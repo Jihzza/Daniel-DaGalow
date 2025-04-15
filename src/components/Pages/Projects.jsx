@@ -21,10 +21,10 @@ function Projects() {
   return (
     <section id="projects" className="py-16 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6">
+        <h2 className="text-2xl md:text-3xl font-bold mb-8">
           My Ventures
         </h2>
-        <div className="space-y-8">
+        <div className="space-y-6">
           {projects.map((project, index) => (
             <div key={index} className="flex flex-col md:flex-row items-center gap-4 border border-oxfordBlue rounded-lg py-4 px-8">
               <img src={project.image} alt={project.name} className="w-24 h-auto object-cover rounded"/>

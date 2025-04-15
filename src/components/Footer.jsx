@@ -11,7 +11,7 @@ function Footer() {
           <a href="https://youtube.com/" className="mx-2 hover:text-gold">YouTube</a>
           <a href="https://linkedin.com/" className="mx-2 hover:text-gold">LinkedIn</a>
         </div>
-        <p className="text-sm">&copy; {new Date().getFullYear()} John Doe Consulting. All rights reserved.</p>
+        <p className="text-sm">&copy; {new Date().getFullYear()} Daniel DaGalow. All rights reserved.</p>
       </div>
     </footer>
   );

@@ -1,10 +1,7 @@
-// components/Booking.js
+// components/Pages/Booking.jsx
 import React, { useState, useEffect } from 'react';
-import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isWeekend, addMinutes, parseISO } from 'date-fns';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isWeekend, addMinutes } from 'date-fns';
+import { fetchBookings, createBooking, checkTimeSlotAvailability } from '../../services/bookingService';
 
 function Booking() {
   const [step, setStep] = useState(1);
@@ -12,56 +9,35 @@ function Booking() {
   const [selectedTime, setSelectedTime] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [bookedEvents, setBookedEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
   });
 
-  // Load booked events from localStorage on component mount
+  // Load booked events from Supabase on component mount
   useEffect(() => {
-    const savedEvents = localStorage.getItem('bookedEvents');
-    if (savedEvents) {
-      setBookedEvents(JSON.parse(savedEvents));
-    }
+    loadBookedEvents();
   }, []);
 
-  // Function to create event with buffer times
-  const createEventWithBuffers = (date, time) => {
-    const eventDate = new Date(date);
-    const [hours, minutes] = time.split(':').map(Number);
-    eventDate.setHours(hours, minutes, 0, 0);
-
-    // Main appointment (1 hour)
-    const mainEvent = {
-      id: `appointment-${Date.now()}`,
-      title: 'Booked',
-      start: eventDate,
-      end: addMinutes(eventDate, 60),
-      backgroundColor: '#B8860B', // darkGold
-      type: 'main'
-    };
-
-    // Preparation buffer (30 min before)
-    const prepBuffer = {
-      id: `prep-${Date.now()}`,
-      title: 'Preparation',
-      start: addMinutes(eventDate, -30),
-      end: eventDate,
-      backgroundColor: '#D3D3D3',
-      type: 'buffer'
-    };
-
-    // Review buffer (30 min after)
-    const reviewBuffer = {
-      id: `review-${Date.now()}`,
-      title: 'Review',
-      start: addMinutes(eventDate, 60),
-      end: addMinutes(eventDate, 90),
-      backgroundColor: '#D3D3D3',
-      type: 'buffer'
-    };
-
-    return [mainEvent, prepBuffer, reviewBuffer];
+  // Function to load booked events from Supabase
+  const loadBookedEvents = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await fetchBookings();
+      
+      if (error) throw error;
+      
+      setBookedEvents(data || []);
+    } catch (error) {
+      console.error('Error loading booked events:', error);
+      setError('Failed to load booking information. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Generate available times (10 AM to 10 PM)
@@ -93,19 +69,40 @@ function Booking() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newEvents = createEventWithBuffers(selectedDate, selectedTime);
+    setIsLoading(true);
+    setError(null);
     
-    // Save to localStorage
-    const updatedEvents = [...bookedEvents, ...newEvents];
-    localStorage.setItem('bookedEvents', JSON.stringify(updatedEvents));
-    setBookedEvents(updatedEvents);
-
-    // Reset form
-    setFormData({ name: '', email: '' });
-    setSelectedDate(null);
-    setSelectedTime(null);
-    setStep(1);
-    alert('Thank you! Your booking request has been submitted.');
+    try {
+      // Create booking record
+      const bookingData = {
+        name: formData.name,
+        email: formData.email,
+        date: selectedDate,
+        time: selectedTime
+      };
+      
+      // Save booking to Supabase
+      const { data, error } = await createBooking(bookingData);
+      
+      if (error) throw error;
+      
+      // Reload bookings to show the new booking
+      await loadBookedEvents();
+      
+      // Reset form
+      setFormData({ name: '', email: '' });
+      setSelectedDate(null);
+      setSelectedTime(null);
+      setStep(1);
+      
+      alert('Thank you! Your booking has been confirmed.');
+    } catch (error) {
+      console.error('Error submitting booking:', error);
+      setError('Failed to create booking. Please try again later.');
+      alert('There was an error with your booking. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Generate days for the current month
@@ -168,15 +165,34 @@ function Booking() {
     });
   };
 
+  // Display loading state
+  if (isLoading && step === 1) {
+    return (
+      <section id="booking" className="py-16 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-8 text-black">
+            Schedule Your Consultation
+          </h2>
+          <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl flex justify-center items-center h-64">
+            <p className="text-white">Loading booking information...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="booking" className="py-16 px-4">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-8 text-black">
+        <h2 className="text-2xl md:text-3xl font-bold mb-8 text-black text-center">
           Schedule Your Consultation
         </h2>
-        <p className="text-center text-black mb-12 max-w-2xl mx-auto">
-          Choose your preferred time for a one-hour consultation.
-        </p>
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            {error}
+          </div>
+        )}
 
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
           {/* Progress Steps */}
@@ -195,18 +211,18 @@ function Booking() {
               <div className="flex items-center justify-between mb-6">
                 <button 
                   onClick={() => changeMonth(-1)}
-                  className="text-white/60 hover:text-white p-2"
+                  className="text-white font-bold p-2"
                 >
-                  ← Previous
+                  ←
                 </button>
                 <h3 className="text-xl text-white text-center">
                   {format(currentMonth, 'MMMM yyyy')}
                 </h3>
                 <button 
                   onClick={() => changeMonth(1)}
-                  className="text-white/60 hover:text-white p-2"
+                  className="text-white font-bold p-2"
                 >
-                  Next →
+                  →
                 </button>
               </div>
 
@@ -230,7 +246,7 @@ function Booking() {
                     <button
                       key={i}
                       onClick={() => !isWeekendDay && isCurrentMonth && handleDateSelect(date)}
-                      disabled={isWeekendDay || !isCurrentMonth}
+                      disabled={isWeekendDay || !isCurrentMonth || isLoading}
                       className={`
                         aspect-square rounded-full p-2 flex flex-col items-center justify-center text-sm relative
                         ${!isCurrentMonth ? 'text-white/20 cursor-not-allowed' : ''}
@@ -255,17 +271,17 @@ function Booking() {
           {step === 2 && (
             <div className="space-y-8">
               <div className="text-center space-y-2">
-                <h3 className="text-xl text-white">Select a Time</h3>
+                <h3 className="text-xl text-white mb-2">Select a Time</h3>
                 <p className="text-white/60">{format(selectedDate, 'EEEE, MMMM d')}</p>
               </div>
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 max-w-2xl mx-auto">
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-6 max-w-2xl mx-auto">
                 {availableTimes.map((time) => {
                   const isAvailable = isTimeAvailable(selectedDate, time);
                   return (
                     <button
                       key={time}
                       onClick={() => isAvailable && handleTimeSelect(time)}
-                      disabled={!isAvailable}
+                      disabled={!isAvailable || isLoading}
                       className={`
                         p-4 rounded-xl text-center transition-all
                         ${!isAvailable ? 'bg-white/5 text-white/40 cursor-not-allowed' : 'hover:bg-darkGold hover:text-white cursor-pointer'}
@@ -279,6 +295,7 @@ function Booking() {
               </div>
               <button
                 onClick={handleBack}
+                disabled={isLoading}
                 className="block mx-auto mt-6 text-white/60 hover:text-white"
               >
                 ← Back to dates
@@ -289,7 +306,7 @@ function Booking() {
           {step === 3 && (
             <div className="max-w-md mx-auto space-y-6">
               <div className="text-center space-y-2 mb-8">
-                <h3 className="text-xl text-white">Complete Booking</h3>
+                <h3 className="text-xl text-white mb-2">Complete Booking</h3>
                 <p className="text-white/60">
                   {format(selectedDate, 'EEEE, MMMM d')} at {selectedTime}
                 </p>
@@ -302,6 +319,7 @@ function Booking() {
                     placeholder="Your Name"
                     value={formData.name}
                     onChange={handleChange}
+                    disabled={isLoading}
                     className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent"
                     required
                   />
@@ -313,6 +331,7 @@ function Booking() {
                     placeholder="Your Email"
                     value={formData.email}
                     onChange={handleChange}
+                    disabled={isLoading}
                     className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent"
                     required
                   />
@@ -321,15 +340,21 @@ function Booking() {
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="w-1/2 p-4 border-2 border-darkGold text-darkGold font-bold rounded-xl hover:bg-darkGold hover:text-white transition-all duration-300"
+                    disabled={isLoading}
+                    className="w-1/2 p-4 border-2 border-darkGold text-darkGold font-bold rounded-xl hover:bg-darkGold hover:text-white transition-all duration-300 disabled:opacity-50"
                   >
                     Back
                   </button>
                   <button
                     type="submit"
-                    className="w-1/2 bg-darkGold text-white font-bold p-4 rounded-xl hover:bg-yellow-500 transition-all duration-300"
+                    disabled={isLoading}
+                    className="w-1/2 bg-darkGold text-white font-bold p-4 rounded-xl hover:bg-yellow-500 transition-all duration-300 disabled:opacity-50 flex justify-center items-center"
                   >
-                    Confirm
+                    {isLoading ? (
+                      <span>Processing...</span>
+                    ) : (
+                      <span>Confirm</span>
+                    )}
                   </button>
                 </div>
               </form>
