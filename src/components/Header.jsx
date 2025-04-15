@@ -5,11 +5,11 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-black bg-opacity-80 text-white z-50">
+    <header className="fixed top-0 left-0 right-0 bg-black bg-opacity-80 text-white z-50 w-full">
       <div className="max-w-5xl mx-auto flex items-center justify-between p-4">
         <div className="text-xl font-bold">
           {/* Replace with your logo or brand name */}
-          John Doe Consulting
+          Daniel DaGalow
         </div>
         <button
           onClick={() => setMenuOpen(!menuOpen)}

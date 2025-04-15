@@ -1,18 +1,18 @@
 // App.js
 import React from 'react';
 import Header from './components/Header';
-import Hero from './components/Hero';
-import About from './components/About';
-import Services from './components/Services';
-import Projects from './components/Projects';
-import Testimonials from './components/Testimonials';
-import Booking from './components/Booking';
+import Hero from './components/Pages/Hero';
+import About from './components/Pages/About';
+import Services from './components/Pages/Services';
+import Projects from './components/Pages/Projects';
+import Testimonials from './components/Pages/Testimonials';
+import Booking from './components/Pages/Booking';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 
 function App() {
   return (
-    <div className="App font-sans text-gray-900">
+    <div className="App font-sans bg-gradient-to-b from-oxfordBlue from-0% via-oxfordBlue via-40% to-gentleGray">
       {/* Sticky header */}
       <Header />
       <main>

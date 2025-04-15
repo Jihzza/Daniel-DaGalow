@@ -15,14 +15,14 @@ function Testimonials() {
   ];
 
   return (
-    <section id="testimonials" className="py-16 px-4">
+    <section id="testimonials" className="py-16 px-4 text-black">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-2xl md:text-3xl font-bold mb-6">
           Success Stories
         </h2>
         <div className="space-y-8">
           {testimonials.map((t, index) => (
-            <div key={index} className="p-4 bg-gray-100 rounded shadow">
+            <div key={index} className="p-4 bg-gray-100 rounded shadow text-black">
               <p className="italic mb-2">"{t.quote}"</p>
               <p className="font-semibold">— {t.author}</p>
             </div>

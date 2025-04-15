@@ -3,7 +3,7 @@ import React from 'react';
 
 function Services() {
   return (
-    <section id="services" className="py-16 px-4">
+    <section id="services" className="py-16 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-2xl md:text-3xl font-bold mb-6">
           How I Can Help You
@@ -11,7 +11,7 @@ function Services() {
         <p className="mb-8">
           Whether you need guidance on mindset, social media growth, finance, marketing, business building, or relationships – I cover it all.
         </p>
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
+        <div className="grid grid-cols-2 gap-6 md:grid-cols-3 text-black">
           {[
             { title: "Mindset & Psychology", icon: "🧠" },
             { title: "Social Media Growth", icon: "📱" },

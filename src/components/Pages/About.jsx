@@ -3,10 +3,10 @@ import React from 'react';
 
 function About() {
   return (
-    <section id="about" className="py-16 px-4 bg-gentleGray text-center">
+    <section id="about" className="py-16 px-4 text-white text-center">
       <div className="max-w-2xl mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold mb-6">
-          Meet John Doe
+          Meet Daniel DaGalow
         </h2>
         <p className="mb-4">
           I went from overcoming a 10‑year challenge and battling daily habits to building successful businesses, transforming my body in 3 months, and coaching high‑profile figures like Miss Portugal 2019/2020.
