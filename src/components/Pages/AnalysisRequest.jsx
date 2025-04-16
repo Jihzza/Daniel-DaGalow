@@ -1,0 +1,197 @@
+import React, { useState } from 'react';
+
+const AnalysisRequest = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    type: 'portfolio', // 'portfolio' or 'company'
+    details: '',
+    companyName: '',
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCompanyField, setShowCompanyField] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    // Simulate API call
+    setTimeout(() => {
+      console.log('Form submitted:', formData);
+      setFormData({
+        name: '',
+        email: '',
+        type: 'portfolio',
+        details: '',
+        companyName: '',
+      });
+      setIsSubmitting(false);
+    }, 1500);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    if (name === 'type') {
+      setShowCompanyField(value === 'company');
+    }
+  };
+
+  return (
+    <section id="analysis-request" className="py-8 px-4 text-white">
+      {/* Background gradient */}
+      
+      <div className="max-w-5xl mx-auto relative">
+        <div className="text-center mb-16 transform transition-all duration-500">
+          <h2 className="text-2xl font-bold text-black mb-8">
+            Get Expert Analysis
+          </h2>
+        </div>
+
+        <div className=" rounded-2xl">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="transform transition-all duration-300 hover:scale-[1.02]">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-200 mb-2">
+                  Your Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
+                  placeholder="John Doe"
+                />
+              </div>
+              <div className="transform transition-all duration-300 hover:scale-[1.02]">
+                <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
+                  placeholder="john@example.com"
+                />
+              </div>
+            </div>
+
+            <div className="transform transition-all duration-300 hover:scale-[1.02]">
+              <label className="block text-sm font-medium text-white mb-4">
+                Analysis Type
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label className="relative">
+                  <input
+                    type="radio"
+                    name="type"
+                    value="portfolio"
+                    checked={formData.type === 'portfolio'}
+                    onChange={handleChange}
+                    className="sr-only peer"
+                  />
+                  <div className="p-4 bg-white/5 border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
+                    <div className="flex items-center">
+                      <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
+                        <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
+                      </div>
+                      <span>Portfolio Analysis</span>
+                    </div>
+                  </div>
+                </label>
+                <label className="relative">
+                  <input
+                    type="radio"
+                    name="type"
+                    value="company"
+                    checked={formData.type === 'company'}
+                    onChange={handleChange}
+                    className="sr-only peer"
+                  />
+                  <div className="p-4 bg-white/5 border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
+                    <div className="flex items-center">
+                      <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
+                        <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
+                      </div>
+                      <span>Company Analysis</span>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div className={`transform transition-all duration-300 ${showCompanyField ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+              {showCompanyField && (
+                <div className="transform transition-all duration-300 hover:scale-[1.02]">
+                  <label htmlFor="companyName" className="block text-sm font-medium text-white mb-2">
+                    Company Name
+                  </label>
+                  <input
+                    type="text"
+                    id="companyName"
+                    name="companyName"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    required={formData.type === 'company'}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
+                    placeholder="Enter company name"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="transform transition-all duration-300 hover:scale-[1.02]">
+              <label htmlFor="details" className="block text-sm font-medium text-white mb-2">
+                Additional Details
+              </label>
+              <textarea
+                id="details"
+                name="details"
+                value={formData.details}
+                onChange={handleChange}
+                rows={4}
+                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300 resize-none"
+                placeholder="Please provide any specific details or requirements for the analysis..."
+              />
+            </div>
+
+            <div className="flex justify-center transform transition-all duration-300 hover:scale-[1.05] active:scale-[0.95]">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`px-8 py-4 bg-darkGold text-white font-medium rounded-xl hover:bg-gold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-darkGold focus:ring-offset-2 focus:ring-offset-oxfordBlue ${
+                  isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
+                }`}
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </div>
+                ) : (
+                  'Request Analysis'
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default AnalysisRequest; 

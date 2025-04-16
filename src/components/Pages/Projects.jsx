@@ -1,33 +1,33 @@
 // components/Projects.js
 import React from 'react';
-import perspectiv from "../../assets/Perspectiv.png";
-import galow from "../../assets/Galow.png";
+import perspectiv from "../../assets/Perspectiv Banner.png";
+import galow from "../../assets/Galow Banner.png";
 
 function Projects() {
   const projects = [
     {
-      name: "Consulting Empire",
-      description: "Built a consulting business generating over $150K+ revenue.",
+      name: "Perspectiv - AI Company",
+      description: "A tech startup helping businesses entering the automation age, with custom software solutions.",
       image: perspectiv // replace with actual image URL or local asset
     },
     {
-      name: "Social Media Success",
-      description: "Gained viral traction with 200K+ views across multiple platforms.",
+      name: "Galow - Success Club",
+      description: "A social club with real world activities and digital software to help successful people connect and achieve their dreams.",
       image: galow
     },
     // Add more projects as needed…
   ];
 
   return (
-    <section id="projects" className="py-16 px-4 text-white">
+    <section id="projects" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-2xl md:text-3xl font-bold mb-8">
           My Ventures
         </h2>
         <div className="space-y-6">
           {projects.map((project, index) => (
-            <div key={index} className="flex flex-col md:flex-row items-center gap-4 border border-oxfordBlue rounded-lg py-4 px-8">
-              <img src={project.image} alt={project.name} className="w-24 h-auto object-cover rounded"/>
+            <div key={index} className="flex flex-col md:flex-row items-center gap-6 border-2 border-darkGold rounded-lg py-8 px-8">
+              <img src={project.image} alt={project.name} className="w-[200px] h-auto object-cover rounded"/>
               <div className="text-left">
                 <h3 className="text-xl font-semibold">{project.name}</h3>
                 <p className="text-sm">{project.description}</p>
