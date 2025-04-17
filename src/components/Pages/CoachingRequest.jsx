@@ -50,8 +50,8 @@ const CoachingRequest = () => {
         <div className="rounded-2xl">
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="transform transition-all duration-300 hover:scale-[1.02]">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-200 mb-2">
+              <div className="">
+                <label htmlFor="name" className="block text-sm font-medium text-black mb-2">
                   Your Name
                 </label>
                 <input
@@ -61,12 +61,12 @@ const CoachingRequest = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
+                  className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
                   placeholder="John Doe"
                 />
               </div>
-              <div className="transform transition-all duration-300 hover:scale-[1.02]">
-                <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+              <div className="">
+                <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
                   Email Address
                 </label>
                 <input
@@ -76,14 +76,14 @@ const CoachingRequest = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
+                  className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
                   placeholder="john@example.com"
                 />
               </div>
             </div>
 
-            <div className="transform transition-all duration-300 hover:scale-[1.02]">
-              <label className="block text-sm font-medium text-white mb-4">
+            <div className="">
+              <label className="block text-sm font-medium text-black mb-4">
                 Coaching Type
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -96,7 +96,7 @@ const CoachingRequest = () => {
                     onChange={handleChange}
                     className="sr-only peer"
                   />
-                  <div className="p-4 bg-white/5 border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
+                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
                     <div className="flex items-center">
                       <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
                         <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
@@ -114,7 +114,7 @@ const CoachingRequest = () => {
                     onChange={handleChange}
                     className="sr-only peer"
                   />
-                  <div className="p-4 bg-white/5 border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
+                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
                     <div className="flex items-center">
                       <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
                         <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
@@ -126,8 +126,8 @@ const CoachingRequest = () => {
               </div>
             </div>
 
-            <div className="transform transition-all duration-300 hover:scale-[1.02]">
-              <label className="block text-sm font-medium text-white mb-4">
+            <div className="">
+              <label className="block text-sm font-medium text-black mb-4">
                 Experience Level
               </label>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -140,7 +140,7 @@ const CoachingRequest = () => {
                     onChange={handleChange}
                     className="sr-only peer"
                   />
-                  <div className="p-4 bg-white/5 border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
+                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
                     <div className="flex items-center">
                       <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
                         <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
@@ -158,7 +158,7 @@ const CoachingRequest = () => {
                     onChange={handleChange}
                     className="sr-only peer"
                   />
-                  <div className="p-4 bg-white/5 border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
+                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
                     <div className="flex items-center">
                       <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
                         <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
@@ -176,7 +176,7 @@ const CoachingRequest = () => {
                     onChange={handleChange}
                     className="sr-only peer"
                   />
-                  <div className="p-4 bg-white/5 border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
+                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
                     <div className="flex items-center">
                       <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
                         <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
@@ -188,8 +188,8 @@ const CoachingRequest = () => {
               </div>
             </div>
 
-            <div className="transform transition-all duration-300 hover:scale-[1.02]">
-              <label htmlFor="goals" className="block text-sm font-medium text-white mb-2">
+            <div className="">
+              <label htmlFor="goals" className="block text-sm font-medium text-black mb-2">
                 Your Goals
               </label>
               <textarea
@@ -198,13 +198,13 @@ const CoachingRequest = () => {
                 value={formData.goals}
                 onChange={handleChange}
                 rows={4}
-                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300 resize-none"
+                className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300 resize-none"
                 placeholder="Describe your goals and what you hope to achieve through coaching..."
               />
             </div>
 
-            <div className="transform transition-all duration-300 hover:scale-[1.02]">
-              <label htmlFor="preferredTime" className="block text-sm font-medium text-white mb-2">
+            <div className="">
+                <label htmlFor="preferredTime" className="block text-sm font-medium text-black mb-2">
                 Preferred Time for Sessions
               </label>
               <input
@@ -213,16 +213,16 @@ const CoachingRequest = () => {
                 name="preferredTime"
                 value={formData.preferredTime}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
+                className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
                 placeholder="e.g., Weekday evenings, Weekend mornings"
               />
             </div>
 
-            <div className="flex justify-center transform transition-all duration-300 hover:scale-[1.05] active:scale-[0.95]">
+            <div className="flex justify-center">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 ${
+                className={`bg-darkGold w-60 text-white font-bold px-6 py-3 rounded-lg shadow-lg ${
                   isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
                 }`}
               >

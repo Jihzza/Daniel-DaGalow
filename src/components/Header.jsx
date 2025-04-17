@@ -10,7 +10,9 @@ function Header() {
   return (
     <header className="top-0 left-0 right-0 bg-black text-white z-50 w-full h-14 shadow-lg">
       <div className="max-w-5xl mx-auto flex items-center justify-between p-4">
-        <img src={DaGalowLogo} alt="DaGalow Logo" className='w-[150px] h-auto object-cover' />
+        <Link to="/" className="focus:outline-none">
+          <img src={DaGalowLogo} alt="DaGalow Logo" className='w-[150px] h-auto object-cover hover:opacity-90 transition-opacity duration-300' />
+        </Link>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden focus:outline-none"
@@ -39,9 +41,11 @@ function Header() {
             </button>
           </div>
           <nav className="flex flex-col space-y-4">
-            <Link to="/" className="text-white" onClick={() => setMenuOpen(false)}>Home</Link>
-            <Link to="./Subpages/Music" className="text-white" onClick={() => setMenuOpen(false)}>Music</Link>
-            <Link to="./Subpages/Videos" className="text-white" onClick={() => setMenuOpen(false)}>Videos</Link>
+            <Link to="/" className="text-white hover:text-darkGold transition-colors duration-300" onClick={() => setMenuOpen(false)}>Home</Link>
+            <Link to="/components/Subpages/Music" className="text-white hover:text-darkGold transition-colors duration-300" onClick={() => setMenuOpen(false)}>Music</Link>
+            <Link to="/components/Subpages/Videos" className="text-white hover:text-darkGold transition-colors duration-300" onClick={() => setMenuOpen(false)}>Videos</Link>
+            <Link to="/components/Subpages/Achievements" className="text-white hover:text-darkGold transition-colors duration-300" onClick={() => setMenuOpen(false)}>Achievements</Link>
+            <Link to="/components/Subpages/AboutMe" className="text-white hover:text-darkGold transition-colors duration-300" onClick={() => setMenuOpen(false)}>About Me</Link>
           </nav>
         </div>
       </div>

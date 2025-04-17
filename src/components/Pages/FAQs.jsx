@@ -1,89 +1,124 @@
 import React, { useState } from 'react';
 
-function FAQs() {
-  const [openIndex, setOpenIndex] = useState(null);
+function FAQs2() {
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState({
+    question: "How can I start improving my mindset?",
+    answer: "Begin with daily gratitude practice, positive affirmations, and setting small, achievable goals. Consistency is key to building a strong mindset foundation."
+  });
 
-  const faqs = [
-    {
-      question: "What services do you offer?",
-      answer: "I offer a range of services including mindset coaching, business consulting, social media strategy, and personal development. Each service is tailored to help you achieve your specific goals and overcome challenges."
+  const questions = [
+    { 
+      question: "How can I start improving my mindset?",
+      answer: "Begin with daily gratitude practice, positive affirmations, and setting small, achievable goals. Consistency is key to building a strong mindset foundation."
     },
-    {
-      question: "How do your coaching sessions work?",
-      answer: "Coaching sessions are conducted one-on-one, either virtually or in-person, depending on your preference. We'll work together to identify your goals, create a personalized action plan, and track your progress over time."
+    { 
+      question: "What's the best way to stay motivated?",
+      answer: "Create a clear vision, break goals into small steps, track progress, and celebrate small wins. Surround yourself with positive influences and maintain a growth mindset."
     },
-    {
-      question: "What makes your approach different?",
-      answer: "My approach combines practical business strategies with mindset work, ensuring both your professional and personal growth. I focus on sustainable results rather than quick fixes, and I bring real-world experience from building successful businesses."
+    { 
+      question: "How do I handle setbacks?",
+      answer: "View setbacks as learning opportunities. Analyze what went wrong, adjust your approach, and keep moving forward. Remember that failure is part of the success journey."
     },
-    {
-      question: "How long does it take to see results?",
-      answer: "Results vary depending on your goals and commitment level. Some clients see immediate improvements in their mindset, while others achieve significant business growth within 3-6 months of consistent work."
+    { 
+      question: "What's the key to building confidence?",
+      answer: "Focus on your strengths, practice self-compassion, step out of your comfort zone regularly, and celebrate your achievements, no matter how small."
     },
-    {
-      question: "Do you offer group programs?",
-      answer: "Yes, I offer both individual and group coaching programs. Group programs provide a supportive community environment where you can learn from others' experiences while receiving personalized guidance."
+    { 
+      question: "How can I improve my productivity?",
+      answer: "Prioritize tasks, eliminate distractions, take regular breaks, and focus on one task at a time. Use time management techniques like the Pomodoro method."
     },
-    {
-      question: "What's your background and experience?",
-      answer: "I've built multiple successful businesses, transformed my own life through mindset work, and have coached high-profile individuals including Miss Portugal 2019/2020. My experience spans across business development, social media growth, and personal transformation."
+    { 
+      question: "What's the best way to handle stress?",
+      answer: "Practice mindfulness, exercise regularly, maintain a healthy sleep schedule, and learn to say no when necessary. Regular self-care is essential."
+    },
+    { 
+      question: "How do I build better habits?",
+      answer: "Start small, be consistent, track your progress, and create a supportive environment. Use habit stacking to build new routines on existing ones."
+    },
+    { 
+      question: "What's the secret to better decision-making?",
+      answer: "Gather relevant information, consider different perspectives, trust your intuition, and be willing to make mistakes. Learn from each decision you make."
+    },
+    { 
+      question: "How can I improve my communication skills?",
+      answer: "Practice active listening, be clear and concise, show empathy, and ask for feedback. Regular practice and self-awareness are crucial."
+    },
+    { 
+      question: "What's the best way to set goals?",
+      answer: "Make them SMART (Specific, Measurable, Achievable, Relevant, Time-bound), write them down, create an action plan, and review them regularly."
     }
   ];
 
-  const toggleAccordion = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
+  const toggleDropdown = () => {
+    setActiveDropdown(!activeDropdown);
+  };
+
+  const handleQuestionSelect = (question, answer) => {
+    setCurrentQuestion({ question, answer });
+    setActiveDropdown(false);
   };
 
   return (
-    <section id="faqs" className="py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold mb-8 text-black text-center">
-          Frequently Asked Questions
+    <section id="faqs2" className="py-8 px-4">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-black">
+          Quick Mindset Tips
         </h2>
-        
-        <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className="bg-oxfordBlue backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300"
+
+        <div className="relative h-[50vh]">
+          <div className="faq backdrop-blur-sm h-[40vh] rounded-xl overflow-hidden">
+            <div 
+              className="question p-4 flex justify-between items-center cursor-pointer relative" 
+              onClick={toggleDropdown}
             >
-              <button
-                onClick={() => toggleAccordion(index)}
-                className="w-full px-6 py-4 text-left focus:outline-none flex justify-between items-center"
-              >
-                <span className="text-lg font-semibold text-white">{faq.question}</span>
-                <svg
-                  className={`w-6 h-6 transform transition-transform duration-300 ${
-                    openIndex === index ? 'rotate-180' : ''
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-              
-              <div
-                className={`px-6 transition-all duration-300 ease-in-out ${
-                  openIndex === index
-                    ? 'max-h-96 opacity-100 py-4'
-                    : 'max-h-0 opacity-0'
+              <h3 className="text-lg font-semibold text-black">{currentQuestion.question}</h3>
+              <svg
+                className={`faqBurger w-6 h-6 text-black transform transition-transform duration-300 ${
+                  activeDropdown ? 'rotate-180' : ''
                 }`}
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <p className="text-white/80">{faq.answer}</p>
-              </div>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+
+              {activeDropdown && (
+                <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-oxfordBlue rounded-xl overflow-hidden shadow-lg z-10 !h-[500px] overflow-y-auto">
+                  {questions.map((option, index) => (
+                    <a
+                      key={index}
+                      href="#"
+                      className="block py-4 px-4 text-white hover:bg-oxfordBlue/80 transition-colors border-t border-white/20"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleQuestionSelect(option.question, option.answer);
+                      }}
+                    >
+                      {option.question}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
-          ))}
+
+            <div className="answer px-4">
+              <p className="text-black">{currentQuestion.answer}</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-export default FAQs;
+export default FAQs2; 

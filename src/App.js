@@ -17,7 +17,8 @@ import Chatbot from './components/Chatbot';
 import Music from './components/Subpages/Music';
 import Videos from './components/Subpages/Videos';
 import FAQs from './components/Pages/FAQs';
-
+import Achievements from './components/Subpages/Achievements';
+import AboutMe from './components/Subpages/AboutMe';
 function App() {
   return (
     <Router>
@@ -41,6 +42,8 @@ function App() {
           } />
           <Route path="/components/Subpages/Music" element={<Music />} />
           <Route path="/components/Subpages/Videos" element={<Videos />} />
+          <Route path="/components/Subpages/Achievements" element={<Achievements />} />
+          <Route path="/components/Subpages/AboutMe" element={<AboutMe />} />
         </Routes>
         <Footer />
         <Chatbot />

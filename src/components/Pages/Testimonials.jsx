@@ -185,25 +185,20 @@ function Testimonials() {
           >
             {tiktokImages.map((tiktok, index) => (
               <SwiperSlide key={index}>
-              <div className="w-full h-64 rounded-xl overflow-hidden shadow-lg">
                 <img
                   src={tiktok}
                   alt={`TikTok Content ${index + 1}`}
-                  className="w-full h-full object-cover cursor-pointer"
+                  className="w-full h-full object-cover rounded-xl shadow-lg justify-center items-center self-center cursor-pointer"
                 />
-              </div>
-            </SwiperSlide>
-            
+              </SwiperSlide>
             ))}
             {twitterImages.map((twitter, index) => (
               <SwiperSlide key={index}>
-                <div className="w-full h-full rounded-xl overflow-hidden shadow-lg">
-                  <img
-                    src={twitter}
-                    alt={`Twitter Content ${index + 1}`}
-                    className="w-full h-full object-cover cursor-pointer"
-                  />
-                </div>
+                <img
+                  src={twitter}
+                  alt={`Twitter Content ${index + 1}`}
+                  className="w-full h-full rounded-xl shadow-lg justify-center items-center self-center cursor-pointer"
+                />
               </SwiperSlide>
             ))}
           </Swiper>
