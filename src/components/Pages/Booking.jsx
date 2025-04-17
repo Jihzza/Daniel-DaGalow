@@ -205,60 +205,8 @@ function Booking() {
 
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
           {/* Progress Steps */}
-            <div className="flex justify-center mb-8">
-            <div className="flex items-center space-x-4">
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  step === 1
-                    ? "bg-darkGold text-white"
-                    : "bg-white/20 text-white"
-                }`}
-              >
-                1
-              </div>
-              <div
-                className={`w-10 h-0.5 ${
-                  step > 1 ? "bg-darkGold" : "bg-white/20"
-                }`}
-              ></div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  step === 2
-                    ? "bg-darkGold text-white"
-                    : "bg-white/20 text-white"
-                }`}
-              >
-                2
-              </div>
-              <div
-                className={`w-10 h-0.5 ${
-                  step > 2 ? "bg-darkGold" : "bg-white/20"
-                }`}
-              ></div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  step === 3
-                    ? "bg-darkGold text-white"
-                    : "bg-white/20 text-white"
-                }`}
-              >
-                3
-              </div>
-              <div
-                className={`w-10 h-0.5 ${
-                  step > 3 ? "bg-darkGold" : "bg-white/20"
-                }`}
-              ></div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  step === 4
-                    ? "bg-darkGold text-white"
-                    : "bg-white/20 text-white"
-                }`}
-              >
-                4
-              </div>
-            </div>
+            <div className="flex justify-center">
+            
           </div>
 
           {step === 1 && (
@@ -532,6 +480,59 @@ function Booking() {
               </div>
             </div>
           )}
+        <div className="flex items-center space-x-4 pt-8">
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  step === 1
+                    ? "bg-darkGold text-white"
+                    : "bg-white/20 text-white"
+                }`}
+              >
+                1
+              </div>
+              <div
+                className={`w-10 h-0.5 ${
+                  step > 1 ? "bg-darkGold" : "bg-white/20"
+                }`}
+              ></div>
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  step === 2
+                    ? "bg-darkGold text-white"
+                    : "bg-white/20 text-white"
+                }`}
+              >
+                2
+              </div>
+              <div
+                className={`w-10 h-0.5 ${
+                  step > 2 ? "bg-darkGold" : "bg-white/20"
+                }`}
+              ></div>
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  step === 3
+                    ? "bg-darkGold text-white"
+                    : "bg-white/20 text-white"
+                }`}
+              >
+                3
+              </div>
+              <div
+                className={`w-10 h-0.5 ${
+                  step > 3 ? "bg-darkGold" : "bg-white/20"
+                }`}
+              ></div>
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  step === 4
+                    ? "bg-darkGold text-white"
+                    : "bg-white/20 text-white"
+                }`}
+              >
+                4
+              </div>
+            </div>
         </div>
       </div>
 

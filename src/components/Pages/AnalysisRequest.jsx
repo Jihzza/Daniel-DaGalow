@@ -46,13 +46,13 @@ const AnalysisRequest = () => {
       {/* Background gradient */}
       
       <div className="max-w-5xl mx-auto relative">
-        <div className="text-center mb-16 transform transition-all duration-500">
+        <div className="text-center transform transition-all duration-500">
           <h2 className="text-2xl font-bold text-black mb-8">
             Get Expert Analysis
           </h2>
         </div>
 
-        <div className=" rounded-2xl">
+        <div className="rounded-2xl">
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="transform transition-all duration-300 hover:scale-[1.02]">
@@ -170,7 +170,7 @@ const AnalysisRequest = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`px-8 py-4 bg-darkGold text-white font-medium rounded-xl hover:bg-gold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-darkGold focus:ring-offset-2 focus:ring-offset-oxfordBlue ${
+                className={`bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 ${
                   isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
                 }`}
               >

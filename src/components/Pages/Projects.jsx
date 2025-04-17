@@ -1,6 +1,6 @@
 // components/Projects.js
 import React from 'react';
-import perspectiv from "../../assets/Perspectiv Banner.png";
+import perspectiv from "../../assets/Perspectiv Banner.svg";
 import galow from "../../assets/Galow Banner.png";
 
 function Projects() {
@@ -20,11 +20,11 @@ function Projects() {
 
   return (
     <section id="projects" className="py-8 px-4 text-white">
-      <div className="max-w-3xl mx-auto text-center">
-        <h2 className="text-2xl md:text-3xl font-bold mb-8">
+      <div className="max-w-3xl mx-auto text-center space-y-8">
+        <h2 className="text-2xl md:text-3xl font-bold">
           My Ventures
         </h2>
-        <div className="space-y-6">
+        <div className="space-y-8">
           {projects.map((project, index) => (
             <div key={index} className="flex flex-col md:flex-row items-center gap-6 border-2 border-darkGold rounded-lg py-8 px-8">
               <img src={project.image} alt={project.name} className="w-[200px] h-auto object-cover rounded"/>

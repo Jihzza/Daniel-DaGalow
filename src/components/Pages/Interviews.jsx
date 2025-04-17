@@ -18,12 +18,12 @@ const Interviews = () => {
 
   return (
     <section id="interviews" className="py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl font-bold text-black mb-4">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <div className="text-center space-y-6">
+          <h2 className="text-2xl font-bold text-white">
             Media Appearances
           </h2>
-          <p className='text-black'>I've been featured in some of the most prestigious media outlets in the world. Here are some of my interviews and articles.</p>
+          <p className='text-white'>I've been featured in some of the most prestigious media outlets and big social media profiles. Here are some of my interviews and articles.</p>
         </div>
         
         <div className="grid grid-cols-1 gap-4">
@@ -40,15 +40,15 @@ const Interviews = () => {
             </div>
           ))}
         </div>
-        <div className='flex flex-row justify-center items-center gap-12 mt-8'>
+        <div className='flex flex-row justify-center items-center gap-12'>
           <a href="https://www.cmjornal.pt/cmtv/programas/especiais/investigacao-cm/detalhe/conteudos-sexuais-na-internet-rendem-milhares-de-euros-e-dao-vida-de-luxo-a-utilizadores-veja-agora-na-cmtv-cmtv">
-          <img src={CMLogo} alt='CM Logo' className='h-12 h-auto object-cover rounded opacity-85 shadow-lg'/>
+          <img src={CMLogo} alt='CM Logo' className='h-12 object-cover rounded opacity-85 shadow-lg'/>
           </a>
           <a href="https://x.com/JornalNoticias/status/1642802512435777536">
-          <img src={JNLogo} alt='JN Logo' className='h-12 h-auto object-cover rounded opacity-85 shadow-lg'/>
+          <img src={JNLogo} alt='JN Logo' className='h-12 object-cover rounded opacity-85 shadow-lg'/>
           </a>
           <a href="https://www.youtube.com/watch?v=yr68LJvYDWc">
-          <img src={Coutinho} alt='Coutinho' className='h-12 h-auto object-cover rounded opacity-85 shadow-lg'/>
+          <img src={Coutinho} alt='Coutinho' className='h-12 object-cover rounded opacity-85 shadow-lg'/>
           </a>
         </div>
       </div>

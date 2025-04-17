@@ -36,8 +36,8 @@ function Testimonials() {
 
   return (
     <section id="testimonials" className="py-8 px-4 text-black overflow-hidden">
-      <div className="max-w-3xl mx-auto text-center px-4 overflow-visible">
-        <h2 className="text-2xl md:text-3xl font-bold mb-8">
+      <div className="max-w-3xl mx-auto text-center space-y-8 px-4 overflow-visible">
+        <h2 className="text-2xl md:text-3xl font-bold">
           Success Stories
         </h2>
 

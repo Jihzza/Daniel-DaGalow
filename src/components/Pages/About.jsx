@@ -3,12 +3,12 @@ import React from 'react';
 
 function About() {
   return (
-    <section id="about" className="py-6 px-4 text-white  text-center">
+    <section id="about" className="py-8 px-4 text-white  text-center">
       <div className="max-w-2xl mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold mb-8">
           Meet Daniel DaGalow
         </h2>
-        <div className="space-y-6">
+        <div className="space-y-8">
           <p className="mb-6">
             I went from overcoming a 10‑year challenge and battling daily habits to building successful businesses, transforming my body in 3 months, and coaching high‑profile figures like Miss Portugal 2019/2020.
           </p>

@@ -7,13 +7,17 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Autoplay } from "swiper/modules";
 import Marquee from "react-fast-marquee";
+import useScrollTo from "../../hooks/useScrollTo";
 
 function Hero() {
+  const scrollTo = useScrollTo();
+
   return (
     <section
       id="hero"
-      className="py-2 px-4 text-white min-h-screen flex flex-col justify-center items-center text-center overflow-hidden"
+      className="py-8 px-4 text-white min-h-screen flex flex-col justify-center items-center text-center overflow-hidden"
     >
+      
       <div className="w-full h-full max-w-3xl mx-auto text-center">
         <img
           src={heroImage}
@@ -26,7 +30,7 @@ function Hero() {
             gradient={true}
             gradientColor="#002147" // This should match your oxfordBlue color
             gradientWidth={40}
-            className="w-40"
+            className="w-20"
           >
             <div className="mx-10">Money</div>
             <div className="mx-10">Health</div>
@@ -44,39 +48,124 @@ function Hero() {
           transformed my life, and I'm here to help you do it too—with humor and
           real talk.
         </p>
-        <div className="my-14">
+        <div className="my-14 ">
           {/* Achievements carousel using Swiper */}
           <Swiper
-            spaceBetween={20}
-            slidesPerView={2}
+            spaceBetween={40}
+            slidesPerView={1.5}
+            centeredSlides={true}
             pagination={{ clickable: true }}
             autoplay={{ delay: 2000, disableOnInteraction: false }}
             loop={true}
             modules={[Autoplay]}
-            className="w-full overflow-visible"
+            className="w-full overflow-visible mx-auto max-w-[800px] px-10"
           >
+            {/* Remade original examples. 246w 180h */}
             <SwiperSlide>
-              <div className="p-2 bg-charcoalGray rounded-lg shadow-lg">
-                <span className="font-extrabold text-lg">$150K+</span>
-                <div className="text-lg">in revenue</div>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">$140K+ / year</span>
+                <div className="text-lg">revenue for my company</div>
               </div>
             </SwiperSlide>
+
             <SwiperSlide>
-              <div className="p-2 bg-charcoalGray rounded-lg shadow-lg">
-                <span className="font-extrabold text-lg">Top 1%</span>
-                <div className="text-lg">on OnlyFans</div>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">Top 1% Earner</span>
+                <div className="text-lg">on OnlyFans Worldwide</div>
               </div>
             </SwiperSlide>
+
             <SwiperSlide>
-              <div className="p-2 bg-charcoalGray rounded-lg shadow-lg">
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
                 <span className="font-extrabold text-lg">200K+</span>
-                <div className="text-lg">social views</div>
+                <div className="text-lg">social media views on multiple videos</div>
               </div>
             </SwiperSlide>
+
             <SwiperSlide>
-              <div className="p-2 bg-charcoalGray rounded-lg shadow-lg">
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
                 <span className="font-extrabold text-lg">3 Months</span>
-                <div className="text-lg">body transformed</div>
+                <div className="text-lg">complete body transformation</div>
+              </div>
+            </SwiperSlide>
+
+            {/* Your other achievements */}
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">4 Countries</span>
+                <div className="text-lg">lived in multiple nations</div>
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">Addiction</span>
+                <div className="text-lg">beat it on my own</div>
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">Depression</span>
+                <div className="text-lg">overcame by myself without medicine</div>
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">6+ Languages</span>
+                <div className="text-lg">fluent in multiple tongues</div>
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">100K+ Views</span>
+                <div className="text-lg">content reaching 100's of thousands</div>
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">Miss Portugal</span>
+                <div className="text-lg">managed the 2019/2020 champion</div>
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">$10K+ Monthly</span>
+                <div className="text-lg">
+                  helped clients achieve financial freedom
+                </div>
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">$40K Profit</span>
+                <div className="text-lg">stock market gains in a single year</div>
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">8 Years</span>
+                <div className="text-lg">in a stable long-term relationship</div>
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">0 to 60K+ Followers</span>
+                <div className="text-lg">grew clients on multiple platforms</div>
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">Age 13</span>
+                <div className="text-lg">website reached 60K+ users</div>
               </div>
             </SwiperSlide>
           </Swiper>
@@ -84,41 +173,41 @@ function Hero() {
 
         <div className="flex flex-col items-center justify-center space-y-6 mt-16 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center space-y-6 my-8">
-            <h2 className="text-3xl font-bold">Indivual Consultation</h2>
-            <p className="text-3xl font-extrabold">$120 / hour</p>
-            <a
-              href="#booking"
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg"
+            <h2 className="text-3xl font-bold">Individual Consultation</h2>
+            <p className="text-3xl font-extrabold !mb-2">$90 / hour</p>
+            <button
+              onClick={() => scrollTo("booking")}
+              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               Book a Consultation
-            </a>
+            </button>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center space-y-6 my-8 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center space-y-6 my-8">
-            <h2 className="text-3xl font-bold">Illimited Access</h2>
-            <p className="text-3xl font-extrabold">$150 / month</p>
-            <a
-              href="#coaching-request"
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg"
+            <h2 className="text-3xl font-bold">Text Me Anytime</h2>
+            <p className="text-3xl font-extrabold !mb-2">$150 / month</p>
+            <button
+              onClick={() => scrollTo("coaching-request")}
+              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               Get My Number
-            </a>
+            </button>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center space-y-6 my-8 border-2 border-darkGold rounded-xl p-4">
+        <div className="flex flex-col items-center justify-center space-y-6 mt-8 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center space-y-6 my-8">
             <h2 className="text-3xl font-bold">Expert Analysis</h2>
-            <p className="text-lg font-normal">
+            <p className="text-lg font-normal !mb-2">
               A stock you're interested - Your entire portfolio - Your social
               media - Your business
             </p>
-            <a
-              href="#coaching-request"
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg"
+            <button
+              onClick={() => scrollTo("coaching-request")}
+              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               See Options
-            </a>
+            </button>
           </div>
         </div>
       </div>
