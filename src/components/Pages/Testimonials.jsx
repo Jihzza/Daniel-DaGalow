@@ -175,32 +175,25 @@ function Testimonials() {
           />
           <p className="text-lg text-white">High reach content</p>
           <Swiper
-            spaceBetween={40}
-            slidesPerView={1}
+            spaceBetween={20}
+            slidesPerView={1.1}
             centeredSlides={true}
             pagination={{ clickable: true }}
             // autoplay={{ delay: 2000, disableOnInteraction: false }}
             loop={true}
             className="w-full overflow-visible mx-auto "
           >
-            {tiktokImages.map((tiktok, index) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={tiktok}
-                  alt={`TikTok Content ${index + 1}`}
-                  className="w-full h-full object-cover rounded-xl shadow-lg justify-center items-center self-center cursor-pointer"
-                />
-              </SwiperSlide>
-            ))}
-            {twitterImages.map((twitter, index) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={twitter}
-                  alt={`Twitter Content ${index + 1}`}
-                  className="w-full h-full rounded-xl shadow-lg justify-center items-center self-center cursor-pointer"
-                />
-              </SwiperSlide>
-            ))}
+            {[...tiktokImages, ...twitterImages].map((image, index) => (
+    <SwiperSlide key={index} className="flex justify-center">
+      <div className="w-full h-full">
+        <img
+          src={image}
+          alt={`Social Media Content ${index + 1}`}
+          className="w-full h-full object-cover rounded-xl shadow-lg cursor-pointer"
+        />
+      </div>
+    </SwiperSlide>
+  ))}
           </Swiper>
         </div>
       </div>
