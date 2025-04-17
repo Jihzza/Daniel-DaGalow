@@ -30,7 +30,7 @@ function Hero() {
             gradient={true}
             gradientColor="#002147" // This should match your oxfordBlue color
             gradientWidth={40}
-            className="w-20"
+            className="w-40"
           >
             <div className="mx-10">Money</div>
             <div className="mx-10">Health</div>
