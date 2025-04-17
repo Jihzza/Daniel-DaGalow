@@ -90,7 +90,7 @@ function Hero() {
 
             <SwiperSlide>
               <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">3 Months</span>
+                <span className="font-extrabold text-lg">69 days</span>
                 <div className="text-lg">complete body transformation</div>
               </div>
             </SwiperSlide>
