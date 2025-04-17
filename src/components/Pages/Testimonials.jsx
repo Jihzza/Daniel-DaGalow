@@ -6,76 +6,122 @@ import "swiper/css";
 import "swiper/css/pagination";
 import test from "../../assets/Dani.jpeg";
 import bodyTransformation from "../../assets/Body Transformation.mp4";
-import tiktok1 from "../../assets/img/Tiktok/TikTok1.png";
-import tiktok2 from "../../assets/img/Tiktok/TikTok2.png";
-import tiktok3 from "../../assets/img/Tiktok/TikTok3.png";
-import tiktok4 from "../../assets/img/Tiktok/TikTok4.png";
-import tiktok5 from "../../assets/img/Tiktok/TikTok5.png";
-import tiktok6 from "../../assets/img/Tiktok/TikTok6.png";
-import tiktok7 from "../../assets/img/Tiktok/TikTok7.png";
-import tiktok8 from "../../assets/img/Tiktok/TikTok8.png";
-import tiktok9 from "../../assets/img/Tiktok/TikTok9.png";
-import tiktok10 from "../../assets/img/Tiktok/TikTok10.png";
-import tiktok11 from "../../assets/img/Tiktok/TikTok11.png";
-import tiktok12 from "../../assets/img/Tiktok/TikTok12.png";
-import tiktok13 from "../../assets/img/Tiktok/TikTok13.png";
-import tiktok14 from "../../assets/img/Tiktok/TikTok14.png";
-import tiktok15 from "../../assets/img/Tiktok/TikTok15.png";
-import tiktok16 from "../../assets/img/Tiktok/TikTok16.png";
-import tiktok17 from "../../assets/img/Tiktok/TikTok17.png";
-import tiktok18 from "../../assets/img/Tiktok/TikTok18.png";
-import tiktok19 from "../../assets/img/Tiktok/TikTok19.png";
-import tiktok20 from "../../assets/img/Tiktok/TikTok20.png";
-import twitter1 from "../../assets/img/Twitter/Twitter1.png";
-import twitter2 from "../../assets/img/Twitter/Twitter2.png";
-import twitter3 from "../../assets/img/Twitter/Twitter3.png";
-import twitter4 from "../../assets/img/Twitter/Twitter4.png";
-import twitter5 from "../../assets/img/Twitter/Twitter5.png";
-import twitter6 from "../../assets/img/Twitter/Twitter6.png";
-import twitter7 from "../../assets/img/Twitter/Twitter7.png";
-import twitter8 from "../../assets/img/Twitter/Twitter8.png";
-import twitter9 from "../../assets/img/Twitter/Twitter9.png";
-import twitter10 from "../../assets/img/Twitter/Twitter10.png";
-import twitter11 from "../../assets/img/Twitter/Twitter11.png";
-import twitter12 from "../../assets/img/Twitter/Twitter12.png";
-import twitter13 from "../../assets/img/Twitter/Twitter13.png";
-import twitter14 from "../../assets/img/Twitter/Twitter14.png";
-import twitter15 from "../../assets/img/Twitter/Twitter15.png";
-import twitter16 from "../../assets/img/Twitter/Twitter16.png";
-import twitter17 from "../../assets/img/Twitter/Twitter17.png";
-import twitter18 from "../../assets/img/Twitter/Twitter18.png";
-import twitter19 from "../../assets/img/Twitter/Twitter19.png";
-import twitter20 from "../../assets/img/Twitter/Twitter20.png";
-import twitter21 from "../../assets/img/Twitter/Twitter21.png";
-import twitter22 from "../../assets/img/Twitter/Twitter22.png";
-import twitter23 from "../../assets/img/Twitter/Twitter23.png";
-import twitter24 from "../../assets/img/Twitter/Twitter24.png";
-import twitter25 from "../../assets/img/Twitter/Twitter25.png";
-import twitter26 from "../../assets/img/Twitter/Twitter26.png";
-import twitter27 from "../../assets/img/Twitter/Twitter27.png";
-import twitter28 from "../../assets/img/Twitter/Twitter28.png";
-import twitter29 from "../../assets/img/Twitter/Twitter29.png";
-import twitter30 from "../../assets/img/Twitter/Twitter30.png"; 
-import twitter31 from "../../assets/img/Twitter/Twitter31.png";
-import twitter32 from "../../assets/img/Twitter/Twitter32.png";
-import twitter33 from "../../assets/img/Twitter/Twitter33.png";
-import twitter34 from "../../assets/img/Twitter/Twitter34.png";
-import twitter35 from "../../assets/img/Twitter/Twitter35.png";
-import twitter36 from "../../assets/img/Twitter/Twitter36.png";
-import twitter37 from "../../assets/img/Twitter/Twitter37.png";
+import socialMedia1 from "../../assets/img/Tiktok/TikTok13.png";
+import socialMedia2 from "../../assets/img/Tiktok/TikTok19.png";
+import socialMedia3 from "../../assets/img/Tiktok/TikTok20.png";
+import socialMedia4 from "../../assets/img/Tiktok/TikTok4.png";
+import socialMedia5 from "../../assets/img/Tiktok/TikTok5.png";
+import socialMedia6 from "../../assets/img/Tiktok/TikTok6.png";
+import socialMedia7 from "../../assets/img/Tiktok/TikTok7.png";
+import socialMedia8 from "../../assets/img/Tiktok/TikTok8.png";
+import socialMedia9 from "../../assets/img/Tiktok/TikTok9.png";
+import socialMedia10 from "../../assets/img/Tiktok/TikTok10.png";
+import socialMedia11 from "../../assets/img/Tiktok/TikTok11.png";
+import socialMedia12 from "../../assets/img/Tiktok/TikTok12.png";
+import socialMedia13 from "../../assets/img/Tiktok/TikTok1.png";
+import socialMedia14 from "../../assets/img/Tiktok/TikTok14.png";
+import socialMedia15 from "../../assets/img/Tiktok/TikTok15.png";
+import socialMedia16 from "../../assets/img/Tiktok/TikTok16.png";
+import socialMedia17 from "../../assets/img/Tiktok/TikTok17.png";
+import socialMedia18 from "../../assets/img/Tiktok/TikTok18.png";
+import socialMedia19 from "../../assets/img/Tiktok/TikTok2.png";
+import socialMedia20 from "../../assets/img/Tiktok/TikTok3.png";
+import socialMedia21 from "../../assets/img/Twitter/Twitter1.png";
+import socialMedia22 from "../../assets/img/Twitter/Twitter2.png";
+import socialMedia23 from "../../assets/img/Twitter/Twitter3.png";
+import socialMedia24 from "../../assets/img/Twitter/Twitter4.png";
+import socialMedia25 from "../../assets/img/Twitter/Twitter5.png";
+import socialMedia26 from "../../assets/img/Twitter/Twitter6.png";
+import socialMedia27 from "../../assets/img/Twitter/Twitter7.png";
+import socialMedia28 from "../../assets/img/Twitter/Twitter8.png";
+import socialMedia29 from "../../assets/img/Twitter/Twitter9.png";
+import socialMedia30 from "../../assets/img/Twitter/Twitter10.png";
+import socialMedia31 from "../../assets/img/Twitter/Twitter11.png";
+import socialMedia32 from "../../assets/img/Twitter/Twitter12.png";
+import socialMedia33 from "../../assets/img/Twitter/Twitter13.png";
+import socialMedia34 from "../../assets/img/Twitter/Twitter14.png";
+import socialMedia35 from "../../assets/img/Twitter/Twitter15.png";
+import socialMedia36 from "../../assets/img/Twitter/Twitter16.png";
+import socialMedia37 from "../../assets/img/Twitter/Twitter17.png";
+import socialMedia38 from "../../assets/img/Twitter/Twitter18.png";
+import socialMedia39 from "../../assets/img/Twitter/Twitter19.png";
+import socialMedia40 from "../../assets/img/Twitter/Twitter20.png";
+import socialMedia41 from "../../assets/img/Twitter/Twitter21.png";
+import socialMedia42 from "../../assets/img/Twitter/Twitter22.png";
+import socialMedia43 from "../../assets/img/Twitter/Twitter23.png";
+import socialMedia44 from "../../assets/img/Twitter/Twitter24.png";
+import socialMedia45 from "../../assets/img/Twitter/Twitter25.png";
+import socialMedia46 from "../../assets/img/Twitter/Twitter26.png";
+import socialMedia47 from "../../assets/img/Twitter/Twitter27.png";
+import socialMedia48 from "../../assets/img/Twitter/Twitter28.png";
+import socialMedia49 from "../../assets/img/Twitter/Twitter29.png";
+import socialMedia50 from "../../assets/img/Twitter/Twitter30.png";
+import socialMedia51 from "../../assets/img/Twitter/Twitter31.png";
+import socialMedia52 from "../../assets/img/Twitter/Twitter32.png";
+import socialMedia53 from "../../assets/img/Twitter/Twitter33.png";
+import socialMedia54 from "../../assets/img/Twitter/Twitter34.png";
+import socialMedia55 from "../../assets/img/Twitter/Twitter35.png";
+import socialMedia56 from "../../assets/img/Twitter/Twitter36.png";
+import socialMedia57 from "../../assets/img/Twitter/Twitter37.png";
 
-
-
-const tiktokImages = [
-  tiktok1, tiktok2, tiktok3, tiktok4, tiktok5, tiktok6, tiktok7, tiktok8, tiktok9, tiktok10,
-  tiktok11, tiktok12, tiktok13, tiktok14, tiktok15, tiktok16, tiktok17, tiktok18, tiktok19, tiktok20
-];
-
-const twitterImages = [
-  twitter1, twitter2, twitter3, twitter4, twitter5, twitter6, twitter7, twitter8, twitter9, twitter10,
-  twitter11, twitter12, twitter13, twitter14, twitter15, twitter16, twitter17, twitter18, twitter19, twitter20,
-  twitter21, twitter22, twitter23, twitter24, twitter25, twitter26, twitter27, twitter28, twitter29, twitter30,
-  twitter31, twitter32, twitter33, twitter34, twitter35, twitter36, twitter37
+const socialMediaImages = [
+  { image: socialMedia1, link: "https://www.tiktok.com/@galo_portugues/video/7172247525540334854" },
+  { image: socialMedia2, link: "https://www.tiktok.com/@galo_portugues/video/7188496959748001030" },
+  { image: socialMedia3, link: "https://www.tiktok.com/@galo_portugues/video/7188901762542128389" },
+  { image: socialMedia4, link: "https://www.tiktok.com/@galo_portugues/video/7319997405875719456" },
+  { image: socialMedia5, link: "https://www.tiktok.com/@galo_portugues/video/7069121685437566213" },
+  { image: socialMedia6, link: "https://www.tiktok.com/@galo_portugues/video/7172986842680233222" },
+  { image: socialMedia7, link: "https://www.tiktok.com/@galo_portugues/video/7086223291626622214" },
+  { image: socialMedia8, link: "https://www.tiktok.com/@galo_portugues/video/7188941851527744774" },
+  { image: socialMedia9, link: "https://www.tiktok.com/@galo_portugues/video/7172852623224130821" },
+  { image: socialMedia10, link: "https://www.tiktok.com/@galo_portugues/video/7152008606173515014" },
+  { image: socialMedia11, link: "https://www.tiktok.com/@galo_portugues/video/7346480566998469920" },
+  { image: socialMedia12, link: "https://www.tiktok.com/@galo_portugues/video/7172269860284550405" },
+  { image: socialMedia13, link: "https://www.tiktok.com/@galo_portugues/video/7069126152278854918" },
+  { image: socialMedia14, link: "https://www.tiktok.com/@galo_portugues/video/7150561631989222661" },
+  { image: socialMedia15, link: "https://www.tiktok.com/@galo_portugues/video/7189354490376523013" },
+  { image: socialMedia16, link: "https://www.tiktok.com/@galo_portugues/video/7158439224776117510" },
+  { image: socialMedia17, link: "https://www.tiktok.com/@galo_portugues/video/7202375791575829766" },
+  { image: socialMedia18, link: "https://www.tiktok.com/@galo_portugues/video/7150561631989222661" },
+  { image: socialMedia19, link: "https://www.tiktok.com/@galo_portugues/video/7344661288200457505" },
+  { image: socialMedia20, link: "https://www.tiktok.com/@galo_portugues/video/7149949788912504069" },
+  { image: socialMedia21, link: "https://x.com/galo_portugues/status/1610017119252389888" },
+  { image: socialMedia22, link: "https://x.com/galo_portugues/status/1610780921111740424" },
+  { image: socialMedia23, link: "https://x.com/galo_portugues/status/1612519780547706880" },
+  { image: socialMedia24, link: "https://x.com/galo_portugues/status/1612540968967741449" },
+  { image: socialMedia25, link: "https://x.com/galo_portugues/status/1612924472088219648" },
+  { image: socialMedia26, link: "https://x.com/galo_portugues/status/1612870732031135759" },
+  { image: socialMedia27, link: "https://x.com/galo_portugues/status/1613169414412668928" },
+  { image: socialMedia28, link: "https://x.com/galo_portugues/status/1613199908579713024" },
+  { image: socialMedia29, link: "https://x.com/galo_portugues/status/1613293969831612457" },
+  { image: socialMedia30, link: "https://x.com/galo_portugues/status/1613259352953221120" },
+  { image: socialMedia31, link: "https://x.com/galo_portugues/status/1613315107605610502" },
+  { image: socialMedia32, link: "https://x.com/galo_portugues/status/1613530446381592578" },
+  { image: socialMedia33, link: "https://x.com/galo_portugues/status/1613600934952865794" },
+  { image: socialMedia34, link: "https://x.com/galo_portugues/status/1613925034225016833" },
+  { image: socialMedia35, link: "https://x.com/galo_portugues/status/1614251694577291266" },
+  { image: socialMedia36, link: "https://x.com/galo_portugues/status/1614346875175424002" },
+  { image: socialMedia37, link: "https://x.com/galo_portugues/status/1614619031134248962" },
+  { image: socialMedia38, link: "https://x.com/galo_portugues/status/1615076490336501782" },
+  { image: socialMedia39, link: "https://x.com/galo_portugues/status/1615088749943160848" },
+  { image: socialMedia40, link: "https://x.com/galo_portugues/status/1614669875586437122" },
+  { image: socialMedia41, link: "https://x.com/galo_portugues/status/1616209812357877763" },
+  { image: socialMedia42, link: "https://x.com/galo_portugues/status/1622966814954393601" },
+  { image: socialMedia43, link: "https://x.com/galo_portugues/status/1623075900047720449" },
+  { image: socialMedia44, link: "https://x.com/galo_portugues/status/1623111519088136197" },
+  { image: socialMedia45, link: "https://x.com/galo_portugues/status/1623419940643434496" },
+  { image: socialMedia46, link: "https://x.com/galo_portugues/status/1627804993184010241" },
+  { image: socialMedia47, link: "https://x.com/galo_portugues/status/1627653957291069441" },
+  { image: socialMedia48, link: "https://x.com/galo_portugues/status/1627812951112445954" },
+  { image: socialMedia49, link: "https://x.com/galo_portugues/status/1629456908590481410" },
+  { image: socialMedia50, link: "https://x.com/galo_portugues/status/1628031737094631424" },
+  { image: socialMedia51, link: "https://x.com/galo_portugues/status/1629859496607531014" },
+  { image: socialMedia52, link: "https://x.com/galo_portugues/status/1628096895200493568" },
+  { image: socialMedia53, link: "https://x.com/galo_portugues/status/1633180612642103298" },
+  { image: socialMedia54, link: "https://x.com/galo_portugues/status/1740650460871324145" },
+  { image: socialMedia55, link: "https://x.com/galo_portugues/status/1771953368732205323" },
+  { image: socialMedia56, link: "https://x.com/galo_portugues/status/1629883089626320897" },
+  { image: socialMedia57, link: "https://x.com/galo_portugues/status/1774914680693084319" },
 ];
 
 function Testimonials() {
@@ -181,19 +227,21 @@ function Testimonials() {
             pagination={{ clickable: true }}
             // autoplay={{ delay: 2000, disableOnInteraction: false }}
             loop={true}
-            className="w-full overflow-visible mx-auto "
+            className="w-[40%] overflow-visible mx-auto "
           >
-            {[...tiktokImages, ...twitterImages].map((image, index) => (
-    <SwiperSlide key={index} className="flex justify-center">
-      <div className="w-full h-full">
-        <img
-          src={image}
-          alt={`Social Media Content ${index + 1}`}
-          className="w-full h-full object-cover rounded-xl shadow-lg cursor-pointer"
-        />
-      </div>
-    </SwiperSlide>
-  ))}
+            {socialMediaImages.map((item, index) => (
+              <SwiperSlide key={index} className="flex justify-center">
+                <div className="w-full h-full rounded-xl">
+                  <a href={item.link} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={item.image}
+                      alt={`Social Media Content ${index + 1}`}
+                      className="w-full h-full object-cover rounded-xl shadow-lg cursor-pointer hover:opacity-90 transition-opacity"
+                    />
+                  </a>
+                </div>
+              </SwiperSlide>
+            ))}
           </Swiper>
         </div>
       </div>
