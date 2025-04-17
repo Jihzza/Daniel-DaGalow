@@ -8,21 +8,27 @@ import "swiper/css/pagination";
 import { Autoplay } from "swiper/modules";
 import Marquee from "react-fast-marquee";
 import useScrollTo from "../../hooks/useScrollTo";
-
+import DaGalow from "../../assets/DaGalow Logo.svg";
 function Hero() {
   const scrollTo = useScrollTo();
 
   return (
     <section
       id="hero"
-      className="py-8 px-4 text-white min-h-screen flex flex-col justify-center items-center text-center overflow-hidden"
+      className="pb-8 pt-4 px-4 text-white min-h-screen flex flex-col justify-center items-center text-center overflow-hidden"
     >
-      
+      <div className="flex items-center justify-center space-x-2">
+        <h1 className="text-lg font-extrabold">
+          Learn from 
+        </h1>
+        <img src={DaGalow} alt="DaGalow" className="w-[150px]" />
+      </div>
+
       <div className="w-full h-full max-w-3xl mx-auto text-center">
         <img
           src={heroImage}
           alt="Hero"
-          className="w-full h-full object-cover rounded-xl my-8 shadow-lg"
+          className="w-full h-full object-cover rounded-xl my-4 shadow-lg"
         />
         <div className="my-8 w-full flex justify-center items-center">
           <Marquee
