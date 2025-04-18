@@ -8,6 +8,8 @@ import Bag from "../../assets/Bag Branco.svg";
 import Heart from "../../assets/Heart Branco.svg";
 import OnlyFans from "../../assets/Onlyfans Branco.svg";
 import Fitness from "../../assets/Fitness Branco.svg";
+import More from "../../assets/More Branco.svg";
+import Robot from "../../assets/Robot Branco.svg";
 import useScrollTo from "../../hooks/useScrollTo";
 function Services() {
   const scrollTo = useScrollTo();
@@ -93,6 +95,26 @@ function Services() {
                 <img
                   src={OnlyFans}
                   alt="OnlyFans"
+                  className="w-10 h-8 object-contain"
+                />
+              ),
+            },
+            {
+              title: "AI & Tech",
+              icon: (
+                <img
+                  src={Robot}
+                  alt="Robot"
+                  className="w-10 h-8 object-contain"
+                />
+              ),
+            },
+            {
+              title: "Way More",
+              icon: (
+                <img
+                  src={More}
+                  alt="More"
                   className="w-10 h-8 object-contain"
                 />
               ),
