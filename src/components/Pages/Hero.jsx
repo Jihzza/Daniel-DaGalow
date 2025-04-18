@@ -153,9 +153,18 @@ function Hero() {
 
             <SwiperSlide>
               <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">$40K Profit</span>
+                <span className="font-extrabold text-lg">+10 years</span>
+                <div className="text-lg">of stock market experience</div>
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">
+                  Thousands of stocks
+                </span>
                 <div className="text-lg">
-                  stock market gains in a single year
+                  researched through fundamental analysis
                 </div>
               </div>
             </SwiperSlide>
@@ -182,10 +191,10 @@ function Hero() {
 
             <SwiperSlide>
               <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">10's of thousands</span>
-                <div className="text-lg">
-                  of hours of research
-                </div> 
+                <span className="font-extrabold text-lg">
+                  10's of thousands
+                </span>
+                <div className="text-lg">of hours of research</div>
               </div>
             </SwiperSlide>
 
