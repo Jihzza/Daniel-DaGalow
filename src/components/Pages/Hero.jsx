@@ -182,6 +182,15 @@ function Hero() {
 
             <SwiperSlide>
               <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
+                <span className="font-extrabold text-lg">10's of thousands</span>
+                <div className="text-lg">
+                  of hours of research
+                </div> 
+              </div>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
                 <span className="font-extrabold text-lg">Age 13</span>
                 <div className="text-lg">website reached 60K+ users</div>
               </div>
@@ -192,16 +201,18 @@ function Hero() {
         <div className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center space-y-6 my-8">
             <div className="flex flex-col items-center justify-center">
-              <h2 className="text-3xl font-bold mb-6">Individual Consultation</h2>
+              <h2 className="text-3xl font-bold mb-6">
+                Individual Consultation
+              </h2>
               <p className="text-3xl font-extrabold mb-2">$90 / hour</p>
               <p className="text-sm font-normal mb-2">Minimum 45 minutes</p>
             </div>
-              <button
-                onClick={() => scrollTo("booking")}
-                className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
-              >
-                Book a Consultation
-              </button>
+            <button
+              onClick={() => scrollTo("booking")}
+              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+            >
+              Book a Consultation
+            </button>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center space-y-6 my-8 border-2 border-darkGold rounded-xl p-4">

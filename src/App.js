@@ -5,6 +5,8 @@ import Header from './components/Header';
 import Hero from './components/Pages/Hero';
 import About from './components/Pages/About';
 import Services from './components/Pages/Services';
+import Coaching from './components/Pages/Coaching';
+import Analysis from './components/Pages/Analysis';
 import Projects from './components/Pages/Projects';
 import VentureInvestment from './components/Pages/VentureInvestment';
 import Testimonials from './components/Pages/Testimonials';
@@ -30,6 +32,8 @@ function App() {
               <Hero />
               <About />
               <Services />
+              <Coaching />
+              <Analysis />
               <Projects />
               <VentureInvestment />
               <Interviews />

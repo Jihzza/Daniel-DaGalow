@@ -1,99 +1,87 @@
-// components/Services.js
+// components/DirectCoaching.jsx
 import React from "react";
-import Brain from "../../assets/Brain Branco.svg";
-import Phone from "../../assets/Phone Branco.svg";
-import MoneyBag from "../../assets/MoneyBag Branco.svg";
-import Target from "../../assets/Target Branco.svg";
-import Bag from "../../assets/Bag Branco.svg";
-import Heart from "../../assets/Heart Branco.svg";
-import OnlyFans from "../../assets/Onlyfans Branco.svg";
-import Fitness from "../../assets/Fitness Branco.svg";
 import useScrollTo from "../../hooks/useScrollTo";
-function Services() {
+
+// You'll need to create or import these SVG icons
+// For now I'll use placeholder references
+import InvestIcon from "../../assets/Stocks Branco.svg";
+import TrainerIcon from "../../assets/PersonalTrainer Branco.svg";
+import DatingIcon from "../../assets/Dating Branco.svg";
+import OnlyFansIcon from "../../assets/Onlyfans Branco.svg";
+import BusinessIcon from "../../assets/Business Branco.svg";
+import HabitsIcon from "../../assets/Habits Branco.svg";
+
+function DirectCoaching() {
   const scrollTo = useScrollTo();
+  
   return (
-    <section id="services" className="py-8 px-4 text-white">
+    <section id="coaching" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-8">
-        <h2 className="text-2xl md:text-3xl font-bold">How I Can Help You</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">Direct Coaching</h2>
         <p className="">
-          Whether you need guidance on mindset, social media growth, finance,
-          marketing, business building, or relationships – I cover it all.
+          Personalized coaching to help you excel in specific areas of your life.
+          Get direct access to expert guidance tailored to your unique situation and goals.
         </p>
+        
         <div className="grid grid-cols-2 gap-6 md:grid-cols-3 text-white">
           {[
             {
-              title: "Mindset & Psychology",
+              title: "Learn How to Invest",
               icon: (
                 <img
-                  src={Brain}
-                  alt="Brain"
+                  src={InvestIcon}
+                  alt="Investment"
                   className="w-8 h-8 object-contain"
                 />
               ),
             },
             {
-              title: "Social Media Growth",
+              title: "Personal Trainer",
               icon: (
                 <img
-                  src={Phone}
-                  alt="Phone"
-                  className="w-8 h-8 object-contain"
-                />
-              ),
-            },
-            {
-              title: "Finance & Wealth",
-              icon: (
-                <img
-                  src={MoneyBag}
-                  alt="MoneyBag"
-                  className="w-8 h-8 object-contain"
-                />
-              ),
-            },
-            {
-              title: "Marketing & Sales",
-              icon: (
-                <img
-                  src={Target}
-                  alt="Target"
-                  className="w-8 h-8 object-contain"
-                />
-              ),
-            },
-            {
-              title: "Business Building",
-              icon: (
-                <img src={Bag} alt="Bag" className="w-8 h-8 object-contain" />
-              ),
-            },
-            {
-              title: "Relationships",
-              icon: (
-                <img
-                  src={Heart}
-                  alt="Heart"
-                  className="w-8 h-8 object-contain"
-                />
-              ),
-            },
-            {
-              title: "Health & Fitness",
-              icon: (
-                <img
-                  src={Fitness}
+                  src={TrainerIcon}
                   alt="Fitness"
-                  className="w-8 h-8 object-contain"
+                  className="w-10 h-8 object-contain"
                 />
               ),
             },
             {
-              title: "OnlyFans",
+              title: "Dating Coach",
               icon: (
                 <img
-                  src={OnlyFans}
+                  src={DatingIcon}
+                  alt="Dating"
+                  className="w-10 h-8 object-contain"
+                />
+              ),
+            },
+            {
+              title: "OnlyFans Coaching",
+              icon: (
+                <img
+                  src={OnlyFansIcon}
                   alt="OnlyFans"
                   className="w-10 h-8 object-contain"
+                />
+              ),
+            },
+            {
+              title: "Business Advisor",
+              icon: (
+                <img
+                  src={BusinessIcon}
+                  alt="Business"
+                  className="w-8 h-8 object-contain"
+                />
+              ),
+            },
+            {
+              title: "Habits & Personal Growth",
+              icon: (
+                <img
+                  src={HabitsIcon}
+                  alt="Habits"
+                  className="w-8 h-8 object-contain"
                 />
               ),
             },
@@ -110,13 +98,14 @@ function Services() {
           ))}
         </div>
       </div>
+      
       <div className="w-full mx-auto px-4 mt-8">
         <h3 className="text-2xl md:text-3xl font-semibold text-center text-white mb-8">
-          What to Expect From Your Consultation
+          Direct Coaching
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Video Call Feature */}
+          {/* Anytime Communication Feature */}
           <div className="flex flex-col items-center text-center">
             <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
@@ -130,21 +119,20 @@ function Services() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={1}
-                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
                 />
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Face-to-Face Video Call
+              Anytime Communication
             </h4>
             <p className="text-white">
-              Our consultations take place via video call, allowing us to
-              connect personally. You'll be able to see me throughout the
-              session, creating a more engaging and personal experience.
+              Text or send audio messages anytime with questions, updates, or challenges. 
+              Get support when you need it most without waiting for scheduled appointments.
             </p>
           </div>
 
-          {/* Duration Feature */}
+          {/* Multi-format Responses */}
           <div className="flex flex-col items-center text-center">
             <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
@@ -158,21 +146,21 @@ function Services() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={1}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
                 />
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Minimum 45-Minute Sessions
+              Flexible Response Formats
             </h4>
             <p className="text-white">
-              Each consultation lasts a minimum of 45 minutes, ensuring we have
-              adequate time to explore your concerns in depth and develop
-              meaningful insights and action plans.
+              Receive guidance through text, audio, or video responses based on your preference
+              and the complexity of the topic. Visual demonstrations when needed, quick text answers
+              when appropriate.
             </p>
           </div>
 
-          {/* Recording Feature */}
+          {/* Personalized Classes */}
           <div className="flex flex-col items-center text-center">
             <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
@@ -186,34 +174,45 @@ function Services() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={1}
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                  d="M12 14l9-5-9-5-9 5 9 5z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
                 />
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Session Recordings
+              Personalized Classes
             </h4>
             <p className="text-white">
-              All consultations are recorded and securely stored, giving both of
-              us access to review the session afterward. This allows you to
-              revisit insights and recommendations without having to take notes
-              during our time together.
+              Receive custom-tailored training sessions designed specifically for your skill level,
+              learning style, and goals. Each class builds on your progress for maximum growth and
+              development.
             </p>
           </div>
         </div>
 
         <div className="mt-10 text-center">
           <p className="text-lg text-white max-w-3xl mx-auto">
-            These features are designed to maximize the value of our time
-            together and provide you with ongoing support even after our session
-            ends. Your comfort and progress are my top priorities.
+            Direct coaching provides consistent support, accountability, and expertise to help you 
+            achieve transformative results in your chosen area. Experience the difference that 
+            personalized attention makes.
           </p>
           <div className="mt-8">
-            <button
-              onClick={() => scrollTo("booking")}
+          <button
+              onClick={() => scrollTo("coaching-journey")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
-              Book a Consultation
+              Get My Number
             </button>
           </div>
         </div>
@@ -222,4 +221,4 @@ function Services() {
   );
 }
 
-export default Services;
+export default DirectCoaching;

@@ -1,99 +1,66 @@
-// components/Services.js
+// components/ExpertAnalysis.jsx
 import React from "react";
-import Brain from "../../assets/Brain Branco.svg";
-import Phone from "../../assets/Phone Branco.svg";
-import MoneyBag from "../../assets/MoneyBag Branco.svg";
-import Target from "../../assets/Target Branco.svg";
-import Bag from "../../assets/Bag Branco.svg";
-import Heart from "../../assets/Heart Branco.svg";
-import OnlyFans from "../../assets/Onlyfans Branco.svg";
-import Fitness from "../../assets/Fitness Branco.svg";
 import useScrollTo from "../../hooks/useScrollTo";
-function Services() {
+
+// You'll need to create or import these SVG icons
+// For now I'll use placeholder references
+import SocialIcon from "../../assets/Phone Branco.svg";
+import StocksIcon from "../../assets/MoneyBag Branco.svg";
+import PortfolioIcon from "../../assets/Target Branco.svg";
+import BusinessIcon from "../../assets/Bag Branco.svg";
+
+function ExpertAnalysis() {
   const scrollTo = useScrollTo();
+  
   return (
-    <section id="services" className="py-8 px-4 text-white">
+    <section id="expert-analysis" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-8">
-        <h2 className="text-2xl md:text-3xl font-bold">How I Can Help You</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">Expert Analysis</h2>
         <p className="">
-          Whether you need guidance on mindset, social media growth, finance,
-          marketing, business building, or relationships – I cover it all.
+          Get professional, in-depth analysis of your investments, business, or social media 
+          presence with actionable insights to help you make better decisions and achieve 
+          your goals.
         </p>
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-3 text-white">
+        
+        <div className="grid grid-cols-2 gap-6 md:grid-cols-2 text-white">
           {[
             {
-              title: "Mindset & Psychology",
+              title: "Social Media Analysis",
               icon: (
                 <img
-                  src={Brain}
-                  alt="Brain"
+                  src={SocialIcon}
+                  alt="Social Media"
                   className="w-8 h-8 object-contain"
                 />
               ),
             },
             {
-              title: "Social Media Growth",
+              title: "Individual Stock Analysis",
               icon: (
                 <img
-                  src={Phone}
-                  alt="Phone"
+                  src={StocksIcon}
+                  alt="Stocks"
                   className="w-8 h-8 object-contain"
                 />
               ),
             },
             {
-              title: "Finance & Wealth",
+              title: "Portfolio Evaluation",
               icon: (
                 <img
-                  src={MoneyBag}
-                  alt="MoneyBag"
+                  src={PortfolioIcon}
+                  alt="Portfolio"
                   className="w-8 h-8 object-contain"
                 />
               ),
             },
             {
-              title: "Marketing & Sales",
+              title: "Business/Company Analysis",
               icon: (
                 <img
-                  src={Target}
-                  alt="Target"
+                  src={BusinessIcon}
+                  alt="Business"
                   className="w-8 h-8 object-contain"
-                />
-              ),
-            },
-            {
-              title: "Business Building",
-              icon: (
-                <img src={Bag} alt="Bag" className="w-8 h-8 object-contain" />
-              ),
-            },
-            {
-              title: "Relationships",
-              icon: (
-                <img
-                  src={Heart}
-                  alt="Heart"
-                  className="w-8 h-8 object-contain"
-                />
-              ),
-            },
-            {
-              title: "Health & Fitness",
-              icon: (
-                <img
-                  src={Fitness}
-                  alt="Fitness"
-                  className="w-8 h-8 object-contain"
-                />
-              ),
-            },
-            {
-              title: "OnlyFans",
-              icon: (
-                <img
-                  src={OnlyFans}
-                  alt="OnlyFans"
-                  className="w-10 h-8 object-contain"
                 />
               ),
             },
@@ -110,41 +77,14 @@ function Services() {
           ))}
         </div>
       </div>
+      
       <div className="w-full mx-auto px-4 mt-8">
         <h3 className="text-2xl md:text-3xl font-semibold text-center text-white mb-8">
-          What to Expect From Your Consultation
+          Expert Analysis
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Video Call Feature */}
-          <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1}
-                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-            <h4 className="text-xl font-medium text-white mb-2">
-              Face-to-Face Video Call
-            </h4>
-            <p className="text-white">
-              Our consultations take place via video call, allowing us to
-              connect personally. You'll be able to see me throughout the
-              session, creating a more engaging and personal experience.
-            </p>
-          </div>
-
-          {/* Duration Feature */}
+          {/* Quick Consultations Feature */}
           <div className="flex flex-col items-center text-center">
             <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
@@ -163,16 +103,15 @@ function Services() {
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Minimum 45-Minute Sessions
+              Three Quick Consultations
             </h4>
             <p className="text-white">
-              Each consultation lasts a minimum of 45 minutes, ensuring we have
-              adequate time to explore your concerns in depth and develop
-              meaningful insights and action plans.
+              Includes three brief sessions to gather basic information, ask follow-up questions, 
+              and provide any additional context needed for a comprehensive analysis of your situation.
             </p>
           </div>
 
-          {/* Recording Feature */}
+          {/* Detailed Analysis */}
           <div className="flex flex-col items-center text-center">
             <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
@@ -186,34 +125,62 @@ function Services() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={1}
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
                 />
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Session Recordings
+              Detailed Analysis Report
             </h4>
             <p className="text-white">
-              All consultations are recorded and securely stored, giving both of
-              us access to review the session afterward. This allows you to
-              revisit insights and recommendations without having to take notes
-              during our time together.
+              Receive a thorough examination of your current situation, market conditions, 
+              competitive landscape, and historical performance. This context helps frame the 
+              analysis and recommendations in the most relevant way.
+            </p>
+          </div>
+
+          {/* Actionable Suggestions */}
+          <div className="flex flex-col items-center text-center">
+            <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </div>
+            <h4 className="text-xl font-medium text-white mb-2">
+              Strategic Recommendations
+            </h4>
+            <p className="text-white">
+              Get clear, actionable suggestions based on the analysis findings. Each recommendation 
+              is prioritized and explained, with specific steps you can take to implement changes 
+              and improve your outcomes.
             </p>
           </div>
         </div>
 
         <div className="mt-10 text-center">
           <p className="text-lg text-white max-w-3xl mx-auto">
-            These features are designed to maximize the value of our time
-            together and provide you with ongoing support even after our session
-            ends. Your comfort and progress are my top priorities.
+            My expert analysis services provide you with professional insights backed by years of 
+            experience. Whether you're looking to optimize your social media presence, evaluate 
+            investment opportunities, or improve your business strategy, I deliver thorough analysis 
+            with practical recommendations you can implement immediately.
           </p>
           <div className="mt-8">
-            <button
-              onClick={() => scrollTo("booking")}
+          <button
+              onClick={() => scrollTo("analysis-request")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
-              Book a Consultation
+              Get Analysis
             </button>
           </div>
         </div>
@@ -222,4 +189,4 @@ function Services() {
   );
 }
 
-export default Services;
+export default ExpertAnalysis;

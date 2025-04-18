@@ -208,8 +208,8 @@ function Testimonials() {
           ))}
         </Swiper>
         <div className="flex flex-col justify-center space-y-6 items-center">
-          <h1 className="text-2xl text-white font-bold">Other Wins</h1>
-          <p className="text-lg text-white">69 Days Body Transformation</p>
+          <h1 className="text-2xl text-black font-bold">Other Wins</h1>
+          <p className="text-lg text-black">69 Days Body Transformation</p>
           {/*Double click to go back to normal size*/}
           <video
             src={bodyTransformation}
@@ -219,7 +219,7 @@ function Testimonials() {
             onDoubleClick={handleDoubleClick}
             className="w-[50%] object-cover rounded-xl shadow-lg justify-center items-center self-center cursor-pointer"
           />
-          <p className="text-lg text-white">High reach content</p>
+          <p className="text-lg text-black">High reach content</p>
           <Swiper
             modules={[Autoplay]}
             spaceBetween={20}

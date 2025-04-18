@@ -42,7 +42,7 @@ const VentureInvestment = () => {
             type="submit"
             className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
           >
-            Book a Consultation
+            Apply for Pitch Deck
           </button>
         </div>
       </div>
