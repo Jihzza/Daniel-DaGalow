@@ -1,249 +1,257 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
-const CoachingRequest = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    coachingType: 'personal', // 'personal' or 'business'
-    experience: 'beginner', // 'beginner', 'intermediate', or 'advanced'
-    goals: '',
-    preferredTime: '',
-  });
+import { supabase } from "../../utils/supabaseClient";
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+// Progress Indicator Component
+function StepIndicator({ stepCount, currentStep, className = "" }) {
+  return (
+    <div className={`flex items-center justify-center ${className}`}>
+      {Array.from({ length: stepCount }).map((_, idx) => (
+        <React.Fragment key={idx}>
+          <div
+            className={`w-10 h-10 flex items-center justify-center rounded-full border-2 transition-colors duration-300 mx-1 ${
+              currentStep === idx + 1
+                ? "bg-darkGold border-darkGold text-white"
+                : "bg-white/20 border-white/50 text-white/50"
+            }`}
+          >
+            {idx + 1}
+          </div>
+          {idx < stepCount - 1 && (
+            <div
+              className={`flex-1 h-1 transition-colors duration-300 ${
+                currentStep > idx + 1 ? "bg-darkGold" : "bg-white/20"
+              }`}
+            />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Form submitted:', formData);
-      setFormData({
-        name: '',
-        email: '',
-        coachingType: 'personal',
-        experience: 'beginner',
-        goals: '',
-        preferredTime: '',
-      });
-      setIsSubmitting(false);
-    }, 1500);
-  };
+// Step 1: Frequency Selection
+function FrequencyStep({ formData, onChange }) {
+  const options = [
+    { label: "Once per Week", value: "weekly" },
+    { label: "Every Day", value: "daily" },
+    { label: "Priority Coaching", value: "priority" },
+  ];
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      {options.map((opt) => (
+        <button
+          key={opt.value}
+          type="button"
+          className={`p-6 rounded-2xl cursor-pointer text-center transition-shadow duration-300 border-2 focus:outline-none ${
+            formData.frequency === opt.value
+              ? "border-darkGold bg-darkGold/10 shadow-md"
+              : "border-white/20 bg-oxfordBlue hover:border-darkGold"
+          }`}
+          onClick={() => onChange({ target: { name: "frequency", value: opt.value } })}
+        >
+          <span className="block text-white font-semibold text-lg">{opt.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Step 2: Contact Info
+function ContactStep({ formData, onChange }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      <div>
+        <label className="block text-white font-medium mb-2">Your Name</label>
+        <input
+          name="name"
+          type="text"
+          value={formData.name}
+          onChange={onChange}
+          placeholder="John Doe"
+          required
+          className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+        />
+      </div>
+      <div>
+        <label className="block text-white font-medium mb-2">Email Address</label>
+        <input
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={onChange}
+          placeholder="john@example.com"
+          required
+          className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+        />
+      </div>
+      <div className="md:col-span-2">
+        <label className="block text-white font-medium mb-2">Phone Number</label>
+        <PhoneInput
+          country={"us"}
+          enableSearch
+          searchPlaceholder="Search country..."
+          value={formData.phone}
+          onChange={(phone) => onChange({ target: { name: "phone", value: phone } })}
+          inputClass="w-full p-4 !bg-white/5 border !border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+          buttonClass="!bg-white/5 border !border-white/20 rounded-l-2xl h-full"
+          dropdownClass="!bg-oxfordBlue text-white rounded-2xl"
+          containerClass="rounded-2xl bg-oxfordBlue"
+          searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2"
+        />
+      </div>
+    </div>
+  );
+}
+
+// Step 3: Chat Interface
+function ChatbotStep({ formData, requestId }) {
+  const [message, setMessage] = useState("");
+  const [chatHistory, setHistory] = useState([]);
+
+  const sendMessage = async () => {
+    if (!message.trim()) return;
+    const { error } = await supabase
+      .from("coaching_chat_messages")
+      .insert({ request_id: requestId, sender: "user", message });
+    if (error) console.error(error);
+    setHistory((h) => [...h, { sender: "user", message }]);
+    setMessage("");
   };
 
   return (
-    <section id="coaching-request" className="py-8 px-4 text-white">
-      <div className="max-w-5xl mx-auto relative">
-        <div className="text-center transform transition-all duration-500">
-          <h2 className="text-2xl font-bold text-black mb-8">
-            Start Your Coaching Journey
-          </h2>
+    <div className="bg-white/10 rounded-2xl p-6 mb-8 space-y-4 max-h-96 overflow-y-auto">
+      {chatHistory.map((msg, i) => (
+        <div
+          key={i}
+          className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+        >
+          <div
+            className={`px-4 py-2 rounded-2xl max-w-xs break-words ${
+              msg.sender === 'user'
+                ? 'bg-darkGold text-white'
+                : 'bg-white text-black'
+            }`}
+          >
+            {msg.message}
+          </div>
         </div>
+      ))}
+      <div className="relative mt-4">
+        <textarea
+          rows={3}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Type your message here..."
+          className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold resize-none"
+        />
+        <button
+          onClick={sendMessage}
+          className="absolute right-4 bottom-4 p-3 bg-darkGold text-white rounded-full hover:bg-yellow-500 transition-colors duration-200"
+        >
+          <svg className="w-6 h-6 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
 
-        <div className="rounded-2xl">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="">
-                <label htmlFor="name" className="block text-sm font-medium text-black mb-2">
-                  Your Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
-                  placeholder="John Doe"
-                />
-              </div>
-              <div className="">
-                <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
-                  placeholder="john@example.com"
-                />
-              </div>
-            </div>
+// Main Coaching Request Component
+export default function CoachingRequest() {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({ frequency: "", name: "", email: "", phone: "" });
+  const [requestId, setRequestId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-            <div className="">
-              <label className="block text-sm font-medium text-black mb-4">
-                Coaching Type
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label className="relative">
-                  <input
-                    type="radio"
-                    name="coachingType"
-                    value="personal"
-                    checked={formData.coachingType === 'personal'}
-                    onChange={handleChange}
-                    className="sr-only peer"
-                  />
-                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
-                    <div className="flex items-center">
-                      <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
-                        <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
-                      </div>
-                      <span>Personal Development</span>
-                    </div>
-                  </div>
-                </label>
-                <label className="relative">
-                  <input
-                    type="radio"
-                    name="coachingType"
-                    value="business"
-                    checked={formData.coachingType === 'business'}
-                    onChange={handleChange}
-                    className="sr-only peer"
-                  />
-                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
-                    <div className="flex items-center">
-                      <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
-                        <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
-                      </div>
-                      <span>Business Growth</span>
-                    </div>
-                  </div>
-                </label>
-              </div>
-            </div>
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "frequency" && value) setStep(2);
+  };
 
-            <div className="">
-              <label className="block text-sm font-medium text-black mb-4">
-                Experience Level
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <label className="relative">
-                  <input
-                    type="radio"
-                    name="experience"
-                    value="beginner"
-                    checked={formData.experience === 'beginner'}
-                    onChange={handleChange}
-                    className="sr-only peer"
-                  />
-                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
-                    <div className="flex items-center">
-                      <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
-                        <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
-                      </div>
-                      <span>Beginner</span>
-                    </div>
-                  </div>
-                </label>
-                <label className="relative">
-                  <input
-                    type="radio"
-                    name="experience"
-                    value="intermediate"
-                    checked={formData.experience === 'intermediate'}
-                    onChange={handleChange}
-                    className="sr-only peer"
-                  />
-                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
-                    <div className="flex items-center">
-                      <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
-                        <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
-                      </div>
-                      <span>Intermediate</span>
-                    </div>
-                  </div>
-                </label>
-                <label className="relative">
-                  <input
-                    type="radio"
-                    name="experience"
-                    value="advanced"
-                    checked={formData.experience === 'advanced'}
-                    onChange={handleChange}
-                    className="sr-only peer"
-                  />
-                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
-                    <div className="flex items-center">
-                      <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
-                        <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
-                      </div>
-                      <span>Advanced</span>
-                    </div>
-                  </div>
-                </label>
-              </div>
-            </div>
+  const STEPS = [
+    { title: "Frequency", component: FrequencyStep },
+    { title: "Your Info", component: ContactStep },
+    { title: "Chat", component: ChatbotStep },
+  ];
 
-            <div className="">
-              <label htmlFor="goals" className="block text-sm font-medium text-black mb-2">
-                Your Goals
-              </label>
-              <textarea
-                id="goals"
-                name="goals"
-                value={formData.goals}
-                onChange={handleChange}
-                rows={4}
-                className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300 resize-none"
-                placeholder="Describe your goals and what you hope to achieve through coaching..."
-              />
-            </div>
+  const Current = STEPS[step - 1].component;
 
-            <div className="">
-                <label htmlFor="preferredTime" className="block text-sm font-medium text-black mb-2">
-                Preferred Time for Sessions
-              </label>
-              <input
-                type="text"
-                id="preferredTime"
-                name="preferredTime"
-                value={formData.preferredTime}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
-                placeholder="e.g., Weekday evenings, Weekend mornings"
-              />
-            </div>
+  const canProceed = () => {
+    if (step === 2) return formData.name && formData.email && formData.phone;
+    return true;
+  };
 
-            <div className="flex justify-center">
+  const handleNext = async () => {
+    if (step === 2) {
+      setIsSubmitting(true);
+      const { data, error } = await supabase
+        .from("coaching_requests")
+        .insert({ name: formData.name, email: formData.email, phone: formData.phone, service_type: formData.frequency })
+        .select("id")
+        .single();
+      if (error) {
+        console.error(error);
+        alert("Failed to create coaching request.");
+        setIsSubmitting(false);
+        return;
+      }
+      setRequestId(data.id);
+      setIsSubmitting(false);
+      setStep(3);
+    } else {
+      setStep((s) => s + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (step > 1) setStep((s) => s - 1);
+  };
+
+  return (
+    <section id="coaching-journey" className="py-12 px-6">
+      <div className="max-w-2xl mx-auto">
+        <h2 className="text-4xl font-bold text-center mb-8 text-black">Start Your Coaching Journey</h2>
+        <div className="bg-oxfordBlue backdrop-blur-md rounded-3xl p-10 shadow-2xl">
+          <Current formData={formData} onChange={handleChange} requestId={requestId} />
+
+          {step > 1 && (
+            <div className="flex justify-between mt-8">
               <button
-                type="submit"
+                onClick={handleBack}
                 disabled={isSubmitting}
-                className={`bg-darkGold w-60 text-white font-bold px-6 py-3 rounded-lg shadow-lg ${
-                  isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
-                }`}
+                className="px-6 py-3 border-2 border-darkGold text-darkGold font-bold rounded-xl hover:bg-darkGold hover:text-white disabled:opacity-50 transition-colors duration-200"
               >
-                {isSubmitting ? (
-                  <div className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Processing...
-                  </div>
-                ) : (
-                  'Request Coaching'
-                )}
+                Back
               </button>
+              {step < STEPS.length ? (
+                <button
+                  onClick={handleNext}
+                  disabled={!canProceed() || isSubmitting}
+                  className="px-6 py-3 bg-darkGold text-white font-bold rounded-xl hover:bg-yellow-500 disabled:opacity-50 transition-colors duration-200"
+                >
+                  Next
+                </button>
+              ) : (
+                <button className="px-6 py-3 bg-darkGold text-white font-bold rounded-xl opacity-50 cursor-default">
+                  In Chat...
+                </button>
+              )}
             </div>
-          </form>
+          )}
+
+          <StepIndicator
+            stepCount={STEPS.length}
+            currentStep={step}
+            className={step === 1 ? "pt-0" : "pt-6"}
+          />
         </div>
       </div>
     </section>
   );
-};
-
-export default CoachingRequest; 
+}

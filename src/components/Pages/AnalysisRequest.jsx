@@ -1,195 +1,244 @@
-import React, { useState } from 'react';
+// src/components/AnalysisRequest.jsx
+import React, { useState } from 'react'
+import { supabase } from '../../utils/supabaseClient'
 
-const AnalysisRequest = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    type: 'portfolio', // 'portfolio' or 'company'
-    details: '',
-    companyName: '',
-  });
+// Progress Indicator
+function StepIndicator({ stepCount, currentStep, className = '' }) {
+  return (
+    <div className={`flex items-center justify-center ${className}`}>
+      {Array.from({ length: stepCount }).map((_, idx) => (
+        <React.Fragment key={idx}>
+          <div
+            className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
+              currentStep === idx + 1
+                ? 'bg-darkGold border-darkGold text-white'
+                : 'bg-white/20 border-white/50 text-white/50'
+            }`}
+          >
+            {idx + 1}
+          </div>
+          {idx < stepCount - 1 && (
+            <div
+              className={`flex-1 h-0.5 mx-2 transition-colors duration-300 ${
+                currentStep > idx + 1 ? 'bg-darkGold' : 'bg-white/20'
+              }`}
+            />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  )
+}
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showCompanyField, setShowCompanyField] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Form submitted:', formData);
-      setFormData({
-        name: '',
-        email: '',
-        type: 'portfolio',
-        details: '',
-        companyName: '',
-      });
-      setIsSubmitting(false);
-    }, 1500);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    if (name === 'type') {
-      setShowCompanyField(value === 'company');
-    }
-  };
+// Step 1: Select Analysis Type
+function TypeSelectionStep({ formData, onChange }) {
+  const options = [
+    { label: 'Stock', value: 'stock' },
+    { label: 'Portfolio', value: 'portfolio' },
+    { label: 'Social Media', value: 'socialmedia' },
+    { label: 'Business', value: 'business' },
+  ]
 
   return (
-    <section id="analysis-request" className="py-8 px-4 text-white">
-      <div className="max-w-5xl mx-auto relative">
-        <div className="text-center transform transition-all duration-500">
-          <h2 className="text-2xl font-bold text-black mb-8">
-            Get Expert Analysis
-          </h2>
+    <div className="grid grid-cols-2 gap-6 mb-6">
+      {options.map(opt => (
+        <div
+          key={opt.value}
+          className={`p-4 rounded-xl cursor-pointer transition-shadow duration-300 border ${
+            formData.type === opt.value
+              ? 'border-darkGold shadow-lg'
+              : 'border-white/20'
+          } bg-oxfordBlue`}
+          onClick={() => onChange({ target: { name: 'type', value: opt.value } })}
+        >
+          <p className="text-white font-medium text-center">{opt.label}</p>
         </div>
+      ))}
+    </div>
+  )
+}
 
-        <div className="rounded-2xl">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="">
-                <label htmlFor="name" className="block text-sm font-medium text-black mb-2">
-                  Your Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
-                  placeholder="John Doe"
-                />
-              </div>
-              <div className="">
-                <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
-                  placeholder="john@example.com"
-                />
-              </div>
-            </div>
+// Step 2: Contact Info
+function ContactInfoStep({ formData, onChange }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <label className="block text-white mb-2">Your Name</label>
+        <input
+          name="name"
+          type="text"
+          value={formData.name}
+          onChange={onChange}
+          placeholder="John Doe"
+          required
+          className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+        />
+      </div>
+      <div>
+        <label className="block text-white mb-2">Email Address</label>
+        <input
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={onChange}
+          placeholder="john@example.com"
+          required
+          className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+        />
+      </div>
+    </div>
+  )
+}
 
-            <div className="">
-              <label className="block text-sm font-medium text-black mb-4">
-                Analysis Type
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label className="relative">
-                  <input
-                    type="radio"
-                    name="type"
-                    value="portfolio"
-                    checked={formData.type === 'portfolio'}
-                    onChange={handleChange}
-                    className="sr-only peer"
-                  />
-                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
-                    <div className="flex items-center">
-                      <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
-                        <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
-                      </div>
-                      <span>Portfolio Analysis</span>
-                    </div>
-                  </div>
-                </label>
-                <label className="relative">
-                  <input
-                    type="radio"
-                    name="type"
-                    value="company"
-                    checked={formData.type === 'company'}
-                    onChange={handleChange}
-                    className="sr-only peer"
-                  />
-                  <div className="p-4 bg-oxfordBlue border border-white/20 rounded-xl text-white cursor-pointer transition-all duration-300 peer-checked:bg-darkGold/20 peer-checked:border-darkGold">
-                    <div className="flex items-center">
-                      <div className="w-5 h-5 border-2 border-white/40 rounded-full mr-3 flex items-center justify-center">
-                        <div className="w-3 h-3 bg-darkGold rounded-full hidden peer-checked:block" />
-                      </div>
-                      <span>Company Analysis</span>
-                    </div>
-                  </div>
-                </label>
-              </div>
-            </div>
+// Step 3: Chat Interface
+function ChatbotStep({ formData, requestId }) {
+  const [message, setMessage] = useState('')
+  const [chatHistory, setChatHistory] = useState([])
 
-            <div className={`${showCompanyField ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-              {showCompanyField && (
-                <div className="">
-                  <label htmlFor="companyName" className="block text-sm font-medium text-black mb-2">
-                    Company Name
-                  </label>
-                  <input
-                    type="text"
-                    id="companyName"
-                    name="companyName"
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    required={formData.type === 'company'}
-                    className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300"
-                    placeholder="Enter company name"
-                  />
-                </div>
+  const sendMessage = async () => {
+    if (!message.trim()) return
+    // 1) Persist to Supabase
+    const { error } = await supabase
+      .from('analysis_chat_messages')
+      .insert({
+        request_id: requestId,
+        sender: 'user',
+        message,
+      })
+    if (error) console.error(error)
+
+    // 2) Append locally
+    setChatHistory(h => [...h, { sender: 'user', message }])
+    setMessage('')
+  }
+
+  return (
+    <div className="bg-white/5 rounded-2xl p-6 mb-6 space-y-4">
+      {chatHistory.map((msg, i) => (
+        <div key={i} className={`p-3 rounded-lg ${msg.sender === 'user' ? 'bg-oxfordBlue text-white self-end' : 'bg-white/20 text-black'}`}>
+          {msg.message}
+        </div>
+      ))}
+      <div className="relative">
+        <textarea
+          rows={3}
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          placeholder="Type your message here..."
+          className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold resize-none"
+        />
+        <button
+          onClick={sendMessage}
+          className="absolute right-3 bottom-3 p-2 bg-darkGold text-white rounded-xl hover:bg-yellow-500 transition-colors duration-300"
+        >
+          <svg className="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default function AnalysisRequest() {
+  const [step, setStep] = useState(1)
+  const [formData, setFormData] = useState({ type: '', name: '', email: '' })
+  const [requestId, setRequestId] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleChange = e => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+    // auto-advance on type select
+    if (name === 'type' && value) setStep(2)
+  }
+
+  const STEPS = [
+    { title: 'Select Type', component: TypeSelectionStep },
+    { title: 'Contact Info', component: ContactInfoStep },
+    { title: 'Chat', component: ChatbotStep },
+  ]
+  const Current = STEPS[step - 1].component
+
+  const canProceed = () => {
+    if (step === 2) return formData.name && formData.email
+    return true
+  }
+
+  const handleNext = async () => {
+    if (step === 2) {
+      setIsSubmitting(true)
+      const { data, error } = await supabase
+        .from('analysis_requests')
+        .insert({
+          name: formData.name,
+          email: formData.email,
+          service_type: formData.type,
+        })
+        .select('id')
+        .single()
+      if (error) {
+        console.error(error)
+        alert('Failed to create request.')
+        setIsSubmitting(false)
+        return
+      }
+      setRequestId(data.id)
+      setIsSubmitting(false)
+      setStep(3)
+    } else {
+      setStep(s => s + 1)
+    }
+  }
+
+  const handleBack = () => {
+    if (step > 1) setStep(s => s - 1)
+  }
+
+  return (
+    <section id="analysis-request" className="py-8 px-4">
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-6 text-black">Get Expert Analysis</h2>
+        <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
+          <Current formData={formData} onChange={handleChange} requestId={requestId} />
+
+          {step > 1 && (
+            <div className="flex justify-between mt-8">
+              <button
+                onClick={handleBack}
+                disabled={isSubmitting}
+                className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl"
+              >
+                Back
+              </button>
+              {step < STEPS.length ? (
+                <button
+                  onClick={handleNext}
+                  disabled={!canProceed() || isSubmitting}
+                  className="px-4 py-1 bg-darkGold text-white font-bold rounded-xl disabled:opacity-50"
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  onClick={() => {}}
+                  disabled
+                  className="px-6 py-3 bg-darkGold text-white font-bold rounded-xl"
+                >
+                  {/* Chat UI handles messages */}
+                  In Chat…
+                </button>
               )}
             </div>
+          )}
 
-            <div className="">
-              <label htmlFor="details" className="block text-sm font-medium text-black mb-2">
-                Additional Details
-              </label>
-              <textarea
-                id="details"
-                name="details"
-                value={formData.details}
-                onChange={handleChange}
-                rows={4}
-                className="w-full px-4 py-3 bg-oxfordBlue border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold focus:border-transparent transition-all duration-300 resize-none"
-                placeholder="Please provide any specific details or requirements for the analysis..."
-              />
-            </div>
-
-            <div className="flex justify-center">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`bg-darkGold w-60 text-white font-bold px-6 py-3 rounded-lg shadow-lg ${
-                  isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
-                }`}
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Processing...
-                  </div>
-                ) : (
-                  'Request Analysis'
-                )}
-              </button>
-            </div>
-          </form>
+          <StepIndicator
+            stepCount={STEPS.length}
+            currentStep={step}
+            className={step === 1 ? 'pt-0' : 'pt-6'}
+          />
         </div>
       </div>
     </section>
-  );
-};
-
-export default AnalysisRequest; 
+  )
+}

@@ -18,9 +18,7 @@ function Hero() {
       className="pb-8 pt-4 px-4 text-white min-h-screen flex flex-col justify-center items-center text-center overflow-hidden"
     >
       <div className="flex items-center justify-center space-x-2">
-        <h1 className="text-lg font-extrabold">
-          Learn from 
-        </h1>
+        <h1 className="text-lg font-extrabold">Learn from</h1>
         <img src={DaGalow} alt="DaGalow" className="w-[150px]" />
       </div>
 
@@ -84,7 +82,9 @@ function Hero() {
             <SwiperSlide>
               <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
                 <span className="font-extrabold text-lg">200K+</span>
-                <div className="text-lg">social media views on multiple videos</div>
+                <div className="text-lg">
+                  social media views on multiple videos
+                </div>
               </div>
             </SwiperSlide>
 
@@ -113,7 +113,9 @@ function Hero() {
             <SwiperSlide>
               <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
                 <span className="font-extrabold text-lg">Depression</span>
-                <div className="text-lg">overcame by myself without medicine</div>
+                <div className="text-lg">
+                  overcame by myself without medicine
+                </div>
               </div>
             </SwiperSlide>
 
@@ -127,7 +129,9 @@ function Hero() {
             <SwiperSlide>
               <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
                 <span className="font-extrabold text-lg">100K+ Views</span>
-                <div className="text-lg">content reaching 100's of thousands</div>
+                <div className="text-lg">
+                  content reaching 100's of thousands
+                </div>
               </div>
             </SwiperSlide>
 
@@ -150,21 +154,29 @@ function Hero() {
             <SwiperSlide>
               <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
                 <span className="font-extrabold text-lg">$40K Profit</span>
-                <div className="text-lg">stock market gains in a single year</div>
+                <div className="text-lg">
+                  stock market gains in a single year
+                </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
               <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
                 <span className="font-extrabold text-lg">8 Years</span>
-                <div className="text-lg">in a stable long-term relationship</div>
+                <div className="text-lg">
+                  in a stable long-term relationship
+                </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
               <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">0 to 60K+ Followers</span>
-                <div className="text-lg">grew clients on multiple platforms</div>
+                <span className="font-extrabold text-lg">
+                  0 to 60K+ Followers
+                </span>
+                <div className="text-lg">
+                  grew clients on multiple platforms
+                </div>
               </div>
             </SwiperSlide>
 
@@ -177,21 +189,24 @@ function Hero() {
           </Swiper>
         </div>
 
-        <div className="flex flex-col items-center justify-center space-y-6 mt-16 border-2 border-darkGold rounded-xl p-4">
+        <div className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center space-y-6 my-8">
-            <h2 className="text-3xl font-bold">Individual Consultation</h2>
-            <p className="text-3xl font-extrabold !mb-2">$90 / hour</p>
-            <button
-              onClick={() => scrollTo("booking")}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
-            >
-              Book a Consultation
-            </button>
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="text-3xl font-bold mb-6">Individual Consultation</h2>
+              <p className="text-3xl font-extrabold mb-2">$90 / hour</p>
+              <p className="text-sm font-normal mb-2">Minimum 45 minutes</p>
+            </div>
+              <button
+                onClick={() => scrollTo("booking")}
+                className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              >
+                Book a Consultation
+              </button>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center space-y-6 my-8 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center space-y-6 my-8">
-            <h2 className="text-3xl font-bold">Text Me Anytime</h2>
+            <h2 className="text-3xl font-bold">Direct Coaching</h2>
             <p className="text-3xl font-extrabold !mb-2">$150 / month</p>
             <button
               onClick={() => scrollTo("coaching-request")}

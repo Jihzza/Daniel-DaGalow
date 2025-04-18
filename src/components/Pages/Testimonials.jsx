@@ -8,7 +8,7 @@ import test from "../../assets/Dani.jpeg";
 import bodyTransformation from "../../assets/Body Transformation.mp4";
 import socialMedia1 from "../../assets/img/Tiktok/TikTok13.png";
 import socialMedia2 from "../../assets/img/Tiktok/TikTok19.png";
-import socialMedia3 from "../../assets/img/Tiktok/TikTok20.png";
+import socialMedia3 from "../../assets/img/Tiktok/TikTok3.png";
 import socialMedia4 from "../../assets/img/Tiktok/TikTok4.png";
 import socialMedia5 from "../../assets/img/Tiktok/TikTok5.png";
 import socialMedia6 from "../../assets/img/Tiktok/TikTok6.png";
@@ -25,7 +25,7 @@ import socialMedia16 from "../../assets/img/Tiktok/TikTok16.png";
 import socialMedia17 from "../../assets/img/Tiktok/TikTok17.png";
 import socialMedia18 from "../../assets/img/Tiktok/TikTok18.png";
 import socialMedia19 from "../../assets/img/Tiktok/TikTok2.png";
-import socialMedia20 from "../../assets/img/Tiktok/TikTok3.png";
+import socialMedia20 from "../../assets/img/Twitter/Twitter37.png";
 import socialMedia21 from "../../assets/img/Twitter/Twitter1.png";
 import socialMedia22 from "../../assets/img/Twitter/Twitter2.png";
 import socialMedia23 from "../../assets/img/Twitter/Twitter3.png";
@@ -62,12 +62,12 @@ import socialMedia53 from "../../assets/img/Twitter/Twitter33.png";
 import socialMedia54 from "../../assets/img/Twitter/Twitter34.png";
 import socialMedia55 from "../../assets/img/Twitter/Twitter35.png";
 import socialMedia56 from "../../assets/img/Twitter/Twitter36.png";
-import socialMedia57 from "../../assets/img/Twitter/Twitter37.png";
+import socialMedia57 from "../../assets/img/Tiktok/TikTok20.png";
 
 const socialMediaImages = [
   { image: socialMedia1, link: "https://www.tiktok.com/@galo_portugues/video/7172247525540334854" },
   { image: socialMedia2, link: "https://www.tiktok.com/@galo_portugues/video/7188496959748001030" },
-  { image: socialMedia3, link: "https://www.tiktok.com/@galo_portugues/video/7188901762542128389" },
+  { image: socialMedia3, link: "https://www.tiktok.com/@galo_portugues/video/7149949788912504069" },
   { image: socialMedia4, link: "https://www.tiktok.com/@galo_portugues/video/7319997405875719456" },
   { image: socialMedia5, link: "https://www.tiktok.com/@galo_portugues/video/7069121685437566213" },
   { image: socialMedia6, link: "https://www.tiktok.com/@galo_portugues/video/7172986842680233222" },
@@ -78,13 +78,13 @@ const socialMediaImages = [
   { image: socialMedia11, link: "https://www.tiktok.com/@galo_portugues/video/7346480566998469920" },
   { image: socialMedia12, link: "https://www.tiktok.com/@galo_portugues/video/7172269860284550405" },
   { image: socialMedia13, link: "https://www.tiktok.com/@galo_portugues/video/7069126152278854918" },
-  { image: socialMedia14, link: "https://www.tiktok.com/@galo_portugues/video/7150561631989222661" },
+  { image: socialMedia14, link: "https://www.tiktok.com/@galo_portugues/video/7172250969269472517" },
   { image: socialMedia15, link: "https://www.tiktok.com/@galo_portugues/video/7189354490376523013" },
   { image: socialMedia16, link: "https://www.tiktok.com/@galo_portugues/video/7158439224776117510" },
   { image: socialMedia17, link: "https://www.tiktok.com/@galo_portugues/video/7202375791575829766" },
   { image: socialMedia18, link: "https://www.tiktok.com/@galo_portugues/video/7150561631989222661" },
   { image: socialMedia19, link: "https://www.tiktok.com/@galo_portugues/video/7344661288200457505" },
-  { image: socialMedia20, link: "https://www.tiktok.com/@galo_portugues/video/7149949788912504069" },
+  { image: socialMedia20, link: "https://x.com/galo_portugues/status/1774914680693084319" },
   { image: socialMedia21, link: "https://x.com/galo_portugues/status/1610017119252389888" },
   { image: socialMedia22, link: "https://x.com/galo_portugues/status/1610780921111740424" },
   { image: socialMedia23, link: "https://x.com/galo_portugues/status/1612519780547706880" },
@@ -121,7 +121,7 @@ const socialMediaImages = [
   { image: socialMedia54, link: "https://x.com/galo_portugues/status/1740650460871324145" },
   { image: socialMedia55, link: "https://x.com/galo_portugues/status/1771953368732205323" },
   { image: socialMedia56, link: "https://x.com/galo_portugues/status/1629883089626320897" },
-  { image: socialMedia57, link: "https://x.com/galo_portugues/status/1774914680693084319" },
+  { image: socialMedia57, link: "https://www.tiktok.com/@galo_portugues/video/7188901762542128389" },
 ];
 
 function Testimonials() {
@@ -221,13 +221,14 @@ function Testimonials() {
           />
           <p className="text-lg text-white">High reach content</p>
           <Swiper
+            modules={[Autoplay]}
             spaceBetween={20}
-            slidesPerView={1.1}
+            slidesPerView={1.2}
             centeredSlides={true}
             pagination={{ clickable: true }}
-            // autoplay={{ delay: 2000, disableOnInteraction: false }}
+            autoplay={{ delay: 2000, disableOnInteraction: false }}
             loop={true}
-            className="w-[40%] overflow-visible mx-auto "
+            className="w-[40%] testimonial-swiper overflow-visible mx-auto "
           >
             {socialMediaImages.map((item, index) => (
               <SwiperSlide key={index} className="flex justify-center">

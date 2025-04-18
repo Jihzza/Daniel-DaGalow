@@ -1,0 +1,19 @@
+/* phone-input-overrides.css */
+
+/* 1) Keep the button’s selected-flag box in Oxford‑Blue */
+.react-tel-input .selected-flag {
+    background-color: #002147 !important;   /* your bg‑oxfordBlue */
+  }
+  
+  /* 3) Style the country list container */
+  .react-tel-input .country-list {
+    background-color: #002147   !important;  /* Oxford‑Blue bg */
+    border-radius: 1rem         !important;
+    overflow: hidden            !important;
+  }
+  
+  /* 4) Highlight hovered/selected items in Oxford‑Blue tint */
+  .react-tel-input .country-list .country.highlight {
+    background-color: rgba(0, 33, 71, 0.2) !important;  /* 20% Oxford‑Blue */  
+  }
+  
