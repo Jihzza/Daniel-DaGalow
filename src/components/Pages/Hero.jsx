@@ -224,18 +224,24 @@ function Hero() {
             </button>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center space-y-6 my-8 border-2 border-darkGold rounded-xl p-4">
+        <div className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center space-y-6 my-8">
-            <h2 className="text-3xl font-bold">Direct Coaching</h2>
-            <p className="text-3xl font-extrabold !mb-2">$150 / month</p>
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="text-3xl font-bold mb-6">
+              Direct Coaching
+              </h2>
+              <p className="text-3xl font-extrabold mb-2">$150 / month</p>
+              <p className="text-sm font-normal mb-2">Limited Spots</p>
+            </div>
             <button
-              onClick={() => scrollTo("coaching-request")}
+              onClick={() => scrollTo("booking")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
-              Get My Number
+              Get my number
             </button>
           </div>
         </div>
+        
         <div className="flex flex-col items-center justify-center space-y-6 mt-8 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center space-y-6 my-8">
             <h2 className="text-3xl font-bold">Expert Analysis</h2>
