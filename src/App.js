@@ -2,23 +2,21 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
-import Hero from './components/Pages/Hero';
-import About from './components/Pages/About';
-import Services from './components/Pages/Services';
-import Coaching from './components/Pages/Coaching';
-import Analysis from './components/Pages/Analysis';
-import Projects from './components/Pages/Projects';
-import VentureInvestment from './components/Pages/VentureInvestment';
-import Testimonials from './components/Pages/Testimonials';
-import Booking from './components/Pages/Booking';
-import Interviews from './components/Pages/Interviews';
-import AnalysisRequest from './components/Pages/AnalysisRequest';
-import CoachingRequest from './components/Pages/CoachingRequest';
+import Hero from './components/MainSections/Hero';
+import About from './components/MainSections/About';
+import Services from './components/MainSections/Services';
+import Coaching from './components/MainSections/Coaching';
+import Analysis from './components/MainSections/Analysis';
+import Projects from './components/MainSections/Projects';
+import VentureInvestment from './components/MainSections/VentureInvestment';
+import Testimonials from './components/MainSections/Testimonials';
+import Interviews from './components/MainSections/Interviews';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import Music from './components/Subpages/Music';
 import Videos from './components/Subpages/Videos';
-import FAQs from './components/Pages/FAQs';
+import Booking from './components/Forms/UnifiedBookingForm';
+import FAQs from './components/MainSections/FAQs';
 import Achievements from './components/Subpages/Achievements';
 import AboutMe from './components/Subpages/AboutMe';
 function App() {
@@ -38,8 +36,6 @@ function App() {
               <VentureInvestment />
               <Interviews />
               <Testimonials />
-              <AnalysisRequest />
-              <CoachingRequest />
               <Booking />
               <FAQs />
             </main>
