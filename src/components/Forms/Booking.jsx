@@ -79,7 +79,7 @@ function DateStep({
   const calendar = [...prevMonthDays, ...days, ...nextMonthDays];
 
   return (
-    <div className="space-y-6">
+    <div id="booking" className="space-y-6">
       <div className="flex items-center justify-between mb-4">
         <button onClick={() => onChangeMonth(-1)} className="text-white p-2">
           ←
