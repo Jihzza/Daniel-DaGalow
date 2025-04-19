@@ -10,15 +10,16 @@ import Analysis from './components/MainSections/Analysis';
 import Projects from './components/MainSections/Projects';
 import VentureInvestment from './components/MainSections/VentureInvestment';
 import Testimonials from './components/MainSections/Testimonials';
+
 import Interviews from './components/MainSections/Interviews';
 import Footer from './components/Footer';
-import Chatbot from './components/Chatbot';
 import Music from './components/Subpages/Music';
 import Videos from './components/Subpages/Videos';
 import MergedServiceForm from './components/MergedServiceForm';
-import FAQs from './components/MainSections/FAQs';
 import Achievements from './components/Subpages/Achievements';
 import AboutMe from './components/Subpages/AboutMe';
+import BottomCarouselPages from './components/BottomCarouselPages';
+import ChatInput from './components/ChatInput';
 function App() {
   return (
     <Router>
@@ -37,7 +38,8 @@ function App() {
               <Interviews />
               <Testimonials />
               <MergedServiceForm />
-              <FAQs />
+              <BottomCarouselPages />
+              <ChatInput />
             </main>
           } />
           <Route path="/components/Subpages/Music" element={<Music />} />
@@ -46,7 +48,6 @@ function App() {
           <Route path="/components/Subpages/AboutMe" element={<AboutMe />} />
         </Routes>
         <Footer />
-        <Chatbot />
       </div>
     </Router>
   );

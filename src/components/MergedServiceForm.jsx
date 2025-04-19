@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import AnalysisRequest from "./Forms/AnalysisRequest";
 import Booking from "./Forms/Booking";
 import CoachingRequest from "./Forms/CoachingRequest";
-
+import PitchDeckRequest from "./Forms/PitchDeckRequest";
 // Step 1 UI: choose which form to show
 function ServiceSelectionStep({ onSelect }) {
   const services = [
     { label: "Analysis", value: "analysis" },
     { label: "Booking", value: "booking" },
     { label: "Coaching", value: "coaching" },
+    { label: "Pitch Deck", value: "pitchdeck" },
   ];
 
   return (
@@ -19,12 +20,12 @@ function ServiceSelectionStep({ onSelect }) {
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
           What service do you need?
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-oxfordBlue shadow-lg rounded-2xl p-6">
+        <div className="grid grid-cols-2 gap-6 bg-oxfordBlue shadow-lg rounded-2xl p-6">
           {services.map((s) => (
             <button
               key={s.value}
               onClick={() => onSelect(s.value)}
-              className="p-6 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg"
+              className="px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg"
             >
               <span className="block text-white font-medium text-lg">
                 {s.label}
@@ -43,7 +44,7 @@ export default function MergedServiceForm() {
   const [service, setService] = useState(null)
 
   useEffect(() => {
-    if (['booking', 'analysis', 'coaching'].includes(serviceParam)) {
+    if (['booking', 'analysis', 'coaching', 'pitchdeck'].includes(serviceParam)) {
       setService(serviceParam)
     }
   }, [serviceParam])
@@ -69,6 +70,9 @@ export default function MergedServiceForm() {
 
     case 'coaching':
       return <CoachingRequest onBackService={() => setService(null)} />
+
+    case 'pitchdeck':
+      return <PitchDeckRequest onBackService={() => setService(null)} />
       
     default:
       return null

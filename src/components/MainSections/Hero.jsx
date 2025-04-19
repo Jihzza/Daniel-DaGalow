@@ -218,7 +218,7 @@ function Hero() {
           </Swiper>
         </div>
 
-        <div className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4">
+        <div role="button" onClick={() => handleServiceClick("booking")} className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center my-8">
             <div className="flex flex-col items-center py-6 justify-center">
               <h2 className="text-3xl font-bold mb-6">
@@ -236,7 +236,7 @@ function Hero() {
             <p role="button" onClick={() => handleServiceClick("booking")} className="text-sm font-normal">Learn More</p>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4">
+        <div role="button" onClick={() => handleServiceClick("coaching")} className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center my-8">
             <div className="flex flex-col items-center justify-center">
               <h2 className="text-3xl font-bold mb-6">Direct Coaching</h2>
@@ -253,7 +253,7 @@ function Hero() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-center space-y-6 mt-8 border-2 border-darkGold rounded-xl p-4">
+        <div role="button" onClick={() => handleServiceClick("analysis")} className="flex flex-col items-center justify-center space-y-6 mt-8 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center my-8">
             <h2 className="text-3xl font-bold mb-6">Expert Analysis</h2>
             <p className="text-lg font-normal mb-8">
