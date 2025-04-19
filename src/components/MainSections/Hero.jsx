@@ -1,6 +1,5 @@
 // components/Hero.js
 import React from "react";
-import { Link } from "react-router-dom";
 import heroImage from "../../assets/Dani.jpeg";
 // Import Swiper React components and modules
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,7 +7,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Autoplay } from "swiper/modules";
 import Marquee from "react-fast-marquee";
-import useScrollTo from "../../hooks/useScrollTo";
 import { useNavigate } from "react-router-dom";
 import DaGalow from "../../assets/DaGalow Logo.svg";
 function Hero() {
@@ -42,13 +40,12 @@ function Hero() {
           alt="Hero"
           className="w-full h-full object-cover rounded-xl my-4 shadow-lg"
         />
-        <div className="my-8 w-full flex justify-center items-center">
+        <div className="my-8 mx-auto w-40 flex self-center justify-center items-center">
           <Marquee
             speed={70}
             gradient={true}
             gradientColor="#002147" // This should match your oxfordBlue color
             gradientWidth={40}
-            className="w-40"
           >
             <div className="mx-10">Money</div>
             <div className="mx-10">Health</div>
@@ -236,7 +233,7 @@ function Hero() {
             >
               Book a Consultation
             </button>
-            <p className="text-sm font-normal">Learn More</p>
+            <p role="button" onClick={() => handleServiceClick("booking")} className="text-sm font-normal">Learn More</p>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4">
@@ -252,7 +249,7 @@ function Hero() {
             >
               Get My Number
             </button>
-            <p className="text-sm font-normal">Learn More</p>
+            <p role="button" onClick={() => handleServiceClick("coaching")} className="text-sm font-normal">Learn More</p>
           </div>
         </div>
 
@@ -269,7 +266,7 @@ function Hero() {
             >
               Get My Analysis
             </button>
-            <a href="#analysis-request" className="text-sm font-normal">Learn More</a>
+            <p role="button" onClick={() => handleServiceClick("analysis")} className="text-sm font-normal">Learn More</p>
           </div>
         </div>
       </div>
