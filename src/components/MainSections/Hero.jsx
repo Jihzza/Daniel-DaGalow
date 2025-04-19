@@ -68,6 +68,16 @@ function Hero() {
           <Swiper
             spaceBetween={40}
             slidesPerView={1.5}
+            breakpoints={
+              {
+                200: {
+                  slidesPerView: 1.2,
+                },
+                400: {
+                  slidesPerView: 1.5,
+                }
+              }
+            }
             centeredSlides={true}
             pagination={{ clickable: true }}
             autoplay={{ delay: 2000, disableOnInteraction: false }}
