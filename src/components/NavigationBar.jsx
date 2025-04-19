@@ -76,9 +76,9 @@ const ChatInput = ({ input = "", setInput, handleSubmit, isLoading = false }) =>
   const isInputEmpty = !input.trim();
 
   return (
-    <div className="fixed bottom-0 left-0 w-full p-2 z-50">
+    <div className="fixed bottom-0 left-0 w-full p-3 z-50 bg-black">
 
-      <div className="flex justify-around items-center mt-2">
+      <div className="flex justify-around items-center">
         {[
           { src: dashboard, to: '/dashboard', alt: 'Dashboard' },
           { src: folder,    to: '/folder',    alt: 'Folder'    },
