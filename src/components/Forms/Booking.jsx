@@ -17,7 +17,7 @@ import {
   checkTimeSlotAvailability,
 } from "../../services/bookingService";
 
-function Booking() {
+export default function Booking({ onBackService }) {
   const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -197,17 +197,17 @@ function Booking() {
           Schedule Your Consultation
         </h2>
 
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
-          </div>
-        )}
-
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
+          {onBackService && (
+            <button
+              onClick={onBackService}
+              className="mb-4 text-sm font-medium text-darkGold"
+            >
+              ← Change Service
+            </button>
+          )}
           {/* Progress Steps */}
-            <div className="flex justify-center">
-            
-          </div>
+          <div className="flex justify-center"></div>
 
           {step === 1 && (
             <div className="space-y-8">
@@ -432,7 +432,10 @@ function Booking() {
                     </div>
                     <div className="flex-1 rounded-2xl">
                       <p className="text-white/90">
-                        Hi {formData.name}! I'm looking forward to our consultation on {format(selectedDate, "EEEE, MMMM d")} at {selectedTime}. To make our session more productive, I'd like to know more about you. Feel free to share:
+                        Hi {formData.name}! I'm looking forward to our
+                        consultation on {format(selectedDate, "EEEE, MMMM d")}{" "}
+                        at {selectedTime}. To make our session more productive,
+                        I'd like to know more about you. Feel free to share:
                       </p>
                       <ul className="mt-3 space-y-2 text-white/70">
                         <li className="flex items-center">
@@ -480,59 +483,51 @@ function Booking() {
               </div>
             </div>
           )}
-        <div className="flex items-center space-x-4 pt-8">
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  step === 1
-                    ? "bg-darkGold text-white"
-                    : "bg-white/20 text-white"
-                }`}
-              >
-                1
-              </div>
-              <div
-                className={`w-10 h-0.5 ${
-                  step > 1 ? "bg-darkGold" : "bg-white/20"
-                }`}
-              ></div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  step === 2
-                    ? "bg-darkGold text-white"
-                    : "bg-white/20 text-white"
-                }`}
-              >
-                2
-              </div>
-              <div
-                className={`w-10 h-0.5 ${
-                  step > 2 ? "bg-darkGold" : "bg-white/20"
-                }`}
-              ></div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  step === 3
-                    ? "bg-darkGold text-white"
-                    : "bg-white/20 text-white"
-                }`}
-              >
-                3
-              </div>
-              <div
-                className={`w-10 h-0.5 ${
-                  step > 3 ? "bg-darkGold" : "bg-white/20"
-                }`}
-              ></div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  step === 4
-                    ? "bg-darkGold text-white"
-                    : "bg-white/20 text-white"
-                }`}
-              >
-                4
-              </div>
+          <div className="flex items-center space-x-4 pt-8">
+            <div
+              className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                step === 1 ? "bg-darkGold text-white" : "bg-white/20 text-white"
+              }`}
+            >
+              1
             </div>
+            <div
+              className={`w-10 h-0.5 ${
+                step > 1 ? "bg-darkGold" : "bg-white/20"
+              }`}
+            ></div>
+            <div
+              className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                step === 2 ? "bg-darkGold text-white" : "bg-white/20 text-white"
+              }`}
+            >
+              2
+            </div>
+            <div
+              className={`w-10 h-0.5 ${
+                step > 2 ? "bg-darkGold" : "bg-white/20"
+              }`}
+            ></div>
+            <div
+              className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                step === 3 ? "bg-darkGold text-white" : "bg-white/20 text-white"
+              }`}
+            >
+              3
+            </div>
+            <div
+              className={`w-10 h-0.5 ${
+                step > 3 ? "bg-darkGold" : "bg-white/20"
+              }`}
+            ></div>
+            <div
+              className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                step === 4 ? "bg-darkGold text-white" : "bg-white/20 text-white"
+              }`}
+            >
+              4
+            </div>
+          </div>
         </div>
       </div>
 
@@ -568,5 +563,3 @@ function Booking() {
     </section>
   );
 }
-
-export default Booking;

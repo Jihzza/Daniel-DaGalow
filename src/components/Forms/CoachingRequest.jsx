@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -162,7 +163,7 @@ function ChatbotStep({ formData, requestId }) {
 }
 
 // Main Coaching Request Component
-export default function CoachingRequest() {
+export default function CoachingRequest({ onBackService }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({ frequency: "", name: "", email: "", phone: "" });
   const [requestId, setRequestId] = useState(null);
@@ -216,8 +217,16 @@ export default function CoachingRequest() {
   return (
     <section id="coaching-journey" className="py-12 px-6">
       <div className="max-w-2xl mx-auto">
-        <h2 className="text-4xl font-bold text-center mb-8 text-black">Start Your Coaching Journey</h2>
+        <h2 className="text-2xl font-bold text-center mb-8 text-black">Start Your Coaching Journey</h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-3xl p-10 shadow-2xl">
+          {onBackService && (
+            <button
+              onClick={onBackService}
+              className="mb-4 text-sm font-medium text-darkGold"
+            >
+              ← Change Service
+            </button>
+          )}
           <Current formData={formData} onChange={handleChange} requestId={requestId} />
 
           {step > 1 && (

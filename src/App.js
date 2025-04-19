@@ -15,11 +15,14 @@ import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import Music from './components/Subpages/Music';
 import Videos from './components/Subpages/Videos';
-import Booking from './components/Forms/UnifiedBookingForm';
+import MergedServiceForm from './components/MergedServiceForm';
 import FAQs from './components/MainSections/FAQs';
 import Achievements from './components/Subpages/Achievements';
 import AboutMe from './components/Subpages/AboutMe';
-function App() {
+import { useState } from 'react';
+
+export default function App() {
+  const [service, setService] = useState(null);
   return (
     <Router>
       <div className="App font-sans bg-gradient-to-b from-oxfordBlue from-0% via-oxfordBlue via-15% to-gentleGray">
@@ -29,14 +32,14 @@ function App() {
             <main>
               <Hero />
               <About />
-              <Services />
-              <Coaching />
-              <Analysis />
+              <Services onSelectService={setService} />
+              <Coaching onSelectService={setService} />
+              <Analysis onSelectService={setService} />
               <Projects />
               <VentureInvestment />
               <Interviews />
               <Testimonials />
-              <Booking />
+              <MergedServiceForm selectedService={service} onBackService={() => setService(null)} />
               <FAQs />
             </main>
           } />
@@ -51,5 +54,3 @@ function App() {
     </Router>
   );
 }
-
-export default App;

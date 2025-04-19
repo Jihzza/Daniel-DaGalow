@@ -140,8 +140,7 @@ function ChatbotStep({ formData, requestId }) {
   )
 }
 
-export default function AnalysisRequest() {
-  const [step, setStep] = useState(1)
+export default function AnalysisRequest({ onBackService }) {  const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({ type: '', name: '', email: '' })
   const [requestId, setRequestId] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -198,8 +197,16 @@ export default function AnalysisRequest() {
   return (
     <section id="analysis-request" className="py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-6 text-black">Get Expert Analysis</h2>
+        <h2 className="text-2xl font-bold text-center mb-6 text-black">Get Expert Analysis</h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
+          {onBackService && (
+            <button
+              onClick={onBackService}
+              className="mb-4 text-sm font-medium text-darkGold"
+            >
+              ← Change Service
+            </button>
+          )}
           <Current formData={formData} onChange={handleChange} requestId={requestId} />
 
           {step > 1 && (
