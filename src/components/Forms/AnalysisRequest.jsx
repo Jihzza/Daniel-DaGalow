@@ -197,7 +197,7 @@ export default function AnalysisRequest({ onBackService }) {  const [step, setSt
   return (
     <section id="analysis-request" className="py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-2xl font-bold text-center mb-6 text-black">Get Expert Analysis</h2>
+        <h2 className="text-2xl font-bold text-center mb-6 text-black">Get My Analysis</h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
           {onBackService && (
             <button

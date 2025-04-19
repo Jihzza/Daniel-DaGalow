@@ -190,7 +190,7 @@ function ExpertAnalysis() {
               onClick={() => handleServiceClick("analysis")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
-              Get Analysis
+              Get My Analysis
             </button>
           </div>
         </div>

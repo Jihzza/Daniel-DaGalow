@@ -208,7 +208,7 @@ function Hero() {
                 <span className="font-extrabold text-lg">
                   10's of thousands
                 </span>
-                <div className="text-lg">of hours of research</div>
+                <div className="text-lg">of hours researching fundamental topics</div>
               </div>
             </SwiperSlide>
 
@@ -222,8 +222,8 @@ function Hero() {
         </div>
 
         <div className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4">
-          <div className="flex flex-col items-center justify-center space-y-6 my-8">
-            <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-center my-8">
+            <div className="flex flex-col items-center py-6 justify-center">
               <h2 className="text-3xl font-bold mb-6">
                 Individual Consultation
               </h2>
@@ -232,14 +232,15 @@ function Hero() {
             </div>
             <button
               onClick={() => handleServiceClick("booking")}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               Book a Consultation
             </button>
+            <p className="text-sm font-normal">Learn More</p>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4">
-          <div className="flex flex-col items-center justify-center space-y-6 my-8">
+          <div className="flex flex-col items-center justify-center my-8">
             <div className="flex flex-col items-center justify-center">
               <h2 className="text-3xl font-bold mb-6">Direct Coaching</h2>
               <p className="text-3xl font-extrabold mb-2">$150 / month</p>
@@ -247,26 +248,28 @@ function Hero() {
             </div>
             <button
               onClick={() => handleServiceClick("coaching")}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
-              Get my number
+              Get My Number
             </button>
+            <p className="text-sm font-normal">Learn More</p>
           </div>
         </div>
 
         <div className="flex flex-col items-center justify-center space-y-6 mt-8 border-2 border-darkGold rounded-xl p-4">
-          <div className="flex flex-col items-center justify-center space-y-6 my-8">
-            <h2 className="text-3xl font-bold">Expert Analysis</h2>
-            <p className="text-lg font-normal !mb-2">
+          <div className="flex flex-col items-center justify-center my-8">
+            <h2 className="text-3xl font-bold mb-6">Expert Analysis</h2>
+            <p className="text-lg font-normal mb-8">
               A stock you're interested - Your entire portfolio - Your social
               media - Your business
             </p>
             <button
               onClick={() => handleServiceClick("analysis")}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
-              Get analysis
+              Get My Analysis
             </button>
+            <a href="#analysis-request" className="text-sm font-normal">Learn More</a>
           </div>
         </div>
       </div>
