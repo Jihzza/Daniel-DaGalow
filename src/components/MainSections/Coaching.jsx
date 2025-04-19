@@ -1,7 +1,5 @@
 // components/DirectCoaching.jsx
 import React from "react";
-import useScrollTo from "../../hooks/useScrollTo";
-
 // You'll need to create or import these SVG icons
 // For now I'll use placeholder references
 import InvestIcon from "../../assets/Stocks Branco.svg";
@@ -10,10 +8,21 @@ import DatingIcon from "../../assets/Dating Branco.svg";
 import OnlyFansIcon from "../../assets/Onlyfans Branco.svg";
 import BusinessIcon from "../../assets/Business Branco.svg";
 import HabitsIcon from "../../assets/Habits Branco.svg";
+import { useNavigate } from "react-router-dom";
 
 function DirectCoaching() {
-  const scrollTo = useScrollTo();
-  
+  const navigate = useNavigate();
+  const handleServiceClick = (service) => {
+    const mapping = {
+      coaching: "#coaching-journey",
+    };
+    navigate(`/?service=${service}${mapping[service]}`);
+    setTimeout(() => {
+      const id = mapping[service].slice(1);
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
   return (
     <section id="coaching" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-8">
@@ -209,7 +218,7 @@ function DirectCoaching() {
           </p>
           <div className="mt-8">
           <button
-              onClick={() => scrollTo("coaching-journey")}
+              onClick={() => handleServiceClick("coaching")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               Get My Number

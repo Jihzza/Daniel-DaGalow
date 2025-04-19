@@ -10,9 +10,22 @@ import OnlyFans from "../../assets/Onlyfans Branco.svg";
 import Fitness from "../../assets/Fitness Branco.svg";
 import More from "../../assets/More Branco.svg";
 import Robot from "../../assets/Robot Branco.svg";
-import useScrollTo from "../../hooks/useScrollTo";
+import { useNavigate } from "react-router-dom";
+
 function Services() {
-  const scrollTo = useScrollTo();
+  const navigate = useNavigate();
+  const handleServiceClick = (service) => {
+    const mapping = {
+      booking: "#booking",
+    };
+    navigate(`/?service=${service}${mapping[service]}`);
+    setTimeout(() => {
+      const id = mapping[service].slice(1);
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
+
   return (
     <section id="services" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-8">
@@ -232,7 +245,7 @@ function Services() {
           </p>
           <div className="mt-8">
             <button
-              onClick={() => scrollTo("booking")}
+              onClick={() => handleServiceClick("booking")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               Book a Consultation

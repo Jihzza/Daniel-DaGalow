@@ -1,7 +1,6 @@
 // components/ExpertAnalysis.jsx
 import React from "react";
-import useScrollTo from "../../hooks/useScrollTo";
-
+import { useNavigate } from "react-router-dom";
 // You'll need to create or import these SVG icons
 // For now I'll use placeholder references
 import SocialIcon from "../../assets/Phone Branco.svg";
@@ -10,8 +9,19 @@ import PortfolioIcon from "../../assets/Target Branco.svg";
 import BusinessIcon from "../../assets/Bag Branco.svg";
 
 function ExpertAnalysis() {
-  const scrollTo = useScrollTo();
-  
+  const navigate = useNavigate();
+  const handleServiceClick = (service) => {
+    const mapping = {
+      analysis: "#analysis-request",
+    };
+    navigate(`/?service=${service}${mapping[service]}`);
+    setTimeout(() => {
+      const id = mapping[service].slice(1);
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
+
   return (
     <section id="expert-analysis" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-8">
@@ -177,7 +187,7 @@ function ExpertAnalysis() {
           </p>
           <div className="mt-8">
           <button
-              onClick={() => scrollTo("analysis-request")}
+              onClick={() => handleServiceClick("analysis")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               Get Analysis
