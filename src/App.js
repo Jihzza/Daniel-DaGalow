@@ -19,10 +19,7 @@ import MergedServiceForm from './components/MergedServiceForm';
 import FAQs from './components/MainSections/FAQs';
 import Achievements from './components/Subpages/Achievements';
 import AboutMe from './components/Subpages/AboutMe';
-import { useState } from 'react';
-
-export default function App() {
-  const [service, setService] = useState(null);
+function App() {
   return (
     <Router>
       <div className="App font-sans bg-gradient-to-b from-oxfordBlue from-0% via-oxfordBlue via-15% to-gentleGray">
@@ -32,14 +29,14 @@ export default function App() {
             <main>
               <Hero />
               <About />
-              <Services onSelectService={setService} />
-              <Coaching onSelectService={setService} />
-              <Analysis onSelectService={setService} />
+              <Services />
+              <Coaching />
+              <Analysis />
               <Projects />
               <VentureInvestment />
               <Interviews />
               <Testimonials />
-              <MergedServiceForm selectedService={service} onBackService={() => setService(null)} />
+              <MergedServiceForm />
               <FAQs />
             </main>
           } />
@@ -54,3 +51,5 @@ export default function App() {
     </Router>
   );
 }
+
+export default App;

@@ -531,7 +531,7 @@ export default function Booking({ onBackService }) {
         </div>
       </div>
 
-      <style jsx global>{`
+      <style>{`
         .calendar-container .fc {
           background: transparent;
           border: none;

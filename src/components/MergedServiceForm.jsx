@@ -1,5 +1,6 @@
 // src/components/MergedServiceForm.jsx
-import React, { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import AnalysisRequest from "./Forms/AnalysisRequest";
 import Booking from "./Forms/Booking";
 import CoachingRequest from "./Forms/CoachingRequest";
@@ -13,7 +14,7 @@ function ServiceSelectionStep({ onSelect }) {
   ];
 
   return (
-    <section className="py-8 px-4">
+    <section id="service-selection" className="py-8 px-4">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
           What service do you need?
@@ -37,23 +38,39 @@ function ServiceSelectionStep({ onSelect }) {
 }
 
 export default function MergedServiceForm() {
-  const [service, setService] = useState(null);
+  const [searchParams] = useSearchParams();
+  const serviceParam = searchParams.get('service')
+  const [service, setService] = useState(null)
 
+  useEffect(() => {
+    if (['booking', 'analysis', 'coaching'].includes(serviceParam)) {
+      setService(serviceParam)
+    }
+  }, [serviceParam])
+
+  useEffect(() => {
+    if (service) {
+      const el = document.getElementById('service-selection ')
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+  }, [service])
   if (!service) {
-    return <ServiceSelectionStep onSelect={setService} />;
+    return <ServiceSelectionStep onSelect={setService} />
   }
 
   switch (service) {
-    case "analysis":
-      return <AnalysisRequest onBackService={() => setService(null)} />;
+    case 'booking':
+      return <Booking onBackService={() => setService(null)} />
 
-    case "booking":
-      return <Booking onBackService={() => setService(null)} />;
+    case 'analysis':
+      return <AnalysisRequest onBackService={() => setService(null)} />
 
-    case "coaching":
-      return <CoachingRequest onBackService={() => setService(null)} />;
-
+    case 'coaching':
+      return <CoachingRequest onBackService={() => setService(null)} />
+      
     default:
-      return null;
+      return null
   }
 }

@@ -1,5 +1,6 @@
 // components/Hero.js
 import React from "react";
+import { Link } from "react-router-dom";
 import heroImage from "../../assets/Dani.jpeg";
 // Import Swiper React components and modules
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,10 +9,23 @@ import "swiper/css/pagination";
 import { Autoplay } from "swiper/modules";
 import Marquee from "react-fast-marquee";
 import useScrollTo from "../../hooks/useScrollTo";
+import { useNavigate } from "react-router-dom";
 import DaGalow from "../../assets/DaGalow Logo.svg";
 function Hero() {
-  const scrollTo = useScrollTo();
-
+  const navigate = useNavigate();
+  const handleServiceClick = (service) => {
+    const mapping = {
+      booking: "#booking",
+      coaching: "#coaching-journey",
+      analysis: "#analysis-request",
+    };
+    navigate(`/?service=${service}${mapping[service]}`);
+    setTimeout(() => {
+      const id = mapping[service].slice(1);
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
   return (
     <section
       id="hero"
@@ -217,7 +231,7 @@ function Hero() {
               <p className="text-sm font-normal mb-2">Minimum 45 minutes</p>
             </div>
             <button
-              onClick={() => scrollTo("booking")}
+              onClick={() => handleServiceClick("booking")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               Book a Consultation
@@ -227,21 +241,19 @@ function Hero() {
         <div className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center space-y-6 my-8">
             <div className="flex flex-col items-center justify-center">
-              <h2 className="text-3xl font-bold mb-6">
-              Direct Coaching
-              </h2>
+              <h2 className="text-3xl font-bold mb-6">Direct Coaching</h2>
               <p className="text-3xl font-extrabold mb-2">$150 / month</p>
               <p className="text-sm font-normal mb-2">Limited Spots</p>
             </div>
             <button
-              onClick={() => scrollTo("booking")}
+              onClick={() => handleServiceClick("coaching")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               Get my number
             </button>
           </div>
         </div>
-        
+
         <div className="flex flex-col items-center justify-center space-y-6 mt-8 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center space-y-6 my-8">
             <h2 className="text-3xl font-bold">Expert Analysis</h2>
@@ -250,10 +262,10 @@ function Hero() {
               media - Your business
             </p>
             <button
-              onClick={() => scrollTo("coaching-request")}
+              onClick={() => handleServiceClick("analysis")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
-              See Options
+              Get analysis
             </button>
           </div>
         </div>

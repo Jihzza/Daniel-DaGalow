@@ -1,17 +1,13 @@
-import { useCallback } from 'react';
+import { useCallback } from 'react'
 
-const useScrollTo = () => {
-  const scrollTo = useCallback((elementId) => {
-    const element = document.getElementById(elementId);
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }
-  }, []);
-
-  return scrollTo;
-};
-
-export default useScrollTo; 
+/**
+ * Returns a function you can call with an element’s id,
+ * and it will smooth‑scroll to that element (if it exists).
+ */
+export default function useScrollTo() {
+  return useCallback((id) => {
+    const el = document.getElementById(id)
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [])
+}
