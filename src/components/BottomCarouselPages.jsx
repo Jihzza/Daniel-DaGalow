@@ -13,7 +13,7 @@ export default function PageCarousel(){
 
     return (
         <section id="bottom-carousel" className="py-8 px-4">
-            <div className="flex overflow-x-auto space-x-4 pb-2">
+            <div className="flex overflow-x-auto space-x-4">
                 {pages.map((p, i) => (
                     <button
                     key={p.label}

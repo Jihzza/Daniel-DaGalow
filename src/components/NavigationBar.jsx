@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import sendIcon from "../assets/Send.svg";
 import clipper from "../assets/Anexar.svg";
-import search from "../assets/Habits Branco.svg";
+import chatbot from "../assets/Habits Branco.svg";
 import folder from "../assets/MoneyBag Branco.svg";
 import contact from "../assets/Investment.svg";
 import dashboard from "../assets/Heart Branco.svg";
@@ -77,57 +77,17 @@ const ChatInput = ({ input = "", setInput, handleSubmit, isLoading = false }) =>
 
   return (
     <div className="fixed bottom-0 left-0 w-full p-2 z-50">
-      {attachedFiles.length > 0 && (
-        <div className="flex flex-wrap gap-2 px-4 pb-2">
-          {attachedFiles.map((file, idx) => (
-            <div key={idx} className="relative">
-              {file.type.startsWith('image/') ? (
-                <img src={URL.createObjectURL(file)} alt={file.name}
-                  className="w-16 h-16 object-cover rounded-lg" />
-              ) : (
-                <div className="w-16 h-16 flex items-center justify-center text-xs text-gray-800 bg-gray-200 rounded-lg shadow">
-                  {file.name}
-                </div>
-              )}
-              <button onClick={() => handleRemoveFile(idx)}
-                className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs px-1">
-                ×
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmitWithAttachments}
-        className={`flex items-center ${roundedStyle} bg-oxfordBlue border-2 border-darkGold px-4 py-2 shadow-lg`}
-      >
-        <button type="button" onClick={handleAttachClick}
-          className={`flex-shrink-0 mr-2 ${isLoading ? 'opacity-50' : ''}`}>
-          <img src={clipper} alt="Attach" className="w-5 h-5" />
-        </button>
-        <input type="file" multiple ref={fileInputRef} onChange={handleFileChange}
-          style={{ display: 'none' }} />
-        <textarea rows={1} ref={textareaRef} value={input} onChange={e => setInput(e.target.value)}
-          onKeyDown={handleKeyDown} onFocus={handleFocus}
-          placeholder={isLoading ? 'AI is thinking...' : 'Type a message...'}
-          className="flex-1 bg-transparent resize-none outline-none text-gray-800 placeholder-gray-500"
-        />
-        <button type="submit" disabled={isLoading || isInputEmpty}
-          className={`flex-shrink-0 ml-2 ${isLoading || isInputEmpty ? 'cursor-not-allowed' : ''}`}>
-          <img src={sendIcon} alt="Send" className="w-5 h-5 mb-1" />
-        </button>
-      </form>
 
       <div className="flex justify-around items-center mt-2">
         {[
           { src: dashboard, to: '/dashboard', alt: 'Dashboard' },
           { src: folder,    to: '/folder',    alt: 'Folder'    },
-          { src: search,    to: '/search',    alt: 'Search'    },
+          { src: chatbot,    to: '/components/Subpages/Chatbot',    alt: 'Chatbot'    },
           { src: contact,   to: '/contacts',  alt: 'Contacts'  },
           { src: account,   to: '/account',   alt: 'Account'   },
         ].map((icon, i) => (
           <img key={i} src={icon.src} alt={icon.alt}
-            className="w-8 h-8 cursor-pointer hover:scale-110 transition" 
+            className="w-8 h-8 drop-shadow-lg cursor-pointer transition" 
             onClick={() => navigate(icon.to)}
           />
         ))}

@@ -60,7 +60,7 @@ function FAQs2() {
   };
 
   return (
-    <section id="faqs2" className="py-8 px-4">
+    <section id="faqs2" className="w-full">
       <div className="max-w-4xl mx-auto space-y-6">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-black">
           Quick Mindset Tips
@@ -69,7 +69,7 @@ function FAQs2() {
         <div className="relative h-[50vh]">
           <div className="faq backdrop-blur-sm h-[40vh] rounded-xl overflow-hidden">
             <div 
-              className="question p-4 flex justify-between items-center cursor-pointer relative" 
+              className="question pb-4 flex justify-between items-center cursor-pointer relative" 
               onClick={toggleDropdown}
             >
               <h3 className="text-lg font-semibold text-black">{currentQuestion.question}</h3>
@@ -111,7 +111,7 @@ function FAQs2() {
               )}
             </div>
 
-            <div className="answer px-4">
+            <div className="answer">
               <p className="text-black">{currentQuestion.answer}</p>
             </div>
           </div>
