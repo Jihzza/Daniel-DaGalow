@@ -5,29 +5,54 @@ import "react-phone-input-2/lib/style.css";
 import { supabase } from "../../utils/supabaseClient";
 
 // Progress Indicator Component
-function StepIndicator({ stepCount, currentStep, className = "" }) {
+function StepIndicator({
+  stepCount,
+  currentStep,
+  onStepClick = () => {},
+  className = "",
+}) {
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      {Array.from({ length: stepCount }).map((_, idx) => (
-        <React.Fragment key={idx}>
-          <div
-            className={`w-10 h-10 flex items-center justify-center rounded-full border-2 transition-colors duration-300 mx-1 ${
-              currentStep === idx + 1
-                ? "bg-darkGold border-darkGold text-white"
-                : "bg-white/20 border-white/50 text-white/50"
-            }`}
-          >
-            {idx + 1}
-          </div>
-          {idx < stepCount - 1 && (
-            <div
-              className={`flex-1 h-1 transition-colors duration-300 ${
-                currentStep > idx + 1 ? "bg-darkGold" : "bg-white/20"
-              }`}
-            />
-          )}
-        </React.Fragment>
-      ))}
+      {Array.from({ length: stepCount }).map((_, idx) => {
+        const stepNum = idx + 1;
+        const isActive = currentStep === stepNum;
+        return (
+          <React.Fragment key={stepNum}>
+            <button
+              type="button"
+              onClick={() => onStepClick(stepNum)}
+              disabled={
+                stepNum > currentStep /* optional: disable future steps */
+              }
+              className={`
+                w-8 h-8 flex items-center justify-center rounded-full border-2
+                transition-colors duration-300
+                ${
+                  isActive
+                    ? "bg-darkGold border-darkGold text-white"
+                    : "bg-white/20 border-white/50 text-white/50"
+                }
+                focus:outline-none
+                ${
+                  !isActive &&
+                  "hover:border-darkGold hover:text-white cursor-pointer"
+                }
+                ${stepNum > currentStep && "opacity-50 cursor-not-allowed"}
+              `}
+              aria-label={`Go to step ${stepNum}`}
+            >
+              {stepNum}
+            </button>
+            {idx < stepCount - 1 && (
+              <div
+                className={`flex-1 h-0.5 mx-2 transition-colors duration-300 ${
+                  currentStep > stepNum ? "bg-darkGold" : "bg-white/20"
+                }`}
+              />
+            )}
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 }
@@ -51,9 +76,13 @@ function FrequencyStep({ formData, onChange }) {
               ? "border-darkGold bg-darkGold/10 shadow-md"
               : "border-white/20 bg-oxfordBlue hover:border-darkGold"
           }`}
-          onClick={() => onChange({ target: { name: "frequency", value: opt.value } })}
+          onClick={() =>
+            onChange({ target: { name: "frequency", value: opt.value } })
+          }
         >
-          <span className="block text-white font-semibold text-lg">{opt.label}</span>
+          <span className="block text-white font-semibold text-lg">
+            {opt.label}
+          </span>
         </button>
       ))}
     </div>
@@ -77,7 +106,9 @@ function ContactStep({ formData, onChange }) {
         />
       </div>
       <div>
-        <label className="block text-white font-medium mb-2">Email Address</label>
+        <label className="block text-white font-medium mb-2">
+          Email Address
+        </label>
         <input
           name="email"
           type="email"
@@ -89,13 +120,17 @@ function ContactStep({ formData, onChange }) {
         />
       </div>
       <div className="md:col-span-2">
-        <label className="block text-white font-medium mb-2">Phone Number</label>
+        <label className="block text-white font-medium mb-2">
+          Phone Number
+        </label>
         <PhoneInput
           country={"us"}
           enableSearch
           searchPlaceholder="Search country..."
           value={formData.phone}
-          onChange={(phone) => onChange({ target: { name: "phone", value: phone } })}
+          onChange={(phone) =>
+            onChange({ target: { name: "phone", value: phone } })
+          }
           inputClass="w-full p-4 !bg-white/5 border !border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
           buttonClass="!bg-white/5 border !border-white/20 rounded-l-2xl h-full"
           dropdownClass="!bg-oxfordBlue text-white rounded-2xl"
@@ -127,13 +162,15 @@ function ChatbotStep({ formData, requestId }) {
       {chatHistory.map((msg, i) => (
         <div
           key={i}
-          className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+          className={`flex ${
+            msg.sender === "user" ? "justify-end" : "justify-start"
+          }`}
         >
           <div
             className={`px-4 py-2 rounded-2xl max-w-xs break-words ${
-              msg.sender === 'user'
-                ? 'bg-darkGold text-white'
-                : 'bg-white text-black'
+              msg.sender === "user"
+                ? "bg-darkGold text-white"
+                : "bg-white text-black"
             }`}
           >
             {msg.message}
@@ -152,8 +189,18 @@ function ChatbotStep({ formData, requestId }) {
           onClick={sendMessage}
           className="absolute right-4 bottom-4 p-3 bg-darkGold text-white rounded-full hover:bg-yellow-500 transition-colors duration-200"
         >
-          <svg className="w-6 h-6 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          <svg
+            className="w-6 h-6 rotate-90"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+            />
           </svg>
         </button>
       </div>
@@ -164,7 +211,12 @@ function ChatbotStep({ formData, requestId }) {
 // Main Coaching Request Component
 export default function CoachingRequest({ onBackService }) {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({ frequency: "", name: "", email: "", phone: "" });
+  const [formData, setFormData] = useState({
+    frequency: "",
+    name: "",
+    email: "",
+    phone: "",
+  });
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -192,7 +244,12 @@ export default function CoachingRequest({ onBackService }) {
       setIsSubmitting(true);
       const { data, error } = await supabase
         .from("coaching_requests")
-        .insert({ name: formData.name, email: formData.email, phone: formData.phone, service_type: formData.frequency })
+        .insert({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          service_type: formData.frequency,
+        })
         .select("id")
         .single();
       if (error) {
@@ -216,38 +273,40 @@ export default function CoachingRequest({ onBackService }) {
   return (
     <section id="coaching-journey" className="py-12 px-6">
       <div className="max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold text-center mb-8 text-black">Start Your Coaching Journey</h2>
+        <h2 className="text-2xl font-bold text-center mb-8 text-black">
+          Start Your Coaching Journey
+        </h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-3xl p-10 shadow-2xl">
-          {onBackService && (
-            <button
-              onClick={onBackService}
-              className="mb-4 text-sm font-medium text-darkGold"
-            >
-              ← Change Service
-            </button>
-          )}
-          <Current formData={formData} onChange={handleChange} requestId={requestId} />
+          <Current
+            formData={formData}
+            onChange={handleChange}
+            requestId={requestId}
+            />
+            {step === 1 && onBackService && (
+              <button
+                onClick={onBackService}
+                className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl mb-4"
+              >
+                Change Service
+              </button>
+            )}
 
           {step > 1 && (
             <div className="flex justify-between mt-8">
               <button
                 onClick={handleBack}
                 disabled={isSubmitting}
-                className="px-6 py-3 border-2 border-darkGold text-darkGold font-bold rounded-xl hover:bg-darkGold hover:text-white disabled:opacity-50 transition-colors duration-200"
+                className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl"
               >
                 Back
               </button>
-              {step < STEPS.length ? (
+              {step < STEPS.length && (
                 <button
                   onClick={handleNext}
                   disabled={!canProceed() || isSubmitting}
-                  className="px-6 py-3 bg-darkGold text-white font-bold rounded-xl hover:bg-yellow-500 disabled:opacity-50 transition-colors duration-200"
+                  className="px-4 py-1 bg-darkGold text-white font-bold rounded-xl disabled:opacity-50"
                 >
                   Next
-                </button>
-              ) : (
-                <button className="px-6 py-3 bg-darkGold text-white font-bold rounded-xl opacity-50 cursor-default">
-                  In Chat...
                 </button>
               )}
             </div>
@@ -256,6 +315,10 @@ export default function CoachingRequest({ onBackService }) {
           <StepIndicator
             stepCount={STEPS.length}
             currentStep={step}
+            onStepClick={(newStep) => {
+              // optional: validate that newStep <= maxAllowedStep
+              setStep(newStep);
+            }}
             className={step === 1 ? "pt-0" : "pt-6"}
           />
         </div>
