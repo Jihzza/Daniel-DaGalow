@@ -1,7 +1,7 @@
 // components/Projects.js
 import React from 'react';
-import perspectiv from "../../assets/Perspectiv Banner.svg";
-import galow from "../../assets/Galow Banner.png";
+import perspectiv from "../../assets/logos/Perspectiv Banner.svg";
+import galow from "../../assets/logos/Galow Banner.png";
 
 function Projects() {
   const projects = [

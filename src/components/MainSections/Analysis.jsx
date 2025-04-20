@@ -3,10 +3,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 // You'll need to create or import these SVG icons
 // For now I'll use placeholder references
-import SocialIcon from "../../assets/Phone Branco.svg";
-import StocksIcon from "../../assets/MoneyBag Branco.svg";
-import PortfolioIcon from "../../assets/Target Branco.svg";
-import BusinessIcon from "../../assets/Bag Branco.svg";
+import SocialIcon from "../../assets/icons/Phone Branco.svg";
+import StocksIcon from "../../assets/icons/MoneyBag Branco.svg";
+import PortfolioIcon from "../../assets/icons/Target Branco.svg";
+import BusinessIcon from "../../assets/icons/Bag Branco.svg";
 
 function ExpertAnalysis() {
   const navigate = useNavigate();

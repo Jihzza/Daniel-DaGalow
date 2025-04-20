@@ -1,6 +1,6 @@
 // components/Hero.js
 import React from "react";
-import heroImage from "../../assets/Dani.jpeg";
+import heroImage from "../../assets/img/Pessoas/Dani.jpeg";
 // Import Swiper React components and modules
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -8,7 +8,7 @@ import "swiper/css/pagination";
 import { Autoplay } from "swiper/modules";
 import Marquee from "react-fast-marquee";
 import { useNavigate } from "react-router-dom";
-import DaGalow from "../../assets/DaGalow Logo.svg";
+import DaGalow from "../../assets/logos/DaGalow Logo.svg";
 
 function Hero() {
   const scrollTo = (id) => {

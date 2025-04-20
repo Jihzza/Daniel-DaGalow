@@ -2,12 +2,12 @@
 import React from "react";
 // You'll need to create or import these SVG icons
 // For now I'll use placeholder references
-import InvestIcon from "../../assets/Stocks Branco.svg";
-import TrainerIcon from "../../assets/PersonalTrainer Branco.svg";
-import DatingIcon from "../../assets/Dating Branco.svg";
-import OnlyFansIcon from "../../assets/Onlyfans Branco.svg";
-import BusinessIcon from "../../assets/Business Branco.svg";
-import HabitsIcon from "../../assets/Habits Branco.svg";
+import InvestIcon from "../../assets/icons/Stocks Branco.svg";
+import TrainerIcon from "../../assets/icons/PersonalTrainer Branco.svg";
+import DatingIcon from "../../assets/icons/Dating Branco.svg";
+import OnlyFansIcon from "../../assets/icons/Onlyfans Branco.svg";
+import BusinessIcon from "../../assets/icons/Business Branco.svg";
+import HabitsIcon from "../../assets/icons/Habits Branco.svg";
 import { useNavigate } from "react-router-dom";
 
 function DirectCoaching() {

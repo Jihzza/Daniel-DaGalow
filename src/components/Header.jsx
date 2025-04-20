@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import DaGalowLogo from '../assets/DaGalow Logo.svg';
-import Hamburger   from '../assets/Hamburger.svg';
+import DaGalowLogo from '../assets/logos/DaGalow Logo.svg';
+import Hamburger   from '../assets/icons/Hamburger.svg';
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -29,7 +29,7 @@ function Header() {
     <>
       <header
         className={`
-          fixed top-0 left-0 right-0 z-50 h-14 bg-black text-white shadow-lg
+          fixed top-0 left-0 right-0 z-30 h-14 bg-black text-white shadow-lg
           transform transition-transform duration-300
           ${show ? 'translate-y-0' : '-translate-y-full'}
         `}

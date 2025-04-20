@@ -1,15 +1,15 @@
 // components/Services.js
 import React from "react";
-import Brain from "../../assets/Brain Branco.svg";
-import Phone from "../../assets/Phone Branco.svg";
-import MoneyBag from "../../assets/MoneyBag Branco.svg";
-import Target from "../../assets/Target Branco.svg";
-import Bag from "../../assets/Bag Branco.svg";
-import Heart from "../../assets/Heart Branco.svg";
-import OnlyFans from "../../assets/Onlyfans Branco.svg";
-import Fitness from "../../assets/Fitness Branco.svg";
-import More from "../../assets/More Branco.svg";
-import Robot from "../../assets/Robot Branco.svg";
+import Brain from "../../assets/icons/Brain Branco.svg";
+import Phone from "../../assets/icons/Phone Branco.svg";
+import MoneyBag from "../../assets/icons/MoneyBag Branco.svg";
+import Target from "../../assets/icons/Target Branco.svg";
+import Bag from "../../assets/icons/Bag Branco.svg";
+import Heart from "../../assets/icons/Heart Branco.svg";
+import OnlyFans from "../../assets/icons/Onlyfans Branco.svg";
+import Fitness from "../../assets/icons/Fitness Branco.svg";
+import More from "../../assets/icons/More Branco.svg";
+import Robot from "../../assets/icons/Robot Branco.svg";
 import { useNavigate } from "react-router-dom";
 
 function Services() {

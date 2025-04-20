@@ -1,11 +1,11 @@
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
 
-import chatbot from '../../assets/Habits Branco.svg';
-import folder from '../../assets/Stocks Branco.svg';
-import contact from '../../assets/Brain Branco.svg';
-import dashboard from '../../assets/Fitness Branco.svg';
-import account from '../../assets/PersonalTrainer Branco.svg';
+import chatbot from '../../assets/icons/Dagalow Branco.svg';
+import folder from '../../assets/icons/Stocks Branco.svg';
+import contact from '../../assets/icons/Brain Branco.svg';
+import dashboard from '../../assets/icons/Fitness Branco.svg';
+import account from '../../assets/icons/PersonalTrainer Branco.svg';
 
 const NavigationBar = ({ onChatbotClick }) => {
   const navigate = useNavigate();

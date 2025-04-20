@@ -1,8 +1,8 @@
 import React from 'react';
-import interviewJN from '../../assets/News 2.png';
-import CMLogo from '../../assets/CM Logo.png';
-import JNLogo from '../../assets/JN Logo.png';
-import Coutinho from '../../assets/Coutinho.png';
+import interviewJN from '../../assets/img/Noticias/News 2.png';
+import CMLogo from '../../assets/logos/CM Logo.png';
+import JNLogo from '../../assets/logos/JN Logo.png';
+import Coutinho from '../../assets/logos/Coutinho.png';
 
 const Interviews = () => {
   const interviews = [
