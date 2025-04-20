@@ -1,5 +1,5 @@
 // ChatbotWindow.jsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Send from '../../assets/Send.svg';
 import Anexar from '../../assets/Anexar.svg';
 
@@ -7,12 +7,59 @@ export default function ChatbotWindow({ onClose }) {
   const [messages, setMessages] = useState([]);
   const [userText, setUserText] = useState('');
   const [loading, setLoading] = useState(false);
-  const containerRef = useRef(null);
+  const panelRef = useRef(null);
+  const listRef = useRef(null);
+  const headerRef = useRef(null);
+  const DEFAULT_HEIGHT = 384;
+  const [height, setHeight] = useState(DEFAULT_HEIGHT);
+  const [resizing, setResizing] = useState(false);
+  const lastTap = useRef(0);
+  const dragging = useRef(false);
 
   // auto-scroll to bottom on new messages
+
+  const handleDoubleClick = () => {
+    onClose();
+  };
+
+    // inside your component, before the return
+const onPointerDown = e => {
+  e.preventDefault();
+  setResizing(true);
+  dragging.current = false;
+  // capture the pointer so we continue getting moves
+  headerRef.current.setPointerCapture(e.pointerId);
+};
+
+const onPointerMove = e => {
+  if (!resizing) return;
+  dragging.current = true;
+  const newHeight = window.innerHeight - e.clientY - 56;
+  setHeight(Math.max(100, Math.min(newHeight, window.innerHeight - 100)));
+};
+
+const onPointerUp = e => {
+  headerRef.current.releasePointerCapture(e.pointerId);
+  setResizing(false);
+
+  // double‑tap logic
+  if (!dragging.current) {
+    const now = Date.now();
+    if (now - lastTap.current < 300) {
+      onClose();
+      lastTap.current = 0;
+    } else {
+      lastTap.current = now;
+    }
+  }
+  dragging.current = false;
+};
+
+  
+  
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    if (listRef.current) {
+      listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [messages, loading]);
 
@@ -48,15 +95,25 @@ export default function ChatbotWindow({ onClose }) {
   };
 
   return (
-    <div className="fixed bottom-14 w-full h-96 bg-oxfordBlue shadow-2xl rounded-t-2xl overflow-visible border-t-2 border-darkGold flex flex-col z-40">
-      {/* Header */}
-      <div className="w-full flex items-center justify-center py-6 px-4">
+    <div 
+    ref={panelRef}
+   className="fixed bottom-14 w-full bg-oxfordBlue shadow-2xl rounded-t-2xl overflow-visible border-t-2 border-darkGold flex flex-col z-40 touch-none overscroll-contain"
+   style={{ height: `${height}px` }}
+    >
+    {/* Header */}
+      <div 
+      ref={headerRef}
+      className={`w-full flex items-center justify-center py-6 px-4 cursor-row-resize touch-none ${resizing ? 'bg-opacity-50' : ''}`}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      >
         <div className="w-10 h-1 bg-darkGold rounded-full"></div>
       </div>
 
       {/* Message list */}
       <div
-        ref={containerRef}
+        ref={listRef}
         className="flex-1 w-full text-white overflow-auto space-y-2"
       >
         {messages.map((m, i) => (
@@ -80,20 +137,24 @@ export default function ChatbotWindow({ onClose }) {
       </div>
 
       {/* Input & attachments */}
-      <div className="p-2 flex items-center space-x-2">
-        <button>
+      <div className="p-2">
+        <div className="relative w-full">
+        <button className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
           <img src={Anexar} alt="Anexar" className="w-6 h-6" />
         </button>
         <input
-          className="flex-1 h-12 border-2 border-darkGold bg-oxfordBlue text-white rounded-full p-4"
+          className="w-full h-12 border-2 border-darkGold bg-oxfordBlue text-white rounded-full p-4 px-12"
           value={userText}
           onChange={e => setUserText(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && sendMessage()}
           placeholder="Type a message…"
         />
-        <button onClick={sendMessage} disabled={loading}>
+        <button 
+        className="absolute right-4 top-1/2 -translate-y-1/2 pb-1 z-10"
+        onClick={sendMessage} disabled={loading}>
           <img src={Send} alt="Send" className={`w-6 h-6 ${loading ? 'opacity-50' : ''}`} />
         </button>
+        </div>
       </div>
     </div>
 );
