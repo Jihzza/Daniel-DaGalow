@@ -1,53 +1,62 @@
-// components/Header.js
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import DaGalowLogo from '../assets/DaGalow Logo.svg';
-import Hamburger from '../assets/Hamburger.svg';
+import Hamburger   from '../assets/Hamburger.svg';
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [show, setShow] = useState(true);          // whether header is visible
+  const lastY = useRef(0);                         // last scrollY
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      // if we scrolled down and past 50px, hide
+      if (currentY > lastY.current && currentY > 0) {
+        setShow(false);
+      // if we scrolled up, show
+      } else if (currentY < lastY.current) {
+        setShow(true);
+      }
+      lastY.current = currentY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <header className="top-0 left-0 right-0 bg-black text-white z-50 w-full h-14 shadow-lg">
-      <div className="max-w-5xl mx-auto flex items-center justify-between p-4">
-        <Link to="/" className="focus:outline-none">
-          <img src={DaGalowLogo} alt="DaGalow Logo" className='w-[150px] h-auto object-cover hover:opacity-90 transition-opacity duration-300' />
-        </Link>
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden focus:outline-none"
-        >
-          <img src={Hamburger} alt="Hamburger" className='w-6 h-6' />
-        </button>
-      </div>
+    <>
+      <header
+        className={`
+          fixed top-0 left-0 right-0 z-50 h-14 bg-black text-white shadow-lg
+          transform transition-transform duration-300
+          ${show ? 'translate-y-0' : '-translate-y-full'}
+        `}
+      >
+        <div className="max-w-5xl mx-auto flex items-center justify-between p-4">
+          <Link to="/" className="focus:outline-none">
+            <img
+              src={DaGalowLogo}
+              alt="DaGalow Logo"
+              className="w-[150px] h-auto object-cover hover:opacity-90 transition-opacity duration-300"
+            />
+          </Link>
+          <button
+            onClick={() => setMenuOpen(o => !o)}
+            className="md:hidden focus:outline-none"
+          >
+            <img src={Hamburger} alt="Hamburger" className="w-6 h-6" />
+          </button>
+        </div>
+      </header>
 
       {/* Dropdown Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-[70%] bg-black transform transition-transform duration-300 ease-in-out z-50 ${
-          menuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-0 right-0 h-full w-[70%] bg-black transform transition-transform duration-300 ease-in-out z-50
+          ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
-        <div className="p-6">
-          <div className="flex justify-end mb-8">
-            <button
-              onClick={() => setMenuOpen(false)}
-              className="text-white focus:outline-none"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" 
-                   viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                      d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <nav className="flex flex-col space-y-4">
-            <Link to="/" className="text-white hover:text-darkGold transition-colors duration-300" onClick={() => setMenuOpen(false)}>Home</Link>
-            <Link to="/components/Subpages/Music" className="text-white hover:text-darkGold transition-colors duration-300" onClick={() => setMenuOpen(false)}>Music</Link>
-            <Link to="/components/Subpages/Videos" className="text-white hover:text-darkGold transition-colors duration-300" onClick={() => setMenuOpen(false)}>Videos</Link>
-            <Link to="/components/Subpages/Achievements" className="text-white hover:text-darkGold transition-colors duration-300" onClick={() => setMenuOpen(false)}>Achievements</Link>
-            <Link to="/components/Subpages/AboutMe" className="text-white hover:text-darkGold transition-colors duration-300" onClick={() => setMenuOpen(false)}>About Me</Link>
-          </nav>
-        </div>
+        {/* … rest of menu … */}
       </div>
 
       {/* Overlay */}
@@ -57,7 +66,7 @@ function Header() {
           onClick={() => setMenuOpen(false)}
         />
       )}
-    </header>
+    </>
   );
 }
 

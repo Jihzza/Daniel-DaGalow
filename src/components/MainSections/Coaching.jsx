@@ -216,7 +216,11 @@ function DirectCoaching() {
             achieve transformative results in your chosen area. Experience the difference that 
             personalized attention makes.
           </p>
-          <div className="mt-8">
+          <div className="mt-8 w-full">
+          <h1 className="text-white text-2xl py-2 font-bold">
+              $150 / Month
+            </h1>
+            <p className="text-white text-sm pb-6">limited Spots</p>
           <button
               onClick={() => handleServiceClick("coaching")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"

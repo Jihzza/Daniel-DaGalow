@@ -112,6 +112,7 @@ const onPointerUp = e => {
       </div>
 
       {/* Message list */}
+      <div className="flex-1 w-full text-white overflow-auto space-y-2">
       <div
         ref={listRef}
         className="flex-1 w-full text-white overflow-auto space-y-2"
@@ -135,9 +136,9 @@ const onPointerUp = e => {
           </div>
         )}
       </div>
-
+      </div>
       {/* Input & attachments */}
-      <div className="p-2">
+      <div className="pb-2 px-2">
         <div className="relative w-full">
         <button className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
           <img src={Anexar} alt="Anexar" className="w-6 h-6" />

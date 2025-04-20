@@ -243,7 +243,11 @@ function Services() {
             together and provide you with ongoing support even after our session
             ends. Your comfort and progress are my top priorities.
           </p>
-          <div className="mt-8">
+          <div className="mt-6 w-full">
+            <h1 className="text-white text-2xl py-2 font-bold">
+              $90 / hour
+            </h1>
+            <p className="text-white text-sm pb-6">Minimum 45 minutes</p>
             <button
               onClick={() => handleServiceClick("booking")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
