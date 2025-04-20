@@ -10,7 +10,6 @@ import Analysis from './components/MainSections/Analysis';
 import Projects from './components/MainSections/Projects';
 import VentureInvestment from './components/MainSections/VentureInvestment';
 import Testimonials from './components/MainSections/Testimonials';
-import Chatbot from './components/Subpages/Chatbot';
 import Interviews from './components/MainSections/Interviews';
 import Footer from './components/Footer';
 import Music from './components/Subpages/Music';
@@ -19,8 +18,16 @@ import MergedServiceForm from './components/MergedServiceForm';
 import Achievements from './components/Subpages/Achievements';
 import AboutMe from './components/Subpages/AboutMe';
 import BottomCarouselPages from './components/BottomCarouselPages';
-import NavigationBar from './components/NavigationBar';
+import NavigationBar from './components/BottomNavBar/NavigationBar';
+import ChatbotWindow from './components/BottomNavBar/ChatbotWindow';
+
 function App() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const handleChatbotClick = () => {
+    setIsChatOpen(open => !open);
+  };
+    
   return (
     <Router>
       <div className="App font-sans bg-gradient-to-b from-oxfordBlue from-0% via-oxfordBlue via-15% to-gentleGray">
@@ -39,15 +46,15 @@ function App() {
               <Testimonials />
               <MergedServiceForm />
               <BottomCarouselPages />
-              <NavigationBar />
+              <NavigationBar onChatbotClick={handleChatbotClick} />
+              {isChatOpen && <ChatbotWindow onClose={() => setIsChatOpen(false)} />}
             </main>
           } />
           <Route path="/components/Subpages/Music" element={<Music />} />
           <Route path="/components/Subpages/Videos" element={<Videos />} />
           <Route path="/components/Subpages/Achievements" element={<Achievements />} />
           <Route path="/components/Subpages/AboutMe" element={<AboutMe />} />
-          <Route path="/components/Subpages/Chatbot" element={<Chatbot />} />
-        </Routes>
+        </Routes> 
         <Footer />
       </div>
     </Router>
