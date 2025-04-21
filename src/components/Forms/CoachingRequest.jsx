@@ -1,19 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-
 import { supabase } from "../../utils/supabaseClient";
 
 // Progress Indicator Component
-function StepIndicator({
-  stepCount,
-  currentStep,
-  onStepClick = () => {},
-  className = "",
-}) {
+function StepIndicator({ stepCount, currentStep, onStepClick = () => {}, className = "" }) {
   return (
-    <div className={`flex items-center justify-center ${className}`}>
-      {Array.from({ length: stepCount }).map((_, idx) => {
+    <div className={`flex items-center justify-center ${className}`}>      {
+      Array.from({ length: stepCount }).map((_, idx) => {
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
         return (
@@ -21,24 +15,12 @@ function StepIndicator({
             <button
               type="button"
               onClick={() => onStepClick(stepNum)}
-              disabled={
-                stepNum > currentStep /* optional: disable future steps */
-              }
-              className={`
-                w-8 h-8 flex items-center justify-center rounded-full border-2
-                transition-colors duration-300
-                ${
-                  isActive
-                    ? "bg-darkGold border-darkGold text-white"
-                    : "bg-white/20 border-white/50 text-white/50"
-                }
-                focus:outline-none
-                ${
-                  !isActive &&
-                  "hover:border-darkGold hover:text-white cursor-pointer"
-                }
-                ${stepNum > currentStep && "opacity-50 cursor-not-allowed"}
-              `}
+              disabled={stepNum > currentStep}
+              className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
+                isActive
+                  ? "bg-darkGold border-darkGold text-white"
+                  : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer"
+              }${stepNum > currentStep ? " opacity-50 cursor-not-allowed" : ""}`}
               aria-label={`Go to step ${stepNum}`}
             >
               {stepNum}
@@ -64,7 +46,6 @@ function FrequencyStep({ formData, onChange }) {
     { label: "Every Day", value: "daily" },
     { label: "Priority Coaching", value: "priority" },
   ];
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
       {options.map((opt) => (
@@ -76,9 +57,7 @@ function FrequencyStep({ formData, onChange }) {
               ? "border-darkGold bg-darkGold/10 shadow-md"
               : "border-white/20 bg-oxfordBlue hover:border-darkGold"
           }`}
-          onClick={() =>
-            onChange({ target: { name: "frequency", value: opt.value } })
-          }
+          onClick={() => onChange({ target: { name: "frequency", value: opt.value } })}
         >
           <span className="block text-white font-semibold text-lg">
             {opt.label}
@@ -106,9 +85,7 @@ function ContactStep({ formData, onChange }) {
         />
       </div>
       <div>
-        <label className="block text-white font-medium mb-2">
-          Email Address
-        </label>
+        <label className="block text-white font-medium mb-2">Email Address</label>
         <input
           name="email"
           type="email"
@@ -120,17 +97,13 @@ function ContactStep({ formData, onChange }) {
         />
       </div>
       <div className="md:col-span-2">
-        <label className="block text-white font-medium mb-2">
-          Phone Number
-        </label>
+        <label className="block text-white font-medium mb-2">Phone Number</label>
         <PhoneInput
-          country={"us"}
+          country="us"
           enableSearch
           searchPlaceholder="Search country..."
           value={formData.phone}
-          onChange={(phone) =>
-            onChange({ target: { name: "phone", value: phone } })
-          }
+          onChange={(phone) => onChange({ target: { name: "phone", value: phone } })}
           inputClass="w-full p-4 !bg-white/5 border !border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
           buttonClass="!bg-white/5 border !border-white/20 rounded-l-2xl h-full"
           dropdownClass="!bg-oxfordBlue text-white rounded-2xl"
@@ -142,36 +115,69 @@ function ContactStep({ formData, onChange }) {
   );
 }
 
-// Step 3: Chat Interface
-function ChatbotStep({ formData, requestId }) {
+// Step 3: Payment
+function PaymentStep({ formData, onPaid }) {
+  const tiers = {
+    weekly: {
+      label: "Basic Tier",
+      price: "40 € / month",
+      link: "https://checkout.revolut.com/pay/a68cb9c7-0736-4be6-96a9-5b64b4b33f87",
+    },
+    daily: {
+      label: "Mid Tier",
+      price: "90 € / month",
+      link: "https://checkout.revolut.com/pay/06e02890-35c3-40a6-b8c9-16f235ce563d",
+    },
+    priority: {
+      label: "VIP Tier",
+      price: "150 € / month",
+      link: "https://checkout.revolut.com/pay/da2d91d5-9a29-44b5-b28e-a192751b3d54",
+    },
+  };
+  const tier = tiers[formData.frequency] || {};
+  return (
+    <div className="text-center mb-8">
+      <p className="text-white mb-4">
+        You selected <strong>{tier.label}</strong>.<br />
+        Please complete the payment of <strong>{tier.price}</strong> to continue.
+      </p>
+      <a
+        href={tier.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onPaid}
+      >
+        <button className="px-6 py-3 bg-darkGold text-black font-bold rounded-xl hover:bg-yellow-500">
+          Pay with Revolut
+        </button>
+      </a>
+    </div>
+  );
+}
+
+// Step 4: Chat Interface
+function ChatbotStep({ requestId }) {
   const [message, setMessage] = useState("");
   const [chatHistory, setHistory] = useState([]);
-
   const sendMessage = async () => {
     if (!message.trim()) return;
-    const { error } = await supabase
+    await supabase
       .from("coaching_chat_messages")
       .insert({ request_id: requestId, sender: "user", message });
-    if (error) console.error(error);
     setHistory((h) => [...h, { sender: "user", message }]);
     setMessage("");
   };
-
   return (
     <div className="bg-white/10 rounded-2xl p-6 mb-8 space-y-4 max-h-96 overflow-y-auto">
       {chatHistory.map((msg, i) => (
         <div
           key={i}
-          className={`flex ${
-            msg.sender === "user" ? "justify-end" : "justify-start"
-          }`}
+          className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
         >
           <div
-            className={`px-4 py-2 rounded-2xl max-w-xs break-words ${
-              msg.sender === "user"
-                ? "bg-darkGold text-white"
-                : "bg-white text-black"
-            }`}
+            className={`px-4 py-2 rounded-2xl max-w-xs break-words $
+              {msg.sender === "user" ? "bg-darkGold text-white" : "bg-white text-black"}
+            `}
           >
             {msg.message}
           </div>
@@ -189,18 +195,8 @@ function ChatbotStep({ formData, requestId }) {
           onClick={sendMessage}
           className="absolute right-4 bottom-4 p-3 bg-darkGold text-white rounded-full hover:bg-yellow-500 transition-colors duration-200"
         >
-          <svg
-            className="w-6 h-6 rotate-90"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-            />
+          <svg className="w-6 h-6 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
           </svg>
         </button>
       </div>
@@ -211,14 +207,17 @@ function ChatbotStep({ formData, requestId }) {
 // Main Coaching Request Component
 export default function CoachingRequest({ onBackService }) {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    frequency: "",
-    name: "",
-    email: "",
-    phone: "",
-  });
+  const [formData, setFormData] = useState({ frequency: "", name: "", email: "", phone: "" });
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentDone, setPaymentDone] = useState(false);
+
+  // Prevent accessing chat without payment
+  useEffect(() => {
+    if (step === 4 && !paymentDone) {
+      setStep(3);
+    }
+  }, [step, paymentDone]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -229,6 +228,7 @@ export default function CoachingRequest({ onBackService }) {
   const STEPS = [
     { title: "Frequency", component: FrequencyStep },
     { title: "Your Info", component: ContactStep },
+    { title: "Payment", component: PaymentStep },
     { title: "Chat", component: ChatbotStep },
   ];
 
@@ -236,6 +236,7 @@ export default function CoachingRequest({ onBackService }) {
 
   const canProceed = () => {
     if (step === 2) return formData.name && formData.email && formData.phone;
+    if (step === 3) return paymentDone;
     return true;
   };
 
@@ -281,15 +282,17 @@ export default function CoachingRequest({ onBackService }) {
             formData={formData}
             onChange={handleChange}
             requestId={requestId}
-            />
-            {step === 1 && onBackService && (
-              <button
-                onClick={onBackService}
-                className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl mb-4"
-              >
-                Change Service
-              </button>
-            )}
+            onPaid={() => setPaymentDone(true)}
+          />
+
+          {step === 1 && onBackService && (
+            <button
+              onClick={onBackService}
+              className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl mb-4"
+            >
+              Change Service
+            </button>
+          )}
 
           {step > 1 && (
             <div className="flex justify-between mt-8">
@@ -315,10 +318,7 @@ export default function CoachingRequest({ onBackService }) {
           <StepIndicator
             stepCount={STEPS.length}
             currentStep={step}
-            onStepClick={(newStep) => {
-              // optional: validate that newStep <= maxAllowedStep
-              setStep(newStep);
-            }}
+            onStepClick={(newStep) => setStep(newStep)}
             className={step === 1 ? "pt-0" : "pt-6"}
           />
         </div>

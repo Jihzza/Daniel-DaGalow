@@ -13,14 +13,9 @@ import {
 import { fetchBookings, createBooking } from "../../services/bookingService";
 
 // Shared StepIndicator
-function StepIndicator({
-  stepCount,
-  currentStep,
-  onStepClick,
-  className = "",
-}) {
+function StepIndicator({ stepCount, currentStep, onStepClick, className = "" }) {
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div className={`flex items-center justify-center ${className}`}>      
       {Array.from({ length: stepCount }).map((_, idx) => {
         const n = idx + 1;
         const active = currentStep === n;
@@ -70,12 +65,10 @@ function DateStep({
   const nextMonthDays = [];
   const firstDayOfWeek = days[0].getDay();
   const daysFromPrev = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-  for (let i = daysFromPrev; i > 0; i--)
-    prevMonthDays.push(addDays(days[0], -i));
+  for (let i = daysFromPrev; i > 0; i--) prevMonthDays.push(addDays(days[0], -i));
   const totalCells = 42;
   const daysFromNext = totalCells - (days.length + prevMonthDays.length);
-  for (let i = 1; i <= daysFromNext; i++)
-    nextMonthDays.push(addDays(days[days.length - 1], i));
+  for (let i = 1; i <= daysFromNext; i++) nextMonthDays.push(addDays(days[days.length - 1], i));
   const calendar = [...prevMonthDays, ...days, ...nextMonthDays];
 
   return (
@@ -84,15 +77,13 @@ function DateStep({
         <button onClick={() => onChangeMonth(-1)} className="text-white p-2">
           ←
         </button>
-        <h3 className="text-xl text-white">
-          {format(currentMonth, "MMMM yyyy")}
-        </h3>
+        <h3 className="text-xl text-white">{format(currentMonth, "MMMM yyyy")}</h3>
         <button onClick={() => onChangeMonth(1)} className="text-white p-2">
           →
         </button>
       </div>
       <div className="grid grid-cols-7 gap-1">
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => (
           <div key={d} className="text-center text-white/60 text-sm">
             {d}
           </div>
@@ -186,13 +177,38 @@ function InfoStep({ formData, onChange }) {
   );
 }
 
-// Step 4: Confirmation (simple message)
-function ConfirmStep({ formData, date, time }) {
+// Step 4: Payment Selection
+function PaymentStep({ onPaid }) {
+  const options = [
+    { label: '45 min', link: 'https://checkout.revolut.com/pay/3dfccfda-5511-40bf-936c-b6d7141f34e1' },
+    { label: '1h', link: 'https://checkout.revolut.com/pay/66c2a4ff-5041-4548-a595-361d7b42c84a' },
+    { label: '1h15', link: 'https://checkout.revolut.com/pay/ceb92e96-066e-45ec-a5c2-0e83bead7ca2' },
+    { label: '1h30', link: 'https://checkout.revolut.com/pay/dd9ae643-d183-4a0b-adb5-7ec9ec30fbd3' },
+    { label: '1h45', link: 'https://checkout.revolut.com/pay/743b0fae-a826-4c76-8bb6-b3aa103b9073' },
+    { label: '2h', link: 'https://checkout.revolut.com/pay/57b12021-009c-4f5a-9d78-c1e58cc6e36e' },
+  ];
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+      {options.map((opt) => (
+        <button
+          key={opt.label}
+          onClick={() => onPaid(opt.link)}
+          className="p-4 bg-white/10 text-white rounded-xl hover:bg-darkGold transition"
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Step 5: Confirmation
+function ConfirmStep({ formData, selectedDate, selectedTime }) {
   return (
     <div className="text-center text-white">
       <p>Thanks {formData.name}!</p>
       <p>
-        Your consultation is set for {format(date, "EEEE, MMMM d")} at {time}.
+        Your consultation is set for {format(selectedDate, 'EEEE, MMMM d')} at {selectedTime}.
       </p>
     </div>
   );
@@ -204,7 +220,8 @@ export default function Booking({ onBackService }) {
   const [selectedTime, setSelectedTime] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [bookedEvents, setBookedEvents] = useState([]);
-  const [formData, setFormData] = useState({ name: "", email: "" });
+  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [paymentDone, setPaymentDone] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -219,22 +236,46 @@ export default function Booking({ onBackService }) {
   const availableTimes = Array.from({ length: 13 }, (_, i) => `${i + 10}:00`);
   const isTimeAvailable = (date, time) => {
     const dt = new Date(date);
-    const [h, m] = time.split(":").map(Number);
+    const [h, m] = time.split(':').map(Number);
     dt.setHours(h, m, 0, 0);
     const start = addMinutes(dt, -30);
     const end = addMinutes(dt, 90);
     return !bookedEvents.some((e) => {
-      const s = new Date(e.start),
-        en = new Date(e.end);
+      const s = new Date(e.start), en = new Date(e.end);
       return start < en && end > s;
     });
   };
 
-  const STEPS = [DateStep, TimeStep, InfoStep, ConfirmStep];
+  const STEPS = [
+    DateStep,
+    TimeStep,
+    InfoStep,
+    PaymentStep,
+    ConfirmStep,
+  ];
   const Current = STEPS[step - 1];
 
+  const handlePaid = (link) => {
+    setPaymentDone(true);
+    window.location.href = link;
+  };
+
+  const canProceed = () => {
+    if (step === 2) return !!selectedTime;
+    if (step === 3) return formData.name && formData.email;
+    if (step === 4) return paymentDone;
+    return true;
+  };
+
   const handleNext = async () => {
-    if (step === 3) {
+    if (step === 2) {
+      // move from time to contact info
+      setStep(3);
+    } else if (step === 3) {
+      // move to payment
+      setStep(4);
+    } else if (step === 4) {
+      // create booking, then confirm
       setLoading(true);
       await createBooking({
         ...formData,
@@ -242,11 +283,12 @@ export default function Booking({ onBackService }) {
         time: selectedTime,
       });
       setLoading(false);
-      setStep(4);
+      setStep(5);
     } else {
       setStep((s) => s + 1);
     }
   };
+
   const handleChange = (e) =>
     setFormData((f) => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -257,13 +299,10 @@ export default function Booking({ onBackService }) {
           Schedule Your Consultation
         </h2>
         <div className="bg-oxfordBlue rounded-2xl p-8 shadow-xl">
-          <div className="min-h-[200px]">
+          <div className="min-h-[200px]">          
             <Current
               selectedDate={selectedDate}
-              onSelectDate={(d) => {
-                setSelectedDate(d);
-                setStep(2);
-              }}
+              onSelectDate={(d) => { setSelectedDate(d); setStep(2); }}
               currentMonth={currentMonth}
               onChangeMonth={(inc) =>
                 setCurrentMonth((m) => new Date(m.setMonth(m.getMonth() + inc)))
@@ -273,13 +312,11 @@ export default function Booking({ onBackService }) {
               availableTimes={availableTimes}
               isTimeAvailable={isTimeAvailable}
               selectedTime={selectedTime}
-              onSelectTime={(t) => {
-                setSelectedTime(t);
-                setStep(3);
-              }}
+              onSelectTime={(t) => { setSelectedTime(t); setStep(3); }}
               formData={formData}
               onChange={handleChange}
               time={selectedTime}
+              onPaid={handlePaid}
             />
           </div>
           <div className="flex justify-between mt-6">
@@ -303,6 +340,7 @@ export default function Booking({ onBackService }) {
             {step < STEPS.length && (
               <button
                 onClick={handleNext}
+                disabled={!canProceed() || loading}
                 className="px-4 py-1 bg-darkGold text-white font-bold rounded-xl disabled:opacity-50"
               >
                 Next
@@ -312,7 +350,7 @@ export default function Booking({ onBackService }) {
           <StepIndicator
             stepCount={STEPS.length}
             currentStep={step}
-            onStepClick={setStep}
+            onStepClick={(newStep) => setStep(newStep)}
             className="pt-6"
           />
         </div>
