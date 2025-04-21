@@ -239,7 +239,7 @@ function Hero() {
               <h2 className="text-3xl font-bold mb-6">
                 Individual Consultation
               </h2>
-              <p className="text-3xl font-extrabold mb-2">$90 / hour</p>
+              <p className="text-3xl font-extrabold mb-2">65€ / hour</p>
               <p className="text-sm font-normal mb-2">Minimum 45 minutes</p>
             </div>
             <button
@@ -255,7 +255,7 @@ function Hero() {
           <div className="flex flex-col items-center justify-center my-8">
             <div className="flex flex-col items-center justify-center">
               <h2 className="text-3xl font-bold mb-6">Direct Coaching</h2>
-              <p className="text-3xl font-extrabold mb-2">$150 / month</p>
+              <p className="text-3xl font-extrabold mb-2">40€ / 90€ / 150€ <br /> month</p>
               <p className="text-sm font-normal mb-2">Limited Spots</p>
             </div>
             <button

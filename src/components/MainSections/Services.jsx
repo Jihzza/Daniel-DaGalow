@@ -245,7 +245,7 @@ function Services() {
           </p>
           <div className="mt-6 w-full">
             <h1 className="text-white text-2xl py-2 font-bold">
-              $90 / hour
+              65€ / hour
             </h1>
             <p className="text-white text-sm pb-6">Minimum 45 minutes</p>
             <button

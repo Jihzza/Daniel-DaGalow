@@ -218,7 +218,7 @@ function DirectCoaching() {
           </p>
           <div className="mt-8 w-full">
           <h1 className="text-white text-2xl py-2 font-bold">
-              $150 / Month
+              40€ / 90€ / 150€ <br /> month
             </h1>
             <p className="text-white text-sm pb-6">limited Spots</p>
           <button
