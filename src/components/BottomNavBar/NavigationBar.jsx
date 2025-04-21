@@ -1,21 +1,34 @@
+// Update NavigationBar.jsx
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-import chatbot from '../../assets/icons/Dagalow Branco.svg';
-import folder from '../../assets/icons/Stocks Branco.svg';
-import contact from '../../assets/icons/Brain Branco.svg';
-import dashboard from '../../assets/icons/Fitness Branco.svg';
-import account from '../../assets/icons/PersonalTrainer Branco.svg';
+import dagalowicon from '../../assets/icons/Dagalow Branco.svg';
+import calendar from '../../assets/icons/Calendar Branco.svg';
+import chatbot from '../../assets/icons/Chatbot Branco.svg';
+import settings from '../../assets/icons/Settings Branco.svg';
+import account from '../../assets/icons/Profile Branco.svg';
 
-const NavigationBar = ({ onChatbotClick }) => {
+const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleAccountClick = () => {
+    if (user) {
+      // If user is logged in, navigate to profile
+      navigate('/profile');
+    } else {
+      // If user is not logged in, open auth modal
+      onAuthModalOpen();
+    }
+  };
 
   const icons = [
-    {src: dashboard, alt: "Dashboard", to: "/"},
-    {src: folder, alt: "Folder", to: "/"},
+    {src: dagalowicon, alt: "DaGalow", to: "/components/Subpages/Home"},
+    {src: calendar, alt: "Calendar", to: "/components/Subpages/Calendar"},
     {src: chatbot, alt: "Chatbot", action: onChatbotClick},
-    {src: contact, alt: "Contact", to: "/"},
-    {src: account, alt: "Account", to: "/"},
+    {src: settings, alt: "Dashboard", to: user ? "/components/Subpages/Settings" : null, action: user ? null : onAuthModalOpen},
+    {src: account, alt: "Account", action: handleAccountClick},
   ];
   
   return (
@@ -26,7 +39,13 @@ const NavigationBar = ({ onChatbotClick }) => {
           src={icon.src}
           alt={icon.alt}
           className="w-8 h-8 cursor-pointer drop-shadow-lg transition"
-          onClick={() => icon.action ? icon.action() : navigate(icon.to)}
+          onClick={() => {
+            if (icon.action) {
+              icon.action();
+            } else if (icon.to) {
+              navigate(icon.to);
+            }
+          }}
         />
       ))}
     </div>

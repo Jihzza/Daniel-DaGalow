@@ -10,7 +10,7 @@ export default function ChatbotWindow({ onClose }) {
   const panelRef = useRef(null);
   const listRef = useRef(null);
   const headerRef = useRef(null);
-  const DEFAULT_HEIGHT = window.innerHeight - 40;
+  const DEFAULT_HEIGHT = window.innerHeight - 45;
   const [height, setHeight] = useState(DEFAULT_HEIGHT);
   const [resizing, setResizing] = useState(false);
   const lastTap = useRef(0);
@@ -98,7 +98,7 @@ export default function ChatbotWindow({ onClose }) {
       {/* Header */}
       <div
         ref={headerRef}
-        className={`w-full flex items-center justify-center py-6 px-4 cursor-row-resize touch-none ${
+        className={`relative w-full flex items-center justify-center py-6 px-4 cursor-row-resize touch-none ${
           resizing ? "bg-opacity-50" : ""
         }`}
         onPointerDown={onPointerDown}
@@ -106,6 +106,12 @@ export default function ChatbotWindow({ onClose }) {
         onPointerUp={onPointerUp}
       >
         <div className="w-10 h-1 bg-darkGold rounded-full"></div>
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-darkGold text-2xl leading-none focus:outline-none"
+        >
+          x
+        </button>
       </div>
 
       {/* Message list */}

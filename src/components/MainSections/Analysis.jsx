@@ -187,9 +187,9 @@ function ExpertAnalysis() {
           </p>
           <div className="mt-8 w-full">
           <h1 className="text-white text-2xl py-2 font-bold">
-              $?? / hour
+              Ask For Quote
             </h1>
-            <p className="text-white text-sm pb-6">Lorem Ipsum</p>
+            <p className="text-white text-sm pb-6">Depends on the Project</p>
           <button
               onClick={() => handleServiceClick("analysis")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
