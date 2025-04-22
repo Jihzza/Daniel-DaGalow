@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import DaGalowLogo from '../assets/logos/DaGalow Logo.svg';
 import Hamburger from '../assets/icons/Hamburger.svg';
-import userImage from '../assets/img/Pessoas/Dani.jpeg';
+import userImage from '../assets/img/Pessoas/Default.svg';
 import AuthModal from './Auth/AuthModal';
 
 function Header() {
@@ -39,7 +39,7 @@ function Header() {
           <img 
             src={user?.avatar_url || userImage} 
             alt="User" 
-            className='w-10 h-10 rounded-full cursor-pointer'
+            className='w-10 h-10 rounded-full object-cover cursor-pointer'
             onClick={handleProfileClick}
           />
         </div>

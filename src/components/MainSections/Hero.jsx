@@ -1,6 +1,6 @@
 // components/Hero.js
 import React from "react";
-import heroImage from "../../assets/img/Pessoas/Dani.jpeg";
+import heroImage from "../../assets/img/Pessoas/Daniel.jpg";
 // Import Swiper React components and modules
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -14,7 +14,7 @@ function Hero() {
   const scrollTo = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  };
   const navigate = useNavigate();
   const handleServiceClick = (service) => {
     const mapping = {
@@ -73,16 +73,14 @@ function Hero() {
           <Swiper
             spaceBetween={40}
             slidesPerView={1.5}
-            breakpoints={
-              {
-                200: {
-                  slidesPerView: 1.2,
-                },
-                400: {
-                  slidesPerView: 1.5,
-                }
-              }
-            }
+            breakpoints={{
+              200: {
+                slidesPerView: 1.2,
+              },
+              400: {
+                slidesPerView: 1.5,
+              },
+            }}
             centeredSlides={true}
             pagination={{ clickable: true }}
             autoplay={{ delay: 2000, disableOnInteraction: false }}
@@ -220,7 +218,9 @@ function Hero() {
                 <span className="font-extrabold text-lg">
                   10's of thousands
                 </span>
-                <div className="text-lg">of hours researching fundamental topics</div>
+                <div className="text-lg">
+                  of hours researching fundamental topics
+                </div>
               </div>
             </SwiperSlide>
 
@@ -233,13 +233,16 @@ function Hero() {
           </Swiper>
         </div>
 
-        <div onClick={() => scrollTo("services")} className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4">
+        <div
+          onClick={() => scrollTo("services")}
+          className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4"
+        >
           <div className="flex flex-col items-center justify-center my-8">
             <div className="flex flex-col items-center py-6 justify-center">
               <h2 className="text-3xl font-bold mb-6">
                 Individual Consultation
               </h2>
-              <p className="text-3xl font-extrabold mb-2">65€ / hour</p>
+              <p className="text-3xl font-extrabold mb-2">90€ / hour</p>
               <p className="text-sm font-normal mb-2">Minimum 45 minutes</p>
             </div>
             <button
@@ -248,27 +251,69 @@ function Hero() {
             >
               Book a Consultation
             </button>
-            <p role="button" onClick={() => handleServiceClick("booking")} className="text-sm font-normal">Learn More</p>
+            <p
+              role="button"
+              onClick={() => handleServiceClick("booking")}
+              className="text-sm font-normal"
+            >
+              Learn More
+            </p>
           </div>
         </div>
-        <div onClick={() => scrollTo("coaching")} className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4">
+        <div
+          onClick={() => scrollTo("coaching")}
+          className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4"
+        >
           <div className="flex flex-col items-center justify-center my-8">
             <div className="flex flex-col items-center justify-center">
               <h2 className="text-3xl font-bold mb-6">Direct Coaching</h2>
-              <p className="text-3xl font-extrabold mb-2">40€ / 90€ / 150€ <br /> month</p>
+
+              <div className="flex space-x-2 mb-4">
+                <label className="w-24 h-20 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
+                  <input
+                    type="radio"
+                    name="tier"
+                    className="hidden"
+                    defaultChecked
+                  />
+                  <span className="text-[16px] font-extrabold">40€</span>
+                  <span className="text-xs">Basic</span>
+                </label>
+                <label className="w-24 h-20 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
+                  <input type="radio" name="tier" className="hidden" />
+                  <span className="text-[16px] font-extrabold">90€</span>
+                  <span className="text-xs">Standard</span>
+                </label>
+                <label className="w-24 h-20 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
+                  <input type="radio" name="tier" className="hidden" />
+                  <span className="text-[16px] font-extrabold">230€</span>
+                  <span className="text-xs">Premium</span>
+                </label>
+              </div>
+
               <p className="text-sm font-normal mb-2">Limited Spots</p>
             </div>
+
             <button
               onClick={() => handleServiceClick("coaching")}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              className="bg-darkGold w-60 text-black font-bold text-[16px] px-6 py-3 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               Get My Number
             </button>
-            <p role="button" onClick={() => handleServiceClick("coaching")} className="text-sm font-normal">Learn More</p>
+            <p
+              role="button"
+              onClick={() => handleServiceClick("coaching")}
+              className="text-sm font-normal"
+            >
+              Learn More
+            </p>
           </div>
         </div>
 
-        <div onClick={() => scrollTo("expert-analysis")} className="flex flex-col items-center justify-center space-y-6 mt-8 border-2 border-darkGold rounded-xl p-4">
+        <div
+          onClick={() => scrollTo("expert-analysis")}
+          className="flex flex-col items-center justify-center space-y-6 mt-8 border-2 border-darkGold rounded-xl p-4"
+        >
           <div className="flex flex-col items-center justify-center my-8">
             <h2 className="text-3xl font-bold mb-6">Expert Analysis</h2>
             <p className="text-lg font-normal mb-8">
@@ -281,7 +326,13 @@ function Hero() {
             >
               Get My Analysis
             </button>
-            <p role="button" onClick={() => handleServiceClick("analysis")} className="text-sm font-normal">Learn More</p>
+            <p
+              role="button"
+              onClick={() => handleServiceClick("analysis")}
+              className="text-sm font-normal"
+            >
+              Learn More
+            </p>
           </div>
         </div>
       </div>

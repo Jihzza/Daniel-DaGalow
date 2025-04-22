@@ -1,5 +1,5 @@
 // components/DirectCoaching.jsx
-import React from "react";
+import React, { useState } from "react";
 // You'll need to create or import these SVG icons
 // For now I'll use placeholder references
 import InvestIcon from "../../assets/icons/Stocks Branco.svg";
@@ -11,15 +11,35 @@ import HabitsIcon from "../../assets/icons/Habits Branco.svg";
 import { useNavigate } from "react-router-dom";
 
 function DirectCoaching() {
+
+  const [tier, setTier] = useState("basic");
   const navigate = useNavigate();
-  const handleServiceClick = (service) => {
-    const mapping = {
-      coaching: "#coaching-journey",
-    };
-    navigate(`/?service=${service}${mapping[service]}`);
+
+  const tiers = [
+    {
+      id: "basic",
+      price: 40,
+      label: "Basic",
+      desc: "Answers to all questions weekly",
+    },
+    {
+      id: "standard",
+      price: 90,
+      label: "Standard",
+      desc: "Answers to all questions in 48h",
+    },
+    {
+      id: "premium",
+      price: 230,
+      label: "Premium",
+      desc: "Priority answer to all questions ASAP",
+    },
+  ];
+
+  const handleServiceClick = () => {
+    navigate(`/?service=coaching#coaching-journey`);
     setTimeout(() => {
-      const id = mapping[service].slice(1);
-      const el = document.getElementById(id);
+      const el = document.getElementById("coaching-journey");
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
   };
@@ -28,10 +48,11 @@ function DirectCoaching() {
       <div className="max-w-3xl mx-auto text-center space-y-8">
         <h2 className="text-2xl md:text-3xl font-bold">Direct Coaching</h2>
         <p className="">
-          Personalized coaching to help you excel in specific areas of your life.
-          Get direct access to expert guidance tailored to your unique situation and goals.
+          Personalized coaching to help you excel in specific areas of your
+          life. Get direct access to expert guidance tailored to your unique
+          situation and goals.
         </p>
-        
+
         <div className="grid grid-cols-2 gap-6 md:grid-cols-3 text-white">
           {[
             {
@@ -107,11 +128,8 @@ function DirectCoaching() {
           ))}
         </div>
       </div>
-      
+
       <div className="w-full mx-auto px-4 mt-8">
-        <h3 className="text-2xl md:text-3xl font-semibold text-center text-white mb-8">
-          Direct Coaching
-        </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Anytime Communication Feature */}
@@ -136,8 +154,9 @@ function DirectCoaching() {
               Anytime Communication
             </h4>
             <p className="text-white">
-              Text or send audio messages anytime with questions, updates, or challenges. 
-              Get support when you need it most without waiting for scheduled appointments.
+              Text or send audio messages anytime with questions, updates, or
+              challenges. Get support when you need it most without waiting for
+              scheduled appointments.
             </p>
           </div>
 
@@ -163,9 +182,9 @@ function DirectCoaching() {
               Flexible Response Formats
             </h4>
             <p className="text-white">
-              Receive guidance through text, audio, or video responses based on your preference
-              and the complexity of the topic. Visual demonstrations when needed, quick text answers
-              when appropriate.
+              Receive guidance through text, audio, or video responses based on
+              your preference and the complexity of the topic. Visual
+              demonstrations when needed, quick text answers when appropriate.
             </p>
           </div>
 
@@ -203,32 +222,52 @@ function DirectCoaching() {
               Personalized Classes
             </h4>
             <p className="text-white">
-              Receive custom-tailored training sessions designed specifically for your skill level,
-              learning style, and goals. Each class builds on your progress for maximum growth and
-              development.
+              Receive custom-tailored training sessions designed specifically
+              for your skill level, learning style, and goals. Each class builds
+              on your progress for maximum growth and development.
             </p>
           </div>
         </div>
 
-        <div className="mt-10 text-center">
-          <p className="text-lg text-white max-w-3xl mx-auto">
-            Direct coaching provides consistent support, accountability, and expertise to help you 
-            achieve transformative results in your chosen area. Experience the difference that 
-            personalized attention makes.
+        <div className="max-w-3xl mt-8 mx-auto text-center space-y-6">
+        <p className="text-lg text-white max-w-3xl mx-auto">
+            Direct coaching provides consistent support, accountability, and
+            expertise to help you achieve transformative results in your chosen
+            area. Experience the difference that personalized attention makes.
           </p>
-          <div className="mt-8 w-full">
-          <h1 className="text-white text-2xl py-2 font-bold">
-              40€ / 90€ / 150€ <br /> month
-            </h1>
-            <p className="text-white text-sm pb-6">limited Spots</p>
-          <button
-              onClick={() => handleServiceClick("coaching")}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+        {/* Tier Selector */}
+        <div className="grid grid-cols-3 gap-4 pt-2 mt-6">
+          {tiers.map(t => (
+            <label
+              key={t.id}
+              className={`cursor-pointer border-2 rounded-lg py-4 px-2 flex flex-col items-center justify-center transition-all duration-200 ${tier === t.id ? 'border-darkGold bg-darkGold bg-opacity-20' : 'border-darkGold'}`}
             >
-              Get My Number
-            </button>
-          </div>
+              <input
+                type="radio"
+                name="tier"
+                value={t.id}
+                className="hidden"
+                checked={tier === t.id}
+                onChange={() => setTier(t.id)}
+              />
+              <span className="text-xl font-extrabold mb-1">{t.price}€</span>
+              <span className="text-sm mb-2">{t.label}</span>
+              <span className="text-xs text-gray-300">{t.desc}</span>
+            </label>
+          ))}
         </div>
+
+        <p className="text-sm font-normal">Limited Spots</p>
+
+        <div className="flex justify-center pt-2">
+          <button
+            onClick={handleServiceClick}
+            className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 "
+        >
+          Get My Number
+        </button>
+        </div>
+      </div>
       </div>
     </section>
   );

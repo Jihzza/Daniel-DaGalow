@@ -89,9 +89,6 @@ function ExpertAnalysis() {
       </div>
       
       <div className="w-full mx-auto px-4 mt-8">
-        <h3 className="text-2xl md:text-3xl font-semibold text-center text-white mb-8">
-          Expert Analysis
-        </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Quick Consultations Feature */}
