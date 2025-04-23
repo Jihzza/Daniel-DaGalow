@@ -32,6 +32,7 @@ import Signup from './components/Auth/Signup';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
 import Dashboard from './components/Dashboard'; 
+import OtherWins from './components/MainSections/OtherWins';
 
 // Private route component to protect routes that require authentication
 const PrivateRoute = ({ children }) => {
@@ -93,6 +94,7 @@ function App() {
                 <VentureInvestment />
                 <Interviews />
                 <Testimonials />
+                <OtherWins />
                 <MergedServiceForm />
                 <BottomCarouselPages />
                 <NavigationBar 

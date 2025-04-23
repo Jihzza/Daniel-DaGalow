@@ -39,7 +39,7 @@ function Header() {
           <img 
             src={user?.avatar_url || userImage} 
             alt="User" 
-            className='w-10 h-10 rounded-full object-cover cursor-pointer'
+            className='w-8 h-8 object-cover cursor-pointer'
             onClick={handleProfileClick}
           />
         </div>
