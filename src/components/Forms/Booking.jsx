@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { supabase } from "../../utils/supabaseClient";
+import { useAuth } from "../contexts/AuthContext";
 import {
   format,
   addDays,
@@ -11,7 +13,7 @@ import {
   addMinutes,
   isBefore,
 } from "date-fns";
-import { fetchBookings, createBooking } from "../../services/bookingService";
+import { fetchBookings } from "../../services/bookingService";
 
 // Shared StepIndicator
 function StepIndicator({
@@ -173,25 +175,25 @@ function InfoStep({ formData, onChange }) {
   return (
     <div className="space-y-4 max-w-md mx-auto w-full">
       <div className="w-full flex flex-col gap-2">
-              <label className="block text-white">Your Name</label>
-      <input
-        name="name"
-        placeholder="Your Name"
-        value={formData.name}
-        onChange={onChange}
-        className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
-      />
+        <label className="block text-white">Your Name</label>
+        <input
+          name="name"
+          placeholder="Your Name"
+          value={formData.name}
+          onChange={onChange}
+          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+        />
       </div>
-      <div className="w-full flex flex-col gap-2">
+      <div className="w-full">
         <label className="block text-white">Your Email</label>
-      <input
-        name="email"
-        type="email"
-        placeholder="Your Email"
-        value={formData.email}
-        onChange={onChange}
-        className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
-      />
+        <input
+          name="email"
+          type="email"
+          placeholder="Your Email"
+          value={formData.email}
+          onChange={onChange}
+          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+        />
       </div>
     </div>
   );
@@ -237,6 +239,7 @@ function ConfirmStep({ formData, selectedDate, selectedTime }) {
 
 export default function Booking({ onBackService }) {
   const [step, setStep] = useState(1);
+  const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -299,11 +302,23 @@ export default function Booking({ onBackService }) {
       setStep(4);
     } else if (step === 4) {
       setLoading(true);
-      await createBooking({
-        ...formData,
-        date: selectedDate,
-        time: selectedTime,
-      });
+      const { error: insertError } = await supabase
+        .from("appointments")
+        .insert([
+          {
+            user_id: user.id,
+            appointment_date: new Date(
+              selectedDate.getFullYear(),
+              selectedDate.getMonth(),
+              selectedDate.getDate(),
+              ...selectedTime.split(":").map(Number)
+            ).toISOString(),
+          },
+        ]);
+      if (insertError) {
+        console.error("Booking failed:", insertError);
+        // show an error to the user here
+      }
       setLoading(false);
       setStep(5);
     } else {
@@ -372,7 +387,7 @@ export default function Booking({ onBackService }) {
             currentStep={step + 1}
             onStepClick={(dot) => {
               if (dot === 1) {
-                onBackService(); // go back to “choose service”
+                onBackService(); // go back to "choose service"
               } else {
                 setStep(dot - 1); // step 2→internal 1, 3→2, etc.
               }

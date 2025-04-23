@@ -1,4 +1,3 @@
-// components/Subpages/ProfilePage.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../../utils/supabaseClient';
@@ -7,40 +6,38 @@ import { Link } from 'react-router-dom';
 const ProfilePage = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [appointments, setAppointments] = useState([]);
+  const [activeSubscriptions, setActiveSubscriptions] = useState([]);
+  const [userInfo, setUserInfo] = useState({});
+  const [recordings, setRecordings] = useState([]);
+  const [chatHistory, setChatHistory] = useState([]);
 
   useEffect(() => {
     if (user) {
       fetchProfile();
       fetchAppointments();
+      // TODO: fetchSubscriptions();
+      // TODO: fetchUserInfo();
+      // TODO: fetchRecordings();
+      // TODO: fetchChatHistory();
     }
   }, [user]);
 
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      if (!user?.id) {
-        setError('Authentication error: No user ID available');
-        setLoading(false);
-        return;
-      }
+      if (!user?.id) throw new Error('No user ID available');
       const { data, error: queryError } = await supabase
         .from('profiles')
-        .select('*')
-        .eq('id', user.id);
+        .select('full_name, username, avatar_url, phone_number')
+        .eq('id', user.id)
+        .single();
       if (queryError) throw queryError;
-      if (!data || data.length === 0) {
-        const { data: newProfile, error: insertError } = await supabase
-          .from('profiles')
-          .insert([{ id: user.id, full_name: '', avatar_url: '', updated_at: new Date() }])
-          .select();
-        if (insertError) throw insertError;
-        setProfile(newProfile[0]);
-      } else {
-        setProfile(data[0]);
-      }
+      setProfile(data);
+      setPhoneNumber(data.phone_number || '');
     } catch (err) {
       setError(`Error fetching profile data: ${err.message}`);
     } finally {
@@ -74,108 +71,110 @@ const ProfilePage = () => {
     return (
       <section id="profile" className="py-8 px-4">
         <div className="max-w-4xl mx-auto my-8 p-6">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-oxfordBlue">Profile</h1>
-            <Link to="/" className="text-oxfordBlue hover:underline">Go back to Home</Link>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-              {error}
-            </div>
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {error}
           </div>
         </div>
       </section>
     );
   }
 
-  const formatAppointmentDateTime = (dateTimeString) => {
-    const date = new Date(dateTimeString);
-    return date.toLocaleString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
   return (
-    <section id="profile" className="py-12 px-4 h-screen">
-      <div className="max-w-4xl flex flex-col justify-center items-center mx-auto my-8">
-        <div className="border-2 border-darkGold p-6 rounded-lg flex flex-col  justify-center items-center shadow-md">
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Avatar and name section */}
-            <div className="flex flex-col items-center">
-              {profile?.avatar_url ? (
-                <img
-                  src={`${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/avatars/${profile.avatar_url}`}
-                  alt="Profile"
-                  className="w-32 h-32 rounded-full object-cover mb-4"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name || user?.email || 'User')}&size=128`;
-                  }}
-                />
-              ) : (
-                <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center text-white text-4xl font-bold mb-4">
-                  {profile?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
-                </div>
-              )}
-              <h2 className="text-2xl font-bold text-white">
-                {profile?.full_name || 'Add Your Name'}
-              </h2>
-              {profile?.username ? (
-                <p className="text-white mb-2">@{profile.username}</p>
-              ) : (
-                <p className="text-white italic mb-2">No username set</p>
-              )}
-              <p className="text-white mb-4">{user.email}</p>
-              <Link
-                to="/edit-profile"
-                className="bg-oxfordBlue text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors w-full text-center"
-              >
-                Edit Profile
-              </Link>
-            </div>
-            {/* Profile content */}
-            <div className="md:w-2/3">
-              {/* Upcoming Appointments Section */}
-              <div className="pb-6 mb-6">
-                <h3 className="text-xl font-semibold text-white mb-4">Upcoming Appointments</h3>
-                {appointments.length > 0 ? (
-                  <div className="space-y-4">
-                    {appointments.map((appointment) => (
-                      <div key={appointment.id} className="border rounded-lg p-4 border-darkGold">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <p className="font-medium">{appointment.service_type || 'Consultation'}</p>
-                            <p className="text-white">{formatAppointmentDateTime(appointment.appointment_date)}</p>
-                            {appointment.notes && (
-                              <p className="text-gray-500 mt-2 text-sm">{appointment.notes}</p>
-                            )}
-                          </div>
-                          <div className="flex gap-2">
-                            <button className="text-oxfordBlue hover:underline text-sm">Reschedule</button>
-                            <button className="text-red-600 hover:underline text-sm">Cancel</button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 px-4 border-2 rounded-lg border-darkGold ">
-                    <p className="text-white mb-4">You don't have any upcoming appointments</p>
-                    <Link
-                      to="/?service=booking#booking"
-                      className="bg-darkGold text-black font-bold px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
-                    >
-                      Book a Consultation
-                    </Link>
-                  </div>
-                )}
+    <section id="profile" className="py-12 px-4 h-auto">
+      <div className="max-w-4xl mx-auto my-8 p-6 bg-white rounded-lg shadow-md">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-oxfordBlue">Profile</h1>
+          <Link to="/edit-profile" className="text-oxfordBlue hover:underline">Edit Profile</Link>
+        </div>
+
+        {/* Avatar & Basic Info */}
+        <div className="flex items-center gap-6 mb-6">
+          <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200">
+            {profile?.avatar_url ? (
+              <img
+                src={`${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/avatars/${profile.avatar_url}`}
+                alt="Avatar"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.full_name || user.email)}&size=128`;
+                }}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-500 text-4xl font-bold">
+                {profile?.full_name?.charAt(0)?.toUpperCase() || user.email.charAt(0).toUpperCase()}
               </div>
-            </div>
+            )}
+          </div>
+          <div>
+            <p><strong>Name:</strong> {profile.full_name || 'Not set'}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Username:</strong> {profile.username ? `@${profile.username}` : 'Not set'}</p>
+            <p><strong>Phone:</strong> {phoneNumber || 'Not set'}</p>
+          </div>
+        </div>
+
+        {/* Upcoming Appointments */}
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-oxfordBlue mb-3">Upcoming Appointments</h2>
+          {appointments.length ? (
+            appointments.map(a => (
+              <div key={a.id} className="border p-4 rounded mb-2">
+                <p>{a.service_type || 'Appointment'} on {new Date(a.appointment_date).toLocaleString()}</p>
+              </div>
+            ))
+          ) : (
+            <p>No upcoming appointments.</p>
+          )}
+        </div>
+
+        {/* Active Subscriptions */}
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-oxfordBlue mb-3">Active Subscriptions</h2>
+          {activeSubscriptions.length ? (
+            <ul className="list-disc pl-5">
+              {activeSubscriptions.map((sub, i) => <li key={i}>{sub.name}</li>)}
+            </ul>
+          ) : (
+            <p>No active subscriptions.</p>
+          )}
+        </div>
+
+        {/* Additional User Info */}
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-oxfordBlue mb-3">More About You</h2>
+          <pre className="bg-gray-100 p-3 rounded h-32 overflow-auto">
+            {JSON.stringify(userInfo, null, 2)}
+          </pre>
+        </div>
+
+        {/* Call Recordings */}
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-oxfordBlue mb-3">Call Recordings</h2>
+          {recordings.length ? (
+            recordings.map(r => (
+              <div key={r.id} className="mb-2">
+                <a href={r.url} className="text-oxfordBlue hover:underline" download>Download recording #{r.id}</a>
+              </div>
+            ))
+          ) : (
+            <p>No recordings available.</p>
+          )}
+        </div>
+
+        {/* Chat History */}
+        <div>
+          <h2 className="text-xl font-semibold text-oxfordBlue mb-3">Chat History</h2>
+          <div className="bg-gray-50 p-3 rounded h-40 overflow-auto">
+            {chatHistory.length ? (
+              chatHistory.map((msg, idx) => (
+                <div key={idx} className="mb-1">
+                  <span className="font-bold">{msg.sender}:</span> {msg.text}
+                </div>
+              ))
+            ) : (
+              <p>No chat history.</p>
+            )}
           </div>
         </div>
       </div>
