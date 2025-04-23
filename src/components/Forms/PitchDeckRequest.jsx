@@ -325,11 +325,14 @@ export default function PitchDeckRequest({ onBackService }) {
 
         <div className="mt-8">
           <StepIndicator
-            stepCount={STEPS.length}
-            currentStep={step}
-            onStepClick={(newStep) => {
-              // optional: validate that newStep <= maxAllowedStep
-              setStep(newStep);
+            stepCount={STEPS.length + 1}
+            currentStep={step + 1}
+            onStepClick={(dot) => {
+              if (dot === 1) {
+                onBackService();            // go back to “choose service”
+              } else {
+                setStep(dot - 1);           // step 2→internal 1, 3→2, etc.
+              }
             }}
             className={step === 1 ? "pt-0" : "pt-6"}
           />{" "}
