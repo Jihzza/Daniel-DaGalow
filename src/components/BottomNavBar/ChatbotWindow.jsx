@@ -1,5 +1,6 @@
 // ChatbotWindow.jsx
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import Send from "../../assets/icons/Send.svg";
 import Anexar from "../../assets/icons/Anexar.svg";
 
@@ -98,10 +99,14 @@ export default function ChatbotWindow({ onClose }) {
   };
 
   return (
-    <div
+    <motion.div
       ref={panelRef}
       className="fixed bottom-14 w-full bg-oxfordBlue shadow-2xl rounded-t-2xl overflow-visible border-t-2 border-darkGold flex flex-col z-40 touch-none overscroll-contain"
       style={{ height: `${height}px` }}
+      initial={{ y: "100%" }}
+      animate={{ y: 0 }}
+      exit={{ y: "100%" }}
+      transition={{ type: "tween",duration: 0.3 }}
     >
       {/* Header */}
       <div
@@ -174,6 +179,6 @@ export default function ChatbotWindow({ onClose }) {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
