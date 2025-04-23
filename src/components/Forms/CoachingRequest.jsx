@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { supabase } from "../../utils/supabaseClient";
+import { useAuth } from "../contexts/AuthContext";
 
 // Progress Indicator Component
 function StepIndicator({
@@ -233,6 +234,7 @@ function ChatbotStep({ requestId }) {
 
 // Main Coaching Request Component
 export default function CoachingRequest({ onBackService }) {
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     frequency: "",
@@ -278,6 +280,7 @@ export default function CoachingRequest({ onBackService }) {
       const { data, error } = await supabase
         .from("coaching_requests")
         .insert({
+          user_id: user.id,
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
