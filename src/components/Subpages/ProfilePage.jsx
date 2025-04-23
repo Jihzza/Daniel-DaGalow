@@ -121,7 +121,8 @@ const ProfilePage = () => {
           <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200">
             {profile?.avatar_url ? (
               <img
-                src={`${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/avatars/${profile.avatar_url}`}
+              src={`${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/avatars/${profile.avatar_url}`}
+
                 alt="Avatar"
                 className="w-full h-full object-cover"
                 onError={(e) => {
