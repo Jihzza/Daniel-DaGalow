@@ -151,18 +151,43 @@ function Testimonials() {
             autoplay={{ delay: 3000, disableOnInteraction: false }}
             className="testimonial-swiper overflow-visible"
           >
-            {testimonials.map(t => (
-              <SwiperSlide key={t.id}>
-                <div className="bg-white w-full h-full p-4 rounded-lg shadow-md flex flex-col justify-center items-center mx-auto">
-                  <img
-                    src={t.image_url}
-                    alt={t.author}
-                    className="w-14 h-14 rounded-full object-cover border-2 border-darkGold mb-6"
-                  />
-                  <p className="italic mb-6 text-lg">"{t.quote}"</p>
-                  <div className="font-semibold mb-2">{t.author}</div>
+            {testimonials.map((testimonial, index) => (
+              <SwiperSlide key={index}>
+              <div
+                className="
+                  bg-white
+                  w-72           
+                  h-60           
+                  p-4
+                  rounded-lg
+                  shadow-md
+                  flex
+                  flex-col
+                  items-center  /* center horizontally */
+                  justify-center/* center vertically */
+                  text-center   /* center text inside */
+                  overflow-hidden
+                "
+              >
+                {/* Avatar */}
+                <img
+                  src={testimonial.image_url}
+                  alt={testimonial.author}
+                  className="w-14 h-14 rounded-full object-cover border-2 border-darkGold mb-4"
+                />
+            
+                {/* Quote: allow internal scroll if needed */}
+                <div className="flex-1 flex items-center justify-center overflow-y-auto">
+                  <p className="italic text-md px-2">"{testimonial.quote}"</p>
                 </div>
-              </SwiperSlide>
+            
+                {/* Author */}
+                <div className="mt-4 font-semibold">
+                  {testimonial.author}
+                </div>
+              </div>
+            </SwiperSlide>
+            
             ))}
           </Swiper>
         )}
