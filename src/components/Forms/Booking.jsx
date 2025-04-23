@@ -180,12 +180,12 @@ function InfoStep({ formData, onChange }) {
 // Step 4: Payment Selection
 function PaymentStep({ onPaid }) {
   const options = [
-    { label: '45 min', link: 'https://checkout.revolut.com/pay/3dfccfda-5511-40bf-936c-b6d7141f34e1' },
-    { label: '1h', link: 'https://checkout.revolut.com/pay/66c2a4ff-5041-4548-a595-361d7b42c84a' },
-    { label: '1h15', link: 'https://checkout.revolut.com/pay/ceb92e96-066e-45ec-a5c2-0e83bead7ca2' },
-    { label: '1h30', link: 'https://checkout.revolut.com/pay/dd9ae643-d183-4a0b-adb5-7ec9ec30fbd3' },
-    { label: '1h45', link: 'https://checkout.revolut.com/pay/743b0fae-a826-4c76-8bb6-b3aa103b9073' },
-    { label: '2h', link: 'https://checkout.revolut.com/pay/57b12021-009c-4f5a-9d78-c1e58cc6e36e' },
+    { label: '45 min', link: 'https://buy.stripe.com/9AQ4h1gy6fG90Te7sw' },
+    { label: '1h', link: 'https://buy.stripe.com/5kA4h12HgalPbxSeUZ' },
+    { label: '1h15', link: 'https://buy.stripe.com/8wM4h1fu265z9pK8wE' },
+    { label: '1h30', link: 'https://buy.stripe.com/fZe6p9a9I79D7hC6ov' },
+    { label: '1h45', link: 'https://buy.stripe.com/9AQ4h195Edy11Xi28h' },
+    { label: '2h', link: 'https://buy.stripe.com/28o7tdfu2eC50Te4gm' },
   ];
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">

@@ -121,17 +121,17 @@ function PaymentStep({ formData, onPaid }) {
     weekly: {
       label: "Basic Tier",
       price: "40 € / month",
-      link: "https://checkout.revolut.com/pay/a68cb9c7-0736-4be6-96a9-5b64b4b33f87",
+      link: "https://buy.stripe.com/3csdRBdlU9hL6dy4gh",
     },
     daily: {
       label: "Mid Tier",
       price: "90 € / month",
-      link: "https://checkout.revolut.com/pay/06e02890-35c3-40a6-b8c9-16f235ce563d",
+      link: "https://buy.stripe.com/5kAaFpepY8dH59u146",
     },
     priority: {
       label: "VIP Tier",
-      price: "150 € / month",
-      link: "https://checkout.revolut.com/pay/da2d91d5-9a29-44b5-b28e-a192751b3d54",
+      price: "230 € / month",
+      link: "https://buy.stripe.com/6oEcNx2Hg1PjfO88wz",
     },
   };
   const tier = tiers[formData.frequency] || {};
@@ -148,7 +148,7 @@ function PaymentStep({ formData, onPaid }) {
         onClick={onPaid}
       >
         <button className="px-6 py-3 bg-darkGold text-black font-bold rounded-xl hover:bg-yellow-500">
-          Pay with Revolut
+          Pay with Stripe
         </button>
       </a>
     </div>
