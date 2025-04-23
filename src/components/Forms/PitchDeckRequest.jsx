@@ -176,11 +176,21 @@ function NotesStep({ formData, onChange, onSubmit, isSubmitting }) {
   );
 }
 
+function ThankYou() {
+  return (
+    <div className="text-center text-white">
+      <h3 className="text-2xl mb-4">🎉 Thanks for your request!</h3>
+      <p>We’ve got your info and will be in touch soon.</p>
+    </div>
+  );
+}
+
 export default function PitchDeckRequest({ onBackService }) {
   const STEPS = [
     { title: "Select your project", component: ProjectSelectionStep },
     { title: "Your contact information", component: ContactInfoStep },
     { title: "Additional notes", component: NotesStep },
+    { title: "Thank you", component: ThankYou },
   ];
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -219,11 +229,21 @@ export default function PitchDeckRequest({ onBackService }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // submit data
-    await supabase.from("pitch_requests").insert(formData);
+  
+    const { error } = await supabase
+      .from("pitch_requests")
+      .insert(formData, { returning: "minimal" });
+  
     setIsSubmitting(false);
-    // TODO: show thank you or scroll
-  };
+  
+    if (error) {
+      console.error("Insert error:", error);
+      alert("Sorry—couldn’t submit right now. Please try again.");
+    } else {
+      // show a simple thank-you state
+      setStep(4);
+    }
+  };  
 
   const Current = STEPS[step - 1].component;
 
@@ -237,7 +257,7 @@ export default function PitchDeckRequest({ onBackService }) {
         <Current
           formData={formData}
           onChange={handleChange}
-          onSubmit={step === STEPS.length ? handleSubmit : undefined}
+          onSubmit={step === STEPS.length - 1 ? handleSubmit : undefined}
           isSubmitting={isSubmitting}
         />
 
