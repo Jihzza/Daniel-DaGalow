@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import FAQs from './BottomPages/FAQs';
-import Chatbot from './BottomPages/Chatbot';
 
 export default function PageCarousel(){
     const pages =[
         { label: "FAQs", Component: FAQs },
-        { label: "Chatbot", Component: Chatbot },
     ];
     
     const [activeIdx, setActiveIdx] = useState(0);

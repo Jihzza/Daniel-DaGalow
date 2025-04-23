@@ -11,6 +11,7 @@ export default function ChatbotWindow({ onClose }) {
   const listRef = useRef(null);
   const headerRef = useRef(null);
   const DEFAULT_HEIGHT = window.innerHeight - 45;
+  const initialHeight = useRef(DEFAULT_HEIGHT);
   const [height, setHeight] = useState(DEFAULT_HEIGHT);
   const [resizing, setResizing] = useState(false);
   const lastTap = useRef(0);
@@ -31,6 +32,13 @@ export default function ChatbotWindow({ onClose }) {
     const newHeight = window.innerHeight - e.clientY - 56;
     setHeight(Math.max(100, Math.min(newHeight, window.innerHeight - 100)));
   };
+
+  useEffect(() => {
+    const threshold = initialHeight.current * 0.3;
+    if (height <= threshold) {
+      onClose();
+    }
+  }, [height, onClose]);
 
   const onPointerUp = (e) => {
     headerRef.current.releasePointerCapture(e.pointerId);

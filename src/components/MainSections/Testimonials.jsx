@@ -134,7 +134,7 @@ function Testimonials() {
         {/* leave static + dynamic */}
         <button
           onClick={() => setModalOpen(true)}
-          className="mb-4 px-6 py-3 bg-darkGold text-black font-bold rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+          className="!mb-2 px-6 py-3 bg-darkGold text-black font-bold rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
         >
           Leave a Testimonial
         </button>
