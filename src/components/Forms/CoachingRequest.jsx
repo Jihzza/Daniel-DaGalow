@@ -4,10 +4,16 @@ import "react-phone-input-2/lib/style.css";
 import { supabase } from "../../utils/supabaseClient";
 
 // Progress Indicator Component
-function StepIndicator({ stepCount, currentStep, onStepClick = () => {}, className = "" }) {
+function StepIndicator({
+  stepCount,
+  currentStep,
+  onStepClick = () => {},
+  className = "",
+}) {
   return (
-    <div className={`flex items-center justify-center ${className}`}>      {
-      Array.from({ length: stepCount }).map((_, idx) => {
+    <div className={`flex items-center justify-center ${className}`}>
+      {" "}
+      {Array.from({ length: stepCount }).map((_, idx) => {
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
         return (
@@ -20,7 +26,9 @@ function StepIndicator({ stepCount, currentStep, onStepClick = () => {}, classNa
                 isActive
                   ? "bg-darkGold border-darkGold text-white"
                   : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer"
-              }${stepNum > currentStep ? " opacity-50 cursor-not-allowed" : ""}`}
+              }${
+                stepNum > currentStep ? " opacity-50 cursor-not-allowed" : ""
+              }`}
               aria-label={`Go to step ${stepNum}`}
             >
               {stepNum}
@@ -47,21 +55,21 @@ function FrequencyStep({ formData, onChange }) {
     { label: "Priority Coaching", value: "priority" },
   ];
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+    <div className="grid grid-cols-1 gap-6 mb-6">
       {options.map((opt) => (
         <button
           key={opt.value}
           type="button"
-          className={`p-6 rounded-2xl cursor-pointer text-center transition-shadow duration-300 border-2 focus:outline-none ${
+          className={`px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg ${
             formData.frequency === opt.value
-              ? "border-darkGold bg-darkGold/10 shadow-md"
-              : "border-white/20 bg-oxfordBlue hover:border-darkGold"
-          }`}
-          onClick={() => onChange({ target: { name: "frequency", value: opt.value } })}
+              ? "border-darkGold shadow-lg"
+              : "border-darkGold"
+          } bg-oxfordBlue`}
+          onClick={() =>
+            onChange({ target: { name: "frequency", value: opt.value } })
+          }
         >
-          <span className="block text-white font-semibold text-lg">
-            {opt.label}
-          </span>
+          <p className="text-white font-medium text-center">{opt.label}</p>
         </button>
       ))}
     </div>
@@ -71,9 +79,9 @@ function FrequencyStep({ formData, onChange }) {
 // Step 2: Contact Info
 function ContactStep({ formData, onChange }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-      <div>
-        <label className="block text-white font-medium mb-2">Your Name</label>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="w-full flex flex-col gap-2">
+        <label className="block text-white mb-2">Your Name</label>
         <input
           name="name"
           type="text"
@@ -81,11 +89,11 @@ function ContactStep({ formData, onChange }) {
           onChange={onChange}
           placeholder="John Doe"
           required
-          className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50"
         />
       </div>
-      <div>
-        <label className="block text-white font-medium mb-2">Email Address</label>
+      <div className="w-full flex flex-col gap-2">
+        <label className="block text-white mb-2">Email Address</label>
         <input
           name="email"
           type="email"
@@ -93,21 +101,27 @@ function ContactStep({ formData, onChange }) {
           onChange={onChange}
           placeholder="john@example.com"
           required
-          className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50"
         />
       </div>
-      <div className="md:col-span-2">
-        <label className="block text-white font-medium mb-2">Phone Number</label>
+      <div className="w-full flex flex-col gap-2">
+        <label className="block text-white font-medium mb-2">
+          Phone Number
+        </label>
         <PhoneInput
-          country="us"
+          // 1) Outer container has the only border + rounding
+          containerClass="!w-full !h-[42px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
+          // 2) Children: no borders of their own
+          buttonClass="!bg-white/5 !border-none h-full"
+          inputClass="!bg-white/5 !border-none p-4 !h-full text-white placeholder-white/50"
+          country="es"
           enableSearch
           searchPlaceholder="Search country..."
           value={formData.phone}
-          onChange={(phone) => onChange({ target: { name: "phone", value: phone } })}
-          inputClass="w-full p-4 !bg-white/5 border !border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
-          buttonClass="!bg-white/5 border !border-white/20 rounded-l-2xl h-full"
+          onChange={(phone) =>
+            onChange({ target: { name: "phone", value: phone } })
+          }
           dropdownClass="!bg-oxfordBlue text-white rounded-2xl"
-          containerClass="rounded-2xl bg-oxfordBlue"
           searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2"
         />
       </div>
@@ -139,7 +153,8 @@ function PaymentStep({ formData, onPaid }) {
     <div className="text-center mb-8">
       <p className="text-white mb-4">
         You selected <strong>{tier.label}</strong>.<br />
-        Please complete the payment of <strong>{tier.price}</strong> to continue.
+        Please complete the payment of <strong>{tier.price}</strong> to
+        continue.
       </p>
       <a
         href={tier.link}
@@ -172,7 +187,9 @@ function ChatbotStep({ requestId }) {
       {chatHistory.map((msg, i) => (
         <div
           key={i}
-          className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+          className={`flex ${
+            msg.sender === "user" ? "justify-end" : "justify-start"
+          }`}
         >
           <div
             className={`px-4 py-2 rounded-2xl max-w-xs break-words $
@@ -195,8 +212,18 @@ function ChatbotStep({ requestId }) {
           onClick={sendMessage}
           className="absolute right-4 bottom-4 p-3 bg-darkGold text-white rounded-full hover:bg-yellow-500 transition-colors duration-200"
         >
-          <svg className="w-6 h-6 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          <svg
+            className="w-6 h-6 rotate-90"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+            />
           </svg>
         </button>
       </div>
@@ -207,7 +234,12 @@ function ChatbotStep({ requestId }) {
 // Main Coaching Request Component
 export default function CoachingRequest({ onBackService }) {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({ frequency: "", name: "", email: "", phone: "" });
+  const [formData, setFormData] = useState({
+    frequency: "",
+    name: "",
+    email: "",
+    phone: "",
+  });
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
@@ -226,10 +258,10 @@ export default function CoachingRequest({ onBackService }) {
   };
 
   const STEPS = [
-    { title: "Frequency", component: FrequencyStep },
-    { title: "Your Info", component: ContactStep },
-    { title: "Payment", component: PaymentStep },
-    { title: "Chat", component: ChatbotStep },
+    { title: "Choose coaching frequency", component: FrequencyStep },
+    { title: "Your contact information", component: ContactStep },
+    { title: "Complete your payment", component: PaymentStep },
+    { title: "Start your chat", component: ChatbotStep },
   ];
 
   const Current = STEPS[step - 1].component;
@@ -278,21 +310,13 @@ export default function CoachingRequest({ onBackService }) {
           Start Your Coaching Journey
         </h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-3xl p-10 shadow-2xl">
+          <h3 className="text-xl text-white mb-6">{STEPS[step - 1].title}</h3>
           <Current
             formData={formData}
             onChange={handleChange}
             requestId={requestId}
             onPaid={() => setPaymentDone(true)}
           />
-
-          {step === 1 && onBackService && (
-            <button
-              onClick={onBackService}
-              className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl mb-4"
-            >
-              Change Service
-            </button>
-          )}
 
           {step > 1 && (
             <div className="flex justify-between mt-8">
@@ -320,11 +344,12 @@ export default function CoachingRequest({ onBackService }) {
             currentStep={step + 1}
             onStepClick={(dot) => {
               if (dot === 1) {
-                onBackService();            // go back to “choose service”
+                onBackService(); // go back to “choose service”
               } else {
-                setStep(dot - 1);           // step 2→internal 1, 3→2, etc.
+                setStep(dot - 1); // step 2→internal 1, 3→2, etc.
               }
-            }}            className={step === 1 ? "pt-0" : "pt-6"}
+            }}
+            className={step === 1 ? "pt-0" : "pt-6"}
           />
         </div>
       </div>

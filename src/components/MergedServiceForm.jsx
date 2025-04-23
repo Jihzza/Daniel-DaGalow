@@ -10,7 +10,7 @@ export default function MergedServiceForm() {
 
   const services = [
     { label: "Analysis", value: "analysis" },
-    { label: "Booking", value: "booking" },
+    { label: "Consultation", value: "booking" },
     { label: "Coaching", value: "coaching" },
     { label: "Pitch Deck", value: "pitchdeck" },
   ];
@@ -62,10 +62,14 @@ export default function MergedServiceForm() {
           <h2 className="text-2xl font-bold text-center mb-6 text-black">
             What service do you need?
           </h2>
-          <div className="grid grid-cols-2 gap-6 bg-oxfordBlue shadow-lg rounded-2xl p-6">
-            {services.map((s) => (
-              <button
-                key={s.value}
+          <div className=" gap-6 bg-oxfordBlue shadow-lg rounded-2xl p-8">
+            <h3 className="text-xl text-white mb-6">
+              Choose the Service
+            </h3>
+            <div className="grid grid-cols-2 gap-6">
+              {services.map((s) => (
+                <button
+                  key={s.value}
                 onClick={() => selectService(s.value)}
                 className="px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg"
               >
@@ -74,6 +78,7 @@ export default function MergedServiceForm() {
                 </span>
               </button>
             ))}
+            </div>
           </div>
         </div>
       </section>

@@ -18,7 +18,7 @@ function Hero() {
   const navigate = useNavigate();
   const handleServiceClick = (service) => {
     const mapping = {
-      booking: "#booking",
+      booking: "#bookingForm",
       coaching: "#coaching-journey",
       analysis: "#analysis-request",
     };
@@ -234,7 +234,7 @@ function Hero() {
         </div>
 
         <div
-          onClick={() => scrollTo("services")}
+          
           className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4"
         >
           <div className="flex flex-col items-center justify-center my-8">

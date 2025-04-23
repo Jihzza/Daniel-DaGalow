@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { supabase } from "../../utils/supabaseClient";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 // Progress Indicator Component
 function StepIndicator({
@@ -57,12 +59,12 @@ function StepIndicator({
 // Step1: Project Selection
 function ProjectSelectionStep({ formData, onChange }) {
   const projects = [
-    { label: "Project Alpha", value: "alpha" },
-    { label: "Project Beta", value: "beta" },
-    { label: "Project Gamma", value: "gamma" },
+    { label: "Perspectiv", value: "perspectiv" },
+    { label: "Galow.Club", value: "galow" },
+    { label: "Pizzaria", value: "pizzaria" },
   ];
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div className="grid grid-cols-1 gap-6 mb-6">
       {projects.map((p) => (
         <button
           key={p.value}
@@ -70,13 +72,13 @@ function ProjectSelectionStep({ formData, onChange }) {
           onClick={() =>
             onChange({ target: { name: "project", value: p.value } })
           }
-          className={`p-6 rounded-2xl text-center border-2 shadow-lg transition-colors ${
+          className={`px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg ${
             formData.project === p.value
-              ? "border-darkGold bg-darkGold/10"
-              : "border-white/20 bg-oxfordBlue hover:border-darkGold"
+              ? "border-darkGold shadow-lg"
+              : "border-darkGold"
           }`}
         >
-          <span className="text-white font-semibold text-lg block">
+          <span className="text-white font-medium text-center">
             {p.label}
           </span>
         </button>
@@ -88,27 +90,29 @@ function ProjectSelectionStep({ formData, onChange }) {
 // Step2: Contact Info
 function ContactInfoStep({ formData, onChange }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div>
-        <label className="block text-white mb-2">Full Name</label>
+    <div className="grid grid-cols-1 gap-6 mb-6">
+      <div className="w-full flex flex-col gap-2">
+        <label className="block text-white mb-2">Your Name</label>
         <input
           name="name"
           type="text"
           value={formData.name}
           onChange={onChange}
+          placeholder="John Doe"
           required
-          className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50"
         />
       </div>
-      <div>
+      <div className="w-full flex flex-col gap-2">
         <label className="block text-white mb-2">Email Address</label>
         <input
           name="email"
           type="email"
           value={formData.email}
           onChange={onChange}
+          placeholder="john@example.com"
           required
-          className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50"
         />
       </div>
       <div>
@@ -117,84 +121,31 @@ function ContactInfoStep({ formData, onChange }) {
           name="company"
           type="text"
           value={formData.company}
+          placeholder="Company Name"
           onChange={onChange}
-          className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50"
         />
       </div>
-      <div>
-        <label className="block text-white mb-2">Phone Number</label>
-        <input
-          name="phone"
-          type="tel"
-          value={formData.phone}
-          onChange={onChange}
-          className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
-        />
-      </div>
-    </div>
-  );
-}
-
-// Step3: Investor Profile
-function InvestorProfileStep({ formData, onChange }) {
-  return (
-    <div className="space-y-6 mb-6">
-      <div>
-        <label className="block text-white mb-2">Investor Type</label>
-        <select
-          name="investorType"
-          value={formData.investorType}
-          onChange={onChange}
-          className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
-        >
-          <option value="">Select…</option>
-          <option value="angel">Angel Investor</option>
-          <option value="vc">Venture Capital Firm</option>
-          <option value="corporate">Corporate Investor</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-      <div>
-        <label className="block text-white mb-2">Target Check Size</label>
-        <select
-          name="checkSize"
-          value={formData.checkSize}
-          onChange={onChange}
-          className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
-        >
-          <option value="">Select…</option>
-          <option value="<50k">£10k–£50k</option>
-          <option value="50-250">£50k–£250k</option>
-          <option value="250-1m">£250k–£1m</option>
-          <option value=">1m">£1m+</option>
-        </select>
-      </div>
-      <div>
-        <label className="block text-white mb-2">Investment Timeline</label>
-        <select
-          name="timeline"
-          value={formData.timeline}
-          onChange={onChange}
-          className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
-        >
-          <option value="">Select…</option>
-          <option value="immediate">Immediate (0–3 months)</option>
-          <option value="short">Short‑term (3–6 months)</option>
-          <option value="long">Long‑term (6+ months)</option>
-        </select>
-      </div>
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          name="nda"
-          id="nda"
-          checked={formData.nda}
-          onChange={onChange}
-          className="h-4 w-4 text-darkGold bg-white/5 border-white/10 rounded focus:ring-darkGold"
-        />
-        <label htmlFor="nda" className="ml-2 text-white">
-          I agree to sign an NDA before receiving the deck
+      <div className="w-full flex flex-col gap-2">
+        <label className="block text-white font-medium mb-2">
+          Phone Number
         </label>
+        <PhoneInput
+          // 1) Outer container has the only border + rounding
+          containerClass="!w-full !h-[42px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
+          // 2) Children: no borders of their own
+          buttonClass="!bg-white/5 !border-none h-full"
+          inputClass="!bg-white/5 !border-none p-4 !h-full !w-full text-white placeholder-white/50"
+          country="es"
+          enableSearch
+          searchPlaceholder="Search country..."
+          value={formData.phone}
+          onChange={(phone) =>
+            onChange({ target: { name: "phone", value: phone } })
+          }
+          dropdownClass="!bg-oxfordBlue text-white rounded-2xl"
+          searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2"
+        />
       </div>
     </div>
   );
@@ -227,10 +178,9 @@ function NotesStep({ formData, onChange, onSubmit, isSubmitting }) {
 
 export default function PitchDeckRequest({ onBackService }) {
   const STEPS = [
-    ProjectSelectionStep,
-    ContactInfoStep,
-    InvestorProfileStep,
-    NotesStep,
+    { title: "Select your project", component: ProjectSelectionStep },
+    { title: "Your contact information", component: ContactInfoStep },
+    { title: "Additional notes", component: NotesStep },
   ];
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -239,10 +189,6 @@ export default function PitchDeckRequest({ onBackService }) {
     email: "",
     company: "",
     phone: "",
-    investorType: "",
-    checkSize: "",
-    timeline: "",
-    nda: false,
     notes: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -279,7 +225,7 @@ export default function PitchDeckRequest({ onBackService }) {
     // TODO: show thank you or scroll
   };
 
-  const Current = STEPS[step - 1];
+  const Current = STEPS[step - 1].component;
 
   return (
     <section id="pitch-deck-request" className="py-8 px-4">
@@ -287,23 +233,16 @@ export default function PitchDeckRequest({ onBackService }) {
         Request a Pitch Deck
       </h2>
       <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
+        <h3 className="text-xl text-white mb-6">{STEPS[step - 1].title}</h3>
         <Current
           formData={formData}
           onChange={handleChange}
           onSubmit={step === STEPS.length ? handleSubmit : undefined}
           isSubmitting={isSubmitting}
         />
-        {step === 1 && onBackService && (
-          <button
-            onClick={onBackService}
-            className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl mb-4"
-          >
-            ← Change Service
-          </button>
-        )}
 
         {step > 1 && (
-          <div className="flex justify-between mt-6">
+          <div className="flex justify-between mt-4">
             <button
               onClick={handleBack}
               disabled={isSubmitting}
@@ -329,9 +268,9 @@ export default function PitchDeckRequest({ onBackService }) {
             currentStep={step + 1}
             onStepClick={(dot) => {
               if (dot === 1) {
-                onBackService();            // go back to “choose service”
+                onBackService(); // go back to “choose service”
               } else {
-                setStep(dot - 1);           // step 2→internal 1, 3→2, etc.
+                setStep(dot - 1); // step 2→internal 1, 3→2, etc.
               }
             }}
             className={step === 1 ? "pt-0" : "pt-6"}

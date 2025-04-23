@@ -81,7 +81,7 @@ function DateStep({
   const calendar = [...prevMonthDays, ...days, ...nextMonthDays];
 
   return (
-    <div id="booking" className="space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
         <button onClick={() => onChangeMonth(-1)} className="text-white p-2">
           ←
@@ -152,7 +152,7 @@ function TimeStep({
               onClick={() => ok && onSelectTime(time)}
               disabled={!ok}
               className={
-                `p-3 rounded-xl text-center ` +
+                `px-6 py-3 rounded-xl text-center ` +
                 (sel ? "bg-darkGold text-white" : "bg-white/10 text-white") +
                 (ok
                   ? " hover:bg-darkGold hover:text-white cursor-pointer"
@@ -171,22 +171,28 @@ function TimeStep({
 // Step 3: Contact info
 function InfoStep({ formData, onChange }) {
   return (
-    <div className="space-y-4 max-w-md mx-auto">
+    <div className="space-y-4 max-w-md mx-auto w-full">
+      <div className="w-full flex flex-col gap-2">
+              <label className="block text-white">Your Name</label>
       <input
         name="name"
         placeholder="Your Name"
         value={formData.name}
         onChange={onChange}
-        className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50"
+        className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
       />
+      </div>
+      <div className="w-full flex flex-col gap-2">
+        <label className="block text-white">Your Email</label>
       <input
         name="email"
         type="email"
         placeholder="Your Email"
         value={formData.email}
         onChange={onChange}
-        className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50"
+        className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
       />
+      </div>
     </div>
   );
 }
@@ -265,8 +271,14 @@ export default function Booking({ onBackService }) {
     });
   };
 
-  const STEPS = [DateStep, TimeStep, InfoStep, PaymentStep, ConfirmStep];
-  const Current = STEPS[step - 1];
+  const STEPS = [
+    { title: "Choose a date", component: DateStep },
+    { title: "Select a time", component: TimeStep },
+    { title: "Your information", component: InfoStep },
+    { title: "Choose payment option", component: PaymentStep },
+    { title: "Confirmation", component: ConfirmStep },
+  ];
+  const Current = STEPS[step - 1].component;
 
   const handlePaid = (link) => {
     setPaymentDone(true);
@@ -303,13 +315,14 @@ export default function Booking({ onBackService }) {
     setFormData((f) => ({ ...f, [e.target.name]: e.target.value }));
 
   return (
-    <section className="py-8 px-4">
+    <section className="py-8 px-4" id="bookingForm">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
           Schedule Your Consultation
         </h2>
-        <div className="bg-oxfordBlue rounded-2xl p-8 shadow-xl">
-          <div className="min-h-[200px]">
+        <div className="bg-oxfordBlue justify-center items-center rounded-2xl p-8 shadow-xl">
+          <div className="min-h-[200px] flex flex-col justify-center items-center">
+            <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
             <Current
               selectedDate={selectedDate}
               onSelectDate={(d) => {
@@ -337,23 +350,12 @@ export default function Booking({ onBackService }) {
             />
           </div>
           <div className="flex justify-between mt-6">
-            {step === 1 ? (
-              onBackService && (
-                <button
-                  onClick={onBackService}
-                  className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl"
-                >
-                  Change Service
-                </button>
-              )
-            ) : (
-              <button
-                onClick={() => setStep((s) => Math.max(1, s - 1))}
-                className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl"
-              >
-                Back
-              </button>
-            )}
+            <button
+              onClick={() => setStep((s) => Math.max(1, s - 1))}
+              className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl"
+            >
+              Back
+            </button>
             {step < STEPS.length && (
               <button
                 onClick={handleNext}
@@ -364,6 +366,7 @@ export default function Booking({ onBackService }) {
               </button>
             )}
           </div>
+
           <StepIndicator
             stepCount={STEPS.length + 1}
             currentStep={step + 1}

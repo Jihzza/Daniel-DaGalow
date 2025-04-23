@@ -69,10 +69,10 @@ function TypeSelectionStep({ formData, onChange }) {
       {options.map((opt) => (
         <div
           key={opt.value}
-          className={`p-4 rounded-xl cursor-pointer transition-shadow duration-300 border ${
+          className={`px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg ${
             formData.type === opt.value
               ? "border-darkGold shadow-lg"
-              : "border-white/20"
+              : "border-darkGold"
           } bg-oxfordBlue`}
           onClick={() =>
             onChange({ target: { name: "type", value: opt.value } })
@@ -98,7 +98,7 @@ function ContactInfoStep({ formData, onChange }) {
           onChange={onChange}
           placeholder="John Doe"
           required
-          className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
         />
       </div>
       <div>
@@ -110,7 +110,7 @@ function ContactInfoStep({ formData, onChange }) {
           onChange={onChange}
           placeholder="john@example.com"
           required
-          className="w-full p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
         />
       </div>
     </div>
@@ -196,9 +196,9 @@ export default function AnalysisRequest({ onBackService }) {
   };
 
   const STEPS = [
-    { title: "Select Type", component: TypeSelectionStep },
-    { title: "Contact Info", component: ContactInfoStep },
-    { title: "Chat", component: ChatbotStep },
+    { title: "What do you want to analyze?", component: TypeSelectionStep },
+    { title: "Your contact information", component: ContactInfoStep },
+    { title: "Chat with our analyst", component: ChatbotStep },
   ];
   const Current = STEPS[step - 1].component;
 
@@ -244,12 +244,14 @@ export default function AnalysisRequest({ onBackService }) {
           Get My Analysis
         </h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
+          <h3 className="text-xl text-white mb-4">
+            {STEPS[step - 1].title}
+          </h3>
           <Current
             formData={formData}
             onChange={handleChange}
             requestId={requestId}
           />
-
           {step > 1 && (
             <div className="flex justify-between mt-8">
               <button
@@ -269,15 +271,6 @@ export default function AnalysisRequest({ onBackService }) {
                 </button>
               )}
             </div>
-          )}
-
-          {step === 1 && onBackService && (
-            <button
-              onClick={onBackService}
-              className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl mb-4"
-            >
-              Change Service
-            </button>
           )}
           <StepIndicator
             stepCount={STEPS.length + 1}
