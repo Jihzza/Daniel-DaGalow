@@ -9,6 +9,7 @@ import {
   isSameDay,
   isWeekend,
   addMinutes,
+  isBefore,
 } from "date-fns";
 import { fetchBookings, createBooking } from "../../services/bookingService";
 
@@ -56,6 +57,7 @@ function DateStep({
   currentMonth,
   onChangeMonth,
   bookedEvents,
+  minDate,
 }) {
   const days = eachDayOfInterval({
     start: startOfMonth(currentMonth),
@@ -91,18 +93,19 @@ function DateStep({
         {calendar.map((date, i) => {
           const inMonth = isSameMonth(date, currentMonth);
           const weekend = isWeekend(date);
+          const tooSoon = isBefore(date, minDate);
           const selected = selectedDate && isSameDay(date, selectedDate);
           return (
             <button
               key={i}
-              onClick={() => inMonth && !weekend && onSelectDate(date)}
-              disabled={!inMonth || weekend}
+              onClick={() => inMonth && !weekend && !tooSoon && onSelectDate(date)}
+              disabled={!inMonth || weekend || tooSoon}
               className={
                 `aspect-square rounded-full p-2 flex flex-col items-center justify-center text-sm relative ` +
                 (selected
                   ? "bg-darkGold text-white"
                   : "bg-white/10 text-white") +
-                (!inMonth || weekend
+                (!inMonth || weekend || tooSoon
                   ? " opacity-50 cursor-not-allowed"
                   : " hover:bg-darkGold hover:text-white cursor-pointer")
               }
@@ -224,6 +227,9 @@ export default function Booking({ onBackService }) {
   const [paymentDone, setPaymentDone] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // two-day buffer: only allow bookings from today + 2 days onward
+  const minDate = addDays(new Date(), 1);
+
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -269,13 +275,10 @@ export default function Booking({ onBackService }) {
 
   const handleNext = async () => {
     if (step === 2) {
-      // move from time to contact info
       setStep(3);
     } else if (step === 3) {
-      // move to payment
       setStep(4);
     } else if (step === 4) {
-      // create booking, then confirm
       setLoading(true);
       await createBooking({
         ...formData,
@@ -313,6 +316,7 @@ export default function Booking({ onBackService }) {
               isTimeAvailable={isTimeAvailable}
               selectedTime={selectedTime}
               onSelectTime={(t) => { setSelectedTime(t); setStep(3); }}
+              minDate={minDate}
               formData={formData}
               onChange={handleChange}
               time={selectedTime}
