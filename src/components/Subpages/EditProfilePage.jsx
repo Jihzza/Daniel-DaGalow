@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
+import OctagonalProfile from "./Octagonal Profile";
 
 const EditProfilePage = () => {
   const { user } = useAuth();
@@ -16,10 +17,8 @@ const EditProfilePage = () => {
   const [error, setError] = useState("");
   const [usernameAvailable, setUsernameAvailable] = useState(true);
   const [checkingUsername, setCheckingUsername] = useState(false);
+  const initial = (fullName?.[0] ?? user?.email?.[0] ?? '?').toUpperCase();
 
-  useEffect(() => {
-    if (user) fetchProfile();
-  }, [user]);
 
   const fetchProfile = async () => {
     try {
@@ -28,12 +27,19 @@ const EditProfilePage = () => {
         .from("profiles")
         .select("full_name, username, avatar_url, phone_number")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
       if (error) throw error;
-      setFullName(data.full_name || "");
-      setUsername(data.username || "");
-      setAvatarUrl(data.avatar_url || "");
-      setPhoneNumber(data.phone_number || "");
+      if (!data) {
+        setFullName("");
+        setUsername("");
+        setAvatarUrl("");
+        setPhoneNumber("");
+      } else {
+        setFullName(data.full_name || "");
+        setUsername(data.username || "");
+        setAvatarUrl(data.avatar_url || "");
+        setPhoneNumber(data.phone_number || "");
+      }
     } catch (err) {
       console.error("Error loading profile:", err.message);
     } finally {
@@ -41,7 +47,11 @@ const EditProfilePage = () => {
     }
   };
 
-  // Username availability logic unchanged
+ useEffect(() =>{
+  if (user) {
+    fetchProfile();
+  }
+ }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -137,39 +147,27 @@ const EditProfilePage = () => {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Avatar & Phone */}
           <div className="md:w-1/3 flex flex-col items-center">
-            <div className="relative group w-32 h-32 mb-4">
-              {avatarUrl ? (
-                <img
-                  src={`${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/avatars/${avatarUrl}`}
-                  alt="Avatar"
-                  className="w-full h-full object-cover rounded-full"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-4xl font-bold">
-                  {fullName?.charAt(0)?.toUpperCase() ||
-                    user.email.charAt(0).toUpperCase()}
-                </div>
-              )}
+            <OctagonalProfile
+              size={90}
+              borderColor="#002147"
+              innerBorderColor="#ECEBE5"
+              imageSrc={
+                avatarUrl
+                  ? `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/avatars/${avatarUrl}`
+                  : null
+              }
+              fallbackText={initial}
+              onClick={() => document.querySelector("input[type=file]").click()}
+            />
 
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <label className="w-full h-full flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer">
-                  <span className="text-white text-sm">Change Photo</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={uploadAvatar}
-                    disabled={uploading}
-                    className="sr-only"
-                  />
-                </label>
+            <input type="file" accept="image/*" onChange={uploadAvatar} id="avatar-upload" className="sr-only" disabled={uploading} />
+            {uploading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
               </div>
+            )}
 
-              {uploading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
-                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-                </div>
-              )}
-            </div>
+
             <p className="text-gray-500 text-sm text-center mb-4">
               Click avatar to change
             </p>

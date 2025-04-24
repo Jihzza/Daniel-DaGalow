@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const Signup = () => {
+const Signup = ({ isModal = false, onSuccess = () => {}}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -40,8 +40,12 @@ const Signup = () => {
       
       if (error) throw error;
       
-      setMessage('Signup successful! Please check your email for the confirmation link.');
-      setTimeout(() => navigate('/login'), 5000);
+      if (isModal) {
+        onSuccess();
+      } else {
+        setMessage('Signup successful! Please check your email for the confirmation link.');
+        setTimeout(() => navigate('/login'), 5000);
+      }
     } catch (error) {
       setError(error.message || 'Failed to create an account');
     } finally {

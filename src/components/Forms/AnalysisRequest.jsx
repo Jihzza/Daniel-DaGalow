@@ -218,7 +218,7 @@ export default function AnalysisRequest({ onBackService }) {
           service_type: formData.type,
         })
         .select("id")
-        .single();
+        .maybeSingle();
       if (error) {
         console.error(error);
         alert("Failed to create request.");

@@ -1,11 +1,13 @@
 // Update Header.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext';
-import DaGalowLogo from '../assets/logos/DaGalow Logo.svg';
-import Hamburger from '../assets/icons/Hamburger.svg';
-import userImage from '../assets/img/Pessoas/Default.svg';
-import AuthModal from './Auth/AuthModal';
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "./contexts/AuthContext";
+import DaGalowLogo from "../assets/logos/DaGalow Logo.svg";
+import Hamburger from "../assets/icons/Hamburger.svg";
+import userImage from "../assets/img/Pessoas/Default.svg";
+import { supabase } from "../utils/supabaseClient";
+import AuthModal from "./Auth/AuthModal";
+import OctagonalProfile from "./Subpages/Octagonal Profile";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,12 +16,28 @@ function Header() {
   const lastY = useRef(0);
   const { user, signOut } = useAuth();
 
-  // Existing useEffect code...
+  const [avatarUrl, setAvatarUrl] = useState(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    (async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (!error && data?.avatar_url) {
+        setAvatarUrl(
+          `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/avatars/${data.avatar_url}`
+        );
+      }
+    })();
+  }, [user]);
 
   const handleProfileClick = () => {
     if (user) {
       // If user is logged in, navigate to profile
-      window.location.href = '/profile';
+      window.location.href = "/profile";
     } else {
       // If user is not logged in, open auth modal
       setAuthModalOpen(true);
@@ -32,17 +50,19 @@ function Header() {
         className={`
           fixed flex items-center justify-between top-0 p-4 left-0 right-0 z-30 h-14 bg-black text-white shadow-lg
           transform transition-transform duration-300
-          ${show ? 'translate-y-0' : '-translate-y-full'}
+          ${show ? "translate-y-0" : "-translate-y-full"}
         `}
       >
-        <div className=''>
-          <img 
-            src={user?.avatar_url || userImage} 
-            alt="User" 
-            className='w-8 h-8 object-cover cursor-pointer'
-            onClick={handleProfileClick}
+        <div onClick={handleProfileClick} className="cursor-pointer">
+          <OctagonalProfile
+            size={40} // adjust to header height
+            borderColor="#002147" // match your theme
+            innerBorderColor="#000" // see previous answer
+            imageSrc={avatarUrl} // null → fallback
+            fallbackText={user?.email[0].toUpperCase() || "?"}
           />
         </div>
+
         <div className="max-w-5xl mx-auto flex items-center justify-between p-4">
           <Link to="/" className="focus:outline-none">
             <img
@@ -52,11 +72,11 @@ function Header() {
             />
           </Link>
         </div>
-        
+
         {/* Auth links - visible on desktop */}
         <div className="hidden md:flex items-center space-x-4">
           {user ? (
-            <button 
+            <button
               onClick={() => signOut()}
               className="text-white hover:text-gray-300 transition-colors"
             >
@@ -71,9 +91,9 @@ function Header() {
             </button>
           )}
         </div>
-          
+
         <button
-          onClick={() => setMenuOpen(o => !o)}
+          onClick={() => setMenuOpen((o) => !o)}
           className="md:hidden focus:outline-none"
         >
           <img src={Hamburger} alt="Hamburger" className="w-6 h-6" />
@@ -83,37 +103,39 @@ function Header() {
       {/* Dropdown Menu */}
       <div
         className={`fixed top-0 right-0 h-full w-[70%] bg-black transform transition-transform duration-300 ease-in-out z-50
-          ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          ${menuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="p-6 flex flex-col h-full">
           <div className="flex justify-end mb-8">
-            <button 
+            <button
               onClick={() => setMenuOpen(false)}
               className="text-white text-2xl"
             >
               &times;
             </button>
           </div>
-          
+
           {/* Menu links */}
           <div className="flex flex-col space-y-4">
-            <Link to="/" 
+            <Link
+              to="/"
               className="text-white text-xl hover:text-gray-300 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               Home
             </Link>
-            
+
             {/* Auth links in mobile menu */}
             {user ? (
               <>
-                <Link to="/profile" 
+                <Link
+                  to="/profile"
                   className="text-white text-xl hover:text-gray-300 transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
                   Profile
                 </Link>
-                <button 
+                <button
                   onClick={() => {
                     signOut();
                     setMenuOpen(false);
@@ -124,7 +146,7 @@ function Header() {
                 </button>
               </>
             ) : (
-              <button 
+              <button
                 onClick={() => {
                   setMenuOpen(false);
                   setAuthModalOpen(true);
@@ -147,9 +169,9 @@ function Header() {
       )}
 
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={authModalOpen} 
-        onClose={() => setAuthModalOpen(false)} 
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
       />
     </>
   );

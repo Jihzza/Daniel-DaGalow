@@ -15,9 +15,17 @@ const ResetPassword = () => {
   useEffect(() => {
     // Check if we have a hash parameter which indicates we came from a password reset email
     const hash = window.location.hash;
-    if (!hash) {
+    const params = new URLSearchParams(hash.substring(1));
+    const access_token = params.get('access_token');
+    const refresh_token = params.get('refresh_token');
+
+    if (!access_token) {
       setError('Invalid password reset link. Please request a new one.');
+      return;
     }
+    supabase.auth
+      .setSession({ access_token, refresh_token })
+      .catch(err => setError(err.message));
   }, []);
 
   const handleSubmit = async (e) => {

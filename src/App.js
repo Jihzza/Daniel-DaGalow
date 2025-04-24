@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './components/contexts/AuthContext';
@@ -45,6 +45,7 @@ const PrivateRoute = ({ children }) => {
   return children;
 };
 
+
 // Public only route - redirects authenticated users away from login/signup pages
 const PublicOnlyRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -57,6 +58,7 @@ const PublicOnlyRoute = ({ children }) => {
   return children;
 };
 
+
 function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -68,7 +70,7 @@ function App() {
   const handleAuthModalOpen = () => {
     setAuthModalOpen(true);
   };
-
+  
   return (
     <AuthProvider>
       <Router>
