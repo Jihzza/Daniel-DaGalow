@@ -3,8 +3,10 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Send from "../../assets/icons/Send.svg";
 import Anexar from "../../assets/icons/Anexar.svg";
+import { useAuth } from "../contexts/AuthContext";
+import { supabase } from "../../utils/supabaseClient";
 
-export default function ChatbotWindow({ onClose }) {
+export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
   const [messages, setMessages] = useState([]);
   const [userText, setUserText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,6 +19,11 @@ export default function ChatbotWindow({ onClose }) {
   const [resizing, setResizing] = useState(false);
   const lastTap = useRef(0);
   const dragging = useRef(false);
+  const [sessionId] = useState(
+    () => propSessionId || window.crypto.randomUUID()
+  );
+  const { user } = useAuth();
+  const userId = user?.id;
 
   // inside your component, before the return
   const onPointerDown = (e) => {
@@ -33,6 +40,27 @@ export default function ChatbotWindow({ onClose }) {
     const newHeight = window.innerHeight - e.clientY - 56;
     setHeight(Math.max(100, Math.min(newHeight, window.innerHeight - 100)));
   };
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    (async () => {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("role, content, created_at")
+        .eq("session_id", sessionId)
+        .order("created_at", { ascending: true });
+
+      if (!error && data) {
+        setMessages(
+          data.map((row) => ({
+            from: row.role === "user" ? "user" : "bot",
+            text: row.content,
+          }))
+        );
+      }
+    })();
+  }, [sessionId]);
 
   useEffect(() => {
     const threshold = initialHeight.current * 0.3;
@@ -74,14 +102,15 @@ export default function ChatbotWindow({ onClose }) {
     setLoading(true);
 
     try {
-      const res = await fetch(
-        "https://rafaello.app.n8n.cloud/webhook/general",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chatInput: textToSend }),
-        }
-      );
+      const res = await fetch("https://rafaello.app.n8n.cloud/webhook/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: sessionId,
+          chatInput: textToSend,
+          user_id: userId,
+        }),
+      });
       const data = await res.json();
       console.log("Webhook returnded:", data);
 
@@ -106,7 +135,7 @@ export default function ChatbotWindow({ onClose }) {
       initial={{ y: "100%" }}
       animate={{ y: 0 }}
       exit={{ y: "100%" }}
-      transition={{ type: "tween",duration: 0.3 }}
+      transition={{ type: "tween", duration: 0.3 }}
     >
       {/* Header */}
       <div

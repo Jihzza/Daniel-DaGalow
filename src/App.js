@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { AuthProvider, useAuth } from './components/contexts/AuthContext';
+import { AuthProvider } from './components/contexts/AuthContext';
 import AuthModal from './components/Auth/AuthModal';
 import Header from './components/Header';
 import Hero from './components/MainSections/Hero';
@@ -13,12 +13,7 @@ import Projects from './components/MainSections/Projects';
 import VentureInvestment from './components/MainSections/VentureInvestment';
 import Testimonials from './components/MainSections/Testimonials';
 import Interviews from './components/MainSections/Interviews';
-import Footer from './components/Footer';
-import Music from './components/Subpages/Music';
-import Videos from './components/Subpages/Videos';
 import MergedServiceForm from './components/MergedServiceForm';
-import Achievements from './components/Subpages/Achievements';
-import AboutMe from './components/Subpages/AboutMe';
 import BottomCarouselPages from './components/BottomCarouselPages';
 import NavigationBar from './components/BottomNavBar/NavigationBar';
 import ChatbotWindow from './components/BottomNavBar/ChatbotWindow';
@@ -32,6 +27,12 @@ import Signup from './components/Auth/Signup';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
 import Dashboard from './components/Dashboard';
+import { useAuth } from './components/contexts/AuthContext';
+import Footer from './components/Footer';
+import Music from './components/Subpages/Music';
+import Videos from './components/Subpages/Videos';
+import Achievements from './components/Subpages/Achievements';
+import AboutMe from './components/Subpages/AboutMe';
 
 // Private route component to protect routes that require authentication
 const PrivateRoute = ({ children }) => {
@@ -45,7 +46,6 @@ const PrivateRoute = ({ children }) => {
   return children;
 };
 
-
 // Public only route - redirects authenticated users away from login/signup pages
 const PublicOnlyRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -58,10 +58,15 @@ const PublicOnlyRoute = ({ children }) => {
   return children;
 };
 
-
 function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [chatSessionId, setChatSessionId] = useState(null);
+
+  const openChat = (sessionId = null) => {
+    setChatSessionId(sessionId);
+    setIsChatOpen(true);
+  };
 
   const handleChatbotClick = () => {
     setIsChatOpen(open => !open);
@@ -74,8 +79,9 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="App font-sans bg-gradient-to-b from-oxfordBlue from-0% via-oxfordBlue via-15% to-gentleGray">
+        <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray">
           <Header onAuthModalOpen={handleAuthModalOpen} />
+
           <Routes>
             <Route
               path="/"
@@ -92,15 +98,6 @@ function App() {
                   <Testimonials />
                   <MergedServiceForm />
                   <BottomCarouselPages />
-                  <NavigationBar
-                    onChatbotClick={handleChatbotClick}
-                    onAuthModalOpen={handleAuthModalOpen}
-                  />
-                  <AnimatePresence>
-                    {isChatOpen && (
-                      <ChatbotWindow onClose={() => setIsChatOpen(false)} />
-                    )}
-                  </AnimatePresence>
                 </main>
               }
             />
@@ -138,7 +135,8 @@ function App() {
               path="/profile"
               element={
                 <PrivateRoute>
-                  <ProfilePage />
+                  <ProfilePage
+                   onChatOpen={openChat} />
                 </PrivateRoute>
               }
             />
@@ -187,6 +185,21 @@ function App() {
               }
             />
           </Routes>
+
+          {/* Always-on Navigation Bar & Chatbot */}
+          <NavigationBar
+            onChatbotClick={() => openChat()}
+            onAuthModalOpen={handleAuthModalOpen}
+          />
+          <AnimatePresence>
+            {isChatOpen && (
+              <ChatbotWindow 
+               sessionId={chatSessionId}
+               onClose={() => setIsChatOpen(false)}
+               />
+            )}
+          </AnimatePresence>
+
           <Footer />
           <AuthModal
             isOpen={authModalOpen}
