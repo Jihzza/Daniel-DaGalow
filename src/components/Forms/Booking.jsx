@@ -16,6 +16,16 @@ import {
 import { fetchBookings } from "../../services/bookingService";
 import InlineChatbotStep from "./InlineChatbotStep";
 
+const STRIPE_LINKS = {
+  45: "https://buy.stripe.com/9AQ4h1gy6fG90Te7sw",
+  60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
+  75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
+  90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
+  105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
+  120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
+};
+
+
 // Shared StepIndicator
 function StepIndicator({
   stepCount,
@@ -28,6 +38,7 @@ function StepIndicator({
       {Array.from({ length: stepCount }).map((_, idx) => {
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
+        
         return (
           <React.Fragment key={stepNum}>
             <button
@@ -134,41 +145,27 @@ function DateStep({
 }
 
 // Step 2: Time selection
-function TimeStep({
-  selectedTime,
-  onSelectTime,
-  date,
-  availableTimes,
-  isTimeAvailable,
-}) {
+function TimeStep({ availability, selectedTime, onSelectTime }) {
   return (
-    <div className="space-y-6">
-      <h3 className="text-xl text-white">{format(date, "EEEE, MMMM d")}</h3>
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 justify-center items-center">
-        {availableTimes.map((time) => {
-          const ok = isTimeAvailable(date, time);
-          const sel = time === selectedTime;
-          return (
+    <div className="grid…">
+      {availability.map(({ slot, allowed }) => (
+        <div key={slot} className="flex flex-col items-center">
+          <p className="text-white">{slot}</p>
+          {allowed.map(dur => (
             <button
-              key={time}
-              onClick={() => ok && onSelectTime(time)}
-              disabled={!ok}
-              className={
-                `px-3 py-2 justify-center items-center rounded-xl text-center text-base ` +
-                (sel ? "bg-darkGold text-white" : "bg-white/10 text-white") +
-                (ok
-                  ? " hover:bg-darkGold hover:text-white cursor-pointer"
-                  : " opacity-50 cursor-not-allowed")
-              }
+              key={dur}
+              onClick={() => onSelectTime({ slot, dur })}
+              className="…"
             >
-              {time}
+              {dur === 60 ? "1 h" : `${Math.floor(dur/60)} h ${dur%60} m`}
             </button>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
+
 
 // Step 3: Contact info
 function InfoStep({ formData, onChange }) {
@@ -199,43 +196,12 @@ function InfoStep({ formData, onChange }) {
   );
 }
 
-// Step 4: Payment Selection
-function PaymentStep({ onPaid }) {
-  const options = [
-    { label: "45 min", link: "https://buy.stripe.com/9AQ4h1gy6fG90Te7sw" },
-    { label: "1h", link: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ" },
-    { label: "1h15", link: "https://buy.stripe.com/8wM4h1fu265z9pK8wE" },
-    { label: "1h30", link: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov" },
-    { label: "1h45", link: "https://buy.stripe.com/9AQ4h195Edy11Xi28h" },
-    { label: "2h", link: "https://buy.stripe.com/28o7tdfu2eC50Te4gm" },
-  ];
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {options.map((opt) => (
-        <a
-          key={opt.label}
-          href={opt.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => onPaid(opt.link)}
-          className="block"
-        >
-          <button className="w-full px-3 py-2 text-base bg-white/10 text-white rounded-xl hover:bg-darkGold transition">
-            {opt.label}
-          </button>
-        </a>
-      ))}
-    </div>
-  );
-}
-
-
-
 export default function Booking({ onBackService }) {
   const [step, setStep] = useState(1);
   const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [selectedDuration, setSelectedDuration] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [bookedEvents, setBookedEvents] = useState([]);
   const [formData, setFormData] = useState({ name: "", email: "" });
@@ -243,9 +209,27 @@ export default function Booking({ onBackService }) {
   const [loading, setLoading] = useState(false);
   const [bookingId, setBookingId] = useState(null);
 
-  // two-day buffer: only allow bookings from tomorrow onward
+  // Business hours buffer
   const minDate = addDays(new Date(), 1);
 
+  // Stripe checkout links by duration (minutes)
+  const STRIPE_LINKS = {
+    45: "https://buy.stripe.com/9AQ4h1gy6fG90Te7sw",
+    60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
+    75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
+    90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
+    105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
+    120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
+  };
+
+  // Auto-redirect to Stripe at payment step
+  useEffect(() => {
+    if (step === 4 && selectedDuration) {
+      window.open(STRIPE_LINKS[selectedDuration], "_blank");
+    }
+  }, [step, selectedDuration]);
+
+  // Load existing bookings
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -255,139 +239,169 @@ export default function Booking({ onBackService }) {
     })();
   }, []);
 
-  const availableTimes = Array.from({ length: 13 }, (_, i) => `${i + 10}:00`);
-  const isTimeAvailable = (date, time) => {
-    const dt = new Date(date);
-    const [h, m] = time.split(":").map(Number);
-    dt.setHours(h, m, 0, 0);
-    const start = addMinutes(dt, -30);
-    const end = addMinutes(dt, 90);
-    return !bookedEvents.some((e) => {
-      const s = new Date(e.start),
-        en = new Date(e.end);
-      return start < en && end > s;
-    });
-  };
+  // Build blocked intervals (visible end + 30min buffer)
+  const blocked = bookedEvents.map(({ start, end }) => {
+    const s = new Date(start);
+    const e = new Date(end);
+    return {
+      from: addMinutes(s, -30),
+      to: addMinutes(e, 30),
+    };
+  });
 
+  // Check if a slot is free given date + hourString + duration
+  function isSlotFree(date, hourString, dur) {
+    const [h, m] = hourString.split(":").map(Number);
+    const visibleStart = new Date(date);
+    visibleStart.setHours(h, m, 0, 0);
+
+    const blockFrom = addMinutes(visibleStart, -30);
+    const blockTo = addMinutes(visibleStart, dur + 30);
+
+    // Must finish post-buffer by 22:00
+    if (blockTo.getHours() > 22 || (blockTo.getHours() === 22 && blockTo.getMinutes() > 0)) {
+      return false;
+    }
+
+    // Ensure no overlap with existing blocks
+    return !blocked.some(({ from, to }) =>
+      blockFrom < to && blockTo > from
+    );
+  }
+
+  // Define durations and hours
+  const DURS = [45, 60, 75, 90, 105, 120];
+  const timeOptions = Array.from({ length: 12 }, (_, i) => `${10 + i}:00`);
+
+  // Compute availability per hour
+  const availability = timeOptions.map(slot => ({
+    slot,
+    allowed: DURS.filter(dur => isSlotFree(selectedDate, slot, dur)),
+  }));
+
+  // Booking steps
   const STEPS = [
     { title: "Choose a date", component: DateStep },
     { title: "Select a time", component: TimeStep },
     { title: "Your information", component: InfoStep },
-    { title: "Choose payment option", component: PaymentStep },
     { title: "Chat with our assistant", component: InlineChatbotStep },
   ];
   const Current = STEPS[step - 1].component;
   const UI_STEPS = STEPS.length + 1;
-  const handlePaid = () => {
-    setPaymentDone(true);
-  };
 
+  // Navigation logic
   const canProceed = () => {
-    if (step === 2) return !!selectedTime;
+    if (step === 2) return !!selectedDuration;
     if (step === 3) return formData.name && formData.email;
     if (step === 4) return paymentDone;
     return true;
   };
 
   const handleNext = async () => {
-    if (step === 2) {
-      setStep(3);
+    if (step < 3) {
+      setStep(step + 1);
     } else if (step === 3) {
-      setStep(4);
-    } else if (step === 4) {
       setLoading(true);
+  
+      // Build the ISO timestamp for the visible start
+      const appointment_date = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        ...selectedTime.split(":").map(Number)
+      ).toISOString();
+  
       const { data, error } = await supabase
         .from("appointments")
         .insert({
           user_id: user.id,
-          appointment_date: new Date(
-            selectedDate.getFullYear(),
-            selectedDate.getMonth(),
-            selectedDate.getDate(),
-            ...selectedTime.split(":").map(Number)
-          ).toISOString(),
+          appointment_date,
+          duration_minutes: selectedDuration,    // 45, 60, 75, etc.
+          name: formData.name,
+          email: formData.email,
         })
         .select("id")
         .single();
-      if (error) console.error("Booking failed:", error);
-      else setBookingId(data.id);
+  
       setLoading(false);
-      setStep(5);
-    } else if (step === 5) {
-      setStep(6);
+  
+      if (error) {
+        console.error("Booking failed:", error);
+        // optionally show a toast/alert
+      } else {
+        setBookingId(data.id);
+        setStep(4);   // move into the payment/Stripe redirect step
+      }
+    } else {
+      setStep(step + 1);
     }
   };
+  
 
-  const handleChange = (e) =>
-    setFormData((f) => ({ ...f, [e.target.name]: e.target.value }));
-  const handleStepClick = (dot) => {
-      if (dot === 1) onBackService();
-      else setStep(dot - 1);
-    };
+  const handleChange = e => setFormData(f => ({ ...f, [e.target.name]: e.target.value }));
+  const handleStepClick = dot => {
+    if (dot === 1) onBackService(); else setStep(dot - 1);
+  };
+
   return (
     <section className="py-8 px-4" id="bookingForm">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
           Schedule Your Consultation
         </h2>
-        <div className="bg-oxfordBlue justify-center items-center rounded-2xl p-8 shadow-xl">
-          <div className="min-h-[200px] flex flex-col justify-center items-center">
-            <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
-            {step < STEPS.length ? (
-              <Current
-                selectedDate={selectedDate}
-                onSelectDate={(d) => {
-                  setSelectedDate(d);
-                  setStep(2);
-                }}
-                currentMonth={currentMonth}
-                onChangeMonth={(inc) =>
-                  setCurrentMonth(
-                    (m) => new Date(m.setMonth(m.getMonth() + inc))
-                  )
-                }
-                bookedEvents={bookedEvents}
-                date={selectedDate}
-                availableTimes={availableTimes}
-                isTimeAvailable={isTimeAvailable}
-                selectedTime={selectedTime}
-                onSelectTime={(t) => {
-                  setSelectedTime(t);
-                  setStep(3);
-                }}
-                minDate={minDate}
-                formData={formData}
-                onChange={handleChange}
-                onPaid={handlePaid}
-              />
-            ) : (
-              <InlineChatbotStep
-                requestId={bookingId}
-                tableName="booking_chat_messages"
-              />
-            )}
-          </div>
+        <div className="bg-oxfordBlue rounded-2xl p-8 shadow-xl">
+          <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
+          {step === 2 ? (
+            <TimeStep
+              availability={availability}
+              selectedTime={{ slot: selectedTime, dur: selectedDuration }}
+              onSelectTime={({ slot, dur }) => {
+                setSelectedTime(slot);
+                setSelectedDuration(dur);
+                setStep(3);
+              }}
+            />
+          ) : step < 2 ? (
+            <DateStep
+              selectedDate={selectedDate}
+              onSelectDate={d => { setSelectedDate(d); setStep(2); }}
+              currentMonth={currentMonth}
+              onChangeMonth={inc => setCurrentMonth(m => new Date(m.setMonth(m.getMonth() + inc)))}
+              minDate={minDate}
+            />
+          ) : step === 3 ? (
+            React.createElement(Current, {
+              formData,
+              onChange: handleChange,
+              onPaid: () => setPaymentDone(true),
+              requestId: bookingId,
+              tableName: 'booking_chat_messages'
+            })
+          ) : (
+            <InlineChatbotStep
+              requestId={bookingId}
+              tableName="booking_chat_messages"
+            />
+          )}
+
           <div className="flex justify-between mt-6">
             <button
-              type="button"
-              onClick={() =>
-                step > 1 ? setStep((s) => s - 1) : onBackService()
-              }
-              className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl"
+              onClick={() => step > 1 ? setStep(step - 1) : onBackService()}
+              className="px-4 py-1 border-2 border-darkGold text-darkGold rounded-xl"
             >
               Back
             </button>
-
             {step < STEPS.length && (
               <button
                 onClick={handleNext}
                 disabled={!canProceed() || loading}
-                className="px-4 py-1 bg-darkGold text-white font-bold rounded-xl disabled:opacity-50"
+                className="px-4 py-1 bg-darkGold text-white rounded-xl disabled:opacity-50"
               >
                 Next
               </button>
             )}
           </div>
+
           <StepIndicator
             stepCount={UI_STEPS}
             currentStep={step + 1}
