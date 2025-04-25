@@ -3,6 +3,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../contexts/AuthContext";
+import InlineChatbotStep from "./InlineChatbotStep";
 
 // Progress Indicator Component
 function StepIndicator({
@@ -13,7 +14,6 @@ function StepIndicator({
 }) {
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      {" "}
       {Array.from({ length: stepCount }).map((_, idx) => {
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
@@ -27,16 +27,14 @@ function StepIndicator({
                 isActive
                   ? "bg-darkGold border-darkGold text-white"
                   : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer"
-              }${
-                stepNum > currentStep ? " opacity-50 cursor-not-allowed" : ""
-              }`}
+              } ${stepNum > currentStep ? "opacity-50 cursor-not-allowed" : ""}`}
               aria-label={`Go to step ${stepNum}`}
             >
               {stepNum}
             </button>
             {idx < stepCount - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-2 transition-colors duration-300 ${
+                className={`flex-1 h-0.5 mx-1 transition-colors duration-300 ${
                   currentStep > stepNum ? "bg-darkGold" : "bg-white/20"
                 }`}
               />
@@ -61,16 +59,14 @@ function FrequencyStep({ formData, onChange }) {
         <button
           key={opt.value}
           type="button"
-          className={`px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg ${
+          className={`px-3 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg text-sm bg-oxfordBlue ${
             formData.frequency === opt.value
               ? "border-darkGold shadow-lg"
               : "border-darkGold"
-          } bg-oxfordBlue`}
-          onClick={() =>
-            onChange({ target: { name: "frequency", value: opt.value } })
-          }
+          }`}
+          onClick={() => onChange({ target: { name: "frequency", value: opt.value } })}
         >
-          <p className="text-white font-medium text-center">{opt.label}</p>
+          <p className="text-white font-medium">{opt.label}</p>
         </button>
       ))}
     </div>
@@ -90,7 +86,7 @@ function ContactStep({ formData, onChange }) {
           onChange={onChange}
           placeholder="John Doe"
           required
-          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold text-sm"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
@@ -102,26 +98,20 @@ function ContactStep({ formData, onChange }) {
           onChange={onChange}
           placeholder="john@example.com"
           required
-          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold text-sm"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white font-medium mb-2">
-          Phone Number
-        </label>
+        <label className="block text-white mb-2">Phone Number</label>
         <PhoneInput
-          // 1) Outer container has the only border + rounding
           containerClass="!w-full !h-[42px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
-          // 2) Children: no borders of their own
           buttonClass="!bg-white/5 !border-none h-full"
           inputClass="!bg-white/5 !border-none p-4 !h-full text-white placeholder-white/50"
           country="es"
           enableSearch
           searchPlaceholder="Search country..."
           value={formData.phone}
-          onChange={(phone) =>
-            onChange({ target: { name: "phone", value: phone } })
-          }
+          onChange={(phone) => onChange({ target: { name: "phone", value: phone } })}
           dropdownClass="!bg-oxfordBlue text-white rounded-2xl"
           searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2"
         />
@@ -151,11 +141,10 @@ function PaymentStep({ formData, onPaid }) {
   };
   const tier = tiers[formData.frequency] || {};
   return (
-    <div className="text-center mb-8">
-      <p className="text-white mb-4">
+    <div className="text-center mb-6">
+      <p className="text-white mb-4 text-sm">
         You selected <strong>{tier.label}</strong>.<br />
-        Please complete the payment of <strong>{tier.price}</strong> to
-        continue.
+        Please complete the payment of <strong>{tier.price}</strong> to continue.
       </p>
       <a
         href={tier.link}
@@ -163,71 +152,10 @@ function PaymentStep({ formData, onPaid }) {
         rel="noopener noreferrer"
         onClick={onPaid}
       >
-        <button className="px-6 py-3 bg-darkGold text-black font-bold rounded-xl hover:bg-yellow-500">
+        <button className="px-3 py-1 bg-darkGold text-black font-bold rounded-xl hover:bg-darkGold/90">
           Pay with Stripe
         </button>
       </a>
-    </div>
-  );
-}
-
-// Step 4: Chat Interface
-function ChatbotStep({ requestId }) {
-  const [message, setMessage] = useState("");
-  const [chatHistory, setHistory] = useState([]);
-  const sendMessage = async () => {
-    if (!message.trim()) return;
-    await supabase
-      .from("coaching_chat_messages")
-      .insert({ request_id: requestId, sender: "user", message });
-    setHistory((h) => [...h, { sender: "user", message }]);
-    setMessage("");
-  };
-  return (
-    <div className="bg-white/10 rounded-2xl p-6 mb-8 space-y-4 max-h-96 overflow-y-auto">
-      {chatHistory.map((msg, i) => (
-        <div
-          key={i}
-          className={`flex ${
-            msg.sender === "user" ? "justify-end" : "justify-start"
-          }`}
-        >
-          <div
-            className={`px-4 py-2 rounded-2xl max-w-xs break-words $
-              {msg.sender === "user" ? "bg-darkGold text-white" : "bg-white text-black"}
-            `}
-          >
-            {msg.message}
-          </div>
-        </div>
-      ))}
-      <div className="relative mt-4">
-        <textarea
-          rows={3}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your message here..."
-          className="w-full p-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold resize-none"
-        />
-        <button
-          onClick={sendMessage}
-          className="absolute right-4 bottom-4 p-3 bg-darkGold text-white rounded-full hover:bg-yellow-500 transition-colors duration-200"
-        >
-          <svg
-            className="w-6 h-6 rotate-90"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-            />
-          </svg>
-        </button>
-      </div>
     </div>
   );
 }
@@ -246,7 +174,6 @@ export default function CoachingRequest({ onBackService }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
 
-  // Prevent accessing chat without payment
   useEffect(() => {
     if (step === 4 && !paymentDone) {
       setStep(3);
@@ -263,10 +190,12 @@ export default function CoachingRequest({ onBackService }) {
     { title: "Choose coaching frequency", component: FrequencyStep },
     { title: "Your contact information", component: ContactStep },
     { title: "Complete your payment", component: PaymentStep },
-    { title: "Start your chat", component: ChatbotStep },
+    { title: "Chat with your coach", component: InlineChatbotStep },
   ];
 
   const Current = STEPS[step - 1].component;
+  const UI_STEPS = STEPS.length + 1;
+
 
   const canProceed = () => {
     if (step === 2) return formData.name && formData.email && formData.phone;
@@ -304,55 +233,59 @@ export default function CoachingRequest({ onBackService }) {
 
   const handleBack = () => {
     if (step > 1) setStep((s) => s - 1);
+    else onBackService();
   };
 
+  const handleStepClick = (dot) => {
+       if (dot === 1) onBackService();
+       else setStep(dot - 1);
+     };
+
   return (
-    <section id="coaching-journey" className="py-12 px-6">
-      <div className="max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold text-center mb-8 text-black">
+    <section className="py-8 px-4" id="coaching-journey">
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-2xl font-bold text-center mb-6 text-black">
           Start Your Coaching Journey
         </h2>
-        <div className="bg-oxfordBlue backdrop-blur-md rounded-3xl p-10 shadow-2xl">
-          <h3 className="text-xl text-white mb-6">{STEPS[step - 1].title}</h3>
-          <Current
-            formData={formData}
-            onChange={handleChange}
-            requestId={requestId}
-            onPaid={() => setPaymentDone(true)}
-          />
-
-          {step > 1 && (
-            <div className="flex justify-between mt-8">
-              <button
-                onClick={handleBack}
-                disabled={isSubmitting}
-                className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl"
-              >
-                Back
-              </button>
-              {step < STEPS.length && (
-                <button
-                  onClick={handleNext}
-                  disabled={!canProceed() || isSubmitting}
-                  className="px-4 py-1 bg-darkGold text-white font-bold rounded-xl disabled:opacity-50"
-                >
-                  Next
-                </button>
-              )}
-            </div>
+        <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
+          <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
+          {step < 4 ? (
+            <Current
+              formData={formData}
+              onChange={handleChange}
+              onPaid={() => setPaymentDone(true)}
+            />
+          ) : (
+            <InlineChatbotStep
+              requestId={requestId}
+              tableName="coaching_chat_messages"
+            />
           )}
 
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={handleBack}
+              disabled={isSubmitting}
+              className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
+            >
+              Back
+            </button>
+            {step < STEPS.length && (
+              <button
+                onClick={handleNext}
+                disabled={!canProceed() || isSubmitting}
+                className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
+              >
+                Next
+              </button>
+            )}
+          </div>
+
           <StepIndicator
-            stepCount={STEPS.length + 1}
+            stepCount={UI_STEPS }
             currentStep={step + 1}
-            onStepClick={(dot) => {
-              if (dot === 1) {
-                onBackService(); // go back to “choose service”
-              } else {
-                setStep(dot - 1); // step 2→internal 1, 3→2, etc.
-              }
-            }}
-            className={step === 1 ? "pt-0" : "pt-6"}
+            onStepClick={handleStepClick}
+            className="pt-6"
           />
         </div>
       </div>

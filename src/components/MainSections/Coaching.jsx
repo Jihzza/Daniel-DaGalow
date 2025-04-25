@@ -45,7 +45,7 @@ function DirectCoaching() {
   };
   return (
     <section id="coaching" className="py-8 px-4 text-white">
-      <div className="max-w-3xl mx-auto text-center space-y-8">
+      <div className="max-w-3xl mx-auto text-center space-y-6">
         <h2 className="text-2xl md:text-3xl font-bold">Direct Coaching</h2>
         <p className="">
           Personalized coaching to help you excel in specific areas of your

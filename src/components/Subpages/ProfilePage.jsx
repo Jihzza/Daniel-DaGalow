@@ -199,13 +199,13 @@ export default function ProfilePage({ onChatOpen }) {
 
           {/* Conversation History */}
           <div className="bg-gentleGray p-4 rounded-xl shadow-md">
-            <h4 className="font-semibold mb-2">Your Conversations</h4>
-            <div className="bg-white rounded-xl shadow-sm p-4 space-y-2">
+            <h4 className="text-lg font-bold text-black mb-3">Your Conversations</h4>
+            <div className="bg-white rounded-xl shadow-sm p-4">
               {sessions.length > 0 ? (
                 sessions.map((s) => (
                   <button
                     key={s.session_id}
-                    className={`w-full text-left text-sm px-2 py-1 rounded ${
+                    className={`w-full text-left text-sm p-2 ${
                       s.session_id === selectedSession
                         ? "border-b-2 border-darkGold text-black"
                         : "hover:bg-gray-100"

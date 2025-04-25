@@ -24,7 +24,7 @@ function ExpertAnalysis() {
 
   return (
     <section id="expert-analysis" className="py-8 px-4 text-white">
-      <div className="max-w-3xl mx-auto text-center space-y-8">
+      <div className="max-w-3xl mx-auto text-center space-y-6">
         <h2 className="text-2xl md:text-3xl font-bold">Expert Analysis</h2>
         <p className="">
           Get professional, in-depth analysis of your investments, business, or social media 

@@ -17,7 +17,7 @@ export default function VentureInvestment() {
 
   return (
     <section id="venture-investment" className="py-8 px-4 text-white">
-      <div className="max-w-3xl mx-auto text-center space-y-8">
+      <div className="max-w-3xl mx-auto text-center space-y-6">
         <h2 className="text-2xl md:text-3xl font-bold">Invest With Me</h2>
         <p className="text-white text-center max-w-md mx-auto">
           I'm constantly developing new projects and ventures. If you're interested

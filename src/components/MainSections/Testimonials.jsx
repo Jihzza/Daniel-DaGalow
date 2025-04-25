@@ -132,12 +132,6 @@ function Testimonials() {
         </p>
 
         {/* leave static + dynamic */}
-        <button
-          onClick={() => setModalOpen(true)}
-          className="!mb-2 px-6 py-3 bg-darkGold text-black font-bold rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
-        >
-          Leave a Testimonial
-        </button>
 
         {loading ? (
           <p>Loading…</p>
@@ -145,18 +139,18 @@ function Testimonials() {
           <Swiper
             modules={[Autoplay]}
             centeredSlides
-            slidesPerView={1.2}
-            spaceBetween={20}
+            slidesPerView={1}
+            spaceBetween={100}
             loop
             autoplay={{ delay: 3000, disableOnInteraction: false }}
-            className="testimonial-swiper overflow-visible"
+            className="testimonial-swiper w-full overflow-visible"
           >
             {testimonials.map((testimonial, index) => (
               <SwiperSlide key={index}>
               <div
                 className="
                   bg-white
-                  w-72           
+                  w-68           
                   h-60           
                   p-4
                   rounded-lg
@@ -167,6 +161,7 @@ function Testimonials() {
                   justify-center/* center vertically */
                   text-center   /* center text inside */
                   overflow-hidden
+                  text-base
                 "
               >
                 {/* Avatar */}
@@ -191,6 +186,12 @@ function Testimonials() {
             ))}
           </Swiper>
         )}
+        <button
+          onClick={() => setModalOpen(true)}
+          className="px-6 py-3 bg-darkGold text-black font-bold rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+        >
+          Leave a Testimonial
+        </button>
       </div>
 
       {/* Modal */}

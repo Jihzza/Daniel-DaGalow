@@ -59,7 +59,7 @@ export default function MergedServiceForm() {
     return (
       <section id="service-selection" className="py-8 px-4">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-6 text-black">
+          <h2 className="text-2xl sm:text-xl font-bold text-center mb-6 text-black">
             What service do you need?
           </h2>
           <div className=" gap-6 bg-oxfordBlue shadow-lg rounded-2xl p-8">
@@ -73,7 +73,7 @@ export default function MergedServiceForm() {
                 onClick={() => selectService(s.value)}
                 className="px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg"
               >
-                <span className="block text-white font-medium text-lg">
+                <span className="block text-white font-medium text-sm">
                   {s.label}
                 </span>
               </button>

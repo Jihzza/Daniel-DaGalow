@@ -1,17 +1,15 @@
 // src/components/AnalysisRequest.jsx
 import React, { useState } from "react";
 import { supabase } from "../../utils/supabaseClient";
+import InlineChatbotStep from "./InlineChatbotStep";
 
 // Progress Indicator
-function StepIndicator({
-  stepCount,
-  currentStep,
-  onStepClick = () => {},
-  className = "",
-}) {
+function StepIndicator({ stepCount, currentStep, onStepClick = () => {}, className = "" }) {
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div className={`flex items-center justify-center ${className}`}>        
+    
       {Array.from({ length: stepCount }).map((_, idx) => {
+        
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
         return (
@@ -19,25 +17,12 @@ function StepIndicator({
             <button
               type="button"
               onClick={() => onStepClick(stepNum)}
-              disabled={
-                stepNum > currentStep /* optional: disable future steps */
-              }
-              className={`
-                w-8 h-8 flex items-center justify-center rounded-full border-2
-                transition-colors duration-300
-                ${
-                  isActive
-                    ? "bg-darkGold border-darkGold text-white"
-                    : "bg-white/20 border-white/50 text-white/50"
-                }
-                focus:outline-none
-                ${
-                  !isActive &&
-                  "hover:border-darkGold hover:text-white cursor-pointer"
-                }
-                ${stepNum > currentStep && "opacity-50 cursor-not-allowed"}
-              `}
-              aria-label={`Go to step ${stepNum}`}
+              disabled={stepNum > currentStep}
+              className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
+                isActive
+                  ? "bg-darkGold border-darkGold text-white"
+                  : "bg-white/20 border-white/50 text-white/50"
+              } ${!isActive && "hover:border-darkGold hover:text-white cursor-pointer"} ${stepNum > currentStep && "opacity-50 cursor-not-allowed"}`}
             >
               {stepNum}
             </button>
@@ -69,16 +54,12 @@ function TypeSelectionStep({ formData, onChange }) {
       {options.map((opt) => (
         <div
           key={opt.value}
-          className={`px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg ${
-            formData.type === opt.value
-              ? "border-darkGold shadow-lg"
-              : "border-darkGold"
-          } bg-oxfordBlue`}
-          onClick={() =>
-            onChange({ target: { name: "type", value: opt.value } })
-          }
+          onClick={() => onChange({ target: { name: "type", value: opt.value } })}
+          className={`px-3 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg text-sm bg-oxfordBlue ${
+            formData.type === opt.value ? "border-darkGold shadow-lg" : "border-darkGold"
+          }`}
         >
-          <p className="text-white font-medium text-center">{opt.label}</p>
+          <p className="text-white font-medium">{opt.label}</p>
         </div>
       ))}
     </div>
@@ -97,8 +78,8 @@ function ContactInfoStep({ formData, onChange }) {
           value={formData.name}
           onChange={onChange}
           placeholder="John Doe"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
           required
-          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
         />
       </div>
       <div>
@@ -109,74 +90,9 @@ function ContactInfoStep({ formData, onChange }) {
           value={formData.email}
           onChange={onChange}
           placeholder="john@example.com"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
           required
-          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
         />
-      </div>
-    </div>
-  );
-}
-
-// Step 3: Chat Interface
-function ChatbotStep({ formData, requestId }) {
-  const [message, setMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState([]);
-
-  const sendMessage = async () => {
-    if (!message.trim()) return;
-    // 1) Persist to Supabase
-    const { error } = await supabase.from("analysis_chat_messages").insert({
-      request_id: requestId,
-      sender: "user",
-      message,
-    });
-    if (error) console.error(error);
-
-    // 2) Append locally
-    setChatHistory((h) => [...h, { sender: "user", message }]);
-    setMessage("");
-  };
-
-  return (
-    <div className="bg-white/5 rounded-2xl p-6 mb-6 space-y-4">
-      {chatHistory.map((msg, i) => (
-        <div
-          key={i}
-          className={`p-3 rounded-lg ${
-            msg.sender === "user"
-              ? "bg-oxfordBlue text-white self-end"
-              : "bg-white/20 text-black"
-          }`}
-        >
-          {msg.message}
-        </div>
-      ))}
-      <div className="relative">
-        <textarea
-          rows={3}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your message here..."
-          className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold resize-none"
-        />
-        <button
-          onClick={sendMessage}
-          className="absolute right-3 bottom-3 p-2 bg-darkGold text-white rounded-xl hover:bg-yellow-500 transition-colors duration-300"
-        >
-          <svg
-            className="w-5 h-5 rotate-90"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-            />
-          </svg>
-        </button>
       </div>
     </div>
   );
@@ -191,16 +107,20 @@ export default function AnalysisRequest({ onBackService }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // auto-advance on type select
     if (name === "type" && value) setStep(2);
   };
 
   const STEPS = [
-    { title: "What do you want to analyze?", component: TypeSelectionStep },
+    { title: "Select analysis type", component: TypeSelectionStep },
     { title: "Your contact information", component: ContactInfoStep },
-    { title: "Chat with our analyst", component: ChatbotStep },
   ];
-  const Current = STEPS[step - 1].component;
+
+  const UI_STEPS = STEPS.length + 2;
+
+  const handleStepClick = (dot) => {
+       if (dot === 1) onBackService();
+       else setStep(dot - 1);
+     };
 
   const canProceed = () => {
     if (step === 2) return formData.name && formData.email;
@@ -212,77 +132,77 @@ export default function AnalysisRequest({ onBackService }) {
       setIsSubmitting(true);
       const { data, error } = await supabase
         .from("analysis_requests")
-        .insert({
-          name: formData.name,
-          email: formData.email,
-          service_type: formData.type,
-        })
+        .insert({ name: formData.name, email: formData.email, service_type: formData.type })
         .select("id")
         .maybeSingle();
       if (error) {
         console.error(error);
-        alert("Failed to create request.");
         setIsSubmitting(false);
         return;
       }
       setRequestId(data.id);
       setIsSubmitting(false);
       setStep(3);
-    } else {
-      setStep((s) => s + 1);
     }
   };
 
   const handleBack = () => {
-    if (step > 1) setStep((s) => s - 1);
+    if (step > 1) setStep(step - 1);
+    else onBackService();
   };
 
   return (
-    <section id="analysis-request" className="py-8 px-4">
+    <section className="py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-2xl font-bold text-center mb-6 text-black">
-          Get My Analysis
-        </h2>
+        <h2 className="text-2xl font-bold text-center mb-6 text-black">Get My Analysis</h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
-          <h3 className="text-xl text-white mb-4">
-            {STEPS[step - 1].title}
-          </h3>
-          <Current
-            formData={formData}
-            onChange={handleChange}
-            requestId={requestId}
-          />
-          {step > 1 && (
-            <div className="flex justify-between mt-8">
-              <button
-                onClick={handleBack}
-                disabled={isSubmitting}
-                className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl"
-              >
-                Back
-              </button>
-              {step < STEPS.length && (
-                <button
-                  onClick={handleNext}
-                  disabled={!canProceed() || isSubmitting}
-                  className="px-4 py-1 bg-darkGold text-white font-bold rounded-xl disabled:opacity-50"
-                >
-                  Next
-                </button>
-              )}
-            </div>
+          {/* Step Content */}
+          {step <= 2 && (
+            <>
+              <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
+              {React.createElement(STEPS[step - 1].component, {
+                formData,
+                onChange: handleChange,
+              })}
+            </>
           )}
+
+          {/* Inline Chat Step */}
+          {step === 3 && requestId && (
+            <>
+              <h3 className="text-xl text-white mb-4">Chat with our analyst</h3>
+              <InlineChatbotStep
+                requestId={requestId}
+                tableName="analysis_chat_messages"
+              />
+            </>
+          )}
+
+          {/* Navigation Controls */}
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={handleBack}
+              className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
+            >
+              Back
+            </button>
+            {step <= 2 && (
+              <button
+                onClick={handleNext}
+                disabled={!canProceed() || isSubmitting}
+                className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
+              >
+                Next
+              </button>
+            )}
+          </div>
+
+          {/* Progress Dots */}
           <StepIndicator
-            stepCount={STEPS.length + 1}
+            stepCount={UI_STEPS}
             currentStep={step + 1}
-            onStepClick={(dot) => {
-              if (dot === 1) {
-                onBackService();            // go back to “choose service”
-              } else {
-                setStep(dot - 1);           // step 2→internal 1, 3→2, etc.
-              }
-            }}
-            className={step === 1 ? "pt-0" : "pt-6"}
+            onStepClick={handleStepClick}
+            className="mt-6"
           />
         </div>
       </div>

@@ -14,6 +14,7 @@ import {
   isBefore,
 } from "date-fns";
 import { fetchBookings } from "../../services/bookingService";
+import InlineChatbotStep from "./InlineChatbotStep";
 
 // Shared StepIndicator
 function StepIndicator({
@@ -25,28 +26,27 @@ function StepIndicator({
   return (
     <div className={`flex items-center justify-center ${className}`}>
       {Array.from({ length: stepCount }).map((_, idx) => {
-        const n = idx + 1;
-        const active = currentStep === n;
+        const stepNum = idx + 1;
+        const isActive = currentStep === stepNum;
         return (
-          <React.Fragment key={n}>
+          <React.Fragment key={stepNum}>
             <button
               type="button"
-              onClick={() => onStepClick(n)}
-              disabled={n > currentStep}
-              className={
-                `w-8 h-8 flex items-center justify-center rounded-full border-2 transition-colors duration-300 focus:outline-none ` +
-                (active
+              onClick={() => onStepClick(stepNum)}
+              disabled={stepNum > currentStep}
+              className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
+                isActive
                   ? "bg-darkGold border-darkGold text-white"
-                  : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer") +
-                (n > currentStep ? " opacity-50 cursor-not-allowed" : "")
-              }
+                  : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer"
+              } ${stepNum > currentStep ? "opacity-50 cursor-not-allowed" : ""}`}
+              aria-label={`Go to step ${stepNum}`}
             >
-              {n}
+              {stepNum}
             </button>
             {idx < stepCount - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-2 transition-colors duration-300 ${
-                  currentStep > n ? "bg-darkGold" : "bg-white/20"
+                className={`flex-1 h-0.5 mx-1 transition-colors duration-300 ${
+                  currentStep > stepNum ? "bg-darkGold" : "bg-white/20"
                 }`}
               />
             )}
@@ -144,7 +144,7 @@ function TimeStep({
   return (
     <div className="space-y-6">
       <h3 className="text-xl text-white">{format(date, "EEEE, MMMM d")}</h3>
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 justify-center items-center">
         {availableTimes.map((time) => {
           const ok = isTimeAvailable(date, time);
           const sel = time === selectedTime;
@@ -154,7 +154,7 @@ function TimeStep({
               onClick={() => ok && onSelectTime(time)}
               disabled={!ok}
               className={
-                `px-6 py-3 rounded-xl text-center ` +
+                `px-3 py-2 justify-center items-center rounded-xl text-center text-base ` +
                 (sel ? "bg-darkGold text-white" : "bg-white/10 text-white") +
                 (ok
                   ? " hover:bg-darkGold hover:text-white cursor-pointer"
@@ -181,10 +181,10 @@ function InfoStep({ formData, onChange }) {
           placeholder="Your Name"
           value={formData.name}
           onChange={onChange}
-          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
         />
       </div>
-      <div className="w-full">
+      <div className="w-full flex flex-col gap-2">
         <label className="block text-white">Your Email</label>
         <input
           name="email"
@@ -192,7 +192,7 @@ function InfoStep({ formData, onChange }) {
           placeholder="Your Email"
           value={formData.email}
           onChange={onChange}
-          className="w-full p-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
         />
       </div>
     </div>
@@ -210,32 +210,26 @@ function PaymentStep({ onPaid }) {
     { label: "2h", link: "https://buy.stripe.com/28o7tdfu2eC50Te4gm" },
   ];
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
       {options.map((opt) => (
-        <button
+        <a
           key={opt.label}
+          href={opt.link}
+          target="_blank"
+          rel="noopener noreferrer"
           onClick={() => onPaid(opt.link)}
-          className="p-4 bg-white/10 text-white rounded-xl hover:bg-darkGold transition"
+          className="block"
         >
-          {opt.label}
-        </button>
+          <button className="w-full px-3 py-2 text-base bg-white/10 text-white rounded-xl hover:bg-darkGold transition">
+            {opt.label}
+          </button>
+        </a>
       ))}
     </div>
   );
 }
 
-// Step 5: Confirmation
-function ConfirmStep({ formData, selectedDate, selectedTime }) {
-  return (
-    <div className="text-center text-white">
-      <p>Thanks {formData.name}!</p>
-      <p>
-        Your consultation is set for {format(selectedDate, "EEEE, MMMM d")} at{" "}
-        {selectedTime}.
-      </p>
-    </div>
-  );
-}
+
 
 export default function Booking({ onBackService }) {
   const [step, setStep] = useState(1);
@@ -247,8 +241,9 @@ export default function Booking({ onBackService }) {
   const [formData, setFormData] = useState({ name: "", email: "" });
   const [paymentDone, setPaymentDone] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [bookingId, setBookingId] = useState(null);
 
-  // two-day buffer: only allow bookings from today + 2 days onward
+  // two-day buffer: only allow bookings from tomorrow onward
   const minDate = addDays(new Date(), 1);
 
   useEffect(() => {
@@ -279,13 +274,12 @@ export default function Booking({ onBackService }) {
     { title: "Select a time", component: TimeStep },
     { title: "Your information", component: InfoStep },
     { title: "Choose payment option", component: PaymentStep },
-    { title: "Confirmation", component: ConfirmStep },
+    { title: "Chat with our assistant", component: InlineChatbotStep },
   ];
   const Current = STEPS[step - 1].component;
-
-  const handlePaid = (link) => {
+  const UI_STEPS = STEPS.length + 1;
+  const handlePaid = () => {
     setPaymentDone(true);
-    window.location.href = link;
   };
 
   const canProceed = () => {
@@ -302,33 +296,34 @@ export default function Booking({ onBackService }) {
       setStep(4);
     } else if (step === 4) {
       setLoading(true);
-      const { error: insertError } = await supabase
+      const { data, error } = await supabase
         .from("appointments")
-        .insert([
-          {
-            user_id: user.id,
-            appointment_date: new Date(
-              selectedDate.getFullYear(),
-              selectedDate.getMonth(),
-              selectedDate.getDate(),
-              ...selectedTime.split(":").map(Number)
-            ).toISOString(),
-          },
-        ]);
-      if (insertError) {
-        console.error("Booking failed:", insertError);
-        // show an error to the user here
-      }
+        .insert({
+          user_id: user.id,
+          appointment_date: new Date(
+            selectedDate.getFullYear(),
+            selectedDate.getMonth(),
+            selectedDate.getDate(),
+            ...selectedTime.split(":").map(Number)
+          ).toISOString(),
+        })
+        .select("id")
+        .single();
+      if (error) console.error("Booking failed:", error);
+      else setBookingId(data.id);
       setLoading(false);
       setStep(5);
-    } else {
-      setStep((s) => s + 1);
+    } else if (step === 5) {
+      setStep(6);
     }
   };
 
   const handleChange = (e) =>
     setFormData((f) => ({ ...f, [e.target.name]: e.target.value }));
-
+  const handleStepClick = (dot) => {
+      if (dot === 1) onBackService();
+      else setStep(dot - 1);
+    };
   return (
     <section className="py-8 px-4" id="bookingForm">
       <div className="max-w-4xl mx-auto">
@@ -338,39 +333,51 @@ export default function Booking({ onBackService }) {
         <div className="bg-oxfordBlue justify-center items-center rounded-2xl p-8 shadow-xl">
           <div className="min-h-[200px] flex flex-col justify-center items-center">
             <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
-            <Current
-              selectedDate={selectedDate}
-              onSelectDate={(d) => {
-                setSelectedDate(d);
-                setStep(2);
-              }}
-              currentMonth={currentMonth}
-              onChangeMonth={(inc) =>
-                setCurrentMonth((m) => new Date(m.setMonth(m.getMonth() + inc)))
-              }
-              bookedEvents={bookedEvents}
-              date={selectedDate}
-              availableTimes={availableTimes}
-              isTimeAvailable={isTimeAvailable}
-              selectedTime={selectedTime}
-              onSelectTime={(t) => {
-                setSelectedTime(t);
-                setStep(3);
-              }}
-              minDate={minDate}
-              formData={formData}
-              onChange={handleChange}
-              time={selectedTime}
-              onPaid={handlePaid}
-            />
+            {step < STEPS.length ? (
+              <Current
+                selectedDate={selectedDate}
+                onSelectDate={(d) => {
+                  setSelectedDate(d);
+                  setStep(2);
+                }}
+                currentMonth={currentMonth}
+                onChangeMonth={(inc) =>
+                  setCurrentMonth(
+                    (m) => new Date(m.setMonth(m.getMonth() + inc))
+                  )
+                }
+                bookedEvents={bookedEvents}
+                date={selectedDate}
+                availableTimes={availableTimes}
+                isTimeAvailable={isTimeAvailable}
+                selectedTime={selectedTime}
+                onSelectTime={(t) => {
+                  setSelectedTime(t);
+                  setStep(3);
+                }}
+                minDate={minDate}
+                formData={formData}
+                onChange={handleChange}
+                onPaid={handlePaid}
+              />
+            ) : (
+              <InlineChatbotStep
+                requestId={bookingId}
+                tableName="booking_chat_messages"
+              />
+            )}
           </div>
           <div className="flex justify-between mt-6">
             <button
-              onClick={() => setStep((s) => Math.max(1, s - 1))}
+              type="button"
+              onClick={() =>
+                step > 1 ? setStep((s) => s - 1) : onBackService()
+              }
               className="px-4 py-1 border-2 border-darkGold text-darkGold font-bold rounded-xl"
             >
               Back
             </button>
+
             {step < STEPS.length && (
               <button
                 onClick={handleNext}
@@ -381,17 +388,10 @@ export default function Booking({ onBackService }) {
               </button>
             )}
           </div>
-
           <StepIndicator
-            stepCount={STEPS.length + 1}
+            stepCount={UI_STEPS}
             currentStep={step + 1}
-            onStepClick={(dot) => {
-              if (dot === 1) {
-                onBackService(); // go back to "choose service"
-              } else {
-                setStep(dot - 1); // step 2→internal 1, 3→2, etc.
-              }
-            }}
+            onStepClick={handleStepClick}
             className="pt-6"
           />
         </div>

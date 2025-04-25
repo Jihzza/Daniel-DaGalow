@@ -60,13 +60,13 @@ function Hero() {
             <div className="mx-10">Business</div>
           </Marquee>
         </div>
-        <h1 className="text-3xl font-extrabold my-8">
-          I Help You Master Mindset, Money, and More – Without the Boring Stuff.
+        <h1 className="text-2xl font-extrabold my-8">
+        Outsmart your limits—crush mindset, money, and life with crystal‑clear strategies that just work.
         </h1>
         <p className="text-lg md:text-xl my-8 max-w-md mx-auto">
-          Tired of spinning your wheels? I've built million‑dollar businesses,
-          transformed my life, and I'm here to help you do it too—with humor and
-          real talk.
+          I went from bankruptcy to $150 K/year through battle‑tested, no‑fluff
+          tactics—now I share them so you can learn from my mistakes and skip
+          the guesswork
         </p>
         <div className="my-14 ">
           {/* Achievements carousel using Swiper */}
@@ -233,10 +233,7 @@ function Hero() {
           </Swiper>
         </div>
 
-        <div
-          
-          className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4"
-        >
+        <div className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4">
           <div className="flex flex-col items-center justify-center my-8">
             <div className="flex flex-col items-center py-6 justify-center">
               <h2 className="text-3xl font-bold mb-6">
@@ -269,7 +266,7 @@ function Hero() {
               <h2 className="text-3xl font-bold mb-6">Direct Coaching</h2>
 
               <div className="flex space-x-2 mb-4">
-                <label className="w-24 h-20 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
+                <label className="w-20 h-18 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
                   <input
                     type="radio"
                     name="tier"
@@ -279,12 +276,12 @@ function Hero() {
                   <span className="text-[16px] font-extrabold">40€</span>
                   <span className="text-xs">Basic</span>
                 </label>
-                <label className="w-24 h-20 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
+                <label className="w-20 h-18 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
                   <input type="radio" name="tier" className="hidden" />
                   <span className="text-[16px] font-extrabold">90€</span>
                   <span className="text-xs">Standard</span>
                 </label>
-                <label className="w-24 h-20 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
+                <label className="w-20 h-20 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
                   <input type="radio" name="tier" className="hidden" />
                   <span className="text-[16px] font-extrabold">230€</span>
                   <span className="text-xs">Premium</span>
