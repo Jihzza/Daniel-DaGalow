@@ -128,7 +128,7 @@ export default function PitchDeckRequest({ onBackService }) {
   const UI_STEPS = STEPS.length + 1;
 
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({ project: "", name: "", email: "", phone: "", notes: "" });
+  const [formData, setFormData] = useState({ project: "", name: "", email: "", phone: ""});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestId, setRequestId] = useState(null);
 
@@ -144,7 +144,35 @@ export default function PitchDeckRequest({ onBackService }) {
     return true;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    if (step === 2) {
+      // Submit form data after contact information
+      setIsSubmitting(true);
+      console.log('Submitting form data:', formData);
+      try {
+        const { data, error } = await supabase
+          .from("pitch_requests")
+          .insert(formData)
+          .select("id")
+          .single();
+        
+        if (error) {
+          console.error("Supabase error details:", error);
+          alert(`Error submitting form: ${error.message}`);
+          return;
+        } else {
+          console.log('Successfully submitted with ID:', data.id);
+          setRequestId(data.id);
+        }
+      } catch (err) {
+        console.error("Unexpected error:", err);
+        alert("An unexpected error occurred. Please try again.");
+        return;
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+    
     if (canProceed() && step < STEPS.length) setStep((s) => s + 1);
   };
 
@@ -153,35 +181,17 @@ export default function PitchDeckRequest({ onBackService }) {
     else onBackService();
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    const { data, error } = await supabase
-      .from("pitch_requests")
-      .insert(formData)
-      .select("id")
-      .single();
-    setIsSubmitting(false);
-    if (error) {
-      console.error("Insert error:", error);
-      alert("Sorry—couldn’t submit right now. Please try again.");
-    } else {
-      setRequestId(data.id);
-      setStep(4);
-    }
-  };
-
   const Current = STEPS[step - 1].component;
 
   const handleStepClick = (dot) => {
-   if (dot === 1) onBackService();
-   else setStep(dot - 1);
- };
+    if (dot === 1) onBackService();
+    else setStep(dot - 1);
+  };
 
   return (
     <section id="pitch-deck-request" className="py-8 px-4">
       <h2 className="text-2xl font-bold text-center mb-6 text-black">Request a Pitch Deck</h2>
-      <form onSubmit={step === 3 ? handleSubmit : (e) => e.preventDefault()}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
           <h3 className="text-xl text-white mb-6">{STEPS[step - 1].title}</h3>
           {step < STEPS.length ? (
