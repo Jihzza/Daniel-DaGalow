@@ -1,4 +1,3 @@
-// src/components/InlineChatbotStep.jsx
 import React, { useState, useEffect, useRef } from "react";
 import SendIcon from "../../assets/icons/Send.svg";
 import AttachIcon from "../../assets/icons/Anexar.svg";
@@ -10,76 +9,102 @@ export default function InlineChatbotStep({ requestId, tableName }) {
   const [busy, setBusy] = useState(false);
   const listRef = useRef(null);
 
-  // load existing
+  // Load existing messages
   useEffect(() => {
     if (!requestId) return;
     (async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from(tableName)
         .select("sender, message, created_at")
         .eq("request_id", requestId)
         .order("created_at", { ascending: true });
-      if (data) {
-        setMsgs(data.map(d => ({
-          from: d.sender === "user" ? "user" : "bot",
-          text: d.message
-        })));
+      if (error) {
+        console.error("Fetch messages error", error);
+        return;
       }
+      setMsgs(
+        data.map((d) => ({
+          from: d.sender === "user" ? "user" : "bot",
+          text: d.message,
+        }))
+      );
     })();
   }, [requestId, tableName]);
 
-  // scroll
+  // Auto-scroll whenever messages or busy change
   useEffect(() => {
-    if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
+    if (listRef.current) {
+      listRef.current.scrollTop = listRef.current.scrollHeight;
+    }
   }, [msgs, busy]);
 
-  const send = async () => {
+  async function send() {
     if (!text.trim()) return;
     setBusy(true);
     const t = text.trim();
     setText("");
-    // save user
-    await supabase.from(tableName).insert({ request_id: requestId, sender: "user", message: t });
-    setMsgs(m => [...m, { from: "user", text: t }]);
+
+    // 1) Save user message
+    await supabase
+      .from(tableName)
+      .insert({ request_id: requestId, sender: "user", message: t });
+    setMsgs((m) => [...m, { from: "user", text: t }]);
 
     try {
-      const res = await fetch(process.env.REACT_APP_N8N_WEBHOOK_URL, {
+      // 2) Send to n8n webhook using same payload as ChatbotWindow
+      const res = await fetch("https://rafaello.app.n8n.cloud/webhook/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ requestId, chatInput: t })
+        body: JSON.stringify({ session_id: requestId, chatInput: t }),
       });
-      const { output } = await res.json();
-      await supabase.from(tableName).insert({ request_id: requestId, sender: "bot", message: output });
-      setMsgs(m => [...m, { from: "bot", text: output }]);
-    } catch {
-      setMsgs(m => [...m, { from: "bot", text: "Oops, something went wrong." }]);
+      // 3) Parse the response as JSON with `output`
+      const data = await res.json();
+      const { output } = data;
+
+      // 4) Save bot reply
+      await supabase
+        .from(tableName)
+        .insert({ request_id: requestId, sender: "bot", message: output });
+      setMsgs((m) => [...m, { from: "bot", text: output }]);
+    } catch (err) {
+      console.error("Webhook error", err);
+      setMsgs((m) => [
+        ...m,
+        { from: "bot", text: "Oops, something went wrong." },
+      ]);
     } finally {
       setBusy(false);
     }
-  };
+  }
 
   return (
     <div className="bg-oxfordBlue rounded-2xl h-[300px] space-y-4 flex flex-col">
-      <div ref={listRef} className="flex-1 overflow-auto space-y-2">
-        {msgs.map((m,i) => (
-          <div key={i} className={`p-3 rounded-lg max-w-[80%] ${m.from==="user" ? "self-end bg-darkGold text-white" : "self-start bg-white/20 text-black"}`}>
+      <div ref={listRef} className="flex-1 overflow-auto space-y-2 p-3">
+        {msgs.map((m, i) => (
+          <div
+            key={i}
+            className={`max-w-[80%] p-3 rounded-lg whitespace-pre-wrap ${
+              m.from === "user"
+                ? "self-end bg-darkGold text-white"
+                : "self-start bg-white/20 text-black"
+            }`}
+          >
             {m.text}
           </div>
         ))}
-        {busy && (
-          <div className="text-gray-400">bot is typing…</div>
-        )}
+        {busy && <div className="text-gray-400">bot is typing…</div>}
       </div>
-      <div className="relative ">
+
+      <div className="relative">
         <button className="absolute left-3 top-1/2 transform -translate-y-1/2">
-          <img src={AttachIcon} alt="attach" className="w-5 h-5"/>
+          <img src={AttachIcon} alt="attach" className="w-5 h-5" />
         </button>
         <input
           className="w-full h-10 bg-oxfordBlue border-2 border-darkGold rounded-full pl-10 pr-10 text-white"
           placeholder="Type a message…"
           value={text}
-          onChange={e => setText(e.target.value)}
-          onKeyDown={e => e.key==="Enter" && send()}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && send()}
           disabled={busy}
         />
         <button

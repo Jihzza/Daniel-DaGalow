@@ -202,6 +202,7 @@ export default function CoachingRequest({ onBackService }) {
     if (step === 3) return paymentDone;
     return true;
   };
+  
 
   const handleNext = async () => {
     if (step === 2) {
