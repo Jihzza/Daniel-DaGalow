@@ -146,93 +146,88 @@ export default function PitchDeckRequest({ onBackService }) {
 
   const handleNext = async () => {
     if (step === 2) {
-      // Submit form data after contact information
       setIsSubmitting(true);
-      console.log('Submitting form data:', formData);
       try {
         const { data, error } = await supabase
           .from("pitch_requests")
-          .insert(formData)
+          .insert({
+            project: formData.project,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone
+          })
           .select("id")
           .single();
         
-        if (error) {
-          console.error("Supabase error details:", error);
-          alert(`Error submitting form: ${error.message}`);
-          return;
-        } else {
-          console.log('Successfully submitted with ID:', data.id);
-          setRequestId(data.id);
-        }
-      } catch (err) {
-        console.error("Unexpected error:", err);
-        alert("An unexpected error occurred. Please try again.");
-        return;
+        if (error) throw error;
+        
+        setRequestId(data.id);
+        setStep(3);
+      } catch (error) {
+        console.error("Error submitting pitch request:", error);
+        alert("Failed to submit your request. Please try again.");
       } finally {
         setIsSubmitting(false);
       }
     }
-    
-    if (canProceed() && step < STEPS.length) setStep((s) => s + 1);
   };
 
   const handleBack = () => {
-    if (step > 1) setStep((s) => s - 1);
+    if (step > 1) setStep(step - 1);
     else onBackService();
   };
-
-  const Current = STEPS[step - 1].component;
 
   const handleStepClick = (dot) => {
     if (dot === 1) onBackService();
     else setStep(dot - 1);
   };
 
+  const Current = STEPS[step - 1].component;
+
   return (
-    <section id="pitch-deck-request" className="py-8 px-4">
-      <h2 className="text-2xl font-bold text-center mb-6 text-black">Request a Pitch Deck</h2>
-      <form onSubmit={(e) => e.preventDefault()}>
+    <section className="py-8 px-4" id="pitch-deck-request">
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-2xl font-bold text-center mb-6 text-black">
+          Request a Pitch Deck
+        </h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
-          <h3 className="text-xl text-white mb-6">{STEPS[step - 1].title}</h3>
-          {step < STEPS.length ? (
+          <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
+          {step < 3 ? (
             <Current formData={formData} onChange={handleChange} />
           ) : (
-            <InlineChatbotStep requestId={requestId} tableName="pitchdeck_chat_messages" />
+            <InlineChatbotStep
+              requestId={requestId}
+              tableName="pitchdeck_chat_messages"
+            />
           )}
 
           <div className="flex justify-between mt-6">
-            {step > 1 && (
+            <button
+              onClick={handleBack}
+              disabled={isSubmitting}
+              className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
+            >
+              Back
+            </button>
+            {step < STEPS.length && (
               <button
-                type="button"
-                onClick={handleBack}
-                disabled={isSubmitting}
-                className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
-              >
-                Back
-              </button>
-            )}
-            {step > 1 && step < STEPS.length && (
-              <button
-                type={step === 3 ? "submit" : "button"}
-                onClick={step === 3 ? undefined : handleNext}
-                disabled={(step === 3 && isSubmitting) || !canProceed()}
+                onClick={handleNext}
+                disabled={!canProceed() || isSubmitting}
                 className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
               >
-                {step === 3 ? (isSubmitting ? "Submitting…" : "Submit") : "Next"}
+                Next
               </button>
             )}
           </div>
 
-          <div>
-            <StepIndicator
-              stepCount={UI_STEPS }
-              currentStep={step + 1}
-              onStepClick={handleStepClick}
-              className={step === 1 ? "pt-0" : "pt-6"}
-            />
-          </div>
+          <StepIndicator
+            stepCount={UI_STEPS}
+            currentStep={step + 1}
+            onStepClick={handleStepClick}
+            className="pt-6"
+          />
         </div>
-      </form>
+      </div>
     </section>
   );
 }
