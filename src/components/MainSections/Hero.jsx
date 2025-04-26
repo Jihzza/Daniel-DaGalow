@@ -7,7 +7,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Autoplay } from "swiper/modules";
 import Marquee from "react-fast-marquee";
-import { useNavigate } from "react-router-dom";
 import DaGalow from "../../assets/logos/DaGalow Logo.svg";
 import { ServiceContext } from "../contexts/ServiceContext";
 import { useContext } from "react";
@@ -18,7 +17,6 @@ function Hero() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const navigate = useNavigate();
 
   const { setService } = useContext(ServiceContext);
 

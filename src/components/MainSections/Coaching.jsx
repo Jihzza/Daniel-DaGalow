@@ -8,14 +8,12 @@ import DatingIcon from "../../assets/icons/Dating Branco.svg";
 import OnlyFansIcon from "../../assets/icons/Onlyfans Branco.svg";
 import BusinessIcon from "../../assets/icons/Business Branco.svg";
 import HabitsIcon from "../../assets/icons/Habits Branco.svg";
-import { useNavigate } from "react-router-dom";
 import { ServiceContext } from "../contexts/ServiceContext";
 import { useContext } from "react";
 
 function DirectCoaching() {
-  const { service, setService } = useContext(ServiceContext);
+  const {  setService } = useContext(ServiceContext);
   const [tier, setTier] = useState("basic");
-  const navigate = useNavigate();
 
   const openForm = (service) => {
     setService(service);                          // ① tell the form which one
@@ -45,13 +43,6 @@ function DirectCoaching() {
     },
   ];
 
-  const handleServiceClick = () => {
-    navigate(`/?service=coaching#coaching-journey`);
-    setTimeout(() => {
-      const el = document.getElementById("coaching-journey");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
-  };
   return (
     <section id="coaching" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
