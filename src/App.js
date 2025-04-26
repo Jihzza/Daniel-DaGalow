@@ -76,7 +76,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray">
+        <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray overflow-hidden">
           <Header onAuthModalOpen={handleAuthModalOpen} />
           <main className='pt-14'>
           <Routes>

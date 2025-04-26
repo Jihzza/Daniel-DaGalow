@@ -1,17 +1,26 @@
 // Update NavigationBar.jsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-import dagalowicon from '../../assets/icons/Dagalow Branco.svg';
+import home from '../../assets/icons/Home Branco.svg';
 import calendar from '../../assets/icons/Calendar Branco.svg';
-import chatbot from '../../assets/icons/Chatbot Branco.svg';
+import chatbot from '../../assets/icons/Dagalow Branco.svg';
 import settings from '../../assets/icons/Settings Branco.svg';
 import account from '../../assets/icons/Profile Branco.svg';
 
 const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
+
+  const handleDagalowIconClick = () => {
+    if (location.pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      navigate("/");
+    }
+  };
 
   const handleAccountClick = () => {
     if (user) {
@@ -24,7 +33,7 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   };
 
   const icons = [
-    {src: dagalowicon, alt: "DaGalow", to: "/"},
+    {src: home, alt: "Home", action: handleDagalowIconClick},
     {src: calendar, alt: "Calendar", to: "/components/Subpages/Calendar"},
     {src: chatbot, alt: "Chatbot", action: onChatbotClick},
     {src: settings, alt: "Settings", to: user ? "/components/Subpages/Settings" : null, action: user ? null : onAuthModalOpen},

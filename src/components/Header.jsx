@@ -1,6 +1,6 @@
 // Updated Header.jsx with Music and Videos links
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import DaGalowLogo from "../assets/logos/DaGalow Logo.svg";
 import Hamburger from "../assets/icons/Hamburger.svg";
@@ -15,6 +15,8 @@ function Header() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const lastY = useRef(0);
   const { user, signOut } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [avatarUrl, setAvatarUrl] = useState(null);
 
@@ -44,6 +46,14 @@ function Header() {
     }
   };
 
+  const handleLogoClick = () => {
+    if (location.pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <>
       <header
@@ -64,13 +74,13 @@ function Header() {
         </div>
 
         <div className="max-w-5xl mx-auto flex items-center justify-between p-4">
-          <Link to="/" className="focus:outline-none">
+          <div onClick={handleLogoClick} className="focus:outline-none cursor-pointer">
             <img
               src={DaGalowLogo}
               alt="DaGalow Logo"
               className="w-[150px] h-auto object-cover hover:opacity-90 transition-opacity duration-300"
             />
-          </Link>
+          </div>
         </div>
 
         {/* Auth links - visible on desktop */}
@@ -169,15 +179,7 @@ function Header() {
                 >
                   Settings
                 </Link>
-                <button
-                  onClick={() => {
-                    signOut();
-                    setMenuOpen(false);
-                  }}
-                  className="text-white text-xl hover:text-gray-300 transition-colors text-left"
-                >
-                  Logout
-                </button>
+                
               </>
             ) : (
               <button

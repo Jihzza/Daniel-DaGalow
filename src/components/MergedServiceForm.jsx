@@ -14,9 +14,9 @@ export default function MergedServiceForm() {
   const { service, setService } = useContext(ServiceContext);
   const [step, setStep] = useState(service ? 2 : 1);
   const services = [
-    { label: "Analysis", value: "analysis" },
     { label: "Consultation", value: "booking" },
     { label: "Coaching", value: "coaching" },
+    { label: "Analysis", value: "analysis" },
     { label: "Pitch Deck", value: "pitchdeck" },
   ];
 

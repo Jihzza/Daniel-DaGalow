@@ -264,7 +264,7 @@ const openAnalysisForm   = (e) => {
           className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4"
         >
           <div className="flex flex-col items-center justify-center my-8">
-            <div className="flex flex-col items-center py-6 justify-center">
+            <div className="flex flex-col items-center justify-center">
               <h2 className="text-3xl font-bold mb-6">
                 Individual Consultation
               </h2>
@@ -273,7 +273,7 @@ const openAnalysisForm   = (e) => {
             </div>
             <button
               onClick={handleOpenForm("booking")} // ← booking = consultations
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               Book a Consultation
             </button>

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import FAQs from './BottomPages/FAQs';
 import Bugs from './BottomPages/Bugs';
-
+import SocialMedia from './BottomPages/SocialMedia';
 export default function PageCarousel(){
     const pages =[
         { label: "FAQs", Component: FAQs },
         { label: "Bugs", Component: Bugs },
+        { label: "Social Media", Component: SocialMedia },
     ];
     
     const [activeIdx, setActiveIdx] = useState(0);

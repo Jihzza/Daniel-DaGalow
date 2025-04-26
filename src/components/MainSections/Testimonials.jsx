@@ -124,7 +124,7 @@ function Testimonials() {
   };
 
   return (
-    <section id="testimonials" className="py-8 px-4 text-black overflow-hidden">
+    <section id="testimonials" className="py-8 px-4 text-black">
       <div className="max-w-3xl mx-auto text-center space-y-6 px-4 overflow-visible">
         <h2 className="text-2xl md:text-3xl font-bold">Success Stories</h2>
         <p className="text-lg">
@@ -137,21 +137,22 @@ function Testimonials() {
           <p>Loading…</p>
         ) : (
           <Swiper
-            modules={[Autoplay]}
-            centeredSlides
-            slidesPerView={1}
-            spaceBetween={100}
-            loop
-            autoplay={{ delay: 3000, disableOnInteraction: false }}
-            className="testimonial-swiper w-full overflow-visible"
-          >
+  modules={[Autoplay]}
+  centeredSlides           // keep the active slide in the middle
+  slidesPerView={1.5}     // let card width decide how many fit
+  spaceBetween={100}        // gap between cards
+  loop
+  autoplay={{ delay: 3000, disableOnInteraction: false }}
+  className="testimonial-swiper overflow-visible"
+>
+
             {testimonials.map((testimonial, index) => (
               <SwiperSlide key={index}>
               <div
                 className="
                   bg-white
-                  w-68           
-                  h-60           
+                  w-56           
+                  h-72           
                   p-4
                   rounded-lg
                   shadow-md

@@ -79,14 +79,14 @@ export default function InlineChatbotStep({ requestId, tableName }) {
 
   return (
     <div className="bg-oxfordBlue rounded-2xl h-[300px] space-y-4 flex flex-col">
-      <div ref={listRef} className="flex-1 overflow-auto space-y-2 p-3">
+      <div ref={listRef} className="flex-1 overflow-auto">
         {msgs.map((m, i) => (
           <div
             key={i}
-            className={`max-w-[80%] p-3 rounded-lg whitespace-pre-wrap ${
+            className={`w-full p-3 rounded-lg whitespace-pre-wrap ${
               m.from === "user"
-                ? "self-end bg-darkGold text-white"
-                : "self-start bg-white/20 text-black"
+                ? "self-end bg-gentleGray/20 text-white"
+                : "self-start  text-white"
             }`}
           >
             {m.text}

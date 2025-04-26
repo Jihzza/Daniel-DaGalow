@@ -7,31 +7,13 @@ function BugReport() {
   const [formData, setFormData] = useState({
     name: user?.user_metadata?.full_name || "",
     email: user?.email || "",
-    bugType: "",
     description: "",
-    severity: "low",
-    reproducibility: "",
   });
   const [submitStatus, setSubmitStatus] = useState({
     success: false,
     error: false,
     message: "",
   });
-
-  const bugTypes = [
-    { value: "", label: "Select Bug Type" },
-    { value: "ui", label: "User Interface Issue" },
-    { value: "functionality", label: "Functionality Problem" },
-    { value: "performance", label: "Performance Issue" },
-    { value: "security", label: "Security Concern" },
-    { value: "other", label: "Other" },
-  ];
-
-  const severityLevels = [
-    { value: "low", label: "Low - Minor Issue" },
-    { value: "medium", label: "Medium - Noticeable Problem" },
-    { value: "high", label: "High - Critical Issue" },
-  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,7 +28,7 @@ function BugReport() {
     setSubmitStatus({ success: false, error: false, message: "" });
 
     // Basic validation
-    if (!formData.bugType || !formData.description) {
+    if (!formData.description) {
       setSubmitStatus({
         success: false,
         error: true,
@@ -61,10 +43,7 @@ function BugReport() {
         user_id: user?.id,
         name: formData.name,
         email: formData.email,
-        bug_type: formData.bugType,
         description: formData.description,
-        severity: formData.severity,
-        reproducibility: formData.reproducibility,
         status: "new",
       });
 
@@ -74,10 +53,7 @@ function BugReport() {
       setFormData({
         name: user?.user_metadata?.full_name || "",
         email: user?.email || "",
-        bugType: "",
         description: "",
-        severity: "low",
-        reproducibility: "",
       });
 
       setSubmitStatus({
@@ -145,71 +121,6 @@ function BugReport() {
               placeholder="Your email"
               required
             />
-          </div>
-
-          {/* Bug Type Dropdown */}
-          <div>
-            <label htmlFor="bugType" className="block mb-2 text-white">
-              Type of Bug
-            </label>
-            <select
-              id="bugType"
-              name="bugType"
-              value={formData.bugType}
-              onChange={handleChange}
-              className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
-              required
-            >
-              {bugTypes.map((type) => (
-                <option
-                  key={type.value}
-                  value={type.value}
-                  className="bg-oxfordBlue text-white"
-                >
-                  {type.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Severity Dropdown */}
-          <div>
-            <label htmlFor="severity" className="block mb-2 text-white">
-              Severity
-            </label>
-            <select
-              id="severity"
-              name="severity"
-              value={formData.severity}
-              onChange={handleChange}
-              className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
-            >
-              {severityLevels.map((level) => (
-                <option
-                  key={level.value}
-                  value={level.value}
-                  className="bg-oxfordBlue text-white"
-                >
-                  {level.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Reproducibility Input */}
-          <div>
-            <label htmlFor="reproducibility" className="block mb-2 text-white">
-              Steps to Reproduce (Optional)
-            </label>
-            <textarea
-              id="reproducibility"
-              name="reproducibility"
-              value={formData.reproducibility}
-              onChange={handleChange}
-              rows="3"
-              className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
-              placeholder="Describe the steps to reproduce this bug"
-            ></textarea>
           </div>
 
           {/* Description Textarea */}
