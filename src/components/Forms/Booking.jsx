@@ -290,7 +290,10 @@ export default function Booking({ onBackService }) {
   const [selectedDuration, setSelectedDuration] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [bookedEvents, setBookedEvents] = useState([]);
-  const [formData, setFormData] = useState({ name: "", email: "" });
+  const [formData, setFormData] = useState({
+    name: user?.user_metadata?.full_name || "",
+    email: user?.email || ""
+  });
   const [paymentDone, setPaymentDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [bookingId, setBookingId] = useState(null);

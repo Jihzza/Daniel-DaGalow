@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { supabase } from "../../utils/supabaseClient";
 import InlineChatbotStep from "./InlineChatbotStep";
+import { useAuth } from "../contexts/AuthContext";
 
 // Progress Indicator
 function StepIndicator({ stepCount, currentStep, onStepClick = () => {}, className = "" }) {
@@ -100,7 +101,11 @@ function ContactInfoStep({ formData, onChange }) {
 
 export default function AnalysisRequest({ onBackService }) {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({ type: "", name: "", email: "" });
+  const { user } = useAuth(); // Get the current user
+  const [formData, setFormData] = useState({ type: "",
+  name: user?.user_metadata?.full_name || "",
+  email: user?.email || "" 
+});
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

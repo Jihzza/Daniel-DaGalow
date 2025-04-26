@@ -87,7 +87,6 @@ useEffect(() => {
 async function fetchApprovedTestimonials() {
   try {
     setLoading(true);
-    console.log("Fetching approved testimonials...");
     
     const { data, error } = await supabase
       .from("testimonials")
@@ -97,7 +96,6 @@ async function fetchApprovedTestimonials() {
 
     if (error) throw error;
     
-    console.log("Approved testimonials fetched:", data?.length || 0);
     
     // Transform database URLs if necessary
     const processedData = data.map(item => ({

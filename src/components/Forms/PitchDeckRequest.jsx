@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../../utils/supabaseClient";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import InlineChatbotStep from "./InlineChatbotStep";
-
+import { useAuth } from "../contexts/AuthContext";
 // Progress Indicator Component
 function StepIndicator({
   stepCount,
@@ -118,6 +118,8 @@ function ContactInfoStep({ formData, onChange }) {
   );
 }
 
+
+
 export default function PitchDeckRequest({ onBackService }) {
   const STEPS = [
     { title: "Select your project", component: ProjectSelectionStep },
@@ -126,9 +128,14 @@ export default function PitchDeckRequest({ onBackService }) {
   ];
 
   const UI_STEPS = STEPS.length + 1;
-
+  const { user } = useAuth(); // Get the current user
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({ project: "", name: "", email: "", phone: ""});
+  const [formData, setFormData] = useState({
+  project: "",
+  name: user?.user_metadata?.full_name || "",
+    email: user?.email || "",
+  phone: ""
+});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestId, setRequestId] = useState(null);
 
@@ -143,6 +150,27 @@ export default function PitchDeckRequest({ onBackService }) {
     if (step === 2) return formData.name && formData.email && formData.phone;
     return true;
   };
+
+  useEffect(() => {
+    if (user) {
+      const fetchUserProfile = async () => {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("phone_number")
+          .eq("id", user.id)
+          .single();
+        
+        if (!error && data) {
+          setFormData(prev => ({
+            ...prev,
+            phone: data.phone_number || ""
+          }));
+        }
+      };
+      
+      fetchUserProfile();
+    }
+  }, [user]);
 
   const handleNext = async () => {
     if (step === 2) {

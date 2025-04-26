@@ -116,9 +116,7 @@ export default function ProfilePage({ onChatOpen }) {
   async function fetchPendingTestimonials() {
     try {
       setTestimonialLoading(true);
-      
-      console.log("Fetching pending testimonials...");
-      
+            
       const { data, error } = await supabase
         .from("testimonials")
         .select("*")
@@ -147,7 +145,6 @@ export default function ProfilePage({ onChatOpen }) {
       
       if (checkError) throw checkError;
       if (!checkData || checkData.status !== "pending") {
-        console.log("Testimonial already processed or doesn't exist");
         setPendingTestimonials(prev => 
           prev.filter(testimonial => testimonial.id !== id)
         );
@@ -161,9 +158,7 @@ export default function ProfilePage({ onChatOpen }) {
         .eq("id", id);
       
       if (error) throw error;
-      
-      console.log("Testimonial approved successfully:", id);
-      
+            
       // Remove from pending list
       setPendingTestimonials(prev => 
         prev.filter(testimonial => testimonial.id !== id)

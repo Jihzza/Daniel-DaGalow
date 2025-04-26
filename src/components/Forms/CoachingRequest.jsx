@@ -166,8 +166,8 @@ export default function CoachingRequest({ onBackService }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     frequency: "",
-    name: "",
-    email: "",
+    name: user?.user_metadata?.full_name || "",
+    email: user?.email || "",
     phone: "",
   });
   const [requestId, setRequestId] = useState(null);
@@ -196,13 +196,11 @@ export default function CoachingRequest({ onBackService }) {
   const Current = STEPS[step - 1].component;
   const UI_STEPS = STEPS.length + 1;
 
-
   const canProceed = () => {
     if (step === 2) return formData.name && formData.email && formData.phone;
     if (step === 3) return paymentDone;
     return true;
   };
-  
 
   const handleNext = async () => {
     if (step === 2) {
