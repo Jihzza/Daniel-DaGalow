@@ -13,7 +13,7 @@ export default function CalendarPage() {
     async function fetchEvents() {
       setLoading(true);
       const { data, error } = await supabase
-        .from("appointments")
+        .from("bookings")
         .select("id, appointment_date, name, duration_minutes");
       if (error) {
         console.error("Error fetching events:", error);
