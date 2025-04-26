@@ -1,11 +1,9 @@
 // src/components/Subpages/ProfilePage.jsx
 import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
 import { Link } from "react-router-dom";
 import OctagonalProfile from "./Octagonal Profile";
-import ChatbotWindow from "../BottomNavBar/ChatbotWindow";
 
 export default function ProfilePage({ onChatOpen }) {
   const { user } = useAuth();
@@ -16,12 +14,14 @@ export default function ProfilePage({ onChatOpen }) {
   const [activeSubscriptions, setActiveSubscriptions] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
-  const [showChat, setShowChat] = useState(false);
-  const [chatSessionId, setChatSessionId] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [pendingTestimonials, setPendingTestimonials] = useState([]);
+  const [testimonialLoading, setTestimonialLoading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     fetchProfileData();
+    checkAdminStatus();
   }, [user]);
 
   useEffect(() => {
@@ -90,6 +90,113 @@ export default function ProfilePage({ onChatOpen }) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function checkAdminStatus() {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      
+      if (error) throw error;
+      
+      if (data && data.role === "admin") {
+        setIsAdmin(true);
+        // If user is admin, fetch pending testimonials
+        fetchPendingTestimonials();
+      }
+    } catch (err) {
+      console.error("Error checking admin status:", err);
+    }
+  }
+
+  async function fetchPendingTestimonials() {
+    try {
+      setTestimonialLoading(true);
+      
+      console.log("Fetching pending testimonials...");
+      
+      const { data, error } = await supabase
+        .from("testimonials")
+        .select("*")
+        .eq("status", "pending")
+        .order("created_at", { ascending: false });
+      
+      if (error) throw error;
+      
+      console.log("Pending testimonials fetched:", data?.length || 0);
+      setPendingTestimonials(data || []);
+    } catch (err) {
+      console.error("Error fetching pending testimonials:", err);
+    } finally {
+      setTestimonialLoading(false);
+    }
+  }
+
+  async function handleApproveTestimonial(id) {
+    try {
+      // First check if the testimonial exists and is still pending
+      const { data: checkData, error: checkError } = await supabase
+        .from("testimonials")
+        .select("status")
+        .eq("id", id)
+        .single();
+      
+      if (checkError) throw checkError;
+      if (!checkData || checkData.status !== "pending") {
+        console.log("Testimonial already processed or doesn't exist");
+        setPendingTestimonials(prev => 
+          prev.filter(testimonial => testimonial.id !== id)
+        );
+        return;
+      }
+      
+      // Now update the status to approved
+      const { error } = await supabase
+        .from("testimonials")
+        .update({ status: "approved" })
+        .eq("id", id);
+      
+      if (error) throw error;
+      
+      console.log("Testimonial approved successfully:", id);
+      
+      // Remove from pending list
+      setPendingTestimonials(prev => 
+        prev.filter(testimonial => testimonial.id !== id)
+      );
+      
+      alert("Testimonial approved successfully!");
+      
+      // Optional: Refresh the pending testimonials list
+      fetchPendingTestimonials();
+    } catch (err) {
+      console.error("Error approving testimonial:", err);
+      alert("Failed to approve testimonial: " + err.message);
+    }
+  }
+
+  async function handleRejectTestimonial(id) {
+    try {
+      const { error } = await supabase
+        .from("testimonials")
+        .update({ status: "rejected" })
+        .eq("id", id);
+      
+      if (error) throw error;
+      
+      // Remove from pending list
+      setPendingTestimonials(prev => 
+        prev.filter(testimonial => testimonial.id !== id)
+      );
+      
+      alert("Testimonial rejected successfully");
+    } catch (err) {
+      console.error("Error rejecting testimonial:", err);
+      alert("Failed to reject testimonial");
     }
   }
 
@@ -223,6 +330,61 @@ export default function ProfilePage({ onChatOpen }) {
               )}
             </div>
           </div>
+
+          {isAdmin && (
+            <div className="bg-gentleGray p-4 rounded-xl shadow-md">
+              <h3 className="text-lg font-bold text-black mb-3">
+                Testimonial Review
+              </h3>
+              
+              {testimonialLoading ? (
+                <div className="bg-white p-4 rounded-xl flex justify-center">
+                  <div className="animate-spin h-8 w-8 border-2 border-oxfordBlue border-t-transparent rounded-full"></div>
+                </div>
+              ) : pendingTestimonials.length === 0 ? (
+                <div className="bg-white p-4 rounded-xl">
+                  <p className="text-gray-500 text-center">No testimonials pending review.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {pendingTestimonials.map(testimonial => (
+                    <div key={testimonial.id} className="bg-white rounded-xl p-4 shadow-sm">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <img 
+                          src={testimonial.image_url} 
+                          alt={testimonial.author}
+                          className="w-12 h-12 rounded-full object-cover border-2 border-darkGold"
+                        />
+                        <div>
+                          <h4 className="font-medium text-gray-800">{testimonial.author}</h4>
+                          <p className="text-xs text-gray-500">
+                            {new Date(testimonial.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <p className="italic text-gray-700 my-2 text-sm">"{testimonial.quote}"</p>
+                      
+                      <div className="flex justify-end space-x-2 mt-3">
+                        <button
+                          onClick={() => handleRejectTestimonial(testimonial.id)}
+                          className="px-3 py-1 text-sm border border-red-500 text-red-500 rounded-lg hover:bg-red-50"
+                        >
+                          Reject
+                        </button>
+                        <button
+                          onClick={() => handleApproveTestimonial(testimonial.id)}
+                          className="px-3 py-1 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700"
+                        >
+                          Approve
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </>
