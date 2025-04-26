@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 function FAQs2() {
-  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState({
     question: "How can I start improving my mindset?",
     answer: "Begin with daily gratitude practice, positive affirmations, and setting small, achievable goals. Consistency is key to building a strong mindset foundation."
@@ -50,75 +50,90 @@ function FAQs2() {
     }
   ];
 
-  const toggleDropdown = () => {
-    setActiveDropdown(!activeDropdown);
+  const toggleDropdown = (e) => {
+    e.stopPropagation();
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   const handleQuestionSelect = (question, answer) => {
     setCurrentQuestion({ question, answer });
-    setActiveDropdown(false);
+    setIsDropdownOpen(false);
   };
 
   return (
-    <section id="faqs2" className="w-full">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-black">
+    <section id="faqs2" className="w-full h-[60vh]">
+      <div className="max-w-4xl mx-auto h-full flex flex-col">
+        <h2 className="text-2xl py-4 font-bold text-center text-black">
           Quick Mindset Tips
         </h2>
 
-        <div className="relative h-[50vh]">
-          <div className="faq backdrop-blur-sm h-[40vh] rounded-xl overflow-hidden">
-            <div 
-              className="question pb-4 flex justify-between items-center cursor-pointer relative" 
-              onClick={toggleDropdown}
-            >
-              <h3 className="text-lg font-semibold text-black">{currentQuestion.question}</h3>
-              <svg
-                className={`faqBurger w-6 h-6 text-black transform transition-transform duration-300 ${
-                  activeDropdown ? 'rotate-180' : ''
-                }`}
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-              </svg>
-
-              {activeDropdown && (
-                <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-oxfordBlue rounded-xl overflow-hidden shadow-lg z-10 !h-[500px] overflow-y-auto">
-                  {questions.map((option, index) => (
-                    <a
-                      key={index}
-                      href="#"
-                      className="block py-4 px-4 text-white hover:bg-oxfordBlue/80 transition-colors border-t border-white/20"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleQuestionSelect(option.question, option.answer);
-                      }}
+        <div className="relative w-full flex flex-col flex-1">
+          <div className="rounded-xl overflow-hidden flex flex-col h-full">
+            <div className="flex flex-col h-full">
+              <div className="relative">
+                <div 
+                  className="py-3 flex flex-col cursor-pointer rounded-xl"
+                  onClick={toggleDropdown}
+                >
+                  <div className="flex justify-between items-center w-full">
+                    <h3 className="text-lg font-semibold text-gray-800 flex-grow pr-4">
+                      {currentQuestion.question}
+                    </h3>
+                    <svg
+                      className={`w-7 h-7 text-gray-600 transform transition-transform duration-300 ${
+                        isDropdownOpen ? 'rotate-180' : ''
+                      }`}
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      {option.question}
-                    </a>
-                  ))}
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M19 9l-7 7-7-7" 
+                      />
+                    </svg>
+                  </div>
+                  <span className="block w-full mx-auto border-b-2 border-oxfordBlue rounded-xl"></span>
                 </div>
-              )}
-            </div>
+                {/* Scrollable Dropdown Menu */}
+                {isDropdownOpen && (
+                  <div className="absolute rounded-xl left-0 right-0 z-20 bg-white -mt-1 shadow-md py-4 max-h-[40vh] overflow-y-auto">
+                    {questions.map((option, index) => (
+                      <div
+                        key={index}
+                        className={`relative w-[90%] mx-auto rounded-xl py-2 px-2 cursor-pointer transition-colors duration-200 last:border-b-0
+                          ${currentQuestion.question === option.question 
+                            ? 'bg-oxfordBlue text-white'
+                            : 'hover:bg-gray-100 text-gray-800'
+                          }`}
+                        onClick={() => handleQuestionSelect(option.question, option.answer)}
+                      >
+                        {option.question}
+                        {currentQuestion.question !== option.question && (
+                          <span className="block w-9/10 mx-auto border-b-2 border-darkGold mt-1 rounded-xl"></span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-            <div className="answer">
-              <p className="text-black">{currentQuestion.answer}</p>
+              {/* Answer Section */}
+              <div className="py-3 flex-1 flex items-start">
+                <p className="text-base text-black leading-relaxed">
+                  {currentQuestion.answer}
+                </p>
+              </div>
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );
 }
 
-export default FAQs2; 
+export default FAQs2;
