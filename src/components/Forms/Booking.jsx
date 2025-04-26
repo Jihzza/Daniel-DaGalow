@@ -195,13 +195,12 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
       {/* If no hour is selected yet, show the hour selection grid */}
       {!selectedHour ? (
         <div>
-          <h4 className="text-white text-lg mb-4">Select an available time:</h4>
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
             {timeSlots.map(({ slot, allowed }) => (
               <button
                 key={slot}
                 onClick={() => handleHourSelect(slot)}
-                className="bg-white/10 hover:bg-darkGold/70 text-white rounded-xl py-3 px-4 transition-colors duration-200 flex flex-col items-center"
+                className="bg-white/10 hover:bg-darkGold/70 text-white rounded-xl p-3 transition-colors duration-200 flex flex-col items-center"
               >
                 <span className="text-xl font-semibold">{slot}</span>
                 <span className="text-xs mt-1">
@@ -223,7 +222,6 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
                 <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
               </svg>
             </button>
-            <h4 className="text-white text-lg">Choose consultation length for {selectedHour}:</h4>
           </div>
           
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -233,14 +231,14 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
                 <button
                   key={duration}
                   onClick={() => handleDurationSelect(selectedHour, duration)}
-                  className={`relative overflow-hidden rounded-xl border-2 p-4 transition-all duration-200
+                  className={`relative overflow-hidden shadow-lg rounded-xl p-3 transition-all duration-200
                     ${selectedTime?.slot === selectedHour && selectedTime?.dur === duration
-                      ? "border-darkGold bg-darkGold/30 shadow-md"
-                      : "border-white/30 bg-white/10 hover:border-darkGold/70 hover:bg-white/20"
+                      ? " bg-darkGold/30"
+                      : " bg-white/10 hover:border-darkGold/70 hover:bg-white/20"
                     }`}
                 >
                   <div className="flex flex-col items-center justify-center text-white">
-                    <span className="text-2xl font-bold mb-1">{formatDuration(duration)}</span>
+                    <span className="text-lg font-bold mb-1">{formatDuration(duration)}</span>
                     <span className="text-xs opacity-70">
                       {selectedHour} - {calculateEndTime(selectedHour, duration)}
                     </span>
