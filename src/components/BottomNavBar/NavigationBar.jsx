@@ -24,10 +24,10 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   };
 
   const icons = [
-    {src: dagalowicon, alt: "DaGalow", to: "/components/Subpages/Home"},
+    {src: dagalowicon, alt: "DaGalow", to: "/"},
     {src: calendar, alt: "Calendar", to: "/components/Subpages/Calendar"},
     {src: chatbot, alt: "Chatbot", action: onChatbotClick},
-    {src: settings, alt: "Dashboard", to: user ? "/components/Subpages/Settings" : null, action: user ? null : onAuthModalOpen},
+    {src: settings, alt: "Settings", to: user ? "/components/Subpages/Settings" : null, action: user ? null : onAuthModalOpen},
     {src: account, alt: "Account", action: handleAccountClick},
   ];
   

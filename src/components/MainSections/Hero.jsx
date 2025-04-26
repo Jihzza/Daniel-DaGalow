@@ -45,6 +45,7 @@ function Hero() {
           alt="Hero"
           className="w-full h-full object-cover rounded-xl my-4 shadow-lg"
         />
+        
         <div className="my-8 mx-auto w-40 flex self-center justify-center items-center">
           <Marquee
             speed={70}

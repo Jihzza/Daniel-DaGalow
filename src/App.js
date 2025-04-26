@@ -81,7 +81,7 @@ function App() {
       <Router>
         <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray">
           <Header onAuthModalOpen={handleAuthModalOpen} />
-
+          <main className='pt-14'>
           <Routes>
             <Route
               path="/"
@@ -185,7 +185,7 @@ function App() {
               }
             />
           </Routes>
-
+          </main>
           {/* Always-on Navigation Bar & Chatbot */}
           <NavigationBar
             onChatbotClick={() => openChat()}
