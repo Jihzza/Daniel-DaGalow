@@ -58,7 +58,7 @@ export default function ProfilePage({ onChatOpen }) {
             .eq("id", user.id)
             .single(),
           supabase
-            .from("appointments")
+            .from("bookings")
             .select("*")
             .eq("user_id", user.id)
             .order("appointment_date", { ascending: true }),

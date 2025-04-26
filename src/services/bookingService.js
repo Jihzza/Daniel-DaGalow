@@ -14,41 +14,37 @@ export const fetchBookings = async () => {
     
     if (error) throw error;
     
-    // Transform the data to create three visual events for each booking
-    // This is for UI display purposes only
+    // Transform data for our booking system
+    // Every booking has two key periods:
+    // 1. Preparation time (30min before start)
+    // 2. Consultation time (actual appointment)
     const formattedEvents = [];
     
     data.forEach(booking => {
-      // Main consultation event
+      // Get the consultation start and end times
+      const startTime = new Date(booking.appointment_date);
+      const endTime = addMinutes(startTime, booking.duration_minutes);
+      
+      // Get the preparation time (30min before)
+      const prepStartTime = addMinutes(startTime, -30);
+      
+      // Add the main consultation event
       formattedEvents.push({
         id: booking.id,
-        title: 'Booked',
-        start: new Date(booking.main_start_time),
-        end: new Date(booking.main_end_time),
-        backgroundColor: '#B8860B', // darkGold
-        type: 'main',
+        title: 'Consultation',
+        start: startTime,
+        end: endTime,
+        duration: booking.duration_minutes,
         bookingId: booking.id
       });
       
-      // Preparation buffer event
+      // Add the preparation event
       formattedEvents.push({
         id: `prep-${booking.id}`,
         title: 'Preparation',
-        start: new Date(booking.prep_start_time),
-        end: new Date(booking.main_start_time),
-        backgroundColor: '#D3D3D3',
+        start: prepStartTime,
+        end: startTime,
         type: 'prep',
-        bookingId: booking.id
-      });
-      
-      // Review buffer event
-      formattedEvents.push({
-        id: `review-${booking.id}`,
-        title: 'Review',
-        start: new Date(booking.main_end_time),
-        end: new Date(booking.review_end_time),
-        backgroundColor: '#D3D3D3',
-        type: 'review',
         bookingId: booking.id
       });
     });
@@ -56,38 +52,26 @@ export const fetchBookings = async () => {
     return { data: formattedEvents, error: null };
   } catch (error) {
     console.error('Error fetching bookings:', error);
-    return { data: null, error };
+    return { data: [], error };
   }
 };
 
 /**
- * Create a new booking record with prep and review buffers
- * @param {Object} booking - Booking information including name, email, and time
+ * Create a new booking record
+ * @param {Object} booking - Booking information
  * @returns {Promise} Promise containing the created booking data
  */
 export const createBooking = async (booking) => {
   try {
-    const { name, email, date, time } = booking;
+    const { user_id, appointment_date, duration_minutes, name, email } = booking;
     
-    // Parse the selected time
-    const [hours, minutes] = time.split(':').map(Number);
-    
-    // Create date objects for all time periods
-    const mainStartTime = new Date(date);
-    mainStartTime.setHours(hours, minutes, 0, 0);
-    
-    const mainEndTime = addMinutes(mainStartTime, 60);
-    const prepStartTime = addMinutes(mainStartTime, -30);
-    const reviewEndTime = addMinutes(mainEndTime, 30);
-    
-    // Create a single booking record with all time periods
+    // Create the booking record
     const bookingRecord = {
+      user_id,
+      appointment_date,
+      duration_minutes,
       name,
-      email,
-      prep_start_time: prepStartTime.toISOString(),
-      main_start_time: mainStartTime.toISOString(),
-      main_end_time: mainEndTime.toISOString(),
-      review_end_time: reviewEndTime.toISOString()
+      email
     };
     
     // Insert the booking record
@@ -108,33 +92,49 @@ export const createBooking = async (booking) => {
 /**
  * Check if a time slot is available by checking for overlaps
  * @param {Date} date - The date to check
- * @param {String} time - The time to check (format: "HH:MM")
+ * @param {String} hourString - The hour to check (format: "HH:00")
+ * @param {Number} durationMinutes - The duration in minutes
  * @returns {Promise<boolean>} True if the slot is available, false otherwise
  */
-export const checkTimeSlotAvailability = async (date, time) => {
+export const checkTimeSlotAvailability = async (date, hourString, durationMinutes) => {
   try {
-    // Parse the selected time
-    const [hours, minutes] = time.split(':').map(Number);
-    
-    // Create date objects for the full booking period (including buffers)
-    const mainStartTime = new Date(date);
-    mainStartTime.setHours(hours, minutes, 0, 0);
-    
-    const prepStartTime = addMinutes(mainStartTime, -30);
-    const reviewEndTime = addMinutes(mainStartTime, 90); // 60 min consultation + 30 min review
-    
-    // Check for any overlapping bookings
-    const { data, error } = await supabase
+    // We need to get all bookings first to check conflicts
+    const { data: bookings, error } = await supabase
       .from('bookings')
-      .select('*')
-      .or(`prep_start_time,lt.${reviewEndTime.toISOString()},review_end_time,gt.${prepStartTime.toISOString()}`);
+      .select('*');
     
     if (error) throw error;
     
-    // If we found any overlapping bookings, the slot is not available
-    return { isAvailable: data.length === 0, error: null };
+    // Convert the proposed booking to date objects
+    const [hours, minutes] = hourString.split(':').map(Number);
+    
+    const proposedDate = new Date(date);
+    proposedDate.setHours(hours, minutes, 0, 0);
+    
+    const consultationStart = proposedDate;
+    const consultationEnd = addMinutes(consultationStart, durationMinutes);
+    const prepStart = addMinutes(consultationStart, -30);
+    
+    // Check for conflicts with any existing booking
+    for (const booking of bookings) {
+      const existingStart = new Date(booking.appointment_date);
+      const existingEnd = addMinutes(existingStart, booking.duration_minutes);
+      const existingPrepStart = addMinutes(existingStart, -30);
+      
+      // Check if there's any overlap between:
+      // 1. The proposed booking period (including prep time)
+      // 2. Any existing booking period (including prep time)
+      if (
+        (prepStart < existingEnd && consultationEnd > existingPrepStart)
+      ) {
+        return { isAvailable: false, error: null };
+      }
+    }
+    
+    // No conflicts found
+    return { isAvailable: true, error: null };
   } catch (error) {
-    console.error('Error checking time slot availability:', error);
+    console.error('Error checking availability:', error);
     return { isAvailable: false, error };
   }
 };
