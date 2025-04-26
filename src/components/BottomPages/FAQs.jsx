@@ -76,7 +76,7 @@ function FAQs2() {
                   onClick={toggleDropdown}
                 >
                   <div className="flex justify-between items-center w-full">
-                    <h3 className="text-lg font-semibold text-gray-800 flex-grow pr-4">
+                    <h3 className="text-lg font-semibold text-black flex-grow ">
                       {currentQuestion.question}
                     </h3>
                     <svg
@@ -96,7 +96,7 @@ function FAQs2() {
                       />
                     </svg>
                   </div>
-                  <span className="block w-full mx-auto border-b-2 border-oxfordBlue rounded-xl"></span>
+                  <span className="block w-[95%] my-2 mx-auto border-b-2 border-oxfordBlue rounded-xl"></span>
                 </div>
                 {/* Scrollable Dropdown Menu */}
                 {isDropdownOpen && (
@@ -122,7 +122,7 @@ function FAQs2() {
               </div>
 
               {/* Answer Section */}
-              <div className="py-3 flex-1 flex items-start">
+              <div className="flex-1 flex items-start">
                 <p className="text-base text-black leading-relaxed">
                   {currentQuestion.answer}
                 </p>
