@@ -1,4 +1,4 @@
-// Update Header.jsx
+// Updated Header.jsx with Music and Videos links
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
@@ -59,7 +59,7 @@ function Header() {
             borderColor="#002147" // match your theme
             innerBorderColor="#000" // see previous answer
             imageSrc={avatarUrl} // null → fallback
-            fallbackText={user?.email[0].toUpperCase() || "?"}
+            fallbackText={user?.email?.[0]?.toUpperCase() || "?"}
           />
         </div>
 
@@ -125,6 +125,33 @@ function Header() {
               Home
             </Link>
 
+            {/* Added Calendar link */}
+            <Link
+              to="/components/Subpages/Calendar"
+              className="text-white text-xl hover:text-gray-300 transition-colors"
+              onClick={() => setMenuOpen(false)}
+            >
+              Calendar
+            </Link>
+
+            {/* Added Music link */}
+            <Link
+              to="/components/Subpages/Music"
+              className="text-white text-xl hover:text-gray-300 transition-colors"
+              onClick={() => setMenuOpen(false)}
+            >
+              Music
+            </Link>
+
+            {/* Added Videos link */}
+            <Link
+              to="/components/Subpages/Videos"
+              className="text-white text-xl hover:text-gray-300 transition-colors"
+              onClick={() => setMenuOpen(false)}
+            >
+              Videos
+            </Link>
+
             {/* Auth links in mobile menu */}
             {user ? (
               <>
@@ -134,6 +161,13 @@ function Header() {
                   onClick={() => setMenuOpen(false)}
                 >
                   Profile
+                </Link>
+                <Link
+                  to="/components/Subpages/Settings"
+                  className="text-white text-xl hover:text-gray-300 transition-colors"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Settings
                 </Link>
                 <button
                   onClick={() => {

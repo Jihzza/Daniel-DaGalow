@@ -7,9 +7,20 @@ import SocialIcon from "../../assets/icons/Phone Branco.svg";
 import StocksIcon from "../../assets/icons/MoneyBag Branco.svg";
 import PortfolioIcon from "../../assets/icons/Target Branco.svg";
 import BusinessIcon from "../../assets/icons/Bag Branco.svg";
+import { ServiceContext } from "../contexts/ServiceContext";
+import { useContext } from "react";
 
 function ExpertAnalysis() {
   const navigate = useNavigate();
+  const { service, setService } = useContext(ServiceContext);
+
+  const openForm = (service) => {
+    setService(service);                          // ① tell the form which one
+    document                                     // ② smooth scroll
+      .getElementById("service-selection")
+      ?.scrollIntoView({ behavior: "smooth" });   // MDN example :contentReference[oaicite:2]{index=2}
+  };
+
   const handleServiceClick = (service) => {
     const mapping = {
       analysis: "#analysis-request",
@@ -188,7 +199,7 @@ function ExpertAnalysis() {
             </h1>
             <p className="text-white text-sm pb-6">Depends on the Project</p>
           <button
-              onClick={() => handleServiceClick("analysis")}
+              onClick={() => openForm("analysis")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               Get My Analysis

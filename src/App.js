@@ -26,13 +26,10 @@ import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
-import Dashboard from './components/Dashboard';
 import { useAuth } from './components/contexts/AuthContext';
 import Footer from './components/Footer';
 import Music from './components/Subpages/Music';
 import Videos from './components/Subpages/Videos';
-import Achievements from './components/Subpages/Achievements';
-import AboutMe from './components/Subpages/AboutMe';
 
 // Private route component to protect routes that require authentication
 const PrivateRoute = ({ children }) => {
@@ -53,7 +50,7 @@ const PublicOnlyRoute = ({ children }) => {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
   if (user) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/" />;
   }
   return children;
 };
@@ -124,14 +121,6 @@ function App() {
 
             {/* Protected Routes */}
             <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>
-              }
-            />
-            <Route
               path="/profile"
               element={
                 <PrivateRoute>
@@ -160,14 +149,9 @@ function App() {
             {/* Other Routes */}
             <Route path="/components/Subpages/Music" element={<Music />} />
             <Route path="/components/Subpages/Videos" element={<Videos />} />
-            <Route
-              path="/components/Subpages/Achievements"
-              element={<Achievements />}
-            />
-            <Route
-              path="/components/Subpages/AboutMe"
-              element={<AboutMe />}
-            />
+            
+            
+            
             <Route
               path="/components/Subpages/Calendar"
               element={<CalendarPage />}

@@ -26,7 +26,7 @@ const Login = ({ isModal = false, onSuccess = () => {} }) => {
         onSuccess();
       } else {
         // Regular redirect for non-modal
-        navigate('/dashboard');
+        navigate('/');
       }
     } catch (error) {
       setError(error.message || 'Failed to sign in');

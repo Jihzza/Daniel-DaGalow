@@ -1,7 +1,7 @@
 import React from 'react';
 
 function Videos() {
-  const recommendedPlaylists = [
+  const educationalPlaylists = [
     {
       title: "Psychology & Mental Health",
       description: "Explore the fascinating world of psychology and mental health. From understanding human behavior to practical mental wellness techniques, this playlist offers valuable insights for personal growth.",
@@ -40,29 +40,45 @@ function Videos() {
   ];
 
   return (
-    <section id="videos" className="py-8 px-4 text-black overflow-hidden">
-      <div className="max-w-3xl mx-auto text-center space-y-6 px-4 overflow-visible">
-        <h2 className="text-2xl md:text-3xl font-bold text-white">Educational Resources</h2>
-        <p className="text-lg text-white">
-          A curated collection of educational content covering essential life subjects. Expand your knowledge and develop new skills through these carefully selected video playlists.
-        </p>
+    <section className="min-h-screen py-6 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center transform transition-all duration-500">
+          <h2 className="text-2xl font-bold text-center mb-6 text-white">
+            Educational Resources
+          </h2>
+          <p className="text-lg text-white mb-8 max-w-3xl mx-auto">
+            A curated collection of educational content covering essential life subjects. Expand your knowledge and develop new skills through these carefully selected video playlists.
+          </p>
+        </div>
 
-        {/* Playlists Section */}
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
-            {recommendedPlaylists.map((playlist, index) => (
-              <div key={index} className="w-full p-6 rounded-lg shadow-md border-2 border-darkGold">
-                <div className="flex flex-col items-center text-center">
-                  <h3 className="text-xl text-white font-semibold mb-2">{playlist.title}</h3>
-                  <p className="text-white mb-4">{playlist.description}</p>
-                  <a 
-                    href={playlist.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
-                  >
-                    Watch on YouTube
-                  </a>
+        <div className="rounded-2xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {educationalPlaylists.map((playlist, index) => (
+              <div 
+                key={index} 
+                className="transform transition-all duration-300 hover:scale-[1.02]"
+              >
+                <div className="bg-gentleGray flex flex-col items-center justify-center rounded-xl text-center shadow-md p-6">
+                  <h3 className="text-xl font-semibold text-black mb-3 text-center">
+                    {playlist.title}
+                  </h3>
+                  <p className="text-black mb-6 flex-grow">
+                    {playlist.description}
+                  </p>
+                  <div className="mt-auto flex justify-center">
+                    <a 
+                      href={playlist.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-darkGold text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 inline-flex items-center"
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      Watch on YouTube
+                    </a>
+                  </div>
                 </div>
               </div>
             ))}
@@ -73,4 +89,4 @@ function Videos() {
   );
 }
 
-export default Videos; 
+export default Videos;

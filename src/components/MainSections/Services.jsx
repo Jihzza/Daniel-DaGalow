@@ -11,9 +11,20 @@ import Fitness from "../../assets/icons/Fitness Branco.svg";
 import More from "../../assets/icons/More Branco.svg";
 import Robot from "../../assets/icons/Robot Branco.svg";
 import { useNavigate } from "react-router-dom";
+import { ServiceContext } from "../contexts/ServiceContext";
+import { useContext } from "react";
 
 function Services() {
   const navigate = useNavigate();
+  const { service, setService } = useContext(ServiceContext);
+
+  const openForm = (service) => {
+    setService(service);                          // ① tell the form which one
+    document                                     // ② smooth scroll
+      .getElementById("service-selection")
+      ?.scrollIntoView({ behavior: "smooth" });   // MDN example :contentReference[oaicite:2]{index=2}
+  };
+
   const handleServiceClick = (service) => {
     const mapping = {
       booking: "#booking",
@@ -245,12 +256,14 @@ function Services() {
               90€ / hour
             </h1>
             <p className="text-white text-sm pb-6">Minimum 45 minutes</p>
+            <div className="flex justify-center pt-2">
             <button
-              onClick={() => handleServiceClick("booking")}
+              onClick={() => openForm("booking")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
               Book a Consultation
             </button>
+            </div>
           </div>
         </div>
       </div>

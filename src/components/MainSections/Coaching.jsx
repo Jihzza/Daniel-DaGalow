@@ -9,11 +9,20 @@ import OnlyFansIcon from "../../assets/icons/Onlyfans Branco.svg";
 import BusinessIcon from "../../assets/icons/Business Branco.svg";
 import HabitsIcon from "../../assets/icons/Habits Branco.svg";
 import { useNavigate } from "react-router-dom";
+import { ServiceContext } from "../contexts/ServiceContext";
+import { useContext } from "react";
 
 function DirectCoaching() {
-
+  const { service, setService } = useContext(ServiceContext);
   const [tier, setTier] = useState("basic");
   const navigate = useNavigate();
+
+  const openForm = (service) => {
+    setService(service);                          // ① tell the form which one
+    document                                     // ② smooth scroll
+      .getElementById("service-selection")
+      ?.scrollIntoView({ behavior: "smooth" });   // MDN example :contentReference[oaicite:2]{index=2}
+  };
 
   const tiers = [
     {
@@ -261,7 +270,7 @@ function DirectCoaching() {
 
         <div className="flex justify-center pt-2">
           <button
-            onClick={handleServiceClick}
+            onClick={() => openForm("coaching")}
             className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 "
         >
           Get My Number

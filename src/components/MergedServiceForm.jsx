@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AnalysisRequest from "./Forms/AnalysisRequest";
 import Booking from "./Forms/Booking";
 import CoachingRequest from "./Forms/CoachingRequest";
 import PitchDeckRequest from "./Forms/PitchDeckRequest";
+import { useSearchParams } from "react-router-dom";
+import { ServiceContext } from "./contexts/ServiceContext";
+import { useContext } from "react";
 
 export default function MergedServiceForm() {
-  const [service, setService] = useState(null);
-  const [step, setStep] = useState(1);
+  const [searchParams] = useSearchParams();
+  const initialService = searchParams.get("service"); // ← NEW
 
+  const { service, setService } = useContext(ServiceContext);
+  const [step, setStep] = useState(service ? 2 : 1);
   const services = [
     { label: "Analysis", value: "analysis" },
     { label: "Consultation", value: "booking" },
@@ -27,6 +32,15 @@ export default function MergedServiceForm() {
     booking: 5,
     coaching: 4,
     pitchdeck: 4,
+  };
+
+  useEffect(() => {
+    if (service) setStep(2); // jump straight into the wizard
+  }, [service]);
+
+  const handleBack = () => {
+    setService(null);
+    setStep(1);
   };
 
   // total dots = 1 (service select) + internal
@@ -49,10 +63,7 @@ export default function MergedServiceForm() {
   const CurrentForm = service ? SERVICE_COMPONENT[service] : null;
 
   // Step indicators with original styling
-  const StepIndicator = () => (
-    <div>
-    </div>
-  );
+  const StepIndicator = () => <div></div>;
 
   // Service selection view
   if (!service) {
@@ -63,21 +74,19 @@ export default function MergedServiceForm() {
             What service do you need?
           </h2>
           <div className=" gap-6 bg-oxfordBlue shadow-lg rounded-2xl p-8">
-            <h3 className="text-xl text-white mb-6">
-              Choose the Service
-            </h3>
+            <h3 className="text-xl text-white mb-6">Choose the Service</h3>
             <div className="grid grid-cols-2 gap-6">
               {services.map((s) => (
                 <button
                   key={s.value}
-                onClick={() => selectService(s.value)}
-                className="px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg"
-              >
-                <span className="block text-white font-medium text-sm">
-                  {s.label}
-                </span>
-              </button>
-            ))}
+                  onClick={() => selectService(s.value)}
+                  className="px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg"
+                >
+                  <span className="block text-white font-medium text-sm">
+                    {s.label}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -90,9 +99,7 @@ export default function MergedServiceForm() {
     <section>
       <div className="max-w-3xl mx-auto">
         <StepIndicator />
-        {CurrentForm && (
-          <CurrentForm onBackService={() => onStepClick(1)} />
-        )}
+        {CurrentForm && <CurrentForm onBackService={() => onStepClick(1)} />}
       </div>
     </section>
   );

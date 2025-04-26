@@ -9,31 +9,54 @@ import { Autoplay } from "swiper/modules";
 import Marquee from "react-fast-marquee";
 import { useNavigate } from "react-router-dom";
 import DaGalow from "../../assets/logos/DaGalow Logo.svg";
+import { ServiceContext } from "../contexts/ServiceContext";
+import { useContext } from "react";
 
 function Hero() {
   const scrollTo = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
   const navigate = useNavigate();
-  const handleServiceClick = (service) => {
-    const mapping = {
-      booking: "#bookingForm",
-      coaching: "#coaching-journey",
-      analysis: "#analysis-request",
-    };
-    navigate(`/?service=${service}${mapping[service]}`);
-    setTimeout(() => {
-      const id = mapping[service].slice(1);
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
+
+  const { setService } = useContext(ServiceContext);
+
+  const openForm = (service) => {
+    setService(service); // ① tell the form which one
+    document // ② smooth scroll
+      .getElementById("service-selection")
+      ?.scrollIntoView({ behavior: "smooth" }); // MDN example :contentReference[oaicite:2]{index=2}
   };
+
+  const handleCardScroll = () => scrollTo("services"); // parent scroll
+
+  const handleOpenForm = (service) => (e) => {
+    // button action
+    e.stopPropagation(); // ⛔ keep it inside the button
+    openForm(service); // your helper from before
+  };
+
+  /* parent scrolls to the section */
+const handleCoachingCard = () => scrollTo("coaching");
+/* button opens the Coaching wizard */
+const openCoachingForm  = (e) => {
+  e.stopPropagation();          // stop bubbling here
+  openForm("coaching");
+};
+
+const handleAnalysisCard = () => scrollTo("expert-analysis");
+const openAnalysisForm   = (e) => {
+  e.stopPropagation();
+  openForm("analysis");
+};
+
   return (
     <section
       id="hero"
       className="pb-8 pt-4 px-4 text-white min-h-screen flex flex-col justify-center items-center text-center overflow-hidden"
     >
+      {/* Logo */}
       <div className="flex items-center justify-center space-x-2">
         <h1 className="text-lg font-extrabold">Learn from</h1>
         <img src={DaGalow} alt="DaGalow" className="w-[150px]" />
@@ -45,7 +68,7 @@ function Hero() {
           alt="Hero"
           className="w-full h-full object-cover rounded-xl my-4 shadow-lg"
         />
-        
+        {/* Auto Carousel of topics */}
         <div className="my-8 mx-auto w-40 flex self-center justify-center items-center">
           <Marquee
             speed={70}
@@ -61,16 +84,20 @@ function Hero() {
             <div className="mx-10">Business</div>
           </Marquee>
         </div>
+
+        {/* Hero text */}
         <h1 className="text-2xl font-extrabold my-8">
-        Outsmart your limits—crush mindset, money, and life with crystal‑clear strategies that just work.
+          Outsmart your limits—crush mindset, money, and life with crystal‑clear
+          strategies that just work.
         </h1>
         <p className="text-lg md:text-xl my-8 max-w-md mx-auto">
           I went from bankruptcy to $150 K/year through battle‑tested, no‑fluff
           tactics—now I share them so you can learn from my mistakes and skip
           the guesswork
         </p>
+
+        {/* Achievements carousel using Swiper */}
         <div className="my-14 ">
-          {/* Achievements carousel using Swiper */}
           <Swiper
             spaceBetween={40}
             slidesPerView={1.5}
@@ -89,7 +116,6 @@ function Hero() {
             modules={[Autoplay]}
             className="w-full overflow-visible mx-auto max-w-[800px] px-10"
           >
-            {/* Remade original examples. 246w 180h */}
             <SwiperSlide>
               <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
                 <span className="font-extrabold text-lg">$140K+ / year</span>
@@ -234,7 +260,11 @@ function Hero() {
           </Swiper>
         </div>
 
-        <div className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4">
+        {/* Individual Consultation */}
+        <div
+          onClick={handleCardScroll}
+          className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4"
+        >
           <div className="flex flex-col items-center justify-center my-8">
             <div className="flex flex-col items-center py-6 justify-center">
               <h2 className="text-3xl font-bold mb-6">
@@ -244,22 +274,20 @@ function Hero() {
               <p className="text-sm font-normal mb-2">Minimum 45 minutes</p>
             </div>
             <button
-              onClick={() => handleServiceClick("booking")}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              onClick={handleOpenForm("booking")} // ← booking = consultations
+              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               Book a Consultation
             </button>
-            <p
-              role="button"
-              onClick={() => handleServiceClick("booking")}
-              className="text-sm font-normal"
-            >
+            <p role="button" className="text-sm font-normal">
               Learn More
             </p>
           </div>
         </div>
+
+        {/* Direct Coaching */}
         <div
-          onClick={() => scrollTo("coaching")}
+          onClick={handleCoachingCard}
           className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4"
         >
           <div className="flex flex-col items-center justify-center my-8">
@@ -293,23 +321,20 @@ function Hero() {
             </div>
 
             <button
-              onClick={() => handleServiceClick("coaching")}
-              className="bg-darkGold w-60 text-black font-bold text-[16px] px-6 py-3 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              onClick={openCoachingForm}
+              className="bg-darkGold w-60 text-black font-bold text-[16px] px-6 py-3 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               Get My Number
             </button>
-            <p
-              role="button"
-              onClick={() => handleServiceClick("coaching")}
-              className="text-sm font-normal"
-            >
+            <p role="button" className="text-sm font-normal">
               Learn More
             </p>
           </div>
         </div>
 
+        {/* Expert Analysis */}
         <div
-          onClick={() => scrollTo("expert-analysis")}
+          onClick={handleAnalysisCard}
           className="flex flex-col items-center justify-center space-y-6 mt-8 border-2 border-darkGold rounded-xl p-4"
         >
           <div className="flex flex-col items-center justify-center my-8">
@@ -319,16 +344,12 @@ function Hero() {
               media - Your business
             </p>
             <button
-              onClick={() => handleServiceClick("analysis")}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              onClick={openAnalysisForm}
+              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               Get My Analysis
             </button>
-            <p
-              role="button"
-              onClick={() => handleServiceClick("analysis")}
-              className="text-sm font-normal"
-            >
+            <p role="button" className="text-sm font-normal">
               Learn More
             </p>
           </div>
