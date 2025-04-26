@@ -163,6 +163,104 @@ const SettingsPage = () => {
     );
   }
 
+  // Privacy Policy Content
+  const renderPrivacyPolicy = () => (
+    <div className="prose prose-sm max-w-none">
+      <h3 className="text-xl font-bold text-oxfordBlue mb-4">Privacy Policy</h3>
+      <p className="mb-4">Last updated: April 26, 2025</p>
+
+      <p className="mb-2">At DaGalow, we respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, and safeguard your information when you use our website and services.</p>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">1. Information We Collect</h4>
+      <p className="mb-2">We collect information you provide directly to us, including:</p>
+      <ul className="list-disc pl-6 mb-4">
+        <li>Personal information (name, email address, phone number)</li>
+        <li>Profile information</li>
+        <li>Payment and transaction information</li>
+        <li>Communications you send to us</li>
+        <li>Usage information and interaction with our services</li>
+      </ul>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">2. How We Use Your Information</h4>
+      <p className="mb-2">We use your information to:</p>
+      <ul className="list-disc pl-6 mb-4">
+        <li>Provide, maintain, and improve our services</li>
+        <li>Process transactions and send related information</li>
+        <li>Send you technical notices, updates, and support messages</li>
+        <li>Respond to your comments and questions</li>
+        <li>Personalize your experience</li>
+        <li>Monitor and analyze trends and usage</li>
+      </ul>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">3. Sharing of Information</h4>
+      <p className="mb-2">We may share your information with:</p>
+      <ul className="list-disc pl-6 mb-4">
+        <li>Service providers who perform services on our behalf</li>
+        <li>Payment processors</li>
+        <li>Professional advisors</li>
+        <li>When required by law or to protect rights</li>
+      </ul>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">4. Your Rights</h4>
+      <p className="mb-2">Depending on your location, you may have rights to:</p>
+      <ul className="list-disc pl-6 mb-4">
+        <li>Access personal data we hold about you</li>
+        <li>Request correction of your personal data</li>
+        <li>Request deletion of your personal data</li>
+        <li>Object to processing of your personal data</li>
+        <li>Request restriction of processing your personal data</li>
+        <li>Request transfer of your personal data</li>
+        <li>Withdraw consent</li>
+      </ul>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">5. Contact Us</h4>
+      <p className="mb-4">If you have any questions about this Privacy Policy, please contact us at privacy@dagalow.com</p>
+    </div>
+  );
+
+  // Terms of Service Content
+  const renderTermsOfService = () => (
+    <div className="prose prose-sm max-w-none">
+      <h3 className="text-xl font-bold text-oxfordBlue mb-4">Terms of Service</h3>
+      <p className="mb-4">Last updated: April 26, 2025</p>
+
+      <p className="mb-2">Please read these Terms of Service ("Terms") carefully before using the DaGalow website and services operated by DaGalow ("we," "us," or "our").</p>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">1. Acceptance of Terms</h4>
+      <p className="mb-4">By accessing or using our service, you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the service.</p>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">2. User Accounts</h4>
+      <p className="mb-4">When you create an account with us, you must provide accurate, complete, and up-to-date information. You are responsible for safeguarding the password and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account.</p>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">3. Payments and Subscriptions</h4>
+      <p className="mb-2">For paid services:</p>
+      <ul className="list-disc pl-6 mb-4">
+        <li>You agree to pay all fees or charges to your account based on the fees, charges, and billing terms in effect at the time a fee or charge is due and payable.</li>
+        <li>You must provide a valid payment method for paying all fees.</li>
+        <li>Subscriptions will automatically renew until cancelled.</li>
+        <li>Cancellations must be made at least 24 hours before the end of the current billing period.</li>
+      </ul>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">4. Coaching Services</h4>
+      <p className="mb-4">Our coaching services are provided for informational and educational purposes only. We do not guarantee specific results. Implementation of advice and recommendations is at your own risk and discretion.</p>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">5. Intellectual Property</h4>
+      <p className="mb-4">The Service and its original content, features, and functionality are and will remain the exclusive property of DaGalow. Our service is protected by copyright, trademark, and other laws. Our trademarks may not be used in connection with any product or service without our prior written consent.</p>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">6. Termination</h4>
+      <p className="mb-4">We may terminate or suspend your account immediately, without prior notice or liability, for any reason, including without limitation if you breach the Terms. Upon termination, your right to use the Service will immediately cease.</p>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">7. Limitation of Liability</h4>
+      <p className="mb-4">In no event shall DaGalow, its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.</p>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">8. Changes to Terms</h4>
+      <p className="mb-4">We reserve the right to modify or replace these Terms at any time. It is your responsibility to review these Terms periodically for changes.</p>
+      
+      <h4 className="font-bold text-lg mt-6 mb-2">9. Contact Us</h4>
+      <p className="mb-4">If you have any questions about these Terms, please contact us at terms@dagalow.com</p>
+    </div>
+  );
+
   // Helper function to render the appropriate settings content
   const renderSettingsContent = () => {
     switch(activeSection) {
@@ -424,8 +522,8 @@ const SettingsPage = () => {
                 <h3 className="font-semibold text-gray-700 mb-2">Preview</h3>
                 <div className={`p-4 border rounded-lg ${appearanceSettings.highContrast ? 'bg-white text-black border-black' : 'bg-gray-50 text-gray-800 border-gray-200'}`}>
                   <p className={`${appearanceSettings.textSize === 'small' ? 'text-sm' : 
-                                   appearanceSettings.textSize === 'medium' ? 'text-base' : 
-                                   appearanceSettings.textSize === 'large' ? 'text-lg' : 'text-xl'}`}>
+                                 appearanceSettings.textSize === 'medium' ? 'text-base' : 
+                                 appearanceSettings.textSize === 'large' ? 'text-lg' : 'text-xl'}`}>
                     This is a preview of how text will appear with your selected settings.
                   </p>
                 </div>
@@ -538,6 +636,97 @@ const SettingsPage = () => {
             </div>
           </div>
         );
+
+      case 'others':
+        return (
+          <div>
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="space-y-4">
+                {/* Privacy Policy Link */}
+                <div 
+                  className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all mb-3 flex justify-between items-center"
+                  onClick={() => setActiveSection('privacy-policy')}
+                >
+                  <div className="flex items-center">
+                    <div className="bg-oxfordBlue/10 p-2 rounded-full mr-3">
+                      <svg className="w-5 h-5 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                      </svg>
+                    </div>
+                    <span className="font-medium">Privacy Policy</span>
+                  </div>
+                  <svg className="w-5 h-5 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </div>
+                
+                {/* Terms of Service Link */}
+                <div 
+                  className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all flex justify-between items-center"
+                  onClick={() => setActiveSection('terms-of-service')}
+                >
+                  <div className="flex items-center">
+                    <div className="bg-oxfordBlue/10 p-2 rounded-full mr-3">
+                      <svg className="w-5 h-5 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      </svg>
+                    </div>
+                    <span className="font-medium">Terms of Service</span>
+                  </div>
+                  <svg className="w-5 h-5 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={() => setActiveSection(null)}
+                className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors mr-4"
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        );
+
+      case 'privacy-policy':
+        return (
+          <div>
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                {renderPrivacyPolicy()}
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={() => setActiveSection('others')}
+                className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        );
+
+      case 'terms-of-service':
+        return (
+          <div>
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                {renderTermsOfService()}
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={() => setActiveSection('others')}
+                className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        );
         
       default:
         return null;
@@ -545,7 +734,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-10 px-4  text-gray-800">
+    <div className="min-h-screen py-6 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold text-center mb-6 text-white">Settings</h1>
         
@@ -553,7 +742,10 @@ const SettingsPage = () => {
           // Show detailed settings for active section
           <div className="bg-gentleGray rounded-xl shadow-md p-6">
             <h2 className="text-xl font-semibold text-oxfordBlue mb-6">
-              {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)} Settings
+              {activeSection === 'privacy-policy' ? 'Privacy Policy' : 
+               activeSection === 'terms-of-service' ? 'Terms of Service' : 
+               activeSection === 'others' ? 'Others' :
+               activeSection.charAt(0).toUpperCase() + activeSection.slice(1) + ' Settings'}
             </h2>
             {renderSettingsContent()}
           </div>
@@ -667,6 +859,29 @@ const SettingsPage = () => {
                   <div>
                     <h2 className="text-xl font-semibold text-oxfordBlue">Session Preferences</h2>
                     <p className="text-gray-600 mt-1">Manage your consultation and coaching session preferences</p>
+                  </div>
+                </div>
+                <svg className="w-6 h-6 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
+            </div>
+
+            {/* Others Section */}
+            <div 
+              className="bg-gentleGray rounded-xl shadow-md p-6 cursor-pointer transition-all hover:shadow-lg"
+              onClick={() => setActiveSection('others')}
+            >
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <div className="bg-oxfordBlue/10 p-3 rounded-full mr-4">
+                    <svg className="w-6 h-6 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-oxfordBlue">Others</h2>
+                    <p className="text-gray-600 mt-1">View legal documents and additional information</p>
                   </div>
                 </div>
                 <svg className="w-6 h-6 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

@@ -111,7 +111,7 @@ export default function ProfilePage({ onChatOpen }) {
 
   return (
     <>
-      <div className="min-h-screen py-20 px-4">
+      <div className="min-h-screen py-6 px-4">
         <div className="max-w-2xl mx-auto space-y-6">
           {/* Profile Header */}
           <div className="bg-gentleGray rounded-xl shadow-md p-6 flex items-center space-x-4">

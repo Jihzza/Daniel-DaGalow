@@ -34,7 +34,7 @@ function Hero() {
       id="hero"
       className="pb-8 pt-4 px-4 text-white min-h-screen flex flex-col justify-center items-center text-center overflow-hidden"
     >
-      <div className="flex items-center justify-center pt-14 space-x-2">
+      <div className="flex items-center justify-center space-x-2">
         <h1 className="text-lg font-extrabold">Learn from</h1>
         <img src={DaGalow} alt="DaGalow" className="w-[150px]" />
       </div>
