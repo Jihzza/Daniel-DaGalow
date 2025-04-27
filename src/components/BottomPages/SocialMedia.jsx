@@ -6,7 +6,7 @@ import TwitterIcon from "../../assets/icons/X Twitter.svg";
 
 function SocialMedia() {
   
-  const instagramLink = "https://www.instagram.com/";
+  const instagramLink = "https://www.instagram.com/danieldagalow/";
   const tiktokLink = "https://www.tiktok.com/";
   const linkedinLink = "https://www.linkedin.com/";
   const twitterLink = "https://x.com/";
