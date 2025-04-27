@@ -5,12 +5,15 @@ import InlineChatbotStep from "./InlineChatbotStep";
 import { useAuth } from "../contexts/AuthContext";
 
 // Progress Indicator
-function StepIndicator({ stepCount, currentStep, onStepClick = () => {}, className = "" }) {
+function StepIndicator({
+  stepCount,
+  currentStep,
+  onStepClick = () => {},
+  className = "",
+}) {
   return (
-    <div className={`flex items-center justify-center ${className}`}>        
-    
+    <div className={`flex items-center justify-center ${className}`}>
       {Array.from({ length: stepCount }).map((_, idx) => {
-        
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
         return (
@@ -23,7 +26,10 @@ function StepIndicator({ stepCount, currentStep, onStepClick = () => {}, classNa
                 isActive
                   ? "bg-darkGold border-darkGold text-white"
                   : "bg-white/20 border-white/50 text-white/50"
-              } ${!isActive && "hover:border-darkGold hover:text-white cursor-pointer"} ${stepNum > currentStep && "opacity-50 cursor-not-allowed"}`}
+              } ${
+                !isActive &&
+                "hover:border-darkGold hover:text-white cursor-pointer"
+              } ${stepNum > currentStep && "opacity-50 cursor-not-allowed"}`}
             >
               {stepNum}
             </button>
@@ -55,9 +61,13 @@ function TypeSelectionStep({ formData, onChange }) {
       {options.map((opt) => (
         <div
           key={opt.value}
-          onClick={() => onChange({ target: { name: "type", value: opt.value } })}
+          onClick={() =>
+            onChange({ target: { name: "type", value: opt.value } })
+          }
           className={`px-3 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg text-sm bg-oxfordBlue ${
-            formData.type === opt.value ? "border-darkGold shadow-lg" : "border-darkGold"
+            formData.type === opt.value
+              ? "border-darkGold shadow-lg"
+              : "border-darkGold"
           }`}
         >
           <p className="text-white font-medium">{opt.label}</p>
@@ -102,10 +112,11 @@ function ContactInfoStep({ formData, onChange }) {
 export default function AnalysisRequest({ onBackService }) {
   const [step, setStep] = useState(1);
   const { user } = useAuth(); // Get the current user
-  const [formData, setFormData] = useState({ type: "",
-  name: user?.user_metadata?.full_name || "",
-  email: "" 
-});
+  const [formData, setFormData] = useState({
+    type: "",
+    name: user?.user_metadata?.full_name || "",
+    email: "",
+  });
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -123,9 +134,9 @@ export default function AnalysisRequest({ onBackService }) {
   const UI_STEPS = STEPS.length + 2;
 
   const handleStepClick = (dot) => {
-       if (dot === 1) onBackService();
-       else setStep(dot - 1);
-     };
+    if (dot === 1) onBackService();
+    else setStep(dot - 1);
+  };
 
   const canProceed = () => {
     if (step === 2) return formData.name && formData.email;
@@ -137,7 +148,11 @@ export default function AnalysisRequest({ onBackService }) {
       setIsSubmitting(true);
       const { data, error } = await supabase
         .from("analysis_requests")
-        .insert({ name: formData.name, email: formData.email, service_type: formData.type })
+        .insert({
+          name: formData.name,
+          email: formData.email,
+          service_type: formData.type,
+        })
         .select("id")
         .maybeSingle();
       if (error) {
@@ -159,12 +174,16 @@ export default function AnalysisRequest({ onBackService }) {
   return (
     <section className="py-8 px-4">
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-2xl font-bold text-center mb-6 text-black">Get My Analysis</h2>
+        <h2 className="text-2xl font-bold text-center mb-6 text-black">
+          Get My Analysis
+        </h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
           {/* Step Content */}
           {step <= 2 && (
             <>
-              <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
+              <h3 className="text-xl text-white mb-4">
+                {STEPS[step - 1].title}
+              </h3>
               {React.createElement(STEPS[step - 1].component, {
                 formData,
                 onChange: handleChange,
@@ -198,6 +217,14 @@ export default function AnalysisRequest({ onBackService }) {
                 className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
               >
                 Next
+              </button>
+            )}
+            {step >= 3 && ( // step 3 → the chatbot screen
+              <button
+                onClick={onBackService} // closes the form the same way “Back” from dot-1 does
+                className="px-3 py-1 bg-darkGold text-black rounded-xl hover:bg-darkGold/90"
+              >
+                Done
               </button>
             )}
           </div>

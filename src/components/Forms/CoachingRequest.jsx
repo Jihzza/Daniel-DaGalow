@@ -27,7 +27,9 @@ function StepIndicator({
                 isActive
                   ? "bg-darkGold border-darkGold text-white"
                   : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer"
-              } ${stepNum > currentStep ? "opacity-50 cursor-not-allowed" : ""}`}
+              } ${
+                stepNum > currentStep ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               aria-label={`Go to step ${stepNum}`}
             >
               {stepNum}
@@ -64,7 +66,9 @@ function FrequencyStep({ formData, onChange }) {
               ? "border-darkGold shadow-lg"
               : "border-darkGold"
           }`}
-          onClick={() => onChange({ target: { name: "frequency", value: opt.value } })}
+          onClick={() =>
+            onChange({ target: { name: "frequency", value: opt.value } })
+          }
         >
           <p className="text-white font-medium">{opt.label}</p>
         </button>
@@ -111,7 +115,9 @@ function ContactStep({ formData, onChange }) {
           enableSearch
           searchPlaceholder="Search country..."
           value={formData.phone}
-          onChange={(phone) => onChange({ target: { name: "phone", value: phone } })}
+          onChange={(phone) =>
+            onChange({ target: { name: "phone", value: phone } })
+          }
           dropdownClass="!bg-oxfordBlue text-white rounded-2xl"
           searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2"
         />
@@ -144,7 +150,8 @@ function PaymentStep({ formData, onPaid }) {
     <div className="text-center mb-6">
       <p className="text-white mb-4 text-sm">
         You selected <strong>{tier.label}</strong>.<br />
-        Please complete the payment of <strong>{tier.price}</strong> to continue.
+        Please complete the payment of <strong>{tier.price}</strong> to
+        continue.
       </p>
       <a
         href={tier.link}
@@ -236,9 +243,9 @@ export default function CoachingRequest({ onBackService }) {
   };
 
   const handleStepClick = (dot) => {
-       if (dot === 1) onBackService();
-       else setStep(dot - 1);
-     };
+    if (dot === 1) onBackService();
+    else setStep(dot - 1);
+  };
 
   return (
     <section className="py-8 px-4" id="coaching-journey">
@@ -278,10 +285,18 @@ export default function CoachingRequest({ onBackService }) {
                 Next
               </button>
             )}
+            {step === STEPS.length && (
+              <button
+                onClick={onBackService}
+                className="px-3 py-1 bg-darkGold text-black rounded-xl hover:bg-darkGold/90"
+              >
+                Done
+              </button>
+            )}
           </div>
 
           <StepIndicator
-            stepCount={UI_STEPS }
+            stepCount={UI_STEPS}
             currentStep={step + 1}
             onStepClick={handleStepClick}
             className="pt-6"

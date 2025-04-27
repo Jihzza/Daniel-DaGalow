@@ -246,6 +246,15 @@ export default function PitchDeckRequest({ onBackService }) {
                 Next
               </button>
             )}
+            {step === STEPS.length && (
+  <button
+    onClick={onBackService}
+    className="px-3 py-1 bg-darkGold text-black rounded-xl hover:bg-darkGold/90"
+  >
+    Done
+  </button>
+)}
+
           </div>
 
           <StepIndicator
