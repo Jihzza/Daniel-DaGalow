@@ -38,8 +38,8 @@ function ExpertAnalysis() {
   return (
     <section id="expert-analysis" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
-        <h2 className="text-2xl md:text-3xl font-bold">{t("analysis.analysis_title")}</h2>
-        <p className="">{t("analysis.analysis_description")}</p>
+        <h2 className="text-2xl md:text-4xl font-bold">{t("analysis.analysis_title")}</h2>
+        <p className="text-sm md:text-xl">{t("analysis.analysis_description")}</p>
         
         <div className="grid grid-cols-2 gap-6 md:grid-cols-2 text-white">
           {[
@@ -49,7 +49,7 @@ function ExpertAnalysis() {
                 <img
                   src={SocialIcon}
                   alt="Social Media"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -59,7 +59,7 @@ function ExpertAnalysis() {
                 <img
                   src={StocksIcon}
                   alt="Stocks"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -69,7 +69,7 @@ function ExpertAnalysis() {
                 <img
                   src={PortfolioIcon}
                   alt="Portfolio"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -79,7 +79,7 @@ function ExpertAnalysis() {
                 <img
                   src={BusinessIcon}
                   alt="Business"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -91,7 +91,7 @@ function ExpertAnalysis() {
               <div className="flex items-center justify-center mb-3">
                 {item.icon}
               </div>
-              <div className="font-semibold text-[13px]">{item.title}</div>
+              <div className="font-semibold text-[13px] md:text-lg">{item.title}</div>
             </div>
           ))}
         </div>
@@ -105,7 +105,7 @@ function ExpertAnalysis() {
             <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
+                className="h-8 w-8 md:h-12 md:w-12"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -118,10 +118,10 @@ function ExpertAnalysis() {
                 />
               </svg>
             </div>
-            <h4 className="text-xl font-medium text-white mb-2">
+            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
               {t("analysis.analysis_feature_1_title")}
             </h4>
-            <p className="text-white">
+            <p className="text-white md:text-xl">
               {t("analysis.analysis_feature_1_description")}
             </p>
           </div>
@@ -144,10 +144,10 @@ function ExpertAnalysis() {
                 />
               </svg>
             </div>
-            <h4 className="text-xl font-medium text-white mb-2">
+            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
               {t("analysis.analysis_feature_2_title")}
             </h4>
-            <p className="text-white">
+            <p className="text-white md:text-xl">
               {t("analysis.analysis_feature_2_description")}
             </p>
           </div>
@@ -170,27 +170,27 @@ function ExpertAnalysis() {
                 />
               </svg>
             </div>
-            <h4 className="text-xl font-medium text-white mb-2">
+            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
               {t("analysis.analysis_feature_3_title")}
             </h4>
-            <p className="text-white">
+            <p className="text-white md:text-xl">
               {t("analysis.analysis_feature_3_description")}
             </p>
           </div>
         </div>
 
         <div className="mt-10 text-center">
-          <p className="text-lg text-white max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-white max-w-3xl mx-auto">
             {t("analysis.analysis_summary")}
           </p>
           <div className="mt-8 w-full">
-            <h1 className="text-white text-2xl py-2 font-bold">
+            <h1 className="text-white text-2xl md:text-3xl py-2 font-bold">
               {t("analysis.analysis_quote_title")}
             </h1>
-            <p className="text-white text-sm pb-6">{t("analysis.analysis_quote_subtitle")}</p>
+            <p className="text-white text-sm md:text-lg pb-6">{t("analysis.analysis_quote_subtitle")}</p>
             <button
               onClick={() => openForm("analysis")}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               {t("analysis.analysis_get_analysis")}
             </button>

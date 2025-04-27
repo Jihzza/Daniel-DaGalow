@@ -32,7 +32,7 @@ import Signup from "./components/Auth/Signup";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 import { useAuth } from "./contexts/AuthContext";
-import Footer from "./components/layout/Footer";
+
 import Music from "./pages/content/Music";
 import Videos from "./pages/content/Videos";
 import TestimonialReview from "./pages/admin/TestimonialReview";
@@ -209,7 +209,6 @@ function App() {
             )}
           </AnimatePresence>
 
-          <Footer />
           <AuthModal
             isOpen={authModalOpen}
             onClose={() => setAuthModalOpen(false)}

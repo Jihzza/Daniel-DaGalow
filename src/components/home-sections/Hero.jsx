@@ -64,22 +64,22 @@ const openAnalysisForm   = (e) => {
   return (
 <section
       id="hero"
-      className="pb-8 pt-4 px-4 text-white min-h-screen flex flex-col justify-center items-center text-center overflow-hidden"
+      className="pb-8 pt-4 md:pt-16 lg:pt-12 px-4 text-white min-h-screen flex flex-col justify-center items-center text-center overflow-hidden"
     >
       {/* Logo */}
-      <div className="flex items-center justify-center space-x-2">
-        <h1 className="text-lg font-extrabold">{t('hero.learn_from')}</h1>
-        <img src={DaGalow} alt="DaGalow" className="w-[150px]" />
+      <div className="flex items-center justify-center md:py-2 lg:py-0 space-x-2">
+        <h1 className="text-lg md:text-3xl font-extrabold">{t('hero.learn_from')}</h1>
+        <img src={DaGalow} alt="DaGalow" className="w-[150px] md:w-[275px]" />
       </div>
 
       <div className="w-full h-full max-w-3xl mx-auto text-center">
         <img
           src={heroImage}
           alt="Hero"
-          className="w-full h-full object-cover rounded-xl my-4 shadow-lg"
+          className="w-full h-full object-cover rounded-xl my-4 md:my-8 shadow-lg"
         />
         {/* Auto Carousel of topics */}
-        <div className="my-8 mx-auto w-40 flex self-center justify-center items-center">
+        <div className="my-8 mx-auto md:text-2xl w-40 md:w-60 flex self-center justify-center items-center">
           <Marquee
             speed={70}
             gradient={true}
@@ -96,10 +96,10 @@ const openAnalysisForm   = (e) => {
         </div>
 
         {/* Hero text - now using translations */}
-        <h1 className="text-2xl font-extrabold my-8">
+        <h1 className="text-2xl md:text-4xl font-extrabold my-8">
           {t('hero.hero_title')}
         </h1>
-        <p className="text-lg md:text-xl my-8 max-w-md mx-auto">
+        <p className="text-lg md:text-2xl my-8 max-w-md mx-auto md:max-w-2xl">
           {t('hero.hero_description')}
         </p>
 
@@ -113,7 +113,12 @@ const openAnalysisForm   = (e) => {
                 slidesPerView: 1.2,
               },
               400: {
+                spaceBetween: 60,
                 slidesPerView: 1.5,
+              },
+              1000: {
+                spaceBetween: 60,
+                slidesPerView: 2,
               },
             }}
             centeredSlides={true}
@@ -121,143 +126,143 @@ const openAnalysisForm   = (e) => {
             autoplay={{ delay: 2000, disableOnInteraction: false }}
             loop={true}
             modules={[Autoplay]}
-            className="w-full overflow-visible mx-auto max-w-[800px] px-10"
+            className="w-full overflow-visible mx-auto max-w-[800px] md:w-full px-10 md:px-20"
           >
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_1_title')}</span>
-                <div className="text-lg">{t('hero.achievement_1_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_1_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_1_description')}</div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_2_title')}</span>
-                <div className="text-lg">{t('hero.achievement_2_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_2_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_2_description')}</div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_3_title')}</span>
-                <div className="text-lg">{t('hero.achievement_3_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_3_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_3_description')}</div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_4_title')}</span>
-                <div className="text-lg">{t('hero.achievement_4_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_4_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_4_description')}</div>
               </div>
             </SwiperSlide>
 
             {/* Your other achievements */}
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_5_title')}</span>
-                <div className="text-lg">{t('hero.achievement_5_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_5_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_5_description')}</div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_6_title')}</span>
-                <div className="text-lg">{t('hero.achievement_6_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_6_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_6_description')}</div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_7_title')}</span>
-                <div className="text-lg">{t('hero.achievement_7_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_7_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_7_description')}</div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_8_title')}</span>
-                <div className="text-lg">{t('hero.achievement_8_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_8_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_8_description')}</div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_9_title')}</span>
-                <div className="text-lg">{t('hero.achievement_9_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_9_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_9_description')}</div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_10_title')}</span>
-                <div className="text-lg">{t('hero.achievement_10_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_10_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_10_description')}</div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_11_title')}</span>
-                <div className="text-lg">{t('hero.achievement_11_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_11_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_11_description')}</div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">{t('hero.achievement_12_title')}</span>
-                <div className="text-lg">{t('hero.achievement_12_description')}</div>
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">{t('hero.achievement_12_title')}</span>
+                <div className="text-md md:text-2xl">{t('hero.achievement_12_description')}</div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">
                 {t('hero.achievement_13_title')}
                 </span>
-                <div className="text-lg">
+                <div className="text-md md:text-2xl">
                 {t('hero.achievement_13_description')}
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">
                 {t('hero.achievement_14_title')}
                 </span>
-                <div className="text-lg">
+                <div className="text-md md:text-2xl">
                 {t('hero.achievement_14_description')}
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">
                 {t('hero.achievement_15_title')}
                 </span>
-                <div className="text-lg">
+                <div className="text-md md:text-2xl">
                 {t('hero.achievement_15_description')}
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">
                 {t('hero.achievement_16_title')}
                 </span>
-                <div className="text-lg">
+                <div className="text-md md:text-2xl">
                 {t('hero.achievement_16_description')}
                 </div>
               </div>
             </SwiperSlide>
 
             <SwiperSlide>
-              <div className="w-[206px] h-[120px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4">
-                <span className="font-extrabold text-lg">
+              <div className="w-[216px] h-[130px] md:w-[300px] md:h-[180px] bg-charcoalGray rounded-lg shadow-lg flex flex-col justify-center items-center p-4 md:gap-2">
+                <span className="font-extrabold text-lg md:text-3xl">
                 {t('hero.achievement_17_title')}
                 </span>
-                <div className="text-lg">
+                <div className="text-md md:text-2xl">
                 {t('hero.achievement_17_description')}
                 </div>
               </div>
@@ -271,19 +276,19 @@ const openAnalysisForm   = (e) => {
         >
           <div className="flex flex-col items-center justify-center my-8">
             <div className="flex flex-col items-center justify-center">
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 {t('hero.hero_individual_consultation')}
               </h2>
-              <p className="text-3xl font-extrabold mb-2">{t('hero.hero_individual_consultation_price')}</p>
-              <p className="text-sm font-normal mb-2">{t('hero.hero_individual_consultation_minimum_time')}</p>
+              <p className="text-3xl md:text-4xl font-extrabold mb-2">{t('hero.hero_individual_consultation_price')}</p>
+              <p className="text-sm md:text-lg font-normal mb-2">{t('hero.hero_individual_consultation_minimum_time')}</p>
             </div>
             <button
               onClick={handleOpenForm("booking")} // ← booking = consultations
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               {t('hero.hero_book_consultation')}
             </button>
-            <p role="button" className="text-sm font-normal">
+            <p role="button" className="text-sm md:text-md font-normal">
               {t('hero.common_learn_more')}
             </p>
           </div>
@@ -296,41 +301,41 @@ const openAnalysisForm   = (e) => {
         >
           <div className="flex flex-col items-center justify-center my-8">
             <div className="flex flex-col items-center justify-center">
-              <h2 className="text-3xl font-bold mb-6">{t('hero.hero_coaching_title')}</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('hero.hero_coaching_title')}</h2>
 
-              <div className="flex space-x-2 mb-4">
-                <label className="w-20 h-18 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
+              <div className="flex space-x-2 md:space-x-4 mb-4">
+                <label className="w-20 md:w-32 h-18 md:h-24 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
                   <input
                     type="radio"
                     name="tier"
                     className="hidden"
                     defaultChecked
                   />
-                  <span className="text-[16px] font-extrabold">40€</span>
-                  <span className="text-xs">{t('hero.hero_coaching_basic')}</span>
+                  <span className="text-[16px] md:text-2xl font-extrabold">40€</span>
+                  <span className="text-xs md:text-lg">{t('hero.hero_coaching_basic')}</span>
                 </label>
-                <label className="w-20 h-18 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
+                <label className="w-20 md:w-32 h-18 md:h-24 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
                   <input type="radio" name="tier" className="hidden" />
-                  <span className="text-[16px] font-extrabold">90€</span>
-                  <span className="text-xs">{t('hero.hero_coaching_standard')}</span>
+                  <span className="text-[16px] md:text-2xl font-extrabold">90€</span>
+                  <span className="text-xs md:text-lg">{t('hero.hero_coaching_standard')}</span>
                 </label>
-                <label className="w-20 h-20 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
+                <label className="w-20 md:w-32 h-18 md:h-24 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
                   <input type="radio" name="tier" className="hidden" />
-                  <span className="text-[16px] font-extrabold">230€</span>
-                  <span className="text-xs">{t('hero.hero_coaching_premium')}</span>
+                  <span className="text-[16px] md:text-2xl font-extrabold">230€</span>
+                  <span className="text-xs md:text-lg">{t('hero.hero_coaching_premium')}</span>
                 </label>
               </div>
 
-              <p className="text-sm font-normal mb-2">{t('hero.hero_coaching_limited_spots')}</p>
+              <p className="text-sm md:text-md font-normal mb-2">{t('hero.hero_coaching_limited_spots')}</p>
             </div>
 
             <button
               onClick={openCoachingForm}
-              className="bg-darkGold w-60 text-black font-bold text-[16px] px-6 py-3 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               {t('hero.hero_get_my_number')}
             </button>
-            <p role="button" className="text-sm font-normal">
+            <p role="button" className="text-sm md:text-md font-normal">
               {t('hero.common_learn_more')}
             </p>
           </div>
@@ -342,17 +347,17 @@ const openAnalysisForm   = (e) => {
           className="flex flex-col items-center justify-center space-y-6 mt-8 border-2 border-darkGold rounded-xl p-4"
         >
           <div className="flex flex-col items-center justify-center my-8">
-            <h2 className="text-3xl font-bold mb-6">{t('hero.hero_get_analysis_title')}</h2>
-            <p className="text-lg font-normal mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('hero.hero_get_analysis_title')}</h2>
+            <p className="text-lg md:text-xl md:max-w-xl font-normal mb-8">
               {t('hero.hero_get_analysis_description')}
             </p>
             <button
               onClick={openAnalysisForm}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               {t('hero.hero_get_analysis')}
             </button>
-            <p role="button" className="text-sm font-normal">
+            <p role="button" className="text-sm md:text-md font-normal">
               {t('hero.common_learn_more')}
             </p>
           </div>

@@ -41,13 +41,13 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   ];
   
   return (
-    <div className="fixed bottom-0 left-0 w-full py-4 px-8 z-50 bg-black flex justify-between items-center">
+    <div className="fixed bottom-0 left-0 w-full py-4 md:py-8 lg:py-4 px-8 z-50 bg-black flex justify-between items-center">
       {icons.map((icon, i) => (
         <img
           key={i}
           src={icon.src}
           alt={icon.alt}
-          className="w-8 h-8 cursor-pointer drop-shadow-lg transition"
+          className="w-8 h-8 md:w-12 md:h-12 lg:w-10 lg:h-10 cursor-pointer drop-shadow-lg transition-all duration-300"
           onClick={() => {
             if (icon.action) {
               icon.action();

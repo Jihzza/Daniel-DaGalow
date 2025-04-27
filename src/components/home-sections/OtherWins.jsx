@@ -144,8 +144,8 @@ function OtherWins() {
     <section id="other-wins" className="py-8 px-4 text-black overflow-hidden">
       <div className="max-w-3xl mx-auto text-center space-y-8 px-4 overflow-visible">      
         <div className="flex flex-col justify-center space-y-6 items-center">
-          <h1 className="text-2xl text-black font-bold">{t("other_wins.other_wins_title")}</h1>
-          <p className="text-lg text-black">{t("other_wins.body_transformation_title")}</p>
+          <h1 className="text-2xl md:text-4xl text-black font-bold">{t("other_wins.other_wins_title")}</h1>
+          <p className="text-lg md:text-2xl text-black">{t("other_wins.body_transformation_title")}</p>
           {/*Double click to go back to normal size*/}
           <video
             src={bodyTransformation}
@@ -155,16 +155,22 @@ function OtherWins() {
             onDoubleClick={handleDoubleClick}
             className="w-[50%] object-cover rounded-xl shadow-lg justify-center items-center self-center cursor-pointer"
           />
-          <p className="text-lg text-black">{t("other_wins.high_reach_content_title")}</p>
+          <p className="text-lg md:text-2xl text-black">{t("other_wins.high_reach_content_title")}</p>
           <Swiper
             modules={[Autoplay]}
             spaceBetween={20}
-            slidesPerView={1.2}
+            slidesPerView={1}
             centeredSlides={true}
             pagination={{ clickable: true }}
             autoplay={{ delay: 2000, disableOnInteraction: false }}
             loop={true}
             className="w-[40%] testimonial-swiper overflow-visible mx-auto "
+            breakpoints={{
+              768: {
+                slidesPerView: 1.3,
+                spaceBetween: 50,
+              },
+            }}
           >
             {socialMediaImages.map((item, index) => (
               <SwiperSlide key={index} className="flex justify-center">

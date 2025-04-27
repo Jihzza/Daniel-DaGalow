@@ -25,7 +25,7 @@ function StepIndicator({
               type="button"
               onClick={() => onStepClick(stepNum)}
               disabled={stepNum > currentStep}
-              className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
+              className={`w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
                 isActive
                   ? "bg-darkGold border-darkGold text-white"
                   : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer"
@@ -64,7 +64,7 @@ function FrequencyStep({ formData, onChange }) {
         <button
           key={opt.value}
           type="button"
-          className={`px-3 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg text-sm bg-oxfordBlue ${
+          className={`px-3 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg text-sm md:text-lg bg-oxfordBlue ${
             formData.frequency === opt.value
               ? "border-darkGold shadow-lg"
               : "border-darkGold"
@@ -94,7 +94,7 @@ function ContactStep({ formData, onChange }) {
           onChange={onChange}
           placeholder={t("coaching_request.form.name_placeholder")}
           required
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold text-sm"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold text-sm md:text-lg"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
@@ -106,7 +106,7 @@ function ContactStep({ formData, onChange }) {
           onChange={onChange}
           placeholder={t("coaching_request.form.email_placeholder")}
           required
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold text-sm"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold text-sm md:text-lg"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
@@ -114,7 +114,7 @@ function ContactStep({ formData, onChange }) {
         <PhoneInput
           containerClass="!w-full !h-[42px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
           buttonClass="!bg-white/5 !border-none h-full"
-          inputClass="!bg-white/5 !border-none p-4 !h-full text-white placeholder-white/50"
+          inputClass="!bg-white/5 !w-full !border-none p-4 !h-full text-white placeholder-white/50 "
           country="es"
           enableSearch
           searchPlaceholder={t("coaching_request.form.phone_search_placeholder")}
@@ -163,7 +163,7 @@ function PaymentStep({ formData, onPaid }) {
         rel="noopener noreferrer"
         onClick={onPaid}
       >
-        <button className="px-3 py-1 bg-darkGold text-black font-bold rounded-xl hover:bg-darkGold/90">
+        <button className="px-3 py-1 md:px-4 md:py-2 bg-darkGold text-black font-bold rounded-xl hover:bg-darkGold/90">
           {t("coaching_request.payment.pay_with_stripe")}
         </button>
       </a>

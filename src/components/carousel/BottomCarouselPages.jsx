@@ -24,7 +24,7 @@ export default function PageCarousel() {
                     type="button"                                  // ← no form‑submit!
                     onClick={() => setActiveIdx(i)}
                     className={`
-                      px-3 py-1 rounded-lg whitespace-nowrap font-medium
+                      px-3 py-1 md:px-4 md:py-2 rounded-lg whitespace-nowrap font-medium md:text-xl
                       ${i === activeIdx
                         ? 'bg-darkGold text-black border-2 border-darkGold'
                         : ' text-black border-darkGold border-2'}

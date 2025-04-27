@@ -24,16 +24,16 @@ function Projects() {
   return (
     <section id="projects" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-8">
-        <h2 className="text-2xl md:text-3xl font-bold">
+        <h2 className="text-2xl md:text-4xl font-bold">
           {t("projects.projects_title")}
         </h2>
-        <div className="space-y-8">
+        <div className="space-y-8 flex flex-col items-center">
           {projects.map((project, index) => (
-            <div key={index} className="flex flex-col md:flex-row items-center gap-6 border-2 border-darkGold rounded-lg py-8 px-8">
-              <img src={project.image} alt={project.name} className="w-[200px] h-auto object-cover rounded"/>
-              <div className="text-left">
-                <h3 className="text-xl font-semibold">{project.name}</h3>
-                <p className="text-sm">{project.description}</p>
+            <div key={index} className="flex flex-col md:w-[60vw] items-center gap-6 border-2 border-darkGold rounded-lg py-8 px-8">
+              <img src={project.image} alt={project.name} className="w-[200px] md:w-[300px] h-auto object-cover rounded"/>
+              <div className="text-left md:text-center md:space-y-4">
+                <h3 className="text-xl md:text-3xl font-semibold">{project.name}</h3>
+                <p className="text-sm md:text-lg">{project.description}</p>
               </div>
             </div>
           ))}

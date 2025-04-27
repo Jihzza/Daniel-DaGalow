@@ -23,7 +23,7 @@ function StepIndicator({
               type="button"
               onClick={() => onStepClick(stepNum)}
               disabled={stepNum > currentStep}
-              className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
+              className={`w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
                 isActive
                   ? "bg-darkGold border-darkGold text-white"
                   : "bg-white/20 border-white/50 text-white/50"
@@ -66,7 +66,7 @@ function TypeSelectionStep({ formData, onChange }) {
           onClick={() =>
             onChange({ target: { name: "type", value: opt.value } })
           }
-          className={`px-3 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg text-sm bg-oxfordBlue ${
+          className={`px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold  shadow-lg text-sm md:text-lg bg-oxfordBlue ${
             formData.type === opt.value
               ? "border-darkGold shadow-lg"
               : "border-darkGold"

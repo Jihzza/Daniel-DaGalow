@@ -11,6 +11,24 @@ import AuthModal from "../Auth/AuthModal";
 import OctagonalProfile from "../common/Octagonal Profile";
 import LanguageSwitcher from "../common/LanguageSwitcher"; // Import the language switcher
 
+function useBreakpoint() {
+  const getBreakpoint = () => {
+    if (window.innerWidth >= 1024) return "lg";
+    if (window.innerWidth >= 768) return "md";
+    return "sm";
+  };
+
+  const [breakpoint, setBreakpoint] = useState(getBreakpoint());
+
+  useEffect(() => {
+    const handleResize = () => setBreakpoint(getBreakpoint());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return breakpoint;
+}
+
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [show, setShow] = useState(true);
@@ -22,6 +40,12 @@ function Header() {
   const { t } = useTranslation(); // Use translation hook
 
   const [avatarUrl, setAvatarUrl] = useState(null);
+
+  const breakpoint = useBreakpoint();
+  let profileSize;
+  if (breakpoint === "lg") profileSize = 50; // or your desired lg size
+  else if (breakpoint === "md") profileSize = 56; // md size
+  else profileSize = 40; // mobile size
 
   useEffect(() => {
     if (!user?.id) return;
@@ -61,17 +85,17 @@ function Header() {
     <>
       <header
         className={`
-          fixed flex items-center justify-between top-0 p-4 left-0 right-0 z-30 h-14 bg-black text-white shadow-lg
+          fixed flex items-center justify-between top-0 p-4 md:p-8 lg:p-10 left-0 right-0 z-30 h-14 md:h-24 lg:h-20 bg-black text-white shadow-lg
           transform transition-transform duration-300
           ${show ? "translate-y-0" : "-translate-y-full"}
         `}
       >
         <div onClick={handleProfileClick} className="cursor-pointer">
           <OctagonalProfile
-            size={40} // adjust to header height
-            borderColor="#002147" // match your theme
-            innerBorderColor="#000" // see previous answer
-            imageSrc={avatarUrl} // null → fallback
+            size={profileSize}
+            borderColor="#002147"
+            innerBorderColor="#000"
+            imageSrc={avatarUrl}
             fallbackText={user?.email?.[0]?.toUpperCase() || "?"}
           />
         </div>
@@ -84,60 +108,39 @@ function Header() {
             <img
               src={DaGalowLogo}
               alt="DaGalow Logo"
-              className="w-[150px] h-auto object-cover hover:opacity-90 transition-opacity duration-300"
+              className="w-[150px] md:w-[275px] h-auto object-cover"
             />
           </div>
         </div>
 
-        {/* Auth links - visible on desktop */}
-        <div className="hidden md:flex items-center space-x-4">
-          {user ? (
-            <button
-              onClick={() => signOut()}
-              className="text-white hover:text-gray-300 transition-colors"
-            >
-              {t("logout")} {/* Translate logout text */}
-            </button>
-          ) : (
-            <button
-              onClick={() => setAuthModalOpen(true)}
-              className="bg-darkGold text-black px-3 py-1 rounded hover:bg-opacity-90 transition-colors"
-            >
-              {t("login")} {/* Translate login text */}
-            </button>
-          )}
-        </div>
-
         <button
           onClick={() => setMenuOpen((o) => !o)}
-          className="md:hidden focus:outline-none"
+          className="focus:outline-none"
         >
-          <img src={Hamburger} alt="Hamburger" className="w-6 h-6" />
+          <img src={Hamburger} alt="Hamburger" className="w-6 h-6 md:w-10 md:h-10 lg:w-8 lg:h-8" />
         </button>
       </header>
 
       {/* Dropdown Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-[70%] bg-black transform transition-transform duration-300 ease-in-out z-50
+        className={`fixed top-0 right-0 h-full w-[70%] md:w-[50%] lg:w-[30%] bg-black transform transition-transform duration-300 ease-in-out z-50
           ${menuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         <div className="p-6 flex flex-col h-full">
           <div className="flex justify-end mb-8">
             <button
               onClick={() => setMenuOpen(false)}
-              className="text-white text-2xl"
+              className="text-white font-bold text-2xl md:text-4xl"
             >
               &times;
             </button>
           </div>
 
-          {/* Language Switcher in dropdown menu */}
-
           {/* Menu links - now translated */}
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-4 md:space-y-8">
             <Link
               to="/"
-              className="text-white text-xl hover:text-gray-300 transition-colors"
+              className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               {t('navigation.home')}
@@ -146,7 +149,7 @@ function Header() {
             {/* Calendar link */}
             <Link
               to="/components/Subpages/Calendar"
-              className="text-white text-xl hover:text-gray-300 transition-colors"
+              className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               {t('navigation.calendar')}
@@ -155,7 +158,7 @@ function Header() {
             {/* Music link */}
             <Link
               to="/components/Subpages/Music"
-              className="text-white text-xl hover:text-gray-300 transition-colors"
+              className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               {t('navigation.music')}
@@ -164,7 +167,7 @@ function Header() {
             {/* Videos link */}
             <Link
               to="/components/Subpages/Videos"
-              className="text-white text-xl hover:text-gray-300 transition-colors"
+              className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               {t('navigation.videos')}
@@ -175,14 +178,14 @@ function Header() {
               <>
                 <Link
                   to="/profile"
-                  className="text-white text-xl hover:text-gray-300 transition-colors"
+                  className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
                   {t('navigation.profile')}
                 </Link>
                 <Link
                   to="/components/Subpages/Settings"
-                  className="text-white text-xl hover:text-gray-300 transition-colors"
+                  className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
                   {t('navigation.settings')}
@@ -194,13 +197,13 @@ function Header() {
                   setMenuOpen(false);
                   setAuthModalOpen(true);
                 }}
-                className="text-white text-xl hover:text-gray-300 transition-colors text-left"
+                className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors text-left"
               >
                 {t('navigation.login_signup')}
               </button>
             )}
           </div>
-          <div className="mb-6">
+          <div className="mb-6 md:mt-12">
             <LanguageSwitcher />
           </div>
         </div>

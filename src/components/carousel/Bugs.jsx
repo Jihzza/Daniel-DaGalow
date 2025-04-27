@@ -77,10 +77,10 @@ function BugReport() {
     <section id="bug-report" className="w-full">
       <div className="max-w-4xl mx-auto h-full flex flex-col">
         <div className="flex flex-col pb-6">
-          <h2 className="text-2xl py-4 font-bold text-center text-black">
+          <h2 className="text-2xl md:text-4xl py-4 font-bold text-center text-black">
             {t("bug_report.title")}
           </h2>
-          <p className="text-center text-black max-w-2xl mx-auto">
+          <p className="text-center text-black max-w-2xl mx-auto md:text-lg">
             {t("bug_report.description")}
           </p>
         </div>
@@ -100,7 +100,7 @@ function BugReport() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
+              className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 md:text-lg text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
               placeholder={t("bug_report.form.name_placeholder")}
             />
           </div>
@@ -116,7 +116,7 @@ function BugReport() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
+              className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 md:text-lg text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
               placeholder={t("bug_report.form.email_placeholder")}
               required
             />
@@ -133,7 +133,7 @@ function BugReport() {
               value={formData.description}
               onChange={handleChange}
               rows="4"
-              className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
+              className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 md:text-lg text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
               placeholder={t("bug_report.form.description_placeholder")}
               required
             ></textarea>
@@ -143,7 +143,7 @@ function BugReport() {
           <div>
             <button
               type="submit"
-              className="w-full bg-darkGold text-black font-bold py-3 rounded-xl hover:bg-opacity-90 transition-colors"
+              className="w-full bg-darkGold text-black font-bold py-3 md:py-4 rounded-xl hover:bg-opacity-90 transition-colors"
             >
               {t("bug_report.form.submit_button")}
             </button>

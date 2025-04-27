@@ -36,7 +36,7 @@ function StepIndicator({
               type="button"
               onClick={() => onStepClick(stepNum)}
               disabled={stepNum > currentStep}
-              className={`w-8 h-8 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
+              className={`w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
                 isActive
                   ? "bg-darkGold border-darkGold text-white"
                   : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer"
@@ -95,12 +95,12 @@ function DateStep({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h3 className="text-xl text-white font-semibold">
+        <h3 className="text-xl md:text-2xl text-white font-semibold">
           {format(currentMonth, "MMMM yyyy")}
         </h3>
         <button 
           onClick={() => onChangeMonth(1)} 
-          className="text-white p-2 hover:text-darkGold transition-colors"
+          className="text-white p-2 md:p-4 hover:text-darkGold transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -109,7 +109,7 @@ function DateStep({
       </div>
       <div className="grid grid-cols-7 gap-1">
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-          <div key={d} className="text-center text-white/60 text-sm font-medium">
+          <div key={d} className="text-center text-white/60 text-sm md:text-lg font-medium">
             {d}
           </div>
         ))}
@@ -126,7 +126,7 @@ function DateStep({
               }
               disabled={!inMonth || weekend || tooSoon}
               className={
-                `aspect-square rounded-xl p-2 flex flex-col items-center justify-center text-sm relative transition-colors ` +
+                `aspect-square md:aspect-square lg:aspect-square lg:w-18 lg:h-18 rounded-xl p-2 flex flex-col items-center justify-center text-sm relative transition-colors ` +
                 (selected
                   ? "bg-darkGold text-white shadow-md"
                   : "bg-white/10 text-white") +
@@ -135,8 +135,8 @@ function DateStep({
                   : " hover:bg-darkGold/70 hover:text-white cursor-pointer")
               }
             >
-              <span className="text-xs">{format(date, "MMM")}</span>
-              <span className="font-bold">{format(date, "d")}</span>
+              <span className="text-xs md:text-lg">{format(date, "MMM")}</span>
+              <span className="font-bold md:text-xl">{format(date, "d")}</span>
             </button>
           );
         })}
@@ -183,15 +183,15 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
       {/* If no hour is selected yet, show the hour selection grid */}
       {!selectedHour ? (
         <div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {timeSlots.map(({ slot, allowed }) => (
               <button
                 key={slot}
                 onClick={() => handleHourSelect(slot)}
                 className="bg-white/10 hover:bg-darkGold/70 text-white rounded-xl p-3 transition-colors duration-200 flex flex-col items-center"
               >
-                <span className="text-xl font-semibold">{slot}</span>
-                <span className="text-xs mt-1">
+                <span className="text-xl md:text-2xl font-semibold">{slot}</span>
+                <span className="text-xs md:text-base mt-1">
                   {allowed.length} {allowed.length === 1 ? 'option' : 'options'}
                 </span>
               </button>
@@ -212,7 +212,7 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
             </button>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {timeSlots
               .find(item => item.slot === selectedHour)?.allowed
               .map(duration => (
@@ -226,8 +226,8 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
                     }`}
                 >
                   <div className="flex flex-col items-center justify-center text-white">
-                    <span className="text-lg font-bold mb-1">{formatDuration(duration)}</span>
-                    <span className="text-xs opacity-70">
+                    <span className="text-lg md:text-xl font-bold mb-1">{formatDuration(duration)}</span>
+                    <span className="text-xs md:text-base opacity-70">
                       {selectedHour} - {calculateEndTime(selectedHour, duration)}
                     </span>
                   </div>
@@ -248,24 +248,24 @@ function InfoStep({ formData, onChange }) {
   return (
     <div className="space-y-4 max-w-md mx-auto w-full">
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white">{t("booking.name_label")}</label>
+        <label className="block text-white md:text-lg">{t("booking.name_label")}</label>
         <input
           name="name"
           placeholder={t("booking.name_placeholder")}
           value={formData.name}
           onChange={onChange}
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm md:text-base"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white">{t("booking.email_label")}</label>
+        <label className="block text-white md:text-lg">{t("booking.email_label")}</label>
         <input
           name="email"
           type="email"
           placeholder={t("booking.email_placeholder")}
           value={formData.email}
           onChange={onChange}
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm md:text-base"
         />
       </div>
     </div>
@@ -459,15 +459,15 @@ export default function Booking({ onBackService }) {
   return (
     <section className="py-8 px-4" id="bookingForm">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold text-center mb-6 text-black">
+        <h2 className="text-2xl md:text-4xl font-bold text-center mb-6 text-black">
           {t("booking.title")}
         </h2>
         <div className="bg-oxfordBlue rounded-2xl p-8 shadow-xl">
-          <h3 className="text-xl text-white mb-6 font-semibold">{STEPS[step - 1].title}</h3>
+          <h3 className="text-xl md:text-2xl text-white mb-6 font-semibold">{STEPS[step - 1].title}</h3>
           
           {loading && step === 1 ? (
             <div className="flex justify-center py-10">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-darkGold"></div>
+              <div className="animate-spin rounded-full h-12 w-12 md:h-16 md:w-16 border-t-2 border-b-2 border-darkGold"></div>
             </div>
           ) : (
             <>
@@ -505,7 +505,7 @@ export default function Booking({ onBackService }) {
           <div className="flex justify-between mt-8">
             <button
               onClick={() => step > 1 ? setStep(step - 1) : onBackService()}
-              className="px-4 py-2 border-2 border-darkGold text-darkGold rounded-xl hover:bg-darkGold/10 transition-colors"
+              className="px-4 py-2 md:px-6 md:py-3 border-2 border-darkGold text-darkGold rounded-xl hover:bg-darkGold/10 transition-colors"
             >
               {t("booking.back")}
             </button>

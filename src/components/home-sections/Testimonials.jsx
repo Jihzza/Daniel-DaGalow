@@ -58,60 +58,61 @@ function Testimonials({ onAuthModalOpen }) {
 
   // In the useEffect that fetches testimonials
 
-useEffect(() => {
-  // Initial fetch of approved testimonials
-  fetchApprovedTestimonials();
-  
-  // Set up a real-time subscription to testimonials changes
-  const subscription = supabase
-    .channel('testimonials-changes')
-    .on('postgres_changes', 
-      { event: 'UPDATE', schema: 'public', table: 'testimonials' }, 
-      payload => {
-        console.log('Testimonial updated:', payload);
-        // If a testimonial was updated to 'approved' status, refresh the list
-        if (payload.new.status === 'approved') {
-          console.log('Approved testimonial detected, refreshing list');
-          fetchApprovedTestimonials();
+  useEffect(() => {
+    // Initial fetch of approved testimonials
+    fetchApprovedTestimonials();
+
+    // Set up a real-time subscription to testimonials changes
+    const subscription = supabase
+      .channel("testimonials-changes")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "testimonials" },
+        (payload) => {
+          console.log("Testimonial updated:", payload);
+          // If a testimonial was updated to 'approved' status, refresh the list
+          if (payload.new.status === "approved") {
+            console.log("Approved testimonial detected, refreshing list");
+            fetchApprovedTestimonials();
+          }
         }
-      })
-    .subscribe();
-  
-  // Clean up subscription when component unmounts
-  return () => {
-    supabase.removeChannel(subscription);
-  };
-}, []);
+      )
+      .subscribe();
 
-async function fetchApprovedTestimonials() {
-  try {
-    setLoading(true);
-    
-    const { data, error } = await supabase
-      .from("testimonials")
-      .select("*")
-      .eq("status", "approved")
-      .order("created_at", { ascending: false });
+    // Clean up subscription when component unmounts
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, []);
 
-    if (error) throw error;
-    
-    
-    // Transform database URLs if necessary
-    const processedData = data.map(item => ({
-      ...item,
-      image_url: item.image_url.startsWith('http') 
-        ? item.image_url 
-        : `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/testimonials/${item.image_url}`
-    }));
-    
-    // Combine with default testimonials
-    setTestimonials([...processedData, ...defaultTestimonials]);
-  } catch (error) {
-    console.error("Error loading testimonials:", error);
-  } finally {
-    setLoading(false);
+  async function fetchApprovedTestimonials() {
+    try {
+      setLoading(true);
+
+      const { data, error } = await supabase
+        .from("testimonials")
+        .select("*")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      // Transform database URLs if necessary
+      const processedData = data.map((item) => ({
+        ...item,
+        image_url: item.image_url.startsWith("http")
+          ? item.image_url
+          : `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/testimonials/${item.image_url}`,
+      }));
+
+      // Combine with default testimonials
+      setTestimonials([...processedData, ...defaultTestimonials]);
+    } catch (error) {
+      console.error("Error loading testimonials:", error);
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   const handleTestimonialButtonClick = () => {
     if (user) {
@@ -183,10 +184,10 @@ async function fetchApprovedTestimonials() {
   return (
     <section id="testimonials" className="py-8 px-4 text-black">
       <div className="max-w-3xl mx-auto text-center space-y-6 px-4 overflow-visible">
-        <h2 className="text-2xl md:text-3xl font-bold">{t("testimonials.testimonials_title")}</h2>
-        <p className="text-lg">
-          {t("testimonials.testimonials_description")}
-        </p>
+        <h2 className="text-2xl md:text-4xl font-bold">
+          {t("testimonials.testimonials_title")}
+        </h2>
+        <p className="text-lg md:text-xl">{t("testimonials.testimonials_description")}</p>
 
         {/* leave static + dynamic */}
 
@@ -200,7 +201,13 @@ async function fetchApprovedTestimonials() {
             spaceBetween={30} // gap between cards
             loop
             autoplay={{ delay: 3000, disableOnInteraction: false }}
-            className="testimonial-swiper overflow-visible"
+            className="testimonial-swiper  overflow-visible"
+            breakpoints={{
+              768: {
+                slidesPerView: 1.5,
+                spaceBetween: 100,
+              },
+            }}
           >
             {testimonials.map((testimonial, index) => (
               <SwiperSlide key={index}>
@@ -225,16 +232,16 @@ async function fetchApprovedTestimonials() {
                   <img
                     src={testimonial.image_url}
                     alt={testimonial.author}
-                    className="w-14 h-14 rounded-full object-cover border-2 border-darkGold mb-4"
+                    className="w-14 h-14 md:w-20 md:h-20 rounded-full object-cover border-2 border-darkGold mb-4"
                   />
 
                   {/* Quote: allow internal scroll if needed */}
                   <div className="flex-1 flex items-center justify-center overflow-y-auto">
-                    <p className="italic text-md px-2">"{testimonial.quote}"</p>
+                    <p className="italic text-md md:text-xl px-2">"{testimonial.quote}"</p>
                   </div>
 
                   {/* Author */}
-                  <div className="mt-4 font-semibold">{testimonial.author}</div>
+                  <div className="mt-4 font-semibold text-md md:text-xl">{testimonial.author}</div>
                 </div>
               </SwiperSlide>
             ))}
@@ -242,7 +249,7 @@ async function fetchApprovedTestimonials() {
         )}
         <button
           onClick={handleTestimonialButtonClick}
-          className="px-6 py-3 bg-darkGold text-black font-bold rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+          className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
         >
           {t("testimonials.leave_testimonial")}
         </button>
@@ -253,10 +260,10 @@ async function fetchApprovedTestimonials() {
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
           <div className="bg-oxfordBlue rounded-2xl w-full max-w-md shadow-2xl transform transition-all duration-300 animate-fade-in">
             <div className="border-b border-darkGold/30 p-4">
-              <h3 className="text-2xl font-bold text-white mb-1">
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-1">
                 {t("testimonials.modal_title")}
               </h3>
-              <p className="text-gray-300 text-sm">
+              <p className="text-gray-300 text-sm md:text-base">
                 {t("testimonials.modal_subtitle")}
               </p>
             </div>
@@ -279,7 +286,7 @@ async function fetchApprovedTestimonials() {
                       </div>
                       <button
                         onClick={() => setImageFile(null)}
-                        className="absolute -top-2 -right-2 bg-red-500 rounded-full w-6 h-6 flex items-center justify-center text-white text-xs"
+                        className="absolute top-2 right-2 bg-red-500 rounded-full w-6 h-6 flex items-center justify-center text-white text-xs"
                       >
                         ×
                       </button>
@@ -305,7 +312,9 @@ async function fetchApprovedTestimonials() {
 
                   <label className="w-full">
                     <div className="px-4 py-2 bg-darkGold text-black font-medium rounded-lg hover:bg-opacity-90 transition cursor-pointer text-center">
-                      {imageFile ? t("testimonials.modal_photo_change") : t("testimonials.modal_photo_select")}
+                      {imageFile
+                        ? t("testimonials.modal_photo_change")
+                        : t("testimonials.modal_photo_select")}
                     </div>
                     <input
                       type="file"
@@ -316,7 +325,7 @@ async function fetchApprovedTestimonials() {
                   </label>
                 </div>
                 {!imageFile && (
-                  <p className="text-gray-400 text-xs text-center">
+                  <p className="text-gray-400 text-xs md:text-base text-center">
                     {t("testimonials.modal_photo_placeholder")}
                   </p>
                 )}
@@ -344,7 +353,7 @@ async function fetchApprovedTestimonials() {
                     {t("testimonials.modal_testimonial_label")}
                   </label>
                   <span
-                    className={`text-xs ${
+                    className={`text-xs md:text-base ${
                       quote.length > 110 ? "text-red-400" : "text-gray-400"
                     }`}
                   >

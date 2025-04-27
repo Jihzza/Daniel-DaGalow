@@ -46,8 +46,8 @@ function DirectCoaching() {
   return (
     <section id="coaching" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
-        <h2 className="text-2xl md:text-3xl font-bold">{t("coaching.coaching_title")}</h2>
-        <p className="">{t("coaching.coaching_description")}</p>
+        <h2 className="text-2xl md:text-4xl font-bold">{t("coaching.coaching_title")}</h2>
+        <p className="text-sm md:text-xl">{t("coaching.coaching_description")}</p>
 
         <div className="grid grid-cols-2 gap-6 md:grid-cols-3 text-white">
           {[
@@ -57,7 +57,7 @@ function DirectCoaching() {
                 <img
                   src={InvestIcon}
                   alt="Investment"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -67,7 +67,7 @@ function DirectCoaching() {
                 <img
                   src={TrainerIcon}
                   alt="Fitness"
-                  className="w-10 h-8 object-contain"
+                  className="w-10 h-8 md:w-14 md:h-14 object-contain"
                 />
               ),
             },
@@ -77,7 +77,7 @@ function DirectCoaching() {
                 <img
                   src={DatingIcon}
                   alt="Dating"
-                  className="w-10 h-8 object-contain"
+                  className="w-10 h-8 md:w-14 md:h-14 object-contain"
                 />
               ),
             },
@@ -87,7 +87,7 @@ function DirectCoaching() {
                 <img
                   src={OnlyFansIcon}
                   alt="OnlyFans"
-                  className="w-10 h-8 object-contain"
+                  className="w-10 h-8 md:w-14 md:h-14 object-contain"
                 />
               ),
             },
@@ -97,7 +97,7 @@ function DirectCoaching() {
                 <img
                   src={BusinessIcon}
                   alt="Business"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -107,7 +107,7 @@ function DirectCoaching() {
                 <img
                   src={HabitsIcon}
                   alt="Habits"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -119,20 +119,20 @@ function DirectCoaching() {
               <div className="flex items-center justify-center mb-3">
                 {item.icon}
               </div>
-              <div className="font-semibold text-[13px]">{item.title}</div>
+              <div className="font-semibold text-[13px] md:text-lg">{item.title}</div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="w-full mx-auto px-4 mt-8">
+      <div className="w-full mx-auto px-4 mt-8 md:mt-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Anytime Communication Feature */}
           <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
+                className="h-8 w-8 md:h-12 md:w-12"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -145,20 +145,20 @@ function DirectCoaching() {
                 />
               </svg>
             </div>
-            <h4 className="text-xl font-medium text-white mb-2">
+            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
               {t("coaching.coaching_feature_1_title")}
             </h4>
-            <p className="text-white">
+            <p className="text-white md:text-xl">
               {t("coaching.coaching_feature_1_description")}
             </p>
           </div>
 
           {/* Multi-format Responses */}
           <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
+                className="h-8 w-8 md:h-12 md:w-12"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -171,20 +171,20 @@ function DirectCoaching() {
                 />
               </svg>
             </div>
-            <h4 className="text-xl font-medium text-white mb-2">
+            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
               {t("coaching.coaching_feature_2_title")}
             </h4>
-            <p className="text-white">
+            <p className="text-white md:text-xl">
               {t("coaching.coaching_feature_2_description")}
             </p>
           </div>
 
           {/* Personalized Classes */}
           <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
+                className="h-8 w-8 md:h-12 md:w-12"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -209,22 +209,22 @@ function DirectCoaching() {
                 />
               </svg>
             </div>
-            <h4 className="text-xl font-medium text-white mb-2">
+            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
               {t("coaching.coaching_feature_3_title")}
             </h4>
-            <p className="text-white">
+            <p className="text-white md:text-xl">
               {t("coaching.coaching_feature_3_description")}
             </p>
           </div>
         </div>
 
         <div className="max-w-3xl mt-8 mx-auto text-center space-y-6">
-          <p className="text-lg text-white max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-white max-w-3xl mx-auto">
             {t("coaching.coaching_summary")}
           </p>
           
           {/* Tier Selector */}
-          <div className="grid grid-cols-3 gap-4 pt-2 mt-6">
+          <div className="grid grid-cols-3 gap-3 pt-2 mt-6">
             {tiers.map(t => (
               <label
                 key={t.id}
@@ -238,19 +238,19 @@ function DirectCoaching() {
                   checked={tier === t.id}
                   onChange={() => setTier(t.id)}
                 />
-                <span className="text-xl font-extrabold mb-1">{t.price}</span>
-                <span className="text-sm mb-2">{t.label}</span>
-                <span className="text-xs text-gray-300">{t.desc}</span>
+                <span className="text-xl md:text-3xl font-extrabold mb-1">{t.price}</span>
+                <span className="text-sm md:text-lg mb-2">{t.label}</span>
+                <span className="text-xs text-gray-300 md:text-base">{t.desc}</span>
               </label>
             ))}
           </div>
 
-          <p className="text-sm font-normal">{t("coaching.coaching_limited_spots")}</p>
+          <p className="text-sm md:text-lg font-normal">{t("coaching.coaching_limited_spots")}</p>
 
           <div className="flex justify-center pt-2">
             <button
               onClick={() => openForm("coaching")}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               {t("coaching.coaching_get_number")}
             </button>

@@ -42,13 +42,13 @@ function Services() {
   return (
     <section id="services" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
-        <h2 className="text-2xl md:text-3xl font-bold">
+        <h2 className="text-2xl md:text-4xl font-bold">
           {t("services.services_title")}
         </h2>
-        <p className="">
+        <p className="md:text-xl">
           {t("services.services_description")}
         </p>
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-3 text-white">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-white">
           {[
             {
               title: t("services.service_1"),
@@ -56,7 +56,7 @@ function Services() {
                 <img
                   src={Brain}
                   alt="Brain"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -66,7 +66,7 @@ function Services() {
                 <img
                   src={Phone}
                   alt="Phone"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -76,7 +76,7 @@ function Services() {
                 <img
                   src={MoneyBag}
                   alt="MoneyBag"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -86,14 +86,14 @@ function Services() {
                 <img
                   src={Target}
                   alt="Target"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
             {
               title: t("services.service_5"),
               icon: (
-                <img src={Bag} alt="Bag" className="w-8 h-8 object-contain" />
+                <img src={Bag} alt="Bag" className="w-8 h-8 md:w-12 md:h-12 object-contain" />
               ),
             },
             {
@@ -102,7 +102,7 @@ function Services() {
                 <img
                   src={Heart}
                   alt="Heart"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -112,7 +112,7 @@ function Services() {
                 <img
                   src={Fitness}
                   alt="Fitness"
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
                 />
               ),
             },
@@ -122,7 +122,7 @@ function Services() {
                 <img
                   src={OnlyFans}
                   alt="OnlyFans"
-                  className="w-10 h-8 object-contain"
+                  className="w-10 h-8 md:w-14 md:h-12 object-contain"
                 />
               ),
             },
@@ -132,7 +132,7 @@ function Services() {
                 <img
                   src={Robot}
                   alt="Robot"
-                  className="w-10 h-8 object-contain"
+                  className="w-10 h-8 md:w-14 md:h-12 object-contain"
                 />
               ),
             },
@@ -142,7 +142,7 @@ function Services() {
                 <img
                   src={More}
                   alt="More"
-                  className="w-10 h-8 object-contain"
+                  className="w-10 h-8 md:w-14 md:h-12 object-contain"
                 />
               ),
             },
@@ -154,20 +154,20 @@ function Services() {
               <div className="flex items-center justify-center mb-3">
                 {item.icon}
               </div>
-              <div className="font-semibold text-[13px]">{item.title}</div>
+              <div className="font-semibold text-[13px] md:text-lg">{item.title}</div>
             </div>
           ))}
         </div>
       </div>
-      <div className="w-full mx-auto px-4 mt-8">
+      <div className="w-full mx-auto px-4 mt-8 md:mt-16">
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Video Call Feature */}
           <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
+                className="h-8 w-8 md:h-12 md:w-12"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -180,20 +180,20 @@ function Services() {
                 />
               </svg>
             </div>
-            <h4 className="text-xl font-medium text-white mb-2">
+            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
               {t("services.services_structure_1_title")}
             </h4>
-            <p className="text-white">
+            <p className="text-white md:text-xl">
               {t("services.services_structure_1_description")}
             </p>
           </div>
 
           {/* Duration Feature */}
           <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
+                className="h-8 w-8 md:h-12 md:w-12"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -206,20 +206,20 @@ function Services() {
                 />
               </svg>
             </div>
-            <h4 className="text-xl font-medium text-white mb-2">
+            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
               {t("services.services_structure_2_title")}
             </h4>
-            <p className="text-white">
+            <p className="text-white md:text-xl">
               {t("services.services_structure_2_description")}
             </p>
           </div>
 
           {/* Recording Feature */}
           <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
+                className="h-8 w-8 md:h-12 md:w-12"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -232,30 +232,30 @@ function Services() {
                 />
               </svg>
             </div>
-            <h4 className="text-xl font-medium text-white mb-2">
+            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
               {t("services.services_structure_3_title")}
             </h4>
-            <p className="text-white">
+            <p className="text-white md:text-xl">
               {t("services.services_structure_3_description")}
             </p>
           </div>
         </div>
 
         <div className="mt-10 text-center">
-          <p className="text-lg text-white max-w-3xl mx-auto">
+          <p className="text-lg md:text-2xl text-white max-w-3xl mx-auto">
             {t("services.services_structure_description")}
           </p>
           <div className="mt-6 w-full">
-            <h1 className="text-white text-2xl py-2 font-bold">
+            <h1 className="text-white text-2xl md:text-3xl py-2 font-bold">
               {t("services.services_price")}
             </h1>
-            <p className="text-white text-sm pb-6">
+            <p className="text-white text-sm md:text-lg pb-6">
               {t("services.services_price_minimum_time")}
             </p>
             <div className="flex justify-center pt-2">
             <button
               onClick={() => openForm("booking")}
-              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               {t("services.services_book_consultation")}
             </button>

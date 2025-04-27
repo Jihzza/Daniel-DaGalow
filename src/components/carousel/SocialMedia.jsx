@@ -14,7 +14,7 @@ function SocialMedia() {
   return (
     <section id="social-media" className="py-6 px-4 text-black">
       <div className="max-w-3xl mx-auto text-center space-y-6">
-        <h2 className="text-2xl font-bold text-center text-black">
+        <h2 className="text-2xl md:text-4xl font-bold text-center text-black">
           {t("social_media.title")}
         </h2>
         
@@ -27,7 +27,7 @@ function SocialMedia() {
                   <img
                     src={InstagramIcon}
                     alt={t("social_media.platforms.instagram.alt")}
-                    className="w-8 h-8 object-contain"
+                    className="w-8 h-8 md:w-12 md:h-12 object-contain"
                   />
                 ),
                 link: instagramLink,
@@ -38,7 +38,7 @@ function SocialMedia() {
                   <img
                     src={TikTokIcon}
                     alt={t("social_media.platforms.tiktok.alt")}
-                    className="w-8 h-8 object-contain"
+                    className="w-8 h-8 md:w-12 md:h-12 object-contain"
                   />
                 ),
                 link: tiktokLink,
@@ -53,7 +53,7 @@ function SocialMedia() {
                 rel="noopener noreferrer"
               >
                 {item.icon}
-                <div className="font-semibold text-[13px] mt-3">{item.title}</div>
+                <div className="font-semibold text-[13px] md:text-lg mt-3">{item.title}</div>
               </a>
             ))}
           </div>
@@ -68,9 +68,9 @@ function SocialMedia() {
               <img
                 src={TwitterIcon}
                 alt={t("social_media.platforms.twitter.alt")}
-                className="w-8 h-8 object-contain"
+                className="w-8 h-8 md:w-12 md:h-12 object-contain"
               />
-              <div className="font-semibold text-[13px] mt-3">
+              <div className="font-semibold text-[13px] md:text-lg mt-3">
                 {t("social_media.platforms.twitter.title")}
               </div>
             </a>
