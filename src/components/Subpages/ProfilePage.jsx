@@ -5,6 +5,14 @@ import { supabase } from "../../utils/supabaseClient";
 import { Link } from "react-router-dom";
 import OctagonalProfile from "./Octagonal Profile";
 
+const tierNames = {
+  // Example mappings:
+  basic: "Basic Membership",
+  premium: "Premium Membership",
+  gold: "Gold Membership",
+  // Add more as needed
+};
+
 export default function ProfilePage({ onChatOpen }) {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
@@ -47,10 +55,10 @@ export default function ProfilePage({ onChatOpen }) {
       });
   }, [user]);
 
-  async function fetchProfileData() {
+  const fetchProfileData = async () => {
     setLoading(true);
     try {
-      const [{ data: p, error: pError }, { data: a }, { data: s }] =
+      const [{ data: p, error: pError }, { data: a }, { data: coachingRequests, error: coachingError }] =
         await Promise.all([
           supabase
             .from("profiles")
@@ -64,34 +72,44 @@ export default function ProfilePage({ onChatOpen }) {
             .order("appointment_date", { ascending: true }),
           supabase
             .from("coaching_requests")
-            .select("id, service_type, created_at")
+            .select("id, service_type, created_at, membership_start_date, membership_end_date")
             .eq("user_id", user.id)
-            .order("created_at", { ascending: false }),
+            .order("created_at", { ascending: false })
         ]);
-
-      if (pError) throw pError;
-      setProfile(p);
-
-      const tierNames = {
-        weekly: "Basic — 40 € /mo",
-        daily: "Standard — 90 € /mo",
-        priority: "Premium — 230 € /mo",
+  
+      // Log any errors to understand what's going wrong
+      if (pError) console.error("Profiles Error:", pError);
+      if (coachingError) console.error("Coaching Requests Error:", coachingError);
+  
+      // Fallback if no membership columns exist
+      const processSubscriptions = (requests) => {
+        return (requests || []).map((r) => {
+          // Use created_at as fallback for start date
+          const startDate = new Date(r.membership_start_date || r.created_at);
+          const endDate = new Date(startDate);
+          endDate.setMonth(endDate.getMonth() + 1); // Default to 1-month subscription
+  
+          return {
+            id: r.id,
+            name: tierNames[r.service_type] || r.service_type,
+            since: startDate.toLocaleDateString(),
+            expiresOn: endDate.toLocaleDateString(),
+            daysRemaining: Math.max(0, Math.ceil((endDate - new Date()) / (1000 * 60 * 60 * 24)))
+          };
+        });
       };
-      setActiveSubscriptions(
-        (s || []).map((r) => ({
-          id: r.id,
-          name: tierNames[r.service_type] || r.service_type,
-          since: new Date(r.created_at).toLocaleDateString(),
-        }))
-      );
-
+  
+      setProfile(p);
+      setActiveSubscriptions(processSubscriptions(coachingRequests));
       setAppointments(a || []);
+  
     } catch (err) {
+      console.error("Full error in fetchProfileData:", err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   async function checkAdminStatus() {
     try {
@@ -211,6 +229,18 @@ export default function ProfilePage({ onChatOpen }) {
     );
   }
 
+
+  const isSubscriptionActive = (endDate) => {
+    const today = new Date();
+    const subscriptionEnd = new Date(endDate);
+    return today <= subscriptionEnd;
+  };
+  
+  // In the render method or before rendering subscriptions
+  const activeValidSubscriptions = activeSubscriptions.filter(sub => 
+    isSubscriptionActive(sub.expiresOn)
+  );
+
   return (
     <>
       <div className="min-h-screen py-6 px-4">
@@ -289,8 +319,9 @@ export default function ProfilePage({ onChatOpen }) {
                     key={sub.id}
                     className="bg-white rounded-xl shadow-sm p-4 flex justify-between items-center"
                   >
-                    <p className="text-sm text-gray-800">{sub.name}</p>
-                    <p className="text-xs text-gray-500">Since {sub.since}</p>
+                    <p className="text-sm text-black">{sub.name}</p>
+                    <p className="text-xs text-gray-500">Since {sub.since} | Expires: {sub.expiresOn}g</p>
+                    <p className="text-xs text-black">{sub.daysRemaining} days remaining</p>
                   </div>
                 ))
               ) : (

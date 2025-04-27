@@ -36,6 +36,7 @@ import Footer from "./components/Footer";
 import Music from "./components/Subpages/Music";
 import Videos from "./components/Subpages/Videos";
 import TestimonialReview from "./components/admin/TestimonialReview";
+import IncentivePage from "./components/MainSections/IncentivePage";
 // Private route component to protect routes that require authentication
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -104,6 +105,7 @@ function App() {
                     <Analysis />
                     <Projects />
                     <VentureInvestment />
+                    <IncentivePage />
                     <Interviews />
                     <Testimonials onAuthModalOpen={handleAuthModalOpen} />
                     <MergedServiceForm />
@@ -192,12 +194,8 @@ function App() {
           </main>
           {/* Always-on Navigation Bar & Chatbot */}
           <NavigationBar
-            onChatbotClick={() => {
-              // Toggle chat open/closed
-              setIsChatOpen((prev) => !prev);
-            }}
+            onChatbotClick={() => openChat()}
             onAuthModalOpen={handleAuthModalOpen}
-            isChatOpen={isChatOpen}
           />
           <AnimatePresence>
             {isChatOpen && (

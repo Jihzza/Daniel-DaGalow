@@ -4,6 +4,7 @@ import "react-phone-input-2/lib/style.css";
 import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../contexts/AuthContext";
 import InlineChatbotStep from "./InlineChatbotStep";
+import { addMonths } from "date-fns";
 
 // Progress Indicator Component
 function StepIndicator({
@@ -212,6 +213,11 @@ export default function CoachingRequest({ onBackService }) {
   const handleNext = async () => {
     if (step === 2) {
       setIsSubmitting(true);
+      
+      // Calculate membership dates
+      const membershipStartDate = new Date(); // Today's date
+      const membershipEndDate = addMonths(membershipStartDate, 1); // 1 month duration
+  
       const { data, error } = await supabase
         .from("coaching_requests")
         .insert({
@@ -220,9 +226,12 @@ export default function CoachingRequest({ onBackService }) {
           email: formData.email,
           phone: formData.phone,
           service_type: formData.frequency,
+          membership_start_date: membershipStartDate.toISOString(),
+          membership_end_date: membershipEndDate.toISOString(),
         })
         .select("id")
         .single();
+  
       if (error) {
         console.error(error);
         alert("Failed to create coaching request.");
@@ -232,8 +241,6 @@ export default function CoachingRequest({ onBackService }) {
       setRequestId(data.id);
       setIsSubmitting(false);
       setStep(3);
-    } else {
-      setStep((s) => s + 1);
     }
   };
 
