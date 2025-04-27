@@ -3,13 +3,26 @@ import SendIcon from "../../assets/icons/Send.svg";
 import AttachIcon from "../../assets/icons/Anexar.svg";
 import { supabase } from "../../utils/supabaseClient";
 import { format } from "date-fns";
+import TypingMessage from "../UI/TypingMessage";
 
 export default function InlineChatbotStep({ requestId, tableName }) {
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
+  const [isTypingAnimationActive, setIsTypingAnimationActive] = useState(false);
   const listRef = useRef(null);
   const [isNewChat, setIsNewChat] = useState(true);
+  
+  // Function to check if any messages still have active typing animations
+  const checkTypingAnimations = () => {
+    const anyStillTyping = msgs.some(msg => msg.from === "bot" && msg.isTyping);
+    setIsTypingAnimationActive(anyStillTyping);
+  };
+  
+  // Check for active typing animations whenever messages change
+  useEffect(() => {
+    checkTypingAnimations();
+  }, [msgs]);
   
   // Generate a context-specific welcome message based on the service type
   const getWelcomeMessage = async () => {
@@ -107,6 +120,7 @@ export default function InlineChatbotStep({ requestId, tableName }) {
       const messagesList = data.map((d) => ({
         from: d.sender === "user" ? "user" : "bot",
         text: d.message,
+        isTyping: false // Mark existing messages as already typed
       }));
       
       setMsgs(messagesList);
@@ -124,10 +138,12 @@ export default function InlineChatbotStep({ requestId, tableName }) {
         const welcomeMessage = {
           from: "bot",
           text: welcomeText,
+          isTyping: true
         };
         
         // Add welcome message to UI
         setMsgs([welcomeMessage]);
+        setIsTypingAnimationActive(true);
         
         // Store welcome message in database
         if (requestId) {
@@ -155,39 +171,58 @@ export default function InlineChatbotStep({ requestId, tableName }) {
   }, [msgs, busy]);
 
   async function send() {
-    if (!text.trim()) return;
+    // Don't allow sending if text is empty or a typing animation is in progress
+    if (!text.trim() || isTypingAnimationActive) return;
+    
     setBusy(true);
     const t = text.trim();
     setText("");
 
-    // 1) Save user message
+    // 1) Add user message to UI (no animation for user messages)
+    setMsgs((m) => [...m, { from: "user", text: t }]);
+    
+    // 2) Save user message to database
     await supabase
       .from(tableName)
       .insert({ request_id: requestId, sender: "user", message: t });
-    setMsgs((m) => [...m, { from: "user", text: t }]);
 
     try {
-      // 2) Send to n8n webhook using same payload as ChatbotWindow
+      // 3) Send to n8n webhook to get response
       const res = await fetch("https://rafaello.app.n8n.cloud/webhook/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: requestId, chatInput: t }),
       });
-      // 3) Parse the response as JSON with `output`
+      
+      // 4) Parse the response
       const data = await res.json();
       const { output } = data;
 
-      // 4) Save bot reply
+      // 5) Save bot response to database
       await supabase
         .from(tableName)
         .insert({ request_id: requestId, sender: "bot", message: output });
-      setMsgs((m) => [...m, { from: "bot", text: output }]);
+      
+      // 6) Add bot response to UI with typing animation
+      setMsgs((m) => [...m, { 
+        from: "bot", 
+        text: output,
+        isTyping: true  // This ensures typing animation for every bot message
+      }]);
+      setIsTypingAnimationActive(true);
     } catch (err) {
       console.error("Webhook error", err);
+      
+      // Even error messages should animate
       setMsgs((m) => [
         ...m,
-        { from: "bot", text: "Oops, something went wrong." },
+        { 
+          from: "bot", 
+          text: "Oops, something went wrong.",
+          isTyping: true  // Animation for error messages too
+        },
       ]);
+      setIsTypingAnimationActive(true);
     } finally {
       setBusy(false);
     }
@@ -205,7 +240,25 @@ export default function InlineChatbotStep({ requestId, tableName }) {
                 : "self-start text-white"
             }`}
           >
-            {m.text}
+            {m.from === "bot" ? (
+              <TypingMessage 
+                text={m.text} 
+                isComplete={!m.isTyping}
+                typingSpeed={2}  // Fast typing speed
+                startDelay={10}  // Quick start delay
+                onComplete={() => {
+                  // Mark this message as completed typing
+                  setMsgs(prevMsgs => 
+                    prevMsgs.map((msg, idx) => 
+                      idx === i ? {...msg, isTyping: false} : msg
+                    )
+                  );
+                  // checkTypingAnimations will be called via useEffect
+                }}
+              />
+            ) : (
+              m.text
+            )}
           </div>
         ))}
         {busy && <div className="text-gray-400">bot is typing…</div>}
@@ -217,18 +270,22 @@ export default function InlineChatbotStep({ requestId, tableName }) {
         </button>
         <input
           className="w-full h-10 bg-oxfordBlue border-2 border-darkGold rounded-full pl-10 pr-10 text-white"
-          placeholder="Type a message…"
+          placeholder={isTypingAnimationActive ? "Wait for message..." : "Type a message…"}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
-          disabled={busy}
+          onKeyDown={(e) => !isTypingAnimationActive && e.key === "Enter" && send()}
+          disabled={busy || isTypingAnimationActive}
         />
         <button
           className="absolute right-3 top-1/2 transform -translate-y-1/2"
           onClick={send}
-          disabled={busy}
+          disabled={busy || isTypingAnimationActive}
         >
-          <img src={SendIcon} alt="send" className="w-5 h-5" />
+          <img 
+            src={SendIcon} 
+            alt="send" 
+            className={`w-5 h-5 ${(busy || isTypingAnimationActive) ? "opacity-50" : ""}`} 
+          />
         </button>
       </div>
     </div>

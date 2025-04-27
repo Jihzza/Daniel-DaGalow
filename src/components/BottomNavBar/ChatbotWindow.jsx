@@ -5,11 +5,13 @@ import Send from "../../assets/icons/Send.svg";
 import Anexar from "../../assets/icons/Anexar.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
+import TypingMessage from "../UI/TypingMessage";
 
 export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
   const [messages, setMessages] = useState([]);
   const [userText, setUserText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isTypingAnimationActive, setIsTypingAnimationActive] = useState(false);
   const panelRef = useRef(null);
   const listRef = useRef(null);
   const headerRef = useRef(null);
@@ -25,6 +27,12 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
   const { user } = useAuth();
   const userId = user?.id;
   const [isNewChat, setIsNewChat] = useState(true);
+
+  // Check if any messages still have active typing animations
+  const checkTypingAnimations = () => {
+    const anyStillTyping = messages.some(msg => msg.from === "bot" && msg.isTyping);
+    setIsTypingAnimationActive(anyStillTyping);
+  };
 
   // inside your component, before the return
   const onPointerDown = (e) => {
@@ -60,6 +68,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
             data.map((row) => ({
               from: row.role === "user" ? "user" : "bot",
               text: row.content,
+              isTyping: false // Mark existing messages as already typed
             }))
           );
           setIsNewChat(false);
@@ -68,12 +77,14 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
           // Add welcome message immediately to avoid double display
           const welcomeMessage = {
             from: "bot",
-            text: "👋 Welcome to DaGalow's personal assistant! I can help you with information about services, booking consultations, or answering questions about Daniel's expertise in mindset, finance, health, and more. How can I assist you today?"
+            text: "👋 Welcome to DaGalow's personal assistant! I can help you with information about services, booking consultations, or answering questions about Daniel's expertise in mindset, finance, health, and more. How can I assist you today?",
+            isTyping: true
           };
           
           // Update UI first
           setMessages([welcomeMessage]);
           setIsNewChat(false);
+          setIsTypingAnimationActive(true);
           
           // Then save to database
           try {
@@ -123,10 +134,15 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
     }
   }, [messages, loading]);
 
-  const sendMessage = async () => {
-    if (!userText.trim()) return;
+  // Check typing animations whenever messages change
+  useEffect(() => {
+    checkTypingAnimations();
+  }, [messages]);
 
-    // add user message
+  const sendMessage = async () => {
+    if (!userText.trim() || isTypingAnimationActive) return;
+
+    // Add user message (no animation needed)
     setMessages((msgs) => [...msgs, { from: "user", text: userText }]);
     const textToSend = userText;
     setUserText("");
@@ -143,16 +159,47 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
         }),
       });
       const data = await res.json();
-      console.log("Webhook returnded:", data);
+      console.log("Webhook returned:", data);
 
       const { output } = data;
-      setMessages((msgs) => [...msgs, { from: "bot", text: output }]);
+      
+      // Add bot response WITH typing animation flag
+      setMessages((msgs) => [...msgs, { 
+        from: "bot", 
+        text: output,
+        isTyping: true // This triggers the typing animation
+      }]);
+      setIsTypingAnimationActive(true);
+      
+      // Save messages to database
+      await supabase
+        .from("messages")
+        .insert([
+          {
+            session_id: sessionId,
+            role: "user",
+            content: textToSend,
+            user_id: userId,
+          },
+          {
+            session_id: sessionId,
+            role: "assistant",
+            content: output,
+            user_id: userId,
+          }
+        ]);
     } catch (error) {
       console.error("Chatbot error:", error);
+      // Even error messages need the typing animation
       setMessages((msgs) => [
         ...msgs,
-        { from: "bot", text: "Sorry, there was an error. Please try again." },
+        { 
+          from: "bot", 
+          text: "Sorry, there was an error. Please try again.",
+          isTyping: true // Add typing animation to error messages too
+        },
       ]);
+      setIsTypingAnimationActive(true);
     } finally {
       setLoading(false);
     }
@@ -202,7 +249,25 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
                   : "self-start text-white"
               }`}
             >
-              {m.text}
+              {m.from === "bot" ? (
+                <TypingMessage 
+                  text={m.text} 
+                  isComplete={!m.isTyping}
+                  typingSpeed={2}  // Fast typing speed
+                  startDelay={10}  // Quick start delay
+                  onComplete={() => {
+                    // Mark this message as completed
+                    setMessages(prevMsgs => 
+                      prevMsgs.map((msg, idx) => 
+                        idx === i ? {...msg, isTyping: false} : msg
+                      )
+                    );
+                    // This will trigger our useEffect to check if any messages are still typing
+                  }}
+                />
+              ) : (
+                m.text
+              )}
             </div>
           ))}
 
@@ -213,7 +278,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
           )}
         </div>
       </div>
-      {/* Input & attachments */}
+      {/* Input & attachments - Disabled while typing animation is active */}
       <div className="pb-2 px-2">
         <div className="relative w-full">
           <button className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
@@ -223,18 +288,19 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
             className="w-full h-12 border-2 border-darkGold bg-oxfordBlue text-white rounded-full p-4 px-12"
             value={userText}
             onChange={(e) => setUserText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            placeholder="Type a message…"
+            onKeyDown={(e) => !isTypingAnimationActive && e.key === "Enter" && sendMessage()}
+            placeholder={isTypingAnimationActive ? "Wait for message..." : "Type a message…"}
+            disabled={loading || isTypingAnimationActive}
           />
           <button
             className="absolute right-4 top-1/2 -translate-y-1/2 pb-1 z-10"
             onClick={sendMessage}
-            disabled={loading}
+            disabled={loading || isTypingAnimationActive}
           >
             <img
               src={Send}
               alt="Send"
-              className={`w-6 h-6 ${loading ? "opacity-50" : ""}`}
+              className={`w-6 h-6 ${(loading || isTypingAnimationActive) ? "opacity-50" : ""}`}
             />
           </button>
         </div>
