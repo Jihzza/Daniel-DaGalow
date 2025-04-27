@@ -22,10 +22,15 @@ export default function CalendarPage() {
 
   useEffect(() => {
     async function fetchEvents() {
+      // Only fetch events if user is logged in
+      if (!user) return;
+      
       setLoading(true);
       const { data, error } = await supabase
         .from("bookings")
-        .select("id, appointment_date, name, duration_minutes");
+        .select("id, appointment_date, name, duration_minutes")
+        .eq("user_id", user.id); // Filter by current user's ID
+        
       if (error) {
         console.error("Error fetching events:", error);
       } else {
@@ -41,8 +46,9 @@ export default function CalendarPage() {
       }
       setLoading(false);
     }
+    
     fetchEvents();
-  }, []);
+  }, [user]); // Add user as a dependency so query re-runs when user changes
 
   useEffect(() => {
     if (selectedDate) {
