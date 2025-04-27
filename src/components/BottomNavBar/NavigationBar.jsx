@@ -9,7 +9,7 @@ import chatbot from '../../assets/icons/Dagalow Branco.svg';
 import settings from '../../assets/icons/Settings Branco.svg';
 import account from '../../assets/icons/Profile Branco.svg';
 
-const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
+const NavigationBar = ({ onChatbotClick, onAuthModalOpen, isChatOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -35,7 +35,7 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   const icons = [
     {src: home, alt: "Home", action: handleDagalowIconClick},
     {src: calendar, alt: "Calendar", to: user ? "/components/Subpages/Calendar" : null, action: user ? null : onAuthModalOpen},
-    {src: chatbot, alt: "Chatbot", action: onChatbotClick},
+    {src: chatbot, alt: "Chatbot", action: onChatbotClick, special: true},
     {src: settings, alt: "Settings", to: user ? "/components/Subpages/Settings" : null, action: user ? null : onAuthModalOpen},
     {src: account, alt: "Account", action: handleAccountClick},
   ];
@@ -47,7 +47,9 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
           key={i}
           src={icon.src}
           alt={icon.alt}
-          className="w-8 h-8 cursor-pointer drop-shadow-lg transition"
+          className={`w-8 h-8 cursor-pointer drop-shadow-lg transition ${
+            icon.special && isChatOpen ? 'opacity-70' : ''
+          }`}
           onClick={() => {
             if (icon.action) {
               icon.action();

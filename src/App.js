@@ -192,8 +192,12 @@ function App() {
           </main>
           {/* Always-on Navigation Bar & Chatbot */}
           <NavigationBar
-            onChatbotClick={() => openChat()}
+            onChatbotClick={() => {
+              // Toggle chat open/closed
+              setIsChatOpen((prev) => !prev);
+            }}
             onAuthModalOpen={handleAuthModalOpen}
+            isChatOpen={isChatOpen}
           />
           <AnimatePresence>
             {isChatOpen && (

@@ -14,9 +14,17 @@ import { useContext } from "react";
 function Hero() {
   const scrollTo = (id) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (el) {
+      // Calculate the header height (14 is the h-14 in your header)
+      const headerHeight = 56; // 14 * 4 = 56px
+      
+      // Scroll with an offset to account for the header
+      window.scrollTo({
+        top: el.offsetTop - headerHeight,
+        behavior: 'smooth'
+      });
+    }
   };
-
 
   const { setService } = useContext(ServiceContext);
 
