@@ -1,7 +1,7 @@
 // src/components/Pages/ChatbotIncentive.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 // Import icons and images
@@ -180,11 +180,6 @@ const ChatbotIncentive = () => {
   // Handle sign up button click
   const handleSignUp = () => {
     navigate("/signup");
-  };
-
-  // Format a number with commas for thousands
-  const formatNumber = (num) => {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   return (
