@@ -104,7 +104,7 @@ export default function AnalysisRequest({ onBackService }) {
   const { user } = useAuth(); // Get the current user
   const [formData, setFormData] = useState({ type: "",
   name: user?.user_metadata?.full_name || "",
-  email: user?.email || "" 
+  email: "" 
 });
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

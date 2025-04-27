@@ -24,6 +24,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
   );
   const { user } = useAuth();
   const userId = user?.id;
+  const [isNewChat, setIsNewChat] = useState(true);
 
   // inside your component, before the return
   const onPointerDown = (e) => {
@@ -45,22 +46,52 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
     if (!sessionId) return;
 
     (async () => {
+      // Fetch existing messages for this session
       const { data, error } = await supabase
         .from("messages")
         .select("role, content, created_at")
         .eq("session_id", sessionId)
         .order("created_at", { ascending: true });
 
-      if (!error && data) {
-        setMessages(
-          data.map((row) => ({
-            from: row.role === "user" ? "user" : "bot",
-            text: row.content,
-          }))
-        );
+      if (!error) {
+        if (data && data.length > 0) {
+          // We have existing messages, load them
+          setMessages(
+            data.map((row) => ({
+              from: row.role === "user" ? "user" : "bot",
+              text: row.content,
+            }))
+          );
+          setIsNewChat(false);
+        } else {
+          // No messages, this is a new chat
+          // Add welcome message immediately to avoid double display
+          const welcomeMessage = {
+            from: "bot",
+            text: "👋 Welcome to DaGalow's personal assistant! I can help you with information about services, booking consultations, or answering questions about Daniel's expertise in mindset, finance, health, and more. How can I assist you today?"
+          };
+          
+          // Update UI first
+          setMessages([welcomeMessage]);
+          setIsNewChat(false);
+          
+          // Then save to database
+          try {
+            await supabase
+              .from("messages")
+              .insert({
+                session_id: sessionId,
+                role: "assistant",
+                content: welcomeMessage.text,
+                user_id: userId
+              });
+          } catch (error) {
+            console.error("Error saving welcome message:", error);
+          }
+        }
       }
     })();
-  }, [sessionId]);
+  }, [sessionId, userId]);
 
   useEffect(() => {
     const threshold = initialHeight.current * 0.3;
@@ -177,7 +208,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
 
           {loading && (
             <div className="text-center px-4 py-2 text-gray-500">
-              <div className="animate-spin rounded-full  h-5 w-5 border-t-2 border-b-2 border-gray-900 dark:border-white"></div>
+              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-gray-900 dark:border-white"></div>
             </div>
           )}
         </div>

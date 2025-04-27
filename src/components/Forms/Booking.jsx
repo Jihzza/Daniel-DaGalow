@@ -12,22 +12,9 @@ import {
   isWeekend,
   addMinutes,
   isBefore,
-  parseISO,
-  getHours,
-  setHours,
-  setMinutes,
 } from "date-fns";
 import { fetchBookings } from "../../services/bookingService";
 import InlineChatbotStep from "./InlineChatbotStep";
-
-const STRIPE_LINKS = {
-  45: "https://buy.stripe.com/9AQ4h1gy6fG90Te7sw",
-  60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
-  75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
-  90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
-  105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
-  120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
-};
 
 // Shared StepIndicator
 function StepIndicator({
