@@ -9,9 +9,6 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  -webkit-user-select: none;  /* Safari */
-  -ms-user-select: none;      /* IE 10 and IE 11 */
-  user-select: none; 
 }
 
 html {
@@ -21,13 +18,4 @@ html {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-}
-
-img {
-  -webkit-user-drag: none;  /* Prevents dragging in Safari, Chrome, and newer browsers */
-  -khtml-user-drag: none;   /* Prevents dragging in older browsers */
-  -moz-user-drag: none;     /* Prevents dragging in Firefox */
-  -o-user-drag: none;       /* Prevents dragging in Opera */
-  user-drag: none;          /* Standard syntax */
-  pointer-events: none;     /* Disables most image interactions */
 }
