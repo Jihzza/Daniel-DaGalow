@@ -13,38 +13,37 @@ function StepIndicator({
   className = "",
 }) {
   return (
-    <div className={`flex items-center justify-center ${className}`}>
-      {Array.from({ length: stepCount }).map((_, idx) => {
-        const stepNum = idx + 1;
-        const isActive = currentStep === stepNum;
-        return (
-          <React.Fragment key={stepNum}>
-            <button
-              type="button"
-              onClick={() => onStepClick(stepNum)}
-              disabled={stepNum > currentStep}
-              className={`w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
-                isActive
-                  ? "bg-darkGold border-darkGold text-white"
-                  : "bg-white/20 border-white/50 text-white/50"
-              } ${
-                !isActive &&
-                "hover:border-darkGold hover:text-white cursor-pointer"
-              } ${stepNum > currentStep && "opacity-50 cursor-not-allowed"}`}
-            >
-              {stepNum}
-            </button>
-            {idx < stepCount - 1 && (
-              <div
-                className={`flex-1 h-0.5 mx-2 transition-colors duration-300 ${
-                  currentStep > stepNum ? "bg-darkGold" : "bg-white/20"
-                }`}
-              />
-            )}
-          </React.Fragment>
-        );
-      })}
-    </div>
+    <div className="flex items-center justify-center gap-1 md:gap-2 mt-6 md:mt-8">
+  {Array.from({ length: stepCount }).map((_, idx) => {
+    const stepNum = idx + 1;
+    const isActive = currentStep === stepNum;
+    
+    return (
+      <React.Fragment key={stepNum}>
+        <button
+          type="button"
+          onClick={() => onStepClick(stepNum)}
+          disabled={stepNum > currentStep}
+          className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full border-2 transition-colors text-sm md:text-base ${
+            isActive
+              ? "bg-darkGold border-darkGold text-white transform scale-110"
+              : "bg-white/20 border-white/50 text-white/80 hover:border-darkGold hover:text-white"
+          } ${stepNum > currentStep ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+          aria-label={`Go to step ${stepNum}`}
+        >
+          {stepNum}
+        </button>
+        {idx < stepCount - 1 && (
+          <div
+            className={`h-0.5 flex-1 mx-1 md:mx-2 transition-colors ${
+              currentStep > stepNum ? "bg-darkGold" : "bg-white/20"
+            }`}
+          />
+        )}
+      </React.Fragment>
+    );
+  })}
+</div>
   );
 }
 
@@ -59,17 +58,17 @@ function TypeSelectionStep({ formData, onChange }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-6 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-6 mb-6">
       {options.map((opt) => (
         <div
           key={opt.value}
           onClick={() =>
             onChange({ target: { name: "type", value: opt.value } })
           }
-          className={`px-4 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold  shadow-lg text-sm md:text-lg bg-oxfordBlue ${
+          className={`px-4 py-3 md:py-4 rounded-xl md:rounded-2xl cursor-pointer text-center border-2 shadow-lg transition-all text-base md:text-lg bg-oxfordBlue ${
             formData.type === opt.value
-              ? "border-darkGold shadow-lg"
-              : "border-darkGold"
+              ? "border-darkGold bg-darkGold/20 transform scale-[1.02]"
+              : "border-darkGold hover:bg-darkGold/10 active:bg-darkGold/20"
           }`}
         >
           <p className="text-white font-medium">{opt.label}</p>
@@ -83,28 +82,32 @@ function TypeSelectionStep({ formData, onChange }) {
 function ContactInfoStep({ formData, onChange }) {
   const { t } = useTranslation();
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <div>
-        <label className="block text-white mb-2">{t("analysis_request.form.name_label")}</label>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+      <div className="space-y-2">
+        <label className="block text-white text-sm md:text-base font-medium">
+          {t("analysis_request.form.name_label")}
+        </label>
         <input
           name="name"
           type="text"
           value={formData.name}
           onChange={onChange}
           placeholder={t("analysis_request.form.name_placeholder")}
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
+          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold shadow-inner text-base md:text-lg transition-colors"
           required
         />
       </div>
-      <div>
-        <label className="block text-white mb-2">{t("analysis_request.form.email_label")}</label>
+      <div className="space-y-2">
+        <label className="block text-white text-sm md:text-base font-medium">
+          {t("analysis_request.form.email_label")}
+        </label>
         <input
           name="email"
           type="email"
           value={formData.email}
           onChange={onChange}
           placeholder={t("analysis_request.form.email_placeholder")}
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
+          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold shadow-inner text-base md:text-lg transition-colors"
           required
         />
       </div>
@@ -198,7 +201,9 @@ export default function AnalysisRequest({ onBackService }) {
           {/* Inline Chat Step */}
           {step === 3 && requestId && (
             <>
-              <h3 className="text-xl text-white mb-4">{t("analysis_request.steps.chat")}</h3>
+              <h3 className="text-xl text-white mb-4">
+                {t("analysis_request.steps.chat")}
+              </h3>
               <InlineChatbotStep
                 requestId={requestId}
                 tableName="analysis_chat_messages"
@@ -210,7 +215,7 @@ export default function AnalysisRequest({ onBackService }) {
           <div className="flex justify-between mt-6">
             <button
               onClick={handleBack}
-              className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
+              className="px-4 py-2 md:px-5 md:py-3 border-2 border-darkGold text-darkGold rounded-xl hover:bg-darkGold/10 active:bg-darkGold/20 transition-colors font-medium text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-darkGold focus:ring-opacity-50"
             >
               {t("analysis_request.buttons.back")}
             </button>
@@ -218,15 +223,41 @@ export default function AnalysisRequest({ onBackService }) {
               <button
                 onClick={handleNext}
                 disabled={!canProceed() || isSubmitting}
-                className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
+                className="px-4 py-2 md:px-5 md:py-3 bg-darkGold text-black rounded-xl "
               >
-                {t("analysis_request.buttons.next")}
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    {t("analysis_request.buttons.next")}
+                  </span>
+                ) : (
+                  t("analysis_request.buttons.next")
+                )}
               </button>
             )}
             {step >= 3 && (
               <button
                 onClick={onBackService}
-                className="px-3 py-1 bg-darkGold text-black rounded-xl hover:bg-darkGold/90"
+                className="px-4 py-2 md:px-5 md:py-3 bg-darkGold text-black rounded-xl"
               >
                 {t("analysis_request.buttons.done")}
               </button>

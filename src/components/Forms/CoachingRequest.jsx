@@ -15,22 +15,25 @@ function StepIndicator({
   className = "",
 }) {
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div className="flex items-center justify-center gap-1 md:gap-2 mt-6 md:mt-8">
       {Array.from({ length: stepCount }).map((_, idx) => {
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
+
         return (
           <React.Fragment key={stepNum}>
             <button
               type="button"
               onClick={() => onStepClick(stepNum)}
               disabled={stepNum > currentStep}
-              className={`w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
+              className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full border-2 transition-colors text-sm md:text-base ${
                 isActive
-                  ? "bg-darkGold border-darkGold text-white"
-                  : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer"
+                  ? "bg-darkGold border-darkGold text-white transform scale-110"
+                  : "bg-white/20 border-white/50 text-white/80 hover:border-darkGold hover:text-white"
               } ${
-                stepNum > currentStep ? "opacity-50 cursor-not-allowed" : ""
+                stepNum > currentStep
+                  ? "opacity-40 cursor-not-allowed"
+                  : "cursor-pointer"
               }`}
               aria-label={`Go to step ${stepNum}`}
             >
@@ -38,7 +41,7 @@ function StepIndicator({
             </button>
             {idx < stepCount - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-1 transition-colors duration-300 ${
+                className={`h-0.5 flex-1 mx-1 md:mx-2 transition-colors ${
                   currentStep > stepNum ? "bg-darkGold" : "bg-white/20"
                 }`}
               />
@@ -56,18 +59,21 @@ function FrequencyStep({ formData, onChange }) {
   const options = [
     { label: t("coaching_request.frequency_options.weekly"), value: "weekly" },
     { label: t("coaching_request.frequency_options.daily"), value: "daily" },
-    { label: t("coaching_request.frequency_options.priority"), value: "priority" },
+    {
+      label: t("coaching_request.frequency_options.priority"),
+      value: "priority",
+    },
   ];
   return (
-    <div className="grid grid-cols-1 gap-6 mb-6">
+    <div className="grid grid-cols-1 gap-4 mb-6">
       {options.map((opt) => (
         <button
           key={opt.value}
           type="button"
-          className={`px-3 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg text-sm md:text-lg bg-oxfordBlue ${
+          className={`px-4 py-4 rounded-xl md:rounded-2xl cursor-pointer text-center border-2 shadow-lg text-base md:text-lg bg-oxfordBlue transition-all ${
             formData.frequency === opt.value
-              ? "border-darkGold shadow-lg"
-              : "border-darkGold"
+              ? "border-darkGold bg-darkGold/20 transform scale-[1.01]"
+              : "border-darkGold hover:bg-darkGold/10 active:bg-darkGold/20"
           }`}
           onClick={() =>
             onChange({ target: { name: "frequency", value: opt.value } })
@@ -86,44 +92,52 @@ function ContactStep({ formData, onChange }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">{t("coaching_request.form.name_label")}</label>
+        <label className="block text-white mb-2">
+          {t("coaching_request.form.name_label")}
+        </label>
         <input
           name="name"
           type="text"
           value={formData.name}
           onChange={onChange}
           placeholder={t("coaching_request.form.name_placeholder")}
+          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold shadow-inner text-base md:text-lg transition-colors"
           required
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold text-sm md:text-lg"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">{t("coaching_request.form.email_label")}</label>
+        <label className="block text-white mb-2">
+          {t("coaching_request.form.email_label")}
+        </label>
         <input
           name="email"
           type="email"
           value={formData.email}
           onChange={onChange}
           placeholder={t("coaching_request.form.email_placeholder")}
+          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold shadow-inner text-base md:text-lg transition-colors"
           required
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold text-sm md:text-lg"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">{t("coaching_request.form.phone_label")}</label>
+        <label className="block text-white mb-2 font-medium">
+          {t("coaching_request.form.phone_label")}
+        </label>
         <PhoneInput
-          containerClass="!w-full !h-[42px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
+          containerClass="!w-full !h-[48px] md:!h-[52px] lg:!h-[46px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
           buttonClass="!bg-white/5 !border-none h-full"
-          inputClass="!bg-white/5 !w-full !border-none p-4 !h-full text-white placeholder-white/50 "
+          inputClass="!bg-white/5 !w-full !border-none px-2 md:px-4 !h-full text-white placeholder-white/50 text-base md:text-lg"
           country="es"
           enableSearch
-          searchPlaceholder={t("coaching_request.form.phone_search_placeholder")}
+          searchPlaceholder={t(
+            "coaching_request.form.phone_search_placeholder"
+          )}
           value={formData.phone}
           onChange={(phone) =>
             onChange({ target: { name: "phone", value: phone } })
           }
-          dropdownClass="!bg-oxfordBlue text-white rounded-2xl"
-          searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2"
+          dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
+          searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
         />
       </div>
     </div>
@@ -154,8 +168,11 @@ function PaymentStep({ formData, onPaid }) {
   return (
     <div className="text-center mb-6">
       <p className="text-white mb-4 text-sm">
-        {t("coaching_request.payment.selected_tier")} <strong>{tier.label}</strong>.<br />
-        {t("coaching_request.payment.complete_payment")} <strong>{tier.price}</strong> {t("coaching_request.payment.to_continue")}
+        {t("coaching_request.payment.selected_tier")}{" "}
+        <strong>{tier.label}</strong>.<br />
+        {t("coaching_request.payment.complete_payment")}{" "}
+        <strong>{tier.price}</strong>{" "}
+        {t("coaching_request.payment.to_continue")}
       </p>
       <a
         href={tier.link}
@@ -217,11 +234,11 @@ export default function CoachingRequest({ onBackService }) {
   const handleNext = async () => {
     if (step === 2) {
       setIsSubmitting(true);
-      
+
       // Calculate membership dates
       const membershipStartDate = new Date(); // Today's date
       const membershipEndDate = addMonths(membershipStartDate, 1); // 1 month duration
-  
+
       const { data, error } = await supabase
         .from("coaching_requests")
         .insert({
@@ -235,7 +252,7 @@ export default function CoachingRequest({ onBackService }) {
         })
         .select("id")
         .single();
-  
+
       if (error) {
         console.error(error);
         alert("Failed to create coaching request.");

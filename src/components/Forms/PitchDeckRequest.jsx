@@ -13,28 +13,33 @@ function StepIndicator({
   className = "",
 }) {
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div className="flex items-center justify-center gap-1 md:gap-2 mt-6 md:mt-8">
       {Array.from({ length: stepCount }).map((_, idx) => {
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
+
         return (
           <React.Fragment key={stepNum}>
             <button
               type="button"
               onClick={() => onStepClick(stepNum)}
               disabled={stepNum > currentStep}
-              className={`w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
+              className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full border-2 transition-colors text-sm md:text-base ${
                 isActive
-                  ? "bg-darkGold border-darkGold text-white"
-                  : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer"
-              } ${stepNum > currentStep ? "opacity-50 cursor-not-allowed" : ""}`}
+                  ? "bg-darkGold border-darkGold text-white transform scale-110"
+                  : "bg-white/20 border-white/50 text-white/80 hover:border-darkGold hover:text-white"
+              } ${
+                stepNum > currentStep
+                  ? "opacity-40 cursor-not-allowed"
+                  : "cursor-pointer"
+              }`}
               aria-label={`Go to step ${stepNum}`}
             >
               {stepNum}
             </button>
             {idx < stepCount - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-2 transition-colors duration-300 ${
+                className={`h-0.5 flex-1 mx-1 md:mx-2 transition-colors ${
                   currentStep > stepNum ? "bg-darkGold" : "bg-white/20"
                 }`}
               />
@@ -55,14 +60,18 @@ function ProjectSelectionStep({ formData, onChange }) {
     { label: "Pizzaria", value: "pizzaria" },
   ];
   return (
-    <div className="grid grid-cols-1 gap-6 mb-6">
+    <div className="grid grid-cols-1 gap-4 mb-6">
       {projects.map((p) => (
         <button
           key={p.value}
           type="button"
-          onClick={() => onChange({ target: { name: "project", value: p.value } })}
-          className={`px-3 py-2 rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg text-sm md:text-lg bg-oxfordBlue ${
-            formData.project === p.value ? "border-darkGold shadow-lg" : "border-darkGold"
+          onClick={() =>
+            onChange({ target: { name: "project", value: p.value } })
+          }
+          className={`px-4 py-4 rounded-xl md:rounded-2xl cursor-pointer text-center border-2 shadow-lg text-base md:text-lg bg-oxfordBlue transition-all ${
+            formData.project === p.value
+              ? "border-darkGold bg-darkGold/20 transform scale-[1.01]"
+              : "border-darkGold hover:bg-darkGold/10 active:bg-darkGold/20"
           }`}
         >
           <span className="text-white font-medium">{p.label}</span>
@@ -78,43 +87,52 @@ function ContactInfoStep({ formData, onChange }) {
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">{t("pitch_deck_request.form.name_label")}</label>
+        <label className="block text-white mb-2">
+          {t("pitch_deck_request.form.name_label")}
+        </label>
         <input
           name="name"
           type="text"
           value={formData.name}
           onChange={onChange}
           placeholder={t("pitch_deck_request.form.name_placeholder")}
+          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold shadow-inner text-base md:text-lg transition-colors"
           required
-          className="w-full text-sm md:text-lg px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">{t("pitch_deck_request.form.email_label")}</label>
+        <label className="block text-white mb-2">
+          {t("pitch_deck_request.form.email_label")}
+        </label>
         <input
           name="email"
           type="email"
           value={formData.email}
           onChange={onChange}
           placeholder={t("pitch_deck_request.form.email_placeholder")}
+          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold shadow-inner text-base md:text-lg transition-colors"
           required
-          className="w-full text-sm md:text-lg px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white font-medium mb-2">{t("pitch_deck_request.form.phone_label")}</label>
+        <label className="block text-white mb-2 font-medium">
+          {t("coaching_request.form.phone_label")}
+        </label>
         <PhoneInput
-          containerClass="!w-full !h-[42px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
+          containerClass="!w-full !h-[48px] md:!h-[52px] lg:!h-[46px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
           buttonClass="!bg-white/5 !border-none h-full"
-          inputClass="!bg-white/5 !border-none p-4 !h-full !w-full text-white placeholder-white/50"
+          inputClass="!bg-white/5 !w-full !border-none px-2 md:px-4 !h-full text-white placeholder-white/50 text-base md:text-lg"
           country="es"
           enableSearch
-          searchPlaceholder={t("pitch_deck_request.form.phone_search_placeholder")}
+          searchPlaceholder={t(
+            "coaching_request.form.phone_search_placeholder"
+          )}
           value={formData.phone}
-          inputProps={{ name: 'phone', required: true }}
-          onChange={(phone) => onChange({ target: { name: "phone", value: phone } })}
-          dropdownClass="!bg-oxfordBlue text-white rounded-2xl"
-          searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2"
+          onChange={(phone) =>
+            onChange({ target: { name: "phone", value: phone } })
+          }
+          dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
+          searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
         />
       </div>
     </div>
@@ -124,8 +142,14 @@ function ContactInfoStep({ formData, onChange }) {
 export default function PitchDeckRequest({ onBackService }) {
   const { t } = useTranslation();
   const STEPS = [
-    { title: t("pitch_deck_request.steps.project"), component: ProjectSelectionStep },
-    { title: t("pitch_deck_request.steps.contact"), component: ContactInfoStep },
+    {
+      title: t("pitch_deck_request.steps.project"),
+      component: ProjectSelectionStep,
+    },
+    {
+      title: t("pitch_deck_request.steps.contact"),
+      component: ContactInfoStep,
+    },
     { title: t("pitch_deck_request.steps.chat"), component: InlineChatbotStep },
   ];
 
@@ -136,14 +160,17 @@ export default function PitchDeckRequest({ onBackService }) {
     project: "",
     name: user?.user_metadata?.full_name || "",
     email: user?.email || "",
-    phone: ""
+    phone: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestId, setRequestId] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((fd) => ({ ...fd, [name]: type === "checkbox" ? checked : value }));
+    setFormData((fd) => ({
+      ...fd,
+      [name]: type === "checkbox" ? checked : value,
+    }));
     if (step === 1 && name === "project" && value) setStep(2);
   };
 
@@ -161,15 +188,15 @@ export default function PitchDeckRequest({ onBackService }) {
           .select("phone_number")
           .eq("id", user.id)
           .single();
-        
+
         if (!error && data) {
-          setFormData(prev => ({
+          setFormData((prev) => ({
             ...prev,
-            phone: data.phone_number || ""
+            phone: data.phone_number || "",
           }));
         }
       };
-      
+
       fetchUserProfile();
     }
   }, [user]);
@@ -184,13 +211,13 @@ export default function PitchDeckRequest({ onBackService }) {
             project: formData.project,
             name: formData.name,
             email: formData.email,
-            phone: formData.phone
+            phone: formData.phone,
           })
           .select("id")
           .single();
-        
+
         if (error) throw error;
-        
+
         setRequestId(data.id);
         setStep(3);
       } catch (error) {

@@ -36,18 +36,18 @@ function StepIndicator({
               type="button"
               onClick={() => onStepClick(stepNum)}
               disabled={stepNum > currentStep}
-              className={`w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
+              className={`w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
                 isActive
                   ? "bg-darkGold border-darkGold text-white"
                   : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer"
               } ${stepNum > currentStep ? "opacity-50 cursor-not-allowed" : ""}`}
               aria-label={`Go to step ${stepNum}`}
             >
-              {stepNum}
+              <span className="text-xs sm:text-sm md:text-base">{stepNum}</span>
             </button>
             {idx < stepCount - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-1 transition-colors duration-300 ${
+                className={`flex-1 h-0.5 mx-0.5 sm:mx-1 transition-colors duration-300 ${
                   currentStep > stepNum ? "bg-darkGold" : "bg-white/20"
                 }`}
               />
@@ -85,31 +85,31 @@ function DateStep({
   const calendar = [...prevMonthDays, ...days, ...nextMonthDays];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between mb-2 sm:mb-4">
         <button 
           onClick={() => onChangeMonth(-1)} 
-          className="text-white p-2 hover:text-darkGold transition-colors"
+          className="text-white p-1 sm:p-2 hover:text-darkGold transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h3 className="text-xl md:text-2xl text-white font-semibold">
+        <h3 className="text-lg sm:text-xl md:text-2xl text-white font-semibold">
           {format(currentMonth, "MMMM yyyy")}
         </h3>
         <button 
           onClick={() => onChangeMonth(1)} 
-          className="text-white p-2 md:p-4 hover:text-darkGold transition-colors"
+          className="text-white p-1 sm:p-2 md:p-4 hover:text-darkGold transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-0.5 xs:gap-1 sm:gap-1">
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-          <div key={d} className="text-center text-white/60 text-sm md:text-lg font-medium">
+          <div key={d} className="text-center text-white/60 text-xs xs:text-sm md:text-lg font-medium">
             {d}
           </div>
         ))}
@@ -126,7 +126,7 @@ function DateStep({
               }
               disabled={!inMonth || weekend || tooSoon}
               className={
-                `aspect-square md:aspect-square lg:aspect-square lg:w-18 lg:h-18 rounded-xl p-2 flex flex-col items-center justify-center text-sm relative transition-colors ` +
+                `h-8 xs:h-10 sm:h-12 md:h-14 aspect-square rounded-lg p-0.5 xs:p-1 sm:p-2 flex flex-col items-center justify-center text-xs relative transition-colors ` +
                 (selected
                   ? "bg-darkGold text-white shadow-md"
                   : "bg-white/10 text-white") +
@@ -135,8 +135,8 @@ function DateStep({
                   : " hover:bg-darkGold/70 hover:text-white cursor-pointer")
               }
             >
-              <span className="text-xs md:text-lg">{format(date, "MMM")}</span>
-              <span className="font-bold md:text-xl">{format(date, "d")}</span>
+              <span className="text-[8px] xs:text-xs md:text-sm">{format(date, "MMM")}</span>
+              <span className="font-bold text-xs xs:text-sm sm:text-base md:text-xl">{format(date, "d")}</span>
             </button>
           );
         })}
@@ -179,19 +179,19 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
   };
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* If no hour is selected yet, show the hour selection grid */}
       {!selectedHour ? (
         <div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 sm:gap-3">
             {timeSlots.map(({ slot, allowed }) => (
               <button
                 key={slot}
                 onClick={() => handleHourSelect(slot)}
-                className="bg-white/10 hover:bg-darkGold/70 text-white rounded-xl p-3 transition-colors duration-200 flex flex-col items-center"
+                className="bg-white/10 hover:bg-darkGold/70 text-white rounded-xl p-2 sm:p-3 transition-colors duration-200 flex flex-col items-center"
               >
-                <span className="text-xl md:text-2xl font-semibold">{slot}</span>
-                <span className="text-xs md:text-base mt-1">
+                <span className="text-base sm:text-xl md:text-2xl font-semibold">{slot}</span>
+                <span className="text-[10px] xs:text-xs md:text-base mt-1">
                   {allowed.length} {allowed.length === 1 ? 'option' : 'options'}
                 </span>
               </button>
@@ -201,33 +201,33 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
       ) : (
         /* If hour is selected, show duration options for that hour */
         <div>
-          <div className="flex items-center mb-4">
+          <div className="flex items-center mb-2 sm:mb-4">
             <button 
               onClick={() => setSelectedHour(null)}
               className="text-white mr-2 hover:text-darkGold transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
               </svg>
             </button>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
             {timeSlots
               .find(item => item.slot === selectedHour)?.allowed
               .map(duration => (
                 <button
                   key={duration}
                   onClick={() => handleDurationSelect(selectedHour, duration)}
-                  className={`relative overflow-hidden shadow-lg rounded-xl p-3 transition-all duration-200
+                  className={`relative overflow-hidden shadow-lg rounded-xl p-2 sm:p-3 transition-all duration-200
                     ${selectedTime?.slot === selectedHour && selectedTime?.dur === duration
                       ? " bg-darkGold/30"
                       : " bg-white/10 hover:border-darkGold/70 hover:bg-white/20"
                     }`}
                 >
                   <div className="flex flex-col items-center justify-center text-white">
-                    <span className="text-lg md:text-xl font-bold mb-1">{formatDuration(duration)}</span>
-                    <span className="text-xs md:text-base opacity-70">
+                    <span className="text-base sm:text-lg md:text-xl font-bold mb-1">{formatDuration(duration)}</span>
+                    <span className="text-[10px] xs:text-xs md:text-base opacity-70">
                       {selectedHour} - {calculateEndTime(selectedHour, duration)}
                     </span>
                   </div>
@@ -248,24 +248,24 @@ function InfoStep({ formData, onChange }) {
   return (
     <div className="space-y-4 max-w-md mx-auto w-full">
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white md:text-lg">{t("booking.name_label")}</label>
+        <label className="block text-white text-sm sm:text-base md:text-lg">{t("booking.name_label")}</label>
         <input
           name="name"
           placeholder={t("booking.name_placeholder")}
           value={formData.name}
           onChange={onChange}
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm md:text-base"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-xs sm:text-sm md:text-base"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white md:text-lg">{t("booking.email_label")}</label>
+        <label className="block text-white text-sm sm:text-base md:text-lg">{t("booking.email_label")}</label>
         <input
           name="email"
           type="email"
           placeholder={t("booking.email_placeholder")}
           value={formData.email}
           onChange={onChange}
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm md:text-base"
+          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-xs sm:text-sm md:text-base"
         />
       </div>
     </div>
@@ -457,17 +457,17 @@ export default function Booking({ onBackService }) {
   };
 
   return (
-    <section className="py-8 px-4" id="bookingForm">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl md:text-4xl font-bold text-center mb-6 text-black">
+    <section className="py-4 sm:py-6 md:py-8 px-4 sm:px-4" id="bookingForm">
+      <div className="max-w-full sm:max-w-2xl md:max-w-4xl mx-auto">
+        <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-4 sm:mb-6 text-black">
           {t("booking.title")}
         </h2>
-        <div className="bg-oxfordBlue rounded-2xl p-8 shadow-xl">
-          <h3 className="text-xl md:text-2xl text-white mb-6 font-semibold">{STEPS[step - 1].title}</h3>
+        <div className="bg-oxfordBlue rounded-xl p-3 sm:p-6 md:p-8 shadow-xl">
+          <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-4 sm:mb-6 font-semibold">{STEPS[step - 1].title}</h3>
           
           {loading && step === 1 ? (
-            <div className="flex justify-center py-10">
-              <div className="animate-spin rounded-full h-12 w-12 md:h-16 md:w-16 border-t-2 border-b-2 border-darkGold"></div>
+            <div className="flex justify-center py-6 sm:py-10">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 md:h-16 md:w-16 border-t-2 border-b-2 border-darkGold"></div>
             </div>
           ) : (
             <>
@@ -502,10 +502,10 @@ export default function Booking({ onBackService }) {
             </>
           )}
 
-          <div className="flex justify-between mt-8">
+          <div className="flex justify-between mt-4 sm:mt-6 md:mt-8">
             <button
               onClick={() => step > 1 ? setStep(step - 1) : onBackService()}
-              className="px-4 py-2 md:px-6 md:py-3 border-2 border-darkGold text-darkGold rounded-xl hover:bg-darkGold/10 transition-colors"
+              className="px-2 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 border-2 border-darkGold text-darkGold rounded-xl hover:bg-darkGold/10 transition-colors text-xs sm:text-sm md:text-base"
             >
               {t("booking.back")}
             </button>
@@ -513,11 +513,11 @@ export default function Booking({ onBackService }) {
               <button
                 onClick={handleNext}
                 disabled={!canProceed() || loading}
-                className="px-4 py-2 bg-darkGold text-white rounded-xl disabled:opacity-50 hover:bg-darkGold/90 transition-colors"
+                className="px-2 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 bg-darkGold text-white rounded-xl disabled:opacity-50 hover:bg-darkGold/90 transition-colors text-xs sm:text-sm md:text-base"
               >
                 {loading ? (
                   <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -534,7 +534,7 @@ export default function Booking({ onBackService }) {
             stepCount={UI_STEPS}
             currentStep={step + 1}
             onStepClick={handleStepClick}
-            className="pt-6"
+            className="pt-4 sm:pt-6"
           />
         </div>
       </div>
