@@ -10,14 +10,14 @@ import TypingMessage from "../UI/TypingMessage";
 // Fallback function to generate UUID for browsers that don't support crypto.randomUUID
 function generateUUID() {
   // Check if the browser supports crypto.randomUUID
-  if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+  if (window.crypto && typeof window.crypto.randomUUID === "function") {
     return window.crypto.randomUUID();
   }
-  
+
   // Fallback implementation
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
@@ -36,16 +36,16 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
   const [resizing, setResizing] = useState(false);
   const lastTap = useRef(0);
   const dragging = useRef(false);
-  const [sessionId] = useState(
-    () => propSessionId || generateUUID()
-  );
+  const [sessionId] = useState(() => propSessionId || generateUUID());
   const { user } = useAuth();
   const userId = user?.id;
   const [isNewChat, setIsNewChat] = useState(true);
 
   // Check if any messages still have active typing animations
   const checkTypingAnimations = () => {
-    const anyStillTyping = messages.some(msg => msg.from === "bot" && msg.isTyping);
+    const anyStillTyping = messages.some(
+      (msg) => msg.from === "bot" && msg.isTyping
+    );
     setIsTypingAnimationActive(anyStillTyping);
   };
 
@@ -65,10 +65,23 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
     setHeight(Math.max(100, Math.min(newHeight, window.innerHeight - 100)));
   };
 
+  // Inside ChatbotWindow.jsx, modify the useEffect where you check for existing messages
   useEffect(() => {
     if (!sessionId) return;
 
     (async () => {
+      // First check if this session already exists in chat_sessions
+      const { data: sessionData, error: sessionError } = await supabase
+        .from("chat_sessions")
+        .select("id, title")
+        .eq("id", sessionId)
+        .single();
+
+      if (sessionError && sessionError.code !== "PGRST116") {
+        // PGRST116 is "not found"
+        console.error("Error checking session:", sessionError);
+      }
+
       // Fetch existing messages for this session
       const { data, error } = await supabase
         .from("messages")
@@ -83,34 +96,49 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
             data.map((row) => ({
               from: row.role === "user" ? "user" : "bot",
               text: row.content,
-              isTyping: false // Mark existing messages as already typed
+              isTyping: false, // Mark existing messages as already typed
             }))
           );
           setIsNewChat(false);
+
+          // If this session doesn't exist in chat_sessions yet (might have been created before this feature),
+          // create it with a default title
+          if (!sessionData) {
+            await supabase.from("chat_sessions").insert({
+              id: sessionId,
+              user_id: userId,
+              title: "Previous Chat", // Default title for old chats
+            });
+          }
         } else {
           // No messages, this is a new chat
           // Add welcome message immediately to avoid double display
           const welcomeMessage = {
             from: "bot",
             text: "👋 Welcome to DaGalow's personal assistant! I can help you with information about services, booking consultations, or answering questions about Daniel's expertise in mindset, finance, health, and more. How can I assist you today?",
-            isTyping: true
+            isTyping: true,
           };
-          
+
+          // Create a new chat session
+          await supabase.from("chat_sessions").insert({
+            id: sessionId,
+            user_id: userId,
+            title: "New Chat", // Initial default title
+          });
+
           // Update UI first
           setMessages([welcomeMessage]);
           setIsNewChat(false);
           setIsTypingAnimationActive(true);
-          
-          // Then save to database
+
+          // Then save welcome message to database
           try {
-            await supabase
-              .from("messages")
-              .insert({
-                session_id: sessionId,
-                role: "assistant",
-                content: welcomeMessage.text,
-                user_id: userId
-              });
+            await supabase.from("messages").insert({
+              session_id: sessionId,
+              role: "assistant",
+              content: welcomeMessage.text,
+              user_id: userId,
+            });
           } catch (error) {
             console.error("Error saving welcome message:", error);
           }
@@ -118,7 +146,6 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
       }
     })();
   }, [sessionId, userId]);
-
   useEffect(() => {
     const threshold = initialHeight.current * 0.3;
     if (height <= threshold) {
@@ -164,6 +191,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
     setLoading(true);
 
     try {
+      // Send message to chatbot API
       const res = await fetch("https://rafaello.app.n8n.cloud/webhook/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -177,41 +205,81 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
       console.log("Webhook returned:", data);
 
       const { output } = data;
-      
+
       // Add bot response WITH typing animation flag
-      setMessages((msgs) => [...msgs, { 
-        from: "bot", 
-        text: output,
-        isTyping: true // This triggers the typing animation
-      }]);
+      setMessages((msgs) => [
+        ...msgs,
+        {
+          from: "bot",
+          text: output,
+          isTyping: true, // This triggers the typing animation
+        },
+      ]);
       setIsTypingAnimationActive(true);
-      
+
       // Save messages to database
-      await supabase
+      await supabase.from("messages").insert([
+        {
+          session_id: sessionId,
+          role: "user",
+          content: textToSend,
+          user_id: userId,
+        },
+        {
+          session_id: sessionId,
+          role: "assistant",
+          content: output,
+          user_id: userId,
+        },
+      ]);
+
+      // Update chat title after a few messages (e.g., after 3-4 exchanges)
+      const { data: messagesData } = await supabase
         .from("messages")
-        .insert([
-          {
-            session_id: sessionId,
-            role: "user",
-            content: textToSend,
-            user_id: userId,
-          },
-          {
-            session_id: sessionId,
-            role: "assistant",
-            content: output,
-            user_id: userId,
+        .select("content, role")
+        .eq("session_id", sessionId)
+        .order("created_at", { ascending: true });
+
+      if (messagesData && messagesData.length >= 4) {
+        // We have enough content to analyze
+        // Only update every 4 messages to avoid too many API calls
+        if (messagesData.length % 3 === 0) {
+          // Generate a title using the same API
+          // NEW: grab *only* the very first user message
+          const firstUser = messagesData.find((msg) => msg.role === "user");
+          const firstPrompt = firstUser ? firstUser.content : "";
+
+          // send just that prompt
+          const titleRes = await fetch("https://rafaello.app.n8n.cloud/webhook/chat-title", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              session_id: sessionId, // make sure your webhook still knows which session
+              firstUserPrompt: firstPrompt, // we’re only sending the 1st user question
+            }),
+          });
+
+          if (titleRes.ok) {
+            const titleData = await titleRes.json();
+            const generatedTitle = titleData.title || "Chat Session";
+
+            // Update the chat session title
+            await supabase
+              .from("chat_sessions")
+              .update({ title: generatedTitle, updated_at: new Date() })
+              .eq("id", sessionId);
           }
-        ]);
+        }
+      }
     } catch (error) {
       console.error("Chatbot error:", error);
       // Even error messages need the typing animation
       setMessages((msgs) => [
         ...msgs,
-        { 
-          from: "bot", 
+        {
+          from: "bot",
           text: "Sorry, there was an error. Please try again.",
-          isTyping: true // Add typing animation to error messages too
+          isTyping: true, // Add typing animation to error messages too
         },
       ]);
       setIsTypingAnimationActive(true);
@@ -265,16 +333,16 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
               }`}
             >
               {m.from === "bot" ? (
-                <TypingMessage 
-                  text={m.text} 
+                <TypingMessage
+                  text={m.text}
                   isComplete={!m.isTyping}
-                  typingSpeed={2}  // Fast typing speed
-                  startDelay={10}  // Quick start delay
+                  typingSpeed={2} // Fast typing speed
+                  startDelay={10} // Quick start delay
                   onComplete={() => {
                     // Mark this message as completed
-                    setMessages(prevMsgs => 
-                      prevMsgs.map((msg, idx) => 
-                        idx === i ? {...msg, isTyping: false} : msg
+                    setMessages((prevMsgs) =>
+                      prevMsgs.map((msg, idx) =>
+                        idx === i ? { ...msg, isTyping: false } : msg
                       )
                     );
                     // This will trigger our useEffect to check if any messages are still typing
@@ -303,8 +371,14 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
             className="w-full h-12 border-2 border-darkGold bg-oxfordBlue text-white rounded-full p-4 px-12"
             value={userText}
             onChange={(e) => setUserText(e.target.value)}
-            onKeyDown={(e) => !isTypingAnimationActive && e.key === "Enter" && sendMessage()}
-            placeholder={isTypingAnimationActive ? "Wait for message..." : "Type a message…"}
+            onKeyDown={(e) =>
+              !isTypingAnimationActive && e.key === "Enter" && sendMessage()
+            }
+            placeholder={
+              isTypingAnimationActive
+                ? "Wait for message..."
+                : "Type a message…"
+            }
             disabled={loading || isTypingAnimationActive}
           />
           <button
@@ -315,7 +389,9 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
             <img
               src={Send}
               alt="Send"
-              className={`w-6 h-6 ${(loading || isTypingAnimationActive) ? "opacity-50" : ""}`}
+              className={`w-6 h-6 ${
+                loading || isTypingAnimationActive ? "opacity-50" : ""
+              }`}
             />
           </button>
         </div>
