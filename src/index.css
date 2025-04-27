@@ -9,6 +9,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-user-select: none;  /* Safari */
+  -ms-user-select: none;      /* IE 10 and IE 11 */
+  user-select: none; 
 }
 
 html {
@@ -19,3 +22,4 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
