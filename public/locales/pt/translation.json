@@ -966,5 +966,31 @@
         "message": "Instruções para redefinir a senha enviadas ao seu e-mail."
       }
     }
+  },
+  "incentive": {
+    "title": "Crie sua conta hoje mesmo",
+    "description": "Junte-se à nossa comunidade e desbloqueie benefícios exclusivos para acelerar sua jornada de crescimento pessoal.",
+    "benefits": {
+      "title": "Benefícios da conta",
+      "items": {
+        "consultation": "Agendamento fácil de consultas com acesso prioritário",
+        "history": "Salvar e acessar seu histórico de consultas",
+        "content": "Conteúdo exclusivo e atualizações de serviços",
+        "dashboard": "Painel personalizado para acompanhar seu progresso"
+      }
+    },
+    "chatbot": {
+      "title": "Peça ajuda ao nosso chatbot",
+      "description": "Nosso assistente inteligente está disponível 24/7 para responder às suas dúvidas sobre nossos serviços.",
+      "capabilities": {
+        "title": "Com nosso chatbot você pode:",
+        "info": "Obter informações instantâneas sobre serviços e preços",
+        "recommendations": "Receber recomendações com base em seus objetivos",
+        "preparation": "Preparar-se para suas consultas com orientações"
+      }
+    },
+    "cta": {
+      "button": "Crie sua conta gratuita"
+    }
   }
 }

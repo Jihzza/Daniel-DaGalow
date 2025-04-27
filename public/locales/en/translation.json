@@ -74,6 +74,7 @@
     "hero_get_my_number": "Get My Number",
     "hero_get_analysis_title": "Get My Analysis",
     "hero_get_analysis_description": "Get professional, in-depth analysis of your investments, business, or social media presence with actionable insights to help you make better decisions and achieve your goals.",
+    "hero_get_analysis": "Get My Analysis",
     "common_learn_more": "Learn More"
   },
 
@@ -970,6 +971,33 @@
       "success": {
         "message": "Password reset instructions sent to your email."
       }
+    }
+  },
+
+  "incentive": {
+    "title": "Create Your Account Today",
+    "description": "Join our community and unlock exclusive benefits to accelerate your personal growth journey.",
+    "benefits": {
+      "title": "Account Benefits",
+      "items": {
+        "consultation": "Easy consultation scheduling with priority access",
+        "history": "Save and access your consultation history",
+        "content": "Exclusive content and service updates",
+        "dashboard": "Personalized dashboard to track your progress"
+      }
+    },
+    "chatbot": {
+      "title": "Get Help From Our Chatbot",
+      "description": "Our intelligent assistant is available 24/7 to answer your questions about our services.",
+      "capabilities": {
+        "title": "With our chatbot, you can:",
+        "info": "Get instant information about services and pricing",
+        "recommendations": "Receive recommendations based on your goals",
+        "preparation": "Prepare for your consultations with guidance"
+      }
+    },
+    "cta": {
+      "button": "Create Your Free Account"
     }
   }
 }

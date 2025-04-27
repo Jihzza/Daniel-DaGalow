@@ -108,6 +108,7 @@ function App() {
                     <VentureInvestment />
                     
                     <Interviews />
+                    <IncentivePage />
                     <Testimonials onAuthModalOpen={handleAuthModalOpen} />
                     <OtherWins />
                     <MergedServiceForm />

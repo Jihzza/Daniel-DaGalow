@@ -972,5 +972,32 @@
         "message": "Instrucciones para restablecer la contraseña enviadas a tu correo."
       }
     }
+  },
+
+  "incentive": {
+    "title": "Crea tu cuenta hoy mismo",
+    "description": "Únete a nuestra comunidad y desbloquea beneficios exclusivos para acelerar tu viaje de crecimiento personal.",
+    "benefits": {
+      "title": "Beneficios de la cuenta",
+      "items": {
+        "consultation": "Programación sencilla de consultas con acceso prioritario",
+        "history": "Guarda y accede a tu historial de consultas",
+        "content": "Contenido exclusivo y novedades de servicios",
+        "dashboard": "Panel personalizado para seguir tu progreso"
+      }
+    },
+    "chatbot": {
+      "title": "Obtén ayuda de nuestro chatbot",
+      "description": "Nuestro asistente inteligente está disponible 24/7 para responder tus preguntas sobre nuestros servicios.",
+      "capabilities": {
+        "title": "Con nuestro chatbot puedes:",
+        "info": "Obtener información instantánea sobre servicios y precios",
+        "recommendations": "Recibir recomendaciones según tus objetivos",
+        "preparation": "Prepararte para tus consultas con orientación"
+      }
+    },
+    "cta": {
+      "button": "Crea tu cuenta gratis"
+    }
   }
 }

@@ -350,7 +350,7 @@ const openAnalysisForm   = (e) => {
               onClick={openAnalysisForm}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
-              {t('hero.hero_get_my_analysis')}
+              {t('hero.hero_get_analysis')}
             </button>
             <p role="button" className="text-sm font-normal">
               {t('hero.common_learn_more')}
