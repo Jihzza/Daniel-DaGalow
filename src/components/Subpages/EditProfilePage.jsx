@@ -3,10 +3,12 @@ import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
 import OctagonalProfile from "./Octagonal Profile";
+import { useTranslation } from 'react-i18next';
 
 const EditProfilePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
@@ -72,7 +74,7 @@ const EditProfilePage = () => {
         .update(updates)
         .eq("id", user.id);
       if (error) throw error;
-      setMessage("Profile updated successfully!");
+      setMessage(t('edit_profile.profile_updated'));
       setTimeout(() => navigate("/profile"), 1500);
     } catch (err) {
       setError(err.message);
@@ -126,15 +128,15 @@ const EditProfilePage = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-oxfordBlue">Edit Profile</h2>
+        <h2 className="text-2xl font-bold text-oxfordBlue">{t('edit_profile.title')}</h2>
         <Link to="/profile" className="text-oxfordBlue hover:underline">
-          Back to Profile
+          {t('edit_profile.back_to_profile')}
         </Link>
       </div>
 
       {message && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          {message}
+          {t('edit_profile.profile_updated')}
         </div>
       )}
       {error && (
@@ -167,15 +169,14 @@ const EditProfilePage = () => {
               </div>
             )}
 
-
             <p className="text-gray-500 text-sm text-center mb-4">
-              Click avatar to change
+              {t('edit_profile.avatar.change')}
             </p>
             <label
               htmlFor="phoneNumber"
               className="block text-gray-700 font-medium mb-1"
             >
-              Phone Number
+              {t('edit_profile.form.phone_number.label')}
             </label>
             <input
               id="phoneNumber"
@@ -193,7 +194,7 @@ const EditProfilePage = () => {
                 htmlFor="email"
                 className="block text-gray-700 font-medium mb-1"
               >
-                Email
+                {t('edit_profile.form.email.label')}
               </label>
               <input
                 id="email"
@@ -203,7 +204,7 @@ const EditProfilePage = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
               />
               <p className="mt-1 text-sm text-gray-500">
-                Email cannot be changed
+                {t('edit_profile.form.email.cannot_change')}
               </p>
             </div>
             <div>
@@ -211,7 +212,7 @@ const EditProfilePage = () => {
                 htmlFor="fullName"
                 className="block text-gray-700 font-medium mb-1"
               >
-                Full Name
+                {t('edit_profile.form.full_name.label')}
               </label>
               <input
                 id="fullName"
@@ -226,7 +227,7 @@ const EditProfilePage = () => {
                 htmlFor="username"
                 className="block text-gray-700 font-medium mb-1"
               >
-                Username
+                {t('edit_profile.form.username.label')}
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
@@ -241,7 +242,7 @@ const EditProfilePage = () => {
                       e.target.value.toLowerCase().replace(/\s+/g, "")
                     )
                   }
-                  placeholder="yourusername"
+                  placeholder={t('edit_profile.form.username.placeholder')}
                   className={`w-full pl-7 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
                     username && !usernameAvailable
                       ? "border-red-500 focus:ring-red-500"
@@ -257,26 +258,26 @@ const EditProfilePage = () => {
         <div className="mt-6 space-y-6">
           <fieldset>
             <legend className="text-lg font-semibold text-oxfordBlue">
-              Active Subscriptions
+              {t('edit_profile.sections.active_subscriptions.title')}
             </legend>
             <p className="text-gray-500">
-              Manage in Subscriptions settings (coming soon)
+              {t('edit_profile.sections.active_subscriptions.coming_soon')}
             </p>
           </fieldset>
           <fieldset>
             <legend className="text-lg font-semibold text-oxfordBlue">
-              Call Recordings
+              {t('edit_profile.sections.call_recordings.title')}
             </legend>
             <p className="text-gray-500">
-              View your recordings on Profile (coming soon)
+              {t('edit_profile.sections.call_recordings.coming_soon')}
             </p>
           </fieldset>
           <fieldset>
             <legend className="text-lg font-semibold text-oxfordBlue">
-              Chat History
+              {t('edit_profile.sections.chat_history.title')}
             </legend>
             <p className="text-gray-500">
-              View conversation logs on Profile (coming soon)
+              {t('edit_profile.sections.chat_history.coming_soon')}
             </p>
           </fieldset>
         </div>
@@ -286,7 +287,7 @@ const EditProfilePage = () => {
             to="/profile"
             className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
           >
-            Cancel
+            {t('edit_profile.buttons.cancel')}
           </Link>
           <button
             type="submit"
@@ -296,7 +297,7 @@ const EditProfilePage = () => {
             }
             className="bg-oxfordBlue text-white py-2 px-6 rounded-md hover:bg-opacity-90 transition-colors disabled:opacity-50"
           >
-            {loading ? "Saving..." : "Save Changes"}
+            {loading ? t('edit_profile.buttons.saving') : t('edit_profile.buttons.save_changes')}
           </button>
         </div>
       </form>

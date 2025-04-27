@@ -1,6 +1,7 @@
 // src/components/Pages/Testimonials.jsx
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
@@ -12,38 +13,36 @@ import { useAuth } from "../contexts/AuthContext";
 import rafaelImg from "../../assets/img/Pessoas/Rafa.jpeg";
 import goncaloImg from "../../assets/img/Pessoas/Gonçalo.png";
 
-const defaultTestimonials = [
-  {
-    id: "static-1",
-    quote:
-      "I've learned directly from Daniel for two years, moving from poverty and isolation to skill and confidence.",
-    author: "Rafael M.",
-    image_url: rafaelImg,
-  },
-  {
-    id: "static-2",
-    quote:
-      "Seven years following Daniel online, one year abroad learning directly—best decision of my life.",
-    author: "Gonçalo M.",
-    image_url: goncaloImg,
-  },
-  {
-    id: "static-3",
-    quote:
-      "I've learned directly from Daniel for two years, moving from poverty and isolation to skill and confidence.",
-    author: "Rafael M.",
-    image_url: rafaelImg,
-  },
-  {
-    id: "static-4",
-    quote:
-      "Seven years following Daniel online, one year abroad learning directly—best decision of my life.",
-    author: "Gonçalo M.",
-    image_url: goncaloImg,
-  },
-];
-
 function Testimonials({ onAuthModalOpen }) {
+  const { t } = useTranslation();
+
+  const defaultTestimonials = [
+    {
+      id: "static-1",
+      quote: t("testimonials.testimonial_1_quote"),
+      author: t("testimonials.testimonial_1_author"),
+      image_url: rafaelImg,
+    },
+    {
+      id: "static-2",
+      quote: t("testimonials.testimonial_2_quote"),
+      author: t("testimonials.testimonial_2_author"),
+      image_url: goncaloImg,
+    },
+    {
+      id: "static-3",
+      quote: t("testimonials.testimonial_1_quote"),
+      author: t("testimonials.testimonial_1_author"),
+      image_url: rafaelImg,
+    },
+    {
+      id: "static-4",
+      quote: t("testimonials.testimonial_2_quote"),
+      author: t("testimonials.testimonial_2_author"),
+      image_url: goncaloImg,
+    },
+  ];
+
   // start with your default ones
   const [testimonials, setTestimonials] = useState(defaultTestimonials);
   const [loading, setLoading] = useState(true);
@@ -127,12 +126,12 @@ async function fetchApprovedTestimonials() {
   // handle new submission
   const handleSubmit = async () => {
     if (!author.trim() || !quote.trim() || !imageFile) {
-      alert("Please fill out all fields and select an image.");
+      alert(t("testimonials.modal_validation"));
       return;
     }
 
     if (!user) {
-      alert("You must be logged in to submit a testimonial.");
+      alert(t("testimonials.modal_auth_required"));
       return;
     }
 
@@ -172,12 +171,10 @@ async function fetchApprovedTestimonials() {
       setAuthor("");
       setQuote("");
       setImageFile(null);
-      alert(
-        "Thank you! Your testimonial has been submitted and is pending review."
-      );
+      alert(t("testimonials.modal_success"));
     } catch (error) {
       console.error("Submission error:", error);
-      alert("Something went wrong. Please try again.");
+      alert(t("testimonials.modal_error"));
     } finally {
       setSubmitting(false);
     }
@@ -186,10 +183,9 @@ async function fetchApprovedTestimonials() {
   return (
     <section id="testimonials" className="py-8 px-4 text-black">
       <div className="max-w-3xl mx-auto text-center space-y-6 px-4 overflow-visible">
-        <h2 className="text-2xl md:text-3xl font-bold">Success Stories</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">{t("testimonials.testimonials_title")}</h2>
         <p className="text-lg">
-          Here are some reviews — and if I’ve helped you, please leave one so we
-          can inspire even more people.
+          {t("testimonials.testimonials_description")}
         </p>
 
         {/* leave static + dynamic */}
@@ -248,7 +244,7 @@ async function fetchApprovedTestimonials() {
           onClick={handleTestimonialButtonClick}
           className="px-6 py-3 bg-darkGold text-black font-bold rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
         >
-          Leave a Testimonial
+          {t("testimonials.leave_testimonial")}
         </button>
       </div>
 
@@ -258,10 +254,10 @@ async function fetchApprovedTestimonials() {
           <div className="bg-oxfordBlue rounded-2xl w-full max-w-md shadow-2xl transform transition-all duration-300 animate-fade-in">
             <div className="border-b border-darkGold/30 p-4">
               <h3 className="text-2xl font-bold text-white mb-1">
-                Share Your Experience
+                {t("testimonials.modal_title")}
               </h3>
               <p className="text-gray-300 text-sm">
-                Let others know how Daniel helped you
+                {t("testimonials.modal_subtitle")}
               </p>
             </div>
 
@@ -269,7 +265,7 @@ async function fetchApprovedTestimonials() {
               {/* Image upload with preview - NOW FIRST */}
               <div className="space-y-3">
                 <label className="block text-white font-medium">
-                  Your Photo
+                  {t("testimonials.modal_photo_label")}
                 </label>
                 <div className="flex flex-col items-center space-y-4">
                   {imageFile ? (
@@ -309,7 +305,7 @@ async function fetchApprovedTestimonials() {
 
                   <label className="w-full">
                     <div className="px-4 py-2 bg-darkGold text-black font-medium rounded-lg hover:bg-opacity-90 transition cursor-pointer text-center">
-                      {imageFile ? "Change Photo" : "Select Photo"}
+                      {imageFile ? t("testimonials.modal_photo_change") : t("testimonials.modal_photo_select")}
                     </div>
                     <input
                       type="file"
@@ -321,7 +317,7 @@ async function fetchApprovedTestimonials() {
                 </div>
                 {!imageFile && (
                   <p className="text-gray-400 text-xs text-center">
-                    Please upload a photo of yourself for your testimonial
+                    {t("testimonials.modal_photo_placeholder")}
                   </p>
                 )}
               </div>
@@ -329,11 +325,11 @@ async function fetchApprovedTestimonials() {
               {/* Name field - NOW SECOND */}
               <div className="space-y-2">
                 <label className="block text-white font-medium">
-                  Your Name
+                  {t("testimonials.modal_name_label")}
                 </label>
                 <input
                   type="text"
-                  placeholder="Your name"
+                  placeholder={t("testimonials.modal_name_placeholder")}
                   value={author}
                   onChange={(e) => setAuthor(e.target.value)}
                   className="w-full px-3 py-2 border-2 border-darkGold rounded-xl bg-oxfordBlue/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-darkGold"
@@ -345,7 +341,7 @@ async function fetchApprovedTestimonials() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <label className="block text-white font-medium">
-                    Your Testimonial
+                    {t("testimonials.modal_testimonial_label")}
                   </label>
                   <span
                     className={`text-xs ${
@@ -356,7 +352,7 @@ async function fetchApprovedTestimonials() {
                   </span>
                 </div>
                 <textarea
-                  placeholder="Share how Daniel helped you..."
+                  placeholder={t("testimonials.modal_testimonial_placeholder")}
                   maxLength={110}
                   value={quote}
                   onChange={(e) => setQuote(e.target.value)}
@@ -372,7 +368,7 @@ async function fetchApprovedTestimonials() {
                 onClick={() => setModalOpen(false)}
                 className="px-4 py-2 border border-darkGold text-darkGold rounded-lg hover:bg-darkGold/10 transition"
               >
-                Cancel
+                {t("testimonials.modal_cancel")}
               </button>
               <button
                 onClick={handleSubmit}
@@ -415,10 +411,10 @@ async function fetchApprovedTestimonials() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Submitting...
+                    {t("testimonials.modal_submitting")}
                   </div>
                 ) : (
-                  "Submit"
+                  t("testimonials.modal_submit")
                 )}
               </button>
             </div>

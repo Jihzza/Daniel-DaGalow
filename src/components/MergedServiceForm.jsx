@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import AnalysisRequest from "./Forms/AnalysisRequest";
 import Booking from "./Forms/Booking";
 import CoachingRequest from "./Forms/CoachingRequest";
@@ -8,16 +9,17 @@ import { ServiceContext } from "./contexts/ServiceContext";
 import { useContext } from "react";
 
 export default function MergedServiceForm() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const initialService = searchParams.get("service"); // ← NEW
+  const initialService = searchParams.get("service");
 
   const { service, setService } = useContext(ServiceContext);
   const [step, setStep] = useState(service ? 2 : 1);
   const services = [
-    { label: "Consultation", value: "booking" },
-    { label: "Coaching", value: "coaching" },
-    { label: "Analysis", value: "analysis" },
-    { label: "Pitch Deck", value: "pitchdeck" },
+    { label: t("service_form.services.consultation"), value: "booking" },
+    { label: t("service_form.services.coaching"), value: "coaching" },
+    { label: t("service_form.services.analysis"), value: "analysis" },
+    { label: t("service_form.services.pitch_deck"), value: "pitchdeck" },
   ];
 
   const SERVICE_COMPONENT = {
@@ -71,10 +73,10 @@ export default function MergedServiceForm() {
       <section id="service-selection" className="py-8 px-4">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl sm:text-xl font-bold text-center mb-6 text-black">
-            What service do you need?
+            {t("service_form.title")}
           </h2>
           <div className=" gap-6 bg-oxfordBlue shadow-lg rounded-2xl p-8">
-            <h3 className="text-xl text-white mb-6">Choose the Service</h3>
+            <h3 className="text-xl text-white mb-6">{t("service_form.choose_service")}</h3>
             <div className="grid grid-cols-2 gap-6">
               {services.map((s) => (
                 <button

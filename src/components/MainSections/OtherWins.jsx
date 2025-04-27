@@ -1,5 +1,6 @@
-// components/Pages/Testimonials.jsx
+// src/components/MainSections/OtherWins.jsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -123,7 +124,9 @@ const socialMediaImages = [
   { image: socialMedia57, link: "https://www.tiktok.com/@galo_portugues/video/7188901762542128389" },
 ];
 
-function Testimonials() {
+function OtherWins() {
+  const { t } = useTranslation();
+
   const handleDoubleClick = (event) => {
     const video = event.target;
     if (video.requestFullscreen) {
@@ -138,11 +141,11 @@ function Testimonials() {
   };
 
   return (
-    <section id="testimonials" className="py-8 px-4 text-black overflow-hidden">
+    <section id="other-wins" className="py-8 px-4 text-black overflow-hidden">
       <div className="max-w-3xl mx-auto text-center space-y-8 px-4 overflow-visible">      
         <div className="flex flex-col justify-center space-y-6 items-center">
-          <h1 className="text-2xl text-black font-bold">Other Wins</h1>
-          <p className="text-lg text-black">69 Days Body Transformation</p>
+          <h1 className="text-2xl text-black font-bold">{t("other_wins.other_wins_title")}</h1>
+          <p className="text-lg text-black">{t("other_wins.body_transformation_title")}</p>
           {/*Double click to go back to normal size*/}
           <video
             src={bodyTransformation}
@@ -152,7 +155,7 @@ function Testimonials() {
             onDoubleClick={handleDoubleClick}
             className="w-[50%] object-cover rounded-xl shadow-lg justify-center items-center self-center cursor-pointer"
           />
-          <p className="text-lg text-black">High reach content</p>
+          <p className="text-lg text-black">{t("other_wins.high_reach_content_title")}</p>
           <Swiper
             modules={[Autoplay]}
             spaceBetween={20}
@@ -183,4 +186,4 @@ function Testimonials() {
   );
 }
 
-export default Testimonials;
+export default OtherWins;

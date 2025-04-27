@@ -3,6 +3,7 @@ import { supabase } from "../../utils/supabaseClient";
 import { format, addDays, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from "date-fns";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 export default function CalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -10,6 +11,7 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvents, setSelectedEvents] = useState([]);
+  const { t } = useTranslation();
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -100,7 +102,7 @@ export default function CalendarPage() {
   return (
     <div className="min-h-screen py-6 px-4 text-black">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-6 text-white">Calendar</h1>
+        <h1 className="text-2xl font-bold text-center mb-6 text-white">{t('calendar.title')}</h1>
         
         <div className="bg-gentleGray rounded-xl shadow-md p-6">
           {/* Calendar Header */}
@@ -132,7 +134,15 @@ export default function CalendarPage() {
             <div className="bg-white rounded-xl shadow-sm p-4">
               {/* Weekday Headers */}
               <div className="grid grid-cols-7 gap-2 mb-4">
-                {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => (
+                {[
+                  t('calendar.weekdays.monday'),
+                  t('calendar.weekdays.tuesday'),
+                  t('calendar.weekdays.wednesday'),
+                  t('calendar.weekdays.thursday'),
+                  t('calendar.weekdays.friday'),
+                  t('calendar.weekdays.saturday'),
+                  t('calendar.weekdays.sunday')
+                ].map(d => (
                   <div key={d} className="text-center font-medium text-oxfordBlue py-2">{d}</div>
                 ))}
               </div>
@@ -200,13 +210,13 @@ export default function CalendarPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-600">No appointments scheduled for this day.</p>
+                <p className="text-gray-600">{t('calendar.no_appointments')}</p>
               )}
               
               <button 
                 className="mt-4 bg-oxfordBlue text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors"
               >
-                Book Appointment
+                {t('calendar.book_appointment')}
               </button>
             </div>
           )}

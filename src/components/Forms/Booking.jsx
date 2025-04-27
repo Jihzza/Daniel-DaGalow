@@ -15,6 +15,7 @@ import {
 } from "date-fns";
 import { fetchBookings } from "../../services/bookingService";
 import InlineChatbotStep from "./InlineChatbotStep";
+import { useTranslation } from "react-i18next";
 
 // Shared StepIndicator
 function StepIndicator({
@@ -242,24 +243,26 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
 
 // Step 3: Contact info
 function InfoStep({ formData, onChange }) {
+  const { t } = useTranslation();
+  
   return (
     <div className="space-y-4 max-w-md mx-auto w-full">
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white">Your Name</label>
+        <label className="block text-white">{t("booking.name_label")}</label>
         <input
           name="name"
-          placeholder="Your Name"
+          placeholder={t("booking.name_placeholder")}
           value={formData.name}
           onChange={onChange}
           className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white">Your Email</label>
+        <label className="block text-white">{t("booking.email_label")}</label>
         <input
           name="email"
           type="email"
-          placeholder="Your Email"
+          placeholder={t("booking.email_placeholder")}
           value={formData.email}
           onChange={onChange}
           className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
@@ -270,6 +273,7 @@ function InfoStep({ formData, onChange }) {
 }
 
 export default function Booking({ onBackService }) {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState(null);
@@ -382,10 +386,10 @@ export default function Booking({ onBackService }) {
 
   // Booking steps
   const STEPS = [
-    { title: "Choose a date", component: DateStep },
-    { title: "Select a time", component: TimeStep },
-    { title: "Your information", component: InfoStep },
-    { title: "Chat with our assistant", component: InlineChatbotStep },
+    { title: t("booking.step_1"), component: DateStep },
+    { title: t("booking.step_2"), component: TimeStep },
+    { title: t("booking.step_3"), component: InfoStep },
+    { title: t("booking.step_4"), component: InlineChatbotStep },
   ];
   const Current = STEPS[step - 1].component;
   const UI_STEPS = STEPS.length + 1;
@@ -456,7 +460,7 @@ export default function Booking({ onBackService }) {
     <section className="py-8 px-4" id="bookingForm">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
-          Schedule Your Consultation
+          {t("booking.title")}
         </h2>
         <div className="bg-oxfordBlue rounded-2xl p-8 shadow-xl">
           <h3 className="text-xl text-white mb-6 font-semibold">{STEPS[step - 1].title}</h3>
@@ -503,7 +507,7 @@ export default function Booking({ onBackService }) {
               onClick={() => step > 1 ? setStep(step - 1) : onBackService()}
               className="px-4 py-2 border-2 border-darkGold text-darkGold rounded-xl hover:bg-darkGold/10 transition-colors"
             >
-              Back
+              {t("booking.back")}
             </button>
             {step < STEPS.length && (
               <button
@@ -517,10 +521,10 @@ export default function Booking({ onBackService }) {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Processing...
+                    {t("booking.processing")}
                   </span>
                 ) : (
-                  step === 3 ? "Complete Booking" : "Next"
+                  step === 3 ? t("booking.complete_booking") : t("booking.next")
                 )}
               </button>
             )}

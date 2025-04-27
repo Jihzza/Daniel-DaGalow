@@ -37,6 +37,7 @@ import Music from "./components/Subpages/Music";
 import Videos from "./components/Subpages/Videos";
 import TestimonialReview from "./components/admin/TestimonialReview";
 import IncentivePage from "./components/MainSections/IncentivePage";
+import OtherWins from "./components/MainSections/OtherWins";
 // Private route component to protect routes that require authentication
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -108,6 +109,7 @@ function App() {
                     
                     <Interviews />
                     <Testimonials onAuthModalOpen={handleAuthModalOpen} />
+                    <OtherWins />
                     <MergedServiceForm />
                     <BottomCarouselPages />
                   </main>

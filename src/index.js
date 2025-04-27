@@ -1,13 +1,11 @@
-// index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './index.css'; // Make sure Tailwind CSS is imported here
-// in src/index.js or App.js
-import 'react-phone-input-2/lib/style.css';       // default styles
-import './phone-input-overrides.css';              // your overrides
+import './index.css';
+import 'react-phone-input-2/lib/style.css';
+import './phone-input-overrides.css';
 import { ServiceProvider } from "./components/contexts/ServiceContext";
-
+import './i18n'; // Import the i18n configuration
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

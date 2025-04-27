@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { supabase } from "../../utils/supabaseClient";
@@ -51,10 +52,11 @@ function StepIndicator({
 
 // Step 1: Frequency Selection
 function FrequencyStep({ formData, onChange }) {
+  const { t } = useTranslation();
   const options = [
-    { label: "Once per Week", value: "weekly" },
-    { label: "Every Day", value: "daily" },
-    { label: "Priority Coaching", value: "priority" },
+    { label: t("coaching_request.frequency_options.weekly"), value: "weekly" },
+    { label: t("coaching_request.frequency_options.daily"), value: "daily" },
+    { label: t("coaching_request.frequency_options.priority"), value: "priority" },
   ];
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
@@ -80,41 +82,42 @@ function FrequencyStep({ formData, onChange }) {
 
 // Step 2: Contact Info
 function ContactStep({ formData, onChange }) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">Your Name</label>
+        <label className="block text-white mb-2">{t("coaching_request.form.name_label")}</label>
         <input
           name="name"
           type="text"
           value={formData.name}
           onChange={onChange}
-          placeholder="John Doe"
+          placeholder={t("coaching_request.form.name_placeholder")}
           required
           className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold text-sm"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">Email Address</label>
+        <label className="block text-white mb-2">{t("coaching_request.form.email_label")}</label>
         <input
           name="email"
           type="email"
           value={formData.email}
           onChange={onChange}
-          placeholder="john@example.com"
+          placeholder={t("coaching_request.form.email_placeholder")}
           required
           className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold text-sm"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">Phone Number</label>
+        <label className="block text-white mb-2">{t("coaching_request.form.phone_label")}</label>
         <PhoneInput
           containerClass="!w-full !h-[42px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
           buttonClass="!bg-white/5 !border-none h-full"
           inputClass="!bg-white/5 !border-none p-4 !h-full text-white placeholder-white/50"
           country="es"
           enableSearch
-          searchPlaceholder="Search country..."
+          searchPlaceholder={t("coaching_request.form.phone_search_placeholder")}
           value={formData.phone}
           onChange={(phone) =>
             onChange({ target: { name: "phone", value: phone } })
@@ -129,6 +132,7 @@ function ContactStep({ formData, onChange }) {
 
 // Step 3: Payment
 function PaymentStep({ formData, onPaid }) {
+  const { t } = useTranslation();
   const tiers = {
     weekly: {
       label: "Basic Tier",
@@ -150,9 +154,8 @@ function PaymentStep({ formData, onPaid }) {
   return (
     <div className="text-center mb-6">
       <p className="text-white mb-4 text-sm">
-        You selected <strong>{tier.label}</strong>.<br />
-        Please complete the payment of <strong>{tier.price}</strong> to
-        continue.
+        {t("coaching_request.payment.selected_tier")} <strong>{tier.label}</strong>.<br />
+        {t("coaching_request.payment.complete_payment")} <strong>{tier.price}</strong> {t("coaching_request.payment.to_continue")}
       </p>
       <a
         href={tier.link}
@@ -161,7 +164,7 @@ function PaymentStep({ formData, onPaid }) {
         onClick={onPaid}
       >
         <button className="px-3 py-1 bg-darkGold text-black font-bold rounded-xl hover:bg-darkGold/90">
-          Pay with Stripe
+          {t("coaching_request.payment.pay_with_stripe")}
         </button>
       </a>
     </div>
@@ -170,6 +173,7 @@ function PaymentStep({ formData, onPaid }) {
 
 // Main Coaching Request Component
 export default function CoachingRequest({ onBackService }) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -195,10 +199,10 @@ export default function CoachingRequest({ onBackService }) {
   };
 
   const STEPS = [
-    { title: "Choose coaching frequency", component: FrequencyStep },
-    { title: "Your contact information", component: ContactStep },
-    { title: "Complete your payment", component: PaymentStep },
-    { title: "Chat with your coach", component: InlineChatbotStep },
+    { title: t("coaching_request.steps.frequency"), component: FrequencyStep },
+    { title: t("coaching_request.steps.contact"), component: ContactStep },
+    { title: t("coaching_request.steps.payment"), component: PaymentStep },
+    { title: t("coaching_request.steps.chat"), component: InlineChatbotStep },
   ];
 
   const Current = STEPS[step - 1].component;
@@ -258,7 +262,7 @@ export default function CoachingRequest({ onBackService }) {
     <section className="py-8 px-4" id="coaching-journey">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
-          Start Your Coaching Journey
+          {t("coaching_request.title")}
         </h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
           <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
@@ -281,7 +285,7 @@ export default function CoachingRequest({ onBackService }) {
               disabled={isSubmitting}
               className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
             >
-              Back
+              {t("coaching_request.buttons.back")}
             </button>
             {step < STEPS.length && (
               <button
@@ -289,7 +293,7 @@ export default function CoachingRequest({ onBackService }) {
                 disabled={!canProceed() || isSubmitting}
                 className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
               >
-                Next
+                {t("coaching_request.buttons.next")}
               </button>
             )}
             {step === STEPS.length && (
@@ -297,7 +301,7 @@ export default function CoachingRequest({ onBackService }) {
                 onClick={onBackService}
                 className="px-3 py-1 bg-darkGold text-black rounded-xl hover:bg-darkGold/90"
               >
-                Done
+                {t("coaching_request.buttons.done")}
               </button>
             )}
           </div>

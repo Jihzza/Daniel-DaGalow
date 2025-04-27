@@ -1,30 +1,33 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 function Music() {
+  const { t } = useTranslation();
+  
   const recommendedPlaylists = [
     {
-      title: "Classic Rock Essentials",
-      description: "A curated selection of timeless rock hits that defined generations. From Led Zeppelin to Pink Floyd, these tracks showcase the golden era of rock music.",
+      title: t('music.playlists.classic_rock.title'),
+      description: t('music.playlists.classic_rock.description'),
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     },
     {
-      title: "Reggae Roots & Culture",
-      description: "Immerse yourself in the soulful rhythms of reggae. From Bob Marley to modern reggae artists, this playlist captures the essence of Jamaican music culture.",
+      title: t('music.playlists.reggae.title'),
+      description: t('music.playlists.reggae.description'),
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     },
     {
-      title: "Jazz Standards Collection",
-      description: "The finest collection of jazz classics that shaped the genre. Featuring legends like Miles Davis, John Coltrane, and Ella Fitzgerald.",
+      title: t('music.playlists.jazz.title'),
+      description: t('music.playlists.jazz.description'),
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     },
     {
-      title: "Electronic Evolution",
-      description: "A journey through electronic music's evolution. From ambient to techno, this playlist explores the cutting edge of electronic sound.",
+      title: t('music.playlists.electronic.title'),
+      description: t('music.playlists.electronic.description'),
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     },
     {
-      title: "Classical Masterpieces",
-      description: "Timeless compositions from the greatest classical composers. Perfect for focused work or deep relaxation.",
+      title: t('music.playlists.classical.title'),
+      description: t('music.playlists.classical.description'),
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     }
   ];
@@ -34,10 +37,10 @@ function Music() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center transform transition-all duration-500">
           <h2 className="text-2xl font-bold text-center mb-6 text-white">
-            Music Recommendations
+            {t('music.title')}
           </h2>
           <p className="text-lg text-white mb-8 max-w-3xl mx-auto">
-            A carefully curated collection of exceptional music, filtering through the noise to bring you only the finest songs worth your time.
+            {t('music.description')}
           </p>
         </div>
 
@@ -69,7 +72,7 @@ function Music() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        Listen on YouTube
+                        {t('music.listen_button')}
                       </a>
                     </div>
                   </div>

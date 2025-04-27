@@ -13,8 +13,10 @@ import Robot from "../../assets/icons/Robot Branco.svg";
 import { useNavigate } from "react-router-dom";
 import { ServiceContext } from "../contexts/ServiceContext";
 import { useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 function Services() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { service, setService } = useContext(ServiceContext);
 
@@ -40,15 +42,16 @@ function Services() {
   return (
     <section id="services" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
-        <h2 className="text-2xl md:text-3xl font-bold">How I Can Help You</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">
+          {t("services.services_title")}
+        </h2>
         <p className="">
-          Whether you need guidance on mindset, social media growth, finance,
-          marketing, business building, or relationships – I cover it all.
+          {t("services.services_description")}
         </p>
         <div className="grid grid-cols-2 gap-6 md:grid-cols-3 text-white">
           {[
             {
-              title: "Mindset & Psychology",
+              title: t("services.service_1"),
               icon: (
                 <img
                   src={Brain}
@@ -58,7 +61,7 @@ function Services() {
               ),
             },
             {
-              title: "Social Media Growth",
+              title: t("services.service_2"),
               icon: (
                 <img
                   src={Phone}
@@ -68,7 +71,7 @@ function Services() {
               ),
             },
             {
-              title: "Finance & Wealth",
+              title: t("services.service_3"),
               icon: (
                 <img
                   src={MoneyBag}
@@ -78,7 +81,7 @@ function Services() {
               ),
             },
             {
-              title: "Marketing & Sales",
+              title: t("services.service_4"),
               icon: (
                 <img
                   src={Target}
@@ -88,13 +91,13 @@ function Services() {
               ),
             },
             {
-              title: "Business Building",
+              title: t("services.service_5"),
               icon: (
                 <img src={Bag} alt="Bag" className="w-8 h-8 object-contain" />
               ),
             },
             {
-              title: "Relationships",
+              title: t("services.service_6"),
               icon: (
                 <img
                   src={Heart}
@@ -104,7 +107,7 @@ function Services() {
               ),
             },
             {
-              title: "Health & Fitness",
+              title: t("services.service_7"),
               icon: (
                 <img
                   src={Fitness}
@@ -114,7 +117,7 @@ function Services() {
               ),
             },
             {
-              title: "OnlyFans",
+              title: t("services.service_8"),
               icon: (
                 <img
                   src={OnlyFans}
@@ -124,7 +127,7 @@ function Services() {
               ),
             },
             {
-              title: "AI & Tech",
+              title: t("services.service_9"),
               icon: (
                 <img
                   src={Robot}
@@ -134,7 +137,7 @@ function Services() {
               ),
             },
             {
-              title: "Way More",
+              title: t("services.service_10"),
               icon: (
                 <img
                   src={More}
@@ -178,12 +181,10 @@ function Services() {
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Face-to-Face Video Call
+              {t("services.services_structure_1_title")}
             </h4>
             <p className="text-white">
-              Our consultations take place via video call, allowing us to
-              connect personally. You'll be able to see me throughout the
-              session, creating a more engaging and personal experience.
+              {t("services.services_structure_1_description")}
             </p>
           </div>
 
@@ -206,12 +207,10 @@ function Services() {
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Minimum 45-Minute Sessions
+              {t("services.services_structure_2_title")}
             </h4>
             <p className="text-white">
-              Each consultation lasts a minimum of 45 minutes, ensuring we have
-              adequate time to explore your concerns in depth and develop
-              meaningful insights and action plans.
+              {t("services.services_structure_2_description")}
             </p>
           </div>
 
@@ -234,34 +233,31 @@ function Services() {
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Session Recordings
+              {t("services.services_structure_3_title")}
             </h4>
             <p className="text-white">
-              All consultations are recorded and securely stored, giving both of
-              us access to review the session afterward. This allows you to
-              revisit insights and recommendations without having to take notes
-              during our time together.
+              {t("services.services_structure_3_description")}
             </p>
           </div>
         </div>
 
         <div className="mt-10 text-center">
           <p className="text-lg text-white max-w-3xl mx-auto">
-            These features are designed to maximize the value of our time
-            together and provide you with ongoing support even after our session
-            ends. Your comfort and progress are my top priorities.
+            {t("services.services_structure_description")}
           </p>
           <div className="mt-6 w-full">
             <h1 className="text-white text-2xl py-2 font-bold">
-              90€ / hour
+              {t("services.services_price")}
             </h1>
-            <p className="text-white text-sm pb-6">Minimum 45 minutes</p>
+            <p className="text-white text-sm pb-6">
+              {t("services.services_price_minimum_time")}
+            </p>
             <div className="flex justify-center pt-2">
             <button
               onClick={() => openForm("booking")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
-              Book a Consultation
+              {t("services.services_book_consultation")}
             </button>
             </div>
           </div>

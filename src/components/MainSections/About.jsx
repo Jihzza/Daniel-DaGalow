@@ -1,24 +1,25 @@
 // components/About.js
 import React from 'react';
-
+import { useTranslation } from "react-i18next";
 function About() {
+  const { t } = useTranslation();
   return (
     <section id="about" className="py-8 px-4 text-white  text-center">
       <div className="max-w-2xl mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold mb-8">
-          Meet Daniel DaGalow
+          {t("about.about_title")}
         </h2>
         <div className="space-y-8">
           <p className="mb-6">
-            I went from overcoming a 10‑year challenge and battling daily habits to building successful businesses, transforming my body in 3 months, and coaching high‑profile figures like Miss Portugal 2019/2020.
+            {t("about.about_description")}
           </p>
           <p className="mb-6">
-            My journey wasn't easy, but it taught me that success is not only about hard work—it's about mindset, strategy, and having a little fun along the way.
+            {t("about.about_description_2")}
           </p>
           <p className="italic">
-            My mission? To help you break through barriers and rewrite your own success story.
+            {t("about.about_mission")}
           </p>
-        </div>
+        </div>  
       </div>
     </section>
   );

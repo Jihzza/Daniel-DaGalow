@@ -1,8 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function VentureInvestment() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const handleServiceClick = (service) => {
     const mapping = {
       pitchdeck: "#pitch-deck-request",
@@ -18,17 +21,15 @@ export default function VentureInvestment() {
   return (
     <section id="venture-investment" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
-        <h2 className="text-2xl md:text-3xl font-bold">Invest With Me</h2>
+        <h2 className="text-2xl md:text-3xl font-bold">{t("venture_investment.venture_title")}</h2>
         <p className="text-white text-center max-w-md mx-auto">
-          I'm constantly developing new projects and ventures. If you're interested
-          in learning more about current and upcoming opportunities, request a
-          pitch deck below.
+          {t("venture_investment.venture_description")}
         </p>
         <button
           onClick={() => handleServiceClick("pitchdeck")}
           className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
         >
-          Request Pitch Deck
+          {t("venture_investment.venture_request_pitch")}
         </button>
       </div>
     </section>

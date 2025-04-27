@@ -1,7 +1,5 @@
 // components/DirectCoaching.jsx
 import React, { useState } from "react";
-// You'll need to create or import these SVG icons
-// For now I'll use placeholder references
 import InvestIcon from "../../assets/icons/Stocks Branco.svg";
 import TrainerIcon from "../../assets/icons/PersonalTrainer Branco.svg";
 import DatingIcon from "../../assets/icons/Dating Branco.svg";
@@ -10,53 +8,51 @@ import BusinessIcon from "../../assets/icons/Business Branco.svg";
 import HabitsIcon from "../../assets/icons/Habits Branco.svg";
 import { ServiceContext } from "../contexts/ServiceContext";
 import { useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 function DirectCoaching() {
-  const {  setService } = useContext(ServiceContext);
+  const { setService } = useContext(ServiceContext);
   const [tier, setTier] = useState("basic");
+  const { t } = useTranslation();
 
   const openForm = (service) => {
-    setService(service);                          // ① tell the form which one
-    document                                     // ② smooth scroll
+    setService(service);
+    document
       .getElementById("service-selection")
-      ?.scrollIntoView({ behavior: "smooth" });   // MDN example :contentReference[oaicite:2]{index=2}
+      ?.scrollIntoView({ behavior: "smooth" });
   };
 
   const tiers = [
     {
       id: "basic",
-      price: 40,
-      label: "Basic",
-      desc: "Answers to all questions weekly",
+      price: t("coaching.coaching_tier_basic_price"),
+      label: t("coaching.coaching_tier_basic_label"),
+      desc: t("coaching.coaching_tier_basic_description"),
     },
     {
       id: "standard",
-      price: 90,
-      label: "Standard",
-      desc: "Answers to all questions in 48h",
+      price: t("coaching.coaching_tier_standard_price"),
+      label: t("coaching.coaching_tier_standard_label"),
+      desc: t("coaching.coaching_tier_standard_description"),
     },
     {
       id: "premium",
-      price: 230,
-      label: "Premium",
-      desc: "Priority answer to all questions ASAP",
+      price: t("coaching.coaching_tier_premium_price"),
+      label: t("coaching.coaching_tier_premium_label"),
+      desc: t("coaching.coaching_tier_premium_description"),
     },
   ];
 
   return (
     <section id="coaching" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
-        <h2 className="text-2xl md:text-3xl font-bold">Direct Coaching</h2>
-        <p className="">
-          Personalized coaching to help you excel in specific areas of your
-          life. Get direct access to expert guidance tailored to your unique
-          situation and goals.
-        </p>
+        <h2 className="text-2xl md:text-3xl font-bold">{t("coaching.coaching_title")}</h2>
+        <p className="">{t("coaching.coaching_description")}</p>
 
         <div className="grid grid-cols-2 gap-6 md:grid-cols-3 text-white">
           {[
             {
-              title: "Learn How to Invest",
+              title: t("coaching.coaching_service_1"),
               icon: (
                 <img
                   src={InvestIcon}
@@ -66,7 +62,7 @@ function DirectCoaching() {
               ),
             },
             {
-              title: "Personal Trainer",
+              title: t("coaching.coaching_service_2"),
               icon: (
                 <img
                   src={TrainerIcon}
@@ -76,7 +72,7 @@ function DirectCoaching() {
               ),
             },
             {
-              title: "Dating Coach",
+              title: t("coaching.coaching_service_3"),
               icon: (
                 <img
                   src={DatingIcon}
@@ -86,7 +82,7 @@ function DirectCoaching() {
               ),
             },
             {
-              title: "OnlyFans Coaching",
+              title: t("coaching.coaching_service_4"),
               icon: (
                 <img
                   src={OnlyFansIcon}
@@ -96,7 +92,7 @@ function DirectCoaching() {
               ),
             },
             {
-              title: "Business Advisor",
+              title: t("coaching.coaching_service_5"),
               icon: (
                 <img
                   src={BusinessIcon}
@@ -106,7 +102,7 @@ function DirectCoaching() {
               ),
             },
             {
-              title: "Habits & Personal Growth",
+              title: t("coaching.coaching_service_6"),
               icon: (
                 <img
                   src={HabitsIcon}
@@ -130,7 +126,6 @@ function DirectCoaching() {
       </div>
 
       <div className="w-full mx-auto px-4 mt-8">
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Anytime Communication Feature */}
           <div className="flex flex-col items-center text-center">
@@ -151,12 +146,10 @@ function DirectCoaching() {
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Anytime Communication
+              {t("coaching.coaching_feature_1_title")}
             </h4>
             <p className="text-white">
-              Text or send audio messages anytime with questions, updates, or
-              challenges. Get support when you need it most without waiting for
-              scheduled appointments.
+              {t("coaching.coaching_feature_1_description")}
             </p>
           </div>
 
@@ -179,12 +172,10 @@ function DirectCoaching() {
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Flexible Response Formats
+              {t("coaching.coaching_feature_2_title")}
             </h4>
             <p className="text-white">
-              Receive guidance through text, audio, or video responses based on
-              your preference and the complexity of the topic. Visual
-              demonstrations when needed, quick text answers when appropriate.
+              {t("coaching.coaching_feature_2_description")}
             </p>
           </div>
 
@@ -219,55 +210,52 @@ function DirectCoaching() {
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Personalized Classes
+              {t("coaching.coaching_feature_3_title")}
             </h4>
             <p className="text-white">
-              Receive custom-tailored training sessions designed specifically
-              for your skill level, learning style, and goals. Each class builds
-              on your progress for maximum growth and development.
+              {t("coaching.coaching_feature_3_description")}
             </p>
           </div>
         </div>
 
         <div className="max-w-3xl mt-8 mx-auto text-center space-y-6">
-        <p className="text-lg text-white max-w-3xl mx-auto">
-            Direct coaching provides consistent support, accountability, and
-            expertise to help you achieve transformative results in your chosen
-            area. Experience the difference that personalized attention makes.
+          <p className="text-lg text-white max-w-3xl mx-auto">
+            {t("coaching.coaching_summary")}
           </p>
-        {/* Tier Selector */}
-        <div className="grid grid-cols-3 gap-4 pt-2 mt-6">
-          {tiers.map(t => (
-            <label
-              key={t.id}
-              className={`cursor-pointer border-2 rounded-lg py-4 px-2 flex flex-col items-center justify-center transition-all duration-200 ${tier === t.id ? 'border-darkGold bg-darkGold bg-opacity-20' : 'border-darkGold'}`}
+          
+          {/* Tier Selector */}
+          <div className="grid grid-cols-3 gap-4 pt-2 mt-6">
+            {tiers.map(t => (
+              <label
+                key={t.id}
+                className={`cursor-pointer border-2 rounded-lg py-4 px-2 flex flex-col items-center justify-center transition-all duration-200 ${tier === t.id ? 'border-darkGold bg-darkGold bg-opacity-20' : 'border-darkGold'}`}
+              >
+                <input
+                  type="radio"
+                  name="tier"
+                  value={t.id}
+                  className="hidden"
+                  checked={tier === t.id}
+                  onChange={() => setTier(t.id)}
+                />
+                <span className="text-xl font-extrabold mb-1">{t.price}</span>
+                <span className="text-sm mb-2">{t.label}</span>
+                <span className="text-xs text-gray-300">{t.desc}</span>
+              </label>
+            ))}
+          </div>
+
+          <p className="text-sm font-normal">{t("coaching.coaching_limited_spots")}</p>
+
+          <div className="flex justify-center pt-2">
+            <button
+              onClick={() => openForm("coaching")}
+              className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
-              <input
-                type="radio"
-                name="tier"
-                value={t.id}
-                className="hidden"
-                checked={tier === t.id}
-                onChange={() => setTier(t.id)}
-              />
-              <span className="text-xl font-extrabold mb-1">{t.price}€</span>
-              <span className="text-sm mb-2">{t.label}</span>
-              <span className="text-xs text-gray-300">{t.desc}</span>
-            </label>
-          ))}
+              {t("coaching.coaching_get_number")}
+            </button>
+          </div>
         </div>
-
-        <p className="text-sm font-normal">Limited Spots</p>
-
-        <div className="flex justify-center pt-2">
-          <button
-            onClick={() => openForm("coaching")}
-            className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 "
-        >
-          Get My Number
-        </button>
-        </div>
-      </div>
       </div>
     </section>
   );

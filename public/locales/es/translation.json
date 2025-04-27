@@ -1,0 +1,976 @@
+{
+  "navigation": {
+    "home": "Inicio",
+    "about": "Sobre mí",
+    "services": "Servicios",
+    "coaching": "Coaching",
+    "analysis": "Análisis",
+    "projects": "Proyectos",
+    "testimonials": "Testimonios",
+    "calendar": "Calendario",
+    "music": "Música",
+    "videos": "Vídeos",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "login_signup": "Iniciar sesión / Registrarse"
+  },
+
+  "hero": {
+    "learn_from": "Aprende de",
+    "carousel_money": "Dinero",
+    "carousel_health": "Salud",
+    "carousel_relationships": "Relaciones",
+    "carousel_mindset": "Mentalidad",
+    "carousel_social_media": "Redes sociales",
+    "carousel_business": "Negocios",
+    "individual_consultation": "Consulta individual",
+    "hero_title": "Supera tus límites: domina la mentalidad, el dinero y la vida con estrategias claras que realmente funcionan.",
+    "hero_description": "Pasé de la bancarrota a ganar 150 000 $/año con tácticas probadas en batalla—ahora las comparto para que puedas aprender de mis errores y evitar las conjeturas.",
+    "achievement_1_title": "$140K+ / año",
+    "achievement_1_description": "ingresos de mi empresa",
+    "achievement_2_title": "Top 1 % de ingresos",
+    "achievement_2_description": "en OnlyFans a nivel mundial",
+    "achievement_3_title": "200K+",
+    "achievement_3_description": "seguidores en OnlyFans",
+    "achievement_4_title": "69 días",
+    "achievement_4_description": "transformación corporal completa",
+    "achievement_5_title": "4 países",
+    "achievement_5_description": "he vivido en varias naciones",
+    "achievement_6_title": "Adicción",
+    "achievement_6_description": "la superé por mi cuenta",
+    "achievement_7_title": "Depresión",
+    "achievement_7_description": "la superé sin medicación",
+    "achievement_8_title": "6+ idiomas",
+    "achievement_8_description": "fluidez en varias lenguas",
+    "achievement_9_title": "100K+",
+    "achievement_9_description": "contenido con cientos de miles de visitas",
+    "achievement_10_title": "Miss Portugal",
+    "achievement_10_description": "gestioné a la campeona 2019/2020",
+    "achievement_11_title": "$10K+ al mes",
+    "achievement_11_description": "ayudé a clientes a lograr libertad financiera",
+    "achievement_12_title": "+10 años",
+    "achievement_12_description": "de experiencia en bolsa",
+    "achievement_13_title": "Miles de acciones",
+    "achievement_13_description": "analizadas con análisis fundamental",
+    "achievement_14_title": "8 años",
+    "achievement_14_description": "en una relación estable a largo plazo",
+    "achievement_15_title": "0 a 60K+",
+    "achievement_15_description": "crecimiento de clientes en múltiples plataformas",
+    "achievement_16_title": "Decenas de miles",
+    "achievement_16_description": "de horas investigando temas fundamentales",
+    "achievement_17_title": "A los 13 años",
+    "achievement_17_description": "mi web alcanzó 60K+ usuarios",
+    "hero_individual_consultation": "Consulta individual",
+    "hero_individual_consultation_price": "90€ / hora",
+    "hero_individual_consultation_minimum_time": "Mínimo 45 minutos",
+    "hero_book_consultation": "Reservar consulta",
+    "hero_coaching_title": "Coaching directo",
+    "hero_coaching_basic": "Básico",
+    "hero_coaching_standard": "Estándar",
+    "hero_coaching_premium": "Premium",
+    "hero_coaching_limited_spots": "Plazas limitadas",
+    "hero_get_my_number": "Obtener mi número",
+    "hero_get_analysis_title": "Obtener mi análisis",
+    "hero_get_analysis_description": "Obtén un análisis profesional y profundo de tus inversiones, negocio o presencia en redes sociales con ideas accionables que te ayudarán a tomar mejores decisiones y alcanzar tus objetivos.",
+    "hero_get_my_analysis": "Obtener mi análisis",
+    "common_learn_more": "Saber más"
+  },
+
+  "about": {
+    "about_title": "Conoce a Daniel DaGalow",
+    "about_description": "Pasé de superar un desafío de 10 años y luchar contra hábitos diarios a construir negocios exitosos, transformar mi cuerpo en 3 meses y entrenar a figuras de alto perfil como Miss Portugal 2019/2020.",
+    "about_description_2": "Mi camino no fue fácil, pero me enseñó que el éxito no solo se basa en el trabajo duro, sino en la mentalidad, la estrategia y en divertirse un poco durante el proceso.",
+    "about_mission": "¿Mi misión? Ayudarte a romper barreras y reescribir tu propia historia de éxito."
+  },
+
+  "services": {
+    "services_title": "Cómo puedo ayudarte",
+    "services_description": "Ya sea que necesites orientación en mentalidad, crecimiento en redes sociales, finanzas, marketing, creación de negocios o relaciones, lo cubro todo.",
+    "service_1": "Mentalidad y Psicología",
+    "service_2": "Crecimiento en Redes Sociales",
+    "service_3": "Finanzas y Riqueza",
+    "service_4": "Marketing y Ventas",
+    "service_5": "Construcción de Negocios",
+    "service_6": "Relaciones",
+    "service_7": "Salud y Fitness",
+    "service_8": "OnlyFans",
+    "service_9": "IA y Tecnología",
+    "service_10": "Mucho más",
+    "services_structure_1_title": "Videollamada cara a cara",
+    "services_structure_1_description": "Nuestras consultas se realizan por videollamada, lo que nos permite conectar de forma personal. Podrás verme durante toda la sesión, creando una experiencia más cercana y dinámica.",
+    "services_structure_2_title": "Sesiones mínimas de 45 minutos",
+    "services_structure_2_description": "Cada consulta dura un mínimo de 45 minutos, asegurando el tiempo necesario para profundizar en tus inquietudes y desarrollar ideas y planes de acción significativos.",
+    "services_structure_3_title": "Grabaciones de sesiones",
+    "services_structure_3_description": "Todas las consultas se graban y almacenan de forma segura, para que ambos podamos revisarlas después. Así podrás repasar los consejos e ideas sin preocuparte de tomar notas durante la sesión.",
+    "services_structure_description": "Estas características están diseñadas para maximizar el valor de nuestro tiempo juntos y ofrecerte apoyo continuo incluso después de la consulta. Tu comodidad y progreso son mi máxima prioridad.",
+    "services_price": "90€ / hora",
+    "services_price_minimum_time": "Mínimo 45 minutos",
+    "services_book_consultation": "Reservar consulta"
+  },
+
+  "coaching": {
+    "coaching_title": "Coaching directo",
+    "coaching_description": "Coaching personalizado para ayudarte a destacar en áreas específicas de tu vida. Obtén acceso directo a orientación experta adaptada a tu situación y objetivos únicos.",
+    "coaching_feature_1_title": "Comunicación en cualquier momento",
+    "coaching_feature_1_description": "Envía textos o mensajes de audio cuando quieras con preguntas, actualizaciones o desafíos. Obtén apoyo cuando más lo necesites sin esperar a citas programadas.",
+    "coaching_feature_2_title": "Formatos de respuesta flexibles",
+    "coaching_feature_2_description": "Recibe orientación a través de texto, audio o video según tu preferencia y la complejidad del tema. Demostraciones visuales cuando sea necesario, respuestas rápidas por texto cuando sea apropiado.",
+    "coaching_feature_3_title": "Clases personalizadas",
+    "coaching_feature_3_description": "Recibe sesiones de formación hechas a medida para tu nivel, estilo de aprendizaje y objetivos. Cada clase se basa en tu progreso para un crecimiento y desarrollo máximos.",
+    "coaching_summary": "El coaching directo proporciona apoyo constante, responsabilidad y experiencia para ayudarte a lograr resultados transformadores en el área que elijas. Experimenta la diferencia que brinda la atención personalizada.",
+    "coaching_tier_basic_price": "40€",
+    "coaching_tier_basic_label": "Básico",
+    "coaching_tier_basic_description": "Respuestas a todas las preguntas semanalmente",
+    "coaching_tier_standard_price": "90€",
+    "coaching_tier_standard_label": "Estándar",
+    "coaching_tier_standard_description": "Respuestas a todas las preguntas en 48 h",
+    "coaching_tier_premium_price": "230€",
+    "coaching_tier_premium_label": "Premium",
+    "coaching_tier_premium_description": "Respuesta prioritaria a todas las preguntas lo antes posible",
+    "coaching_limited_spots": "Plazas limitadas",
+    "coaching_get_number": "Obtener mi número",
+    "coaching_service_1": "Aprender a invertir",
+    "coaching_service_2": "Entrenador personal",
+    "coaching_service_3": "Coach de citas",
+    "coaching_service_4": "Coaching de OnlyFans",
+    "coaching_service_5": "Asesor empresarial",
+    "coaching_service_6": "Hábitos y crecimiento personal"
+  },
+
+  "analysis": {
+    "analysis_title": "Análisis experto",
+    "analysis_description": "Obtén un análisis profesional y en profundidad de tus inversiones, negocio o presencia en redes sociales con ideas accionables que te ayuden a tomar mejores decisiones y alcanzar tus objetivos.",
+    "analysis_feature_1_title": "Tres consultas rápidas",
+    "analysis_feature_1_description": "Incluye tres sesiones breves para recopilar información básica, hacer preguntas de seguimiento y aportar el contexto adicional necesario para un análisis completo de tu situación.",
+    "analysis_feature_2_title": "Informe de análisis detallado",
+    "analysis_feature_2_description": "Recibirás un examen exhaustivo de tu situación actual, las condiciones de mercado, el panorama competitivo y el desempeño histórico, para enmarcar el análisis y las recomendaciones de la forma más relevante.",
+    "analysis_feature_3_title": "Recomendaciones estratégicas",
+    "analysis_feature_3_description": "Obtén sugerencias claras y accionables basadas en los hallazgos del análisis. Cada recomendación se prioriza y explica con pasos concretos que puedes aplicar para mejorar tus resultados.",
+    "analysis_summary": "Mis servicios de análisis experto te proporcionan información profesional respaldada por años de experiencia. Ya sea para optimizar tu presencia en redes sociales, evaluar oportunidades de inversión o mejorar tu estrategia empresarial, entrego análisis exhaustivos con recomendaciones prácticas que puedes implementar de inmediato.",
+    "analysis_quote_title": "Solicitar presupuesto",
+    "analysis_quote_subtitle": "Depende del proyecto",
+    "analysis_get_analysis": "Obtener mi análisis",
+    "analysis_service_1": "Análisis de redes sociales",
+    "analysis_service_2": "Análisis de acciones individuales",
+    "analysis_service_3": "Evaluación de carteras",
+    "analysis_service_4": "Análisis de negocio/empresa"
+  },
+
+  "projects": {
+    "projects_title": "Mis emprendimientos",
+    "project_1_name": "Perspectiv – empresa de IA",
+    "project_1_description": "Una startup tecnológica que ayuda a empresas a entrar en la era de la automatización, con soluciones de software a medida.",
+    "project_2_name": "Galow – club social",
+    "project_2_description": "Un club social con actividades presenciales y software digital para ayudar a personas exitosas a conectar y lograr sus sueños."
+  },
+
+  "venture_investment": {
+    "venture_title": "Invierte conmigo",
+    "venture_description": "Estoy desarrollando constantemente nuevos proyectos y emprendimientos. Si te interesa conocer las oportunidades actuales y futuras, solicita la presentación de proyecto a continuación.",
+    "venture_request_pitch": "Solicitar presentación de proyecto"
+  },
+
+  "interviews": {
+    "interviews_title": "Apariciones en medios",
+    "interviews_description": "He aparecido en algunos de los medios de comunicación más prestigiosos y en grandes perfiles de redes sociales. Aquí tienes algunas de mis entrevistas y artículos.",
+    "interview_1_title": "El futuro de la IA en los negocios",
+    "interview_1_description": "Una discusión en profundidad sobre cómo la inteligencia artificial está transformando las prácticas empresariales modernas y qué esperar en los próximos años.",
+    "interview_1_date": "15 de marzo de 2024",
+    "media_cm": "CM TV",
+    "media_jn": "Jornal de Notícias",
+    "media_coutinho": "Coutinho"
+  },
+
+  "testimonials": {
+    "testimonials_title": "Historias de éxito",
+    "testimonials_description": "Aquí tienes algunos testimonios — y si te he ayudado, por favor deja uno para que podamos inspirar a más personas.",
+    "testimonial_1_quote": "He aprendido directamente de Daniel durante dos años, pasando de la pobreza y el aislamiento a la habilidad y la confianza.",
+    "testimonial_1_author": "Rafael M.",
+    "testimonial_2_quote": "Siete años siguiendo a Daniel en línea, un año en el extranjero aprendiendo directamente—la mejor decisión de mi vida.",
+    "testimonial_2_author": "Gonçalo M.",
+    "leave_testimonial": "Dejar un testimonio",
+    "modal_title": "Comparte tu experiencia",
+    "modal_subtitle": "Haz saber a otros cómo te ayudó Daniel",
+    "modal_photo_label": "Tu foto",
+    "modal_photo_placeholder": "Por favor, sube una foto tuya para tu testimonio",
+    "modal_name_label": "Tu nombre",
+    "modal_name_placeholder": "Tu nombre",
+    "modal_testimonial_label": "Tu testimonio",
+    "modal_testimonial_placeholder": "Cuenta cómo te ayudó Daniel...",
+    "modal_cancel": "Cancelar",
+    "modal_submit": "Enviar",
+    "modal_submitting": "Enviando...",
+    "modal_success": "¡Gracias! Tu testimonio ha sido enviado y está pendiente de revisión.",
+    "modal_error": "Algo salió mal. Por favor, inténtalo de nuevo.",
+    "modal_validation": "Por favor, completa todos los campos y selecciona una imagen.",
+    "modal_auth_required": "Debes iniciar sesión para enviar un testimonio.",
+    "modal_photo_change": "Cambiar foto",
+    "modal_photo_select": "Seleccionar foto"
+  },
+
+  "other_wins": {
+    "other_wins_title": "Otras victorias",
+    "body_transformation_title": "Transformación corporal de 69 días",
+    "high_reach_content_title": "Contenido de alto alcance"
+  },
+
+  "service_form": {
+    "title": "¿Qué servicio necesitas?",
+    "choose_service": "Elige el servicio",
+    "services": {
+      "consultation": "Consulta",
+      "coaching": "Coaching",
+      "analysis": "Análisis",
+      "pitch_deck": "Presentación de proyecto"
+    }
+  },
+
+  "booking": {
+    "title": "Programa tu consulta",
+    "step_1": "Elige una fecha",
+    "step_2": "Selecciona una hora",
+    "step_3": "Tu información",
+    "step_4": "Chatea con nuestro asistente",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "complete_booking": "Completar reserva",
+    "processing": "Procesando...",
+    "name_label": "Tu nombre",
+    "name_placeholder": "Tu nombre",
+    "email_label": "Tu correo electrónico",
+    "email_placeholder": "Tu correo electrónico"
+  },
+
+  "coaching_request": {
+    "title": "Inicia tu viaje de coaching",
+    "steps": {
+      "frequency": "Elige la frecuencia de coaching",
+      "contact": "Tu información de contacto",
+      "payment": "Completa tu pago",
+      "chat": "Chatea con tu coach"
+    },
+    "frequency_options": {
+      "weekly": "Una vez por semana",
+      "daily": "Todos los días",
+      "priority": "Coaching prioritario"
+    },
+    "form": {
+      "name_label": "Tu nombre",
+      "name_placeholder": "Juan Pérez",
+      "email_label": "Correo electrónico",
+      "email_placeholder": "juan@ejemplo.com",
+      "phone_label": "Número de teléfono",
+      "phone_search_placeholder": "Buscar país..."
+    },
+    "payment": {
+      "selected_tier": "Has seleccionado",
+      "complete_payment": "Por favor, completa el pago de",
+      "to_continue": "para continuar",
+      "pay_with_stripe": "Pagar con Stripe"
+    },
+    "buttons": {
+      "back": "Atrás",
+      "next": "Siguiente",
+      "done": "Hecho"
+    }
+  },
+
+  "analysis_request": {
+    "title": "Obtener mi análisis",
+    "steps": {
+      "type": "Selecciona el tipo de análisis",
+      "contact": "Tu información de contacto",
+      "chat": "Chatea con nuestro analista"
+    },
+    "form": {
+      "name_label": "Tu nombre",
+      "name_placeholder": "John Doe",
+      "email_label": "Correo electrónico",
+      "email_placeholder": "john@example.com"
+    },
+    "buttons": {
+      "back": "Atrás",
+      "next": "Siguiente",
+      "done": "Hecho"
+    }
+  },
+
+  "pitch_deck_request": {
+    "title": "Solicitar presentación de proyecto",
+    "steps": {
+      "project": "Selecciona tu proyecto",
+      "contact": "Tu información de contacto",
+      "chat": "Chatea con nuestro asistente"
+    },
+    "form": {
+      "name_label": "Tu nombre",
+      "name_placeholder": "John Doe",
+      "email_label": "Correo electrónico",
+      "email_placeholder": "john@example.com",
+      "phone_label": "Número de teléfono",
+      "phone_search_placeholder": "Buscar país..."
+    },
+    "buttons": {
+      "back": "Atrás",
+      "next": "Siguiente",
+      "done": "Hecho"
+    }
+  },
+
+  "inline_chatbot": {
+    "input_placeholder": "Type a message…",
+    "input_placeholder_waiting": "Wait for message...",
+    "bot_typing": "bot is typing…",
+    "error_message": "Oops, something went wrong.",
+    "welcome_message": "Welcome! How can I help you today?",
+    "booking_welcome": "Your consultation has been scheduled! I'll be your pre-consultation assistant. Would you like to share what specific topics you'd like to discuss during your session?",
+    "booking_welcome_with_date": "Your consultation for {{date}} ({{duration}} minutes) is confirmed! I'll be your pre-consultation assistant. Would you like to share what specific topics you'd like to discuss during your session?",
+    "coaching_welcome": "Welcome to your {{tier}} coaching program! I'm your assistant and will connect you with Daniel. To make the most of your coaching experience, could you share what specific goals you're hoping to achieve?",
+    "analysis_welcome": "Thank you for requesting our {{type}} analysis service! I'll be gathering some initial information to help us provide you with the most comprehensive analysis. Could you provide some specific details about what you'd like us to analyze?",
+    "pitch_deck_welcome": "Thanks for your interest in the {{project}} project! I'll be gathering some information to help prepare your pitch deck. Could you tell me a bit about what attracted you to this venture and what kind of investment you're considering?"
+  },
+
+  "bottom_carousel": {
+    "pages": {
+      "faqs": "Preguntas frecuentes",
+      "bugs": "Errores",
+      "social_media": "Redes sociales"
+    }
+  },
+
+  "faqs": {
+    "title": "Consejos rápidos de mentalidad",
+    "questions": {
+      "mindset": {
+        "question": "¿Cómo puedo empezar a mejorar mi mentalidad?",
+        "answer": "Comienza con una práctica diaria de gratitud, afirmaciones positivas y estableciendo metas pequeñas y alcanzables. La constancia es la clave para construir una base sólida de mentalidad."
+      },
+      "motivation": {
+        "question": "¿Cuál es la mejor manera de mantenerme motivado?",
+        "answer": "Crea una visión clara, divide los objetivos en pasos pequeños, lleva un seguimiento de tu progreso y celebra los pequeños logros. Rodéate de influencias positivas y mantén una mentalidad de crecimiento."
+      },
+      "setbacks": {
+        "question": "¿Cómo manejo los contratiempos?",
+        "answer": "Ve los contratiempos como oportunidades de aprendizaje. Analiza qué salió mal, ajusta tu enfoque y continúa adelante. Recuerda que el fracaso es parte del camino hacia el éxito."
+      },
+      "confidence": {
+        "question": "¿Cuál es la clave para desarrollar confianza?",
+        "answer": "Enfócate en tus fortalezas, practica la autocompasión, sal de tu zona de confort regularmente y celebra tus logros, por pequeños que sean."
+      },
+      "productivity": {
+        "question": "¿Cómo puedo mejorar mi productividad?",
+        "answer": "Prioriza tareas, elimina distracciones, toma descansos regulares y enfócate en una sola tarea a la vez. Utiliza técnicas de gestión del tiempo como el método Pomodoro."
+      },
+      "stress": {
+        "question": "¿Cuál es la mejor manera de manejar el estrés?",
+        "answer": "Practica la atención plena, haz ejercicio regularmente, mantén un horario de sueño saludable y aprende a decir no cuando sea necesario. El cuidado personal periódico es esencial."
+      },
+      "habits": {
+        "question": "¿Cómo construyo mejores hábitos?",
+        "answer": "Empieza pequeño, sé constante, lleva un registro de tu progreso y crea un entorno de apoyo. Utiliza la técnica de apilar hábitos para construir nuevas rutinas sobre las existentes."
+      },
+      "decision_making": {
+        "question": "¿Cuál es el secreto para tomar mejores decisiones?",
+        "answer": "Recopila información relevante, considera diferentes perspectivas, confía en tu intuición y estate dispuesto a cometer errores. Aprende de cada decisión que tomes."
+      },
+      "communication": {
+        "question": "¿Cómo puedo mejorar mis habilidades de comunicación?",
+        "answer": "Practica la escucha activa, sé claro y conciso, muestra empatía y pide retroalimentación. La práctica regular y la autoconciencia son cruciales."
+      },
+      "goals": {
+        "question": "¿Cuál es la mejor manera de establecer objetivos?",
+        "answer": "Haz que sean SMART (Específicos, Medibles, Alcanzables, Relevantes, con Plazo), escríbelos, crea un plan de acción y revísalos regularmente."
+      }
+    }
+  },
+
+  "bug_report": {
+    "title": "Ayúdame a mejorar",
+    "description": "Como el sitio web está en fase beta, tus comentarios son fundamentales. Por favor, proporciona información detallada sobre cualquier problema que hayas encontrado para ayudarnos a mejorar la experiencia del usuario.",
+    "form": {
+      "name_label": "Tu nombre",
+      "name_placeholder": "Tu nombre",
+      "email_label": "Correo electrónico",
+      "email_placeholder": "Tu correo electrónico",
+      "description_label": "Descripción del error",
+      "description_placeholder": "Proporciona una descripción detallada del error",
+      "submit_button": "Enviar informe de errores"
+    },
+    "validation": {
+      "required_fields": "Por favor, completa todos los campos obligatorios."
+    },
+    "messages": {
+      "success": "¡Gracias por informar de este fallo! Nuestro equipo lo investigará pronto.",
+      "error": "Error al enviar el informe. Por favor, inténtalo de nuevo."
+    }
+  },
+
+  "social_media": {
+    "title": "Redes sociales",
+    "platforms": {
+      "instagram": {
+        "title": "Instagram",
+        "alt": "Instagram"
+      },
+      "tiktok": {
+        "title": "TikTok",
+        "alt": "TikTok"
+      },
+      "twitter": {
+        "title": "X / Twitter",
+        "alt": "Twitter"
+      }
+    }
+  },
+
+  "calendar": {
+    "title": "Calendario",
+    "no_appointments": "No hay citas programadas para este día.",
+    "book_appointment": "Reservar cita",
+    "weekdays": {
+      "monday": "lun",
+      "tuesday": "mar",
+      "wednesday": "mié",
+      "thursday": "jue",
+      "friday": "vie",
+      "saturday": "sáb",
+      "sunday": "dom"
+    }
+  },
+
+  "edit_profile": {
+    "title": "Editar perfil",
+    "back_to_profile": "Volver al perfil",
+    "profile_updated": "¡Perfil actualizado con éxito!",
+    "avatar": {
+      "change": "Haz clic en el avatar para cambiarlo",
+      "uploading": "Cargando..."
+    },
+    "form": {
+      "phone_number": {
+        "label": "Número de teléfono"
+      },
+      "email": {
+        "label": "Correo electrónico",
+        "cannot_change": "El correo electrónico no se puede cambiar"
+      },
+      "full_name": {
+        "label": "Nombre completo"
+      },
+      "username": {
+        "label": "Nombre de usuario",
+        "placeholder": "tuNombreDeUsuario"
+      }
+    },
+    "sections": {
+      "active_subscriptions": {
+        "title": "Suscripciones activas",
+        "coming_soon": "Gestionar en configuración de suscripciones (próximamente)"
+      },
+      "call_recordings": {
+        "title": "Grabaciones de llamadas",
+        "coming_soon": "Ver tus grabaciones en Perfil (próximamente)"
+      },
+      "chat_history": {
+        "title": "Historial de chat",
+        "coming_soon": "Ver registros de conversación en Perfil (próximamente)"
+      }
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "save_changes": "Guardar cambios",
+      "saving": "Guardando..."
+    }
+  },
+
+  "music": {
+    "title": "Recomendaciones musicales",
+    "description": "Una colección cuidadosamente seleccionada de música excepcional, filtrando el ruido para ofrecerte solo las mejores canciones que valen tu tiempo.",
+    "playlists": {
+      "classic_rock": {
+        "title": "Esenciales del rock clásico",
+        "description": "Una selección de éxitos atemporales del rock que definieron generaciones. De Led Zeppelin a Pink Floyd, estas pistas muestran la época dorada del rock."
+      },
+      "reggae": {
+        "title": "Raíces y cultura del reggae",
+        "description": "Sumérgete en los ritmos llenos de alma del reggae. Desde Bob Marley hasta artistas modernos, esta lista captura la esencia de la cultura musical jamaicana."
+      },
+      "jazz": {
+        "title": "Colección de estándares de jazz",
+        "description": "La mejor colección de clásicos del jazz que dieron forma al género. Con leyendas como Miles Davis, John Coltrane y Ella Fitzgerald."
+      },
+      "electronic": {
+        "title": "Evolución electrónica",
+        "description": "Un recorrido por la evolución de la música electrónica. Del ambient al techno, esta lista explora lo más vanguardista del sonido electrónico."
+      },
+      "classical": {
+        "title": "Obras maestras clásicas",
+        "description": "Composiciones atemporales de los más grandes autores clásicos. Perfectas para concentrarte o relajarte profundamente."
+      }
+    },
+    "listen_button": "Escuchar en YouTube"
+  },
+
+  "profile": {
+    "edit_profile": "Editar perfil",
+    "unnamed": "Sin nombre",
+    "no_username": "Sin nombre de usuario",
+    "sections": {
+      "appointments": {
+        "title": "Próximas citas",
+        "no_appointments": "No hay próximas citas.",
+        "appointment": "Cita"
+      },
+      "subscriptions": {
+        "title": "Suscripciones activas",
+        "no_subscriptions": "No se encontraron suscripciones.",
+        "since": "Desde",
+        "expires": "Expira",
+        "days_remaining": "días restantes"
+      },
+      "conversations": {
+        "title": "Tus conversaciones",
+        "no_chats": "Aún no hay chats."
+      },
+      "testimonial_review": {
+        "title": "Revisión de testimonios",
+        "no_pending": "No hay testimonios pendientes de revisión.",
+        "reject": "Rechazar",
+        "approve": "Aprobar",
+        "approved": "¡Testimonio aprobado con éxito!",
+        "rejected": "Testimonio rechazado con éxito",
+        "approve_error": "Error al aprobar el testimonio",
+        "reject_error": "Error al rechazar el testimonio"
+      }
+    },
+    "loading": {
+      "title": "Cargando…"
+    },
+    "error": {
+      "title": "Error"
+    }
+  },
+
+  "settings": {
+    "title": "Configuración",
+    "sections": {
+      "account": {
+        "title": "Configuración de cuenta",
+        "description": "Administra los detalles de tu cuenta, correo electrónico y contraseña",
+        "email": {
+          "label": "Correo electrónico",
+          "change": "Cambiar correo electrónico"
+        },
+        "password": {
+          "label": "Contraseña",
+          "reset": "Restablecer contraseña"
+        },
+        "profile": {
+          "label": "Información de perfil",
+          "edit": "Editar perfil"
+        },
+        "actions": {
+          "label": "Acciones de la cuenta",
+          "sign_out": "Cerrar sesión",
+          "delete_account": "Eliminar cuenta"
+        }
+      },
+      "notifications": {
+        "title": "Preferencias de notificación",
+        "description": "Controla cómo y cuándo recibes notificaciones",
+        "email": {
+          "title": "Notificaciones por correo",
+          "appointments": {
+            "label": "Recordatorios de citas",
+            "description": "Recibe correos sobre tus próximas citas"
+          },
+          "coaching": {
+            "label": "Actualizaciones de coaching",
+            "description": "Recibe correos sobre tus sesiones de coaching"
+          },
+          "marketing": {
+            "label": "Comunicaciones de marketing",
+            "description": "Recibe correos promocionales y ofertas especiales"
+          }
+        },
+        "other": {
+          "title": "Otras notificaciones",
+          "push": {
+            "label": "Notificaciones push",
+            "description": "Recibe notificaciones push en tu navegador"
+          }
+        }
+      },
+      "privacy": {
+        "title": "Configuración de privacidad",
+        "description": "Administra tus datos y preferencias de privacidad",
+        "controls": {
+          "title": "Controles de privacidad",
+          "profile_visibility": {
+            "label": "Visibilidad de perfil",
+            "description": "Controla quién puede ver la información de tu perfil",
+            "options": {
+              "public": "Público",
+              "contacts": "Solo contactos",
+              "private": "Privado"
+            }
+          },
+          "analytics": {
+            "label": "Análisis de datos",
+            "description": "Permítenos usar datos anónimos para mejorar nuestros servicios"
+          }
+        },
+        "data": {
+          "title": "Gestión de datos",
+          "chat_retention": {
+            "label": "Retención del historial de chat",
+            "description": "Elige cuánto tiempo conservar tu historial de chat",
+            "options": {
+              "forever": "Conservar para siempre",
+              "1year": "1 año",
+              "6months": "6 meses",
+              "3months": "3 meses",
+              "1month": "1 mes"
+            }
+          },
+          "actions": {
+            "download": "Descargar mis datos",
+            "clear": "Borrar historial de chat"
+          }
+        }
+      },
+      "appearance": {
+        "title": "Configuración de apariencia",
+        "description": "Personaliza el aspecto de tu experiencia",
+        "language": {
+          "label": "Idioma de la interfaz",
+          "description": "Selecciona tu idioma preferido para la aplicación",
+          "options": {
+            "english": "Inglés",
+            "portuguese": "Portugués",
+            "spanish": "Español",
+            "french": "Francés",
+            "german": "Alemán"
+          }
+        },
+        "text_size": {
+          "label": "Tamaño de texto",
+          "description": "Ajusta el tamaño del texto en la aplicación",
+          "options": {
+            "small": "Pequeño",
+            "medium": "Medio",
+            "large": "Grande",
+            "xlarge": "Extra grande"
+          }
+        },
+        "contrast": {
+          "label": "Modo de alto contraste",
+          "description": "Aumenta el contraste para mejorar la legibilidad"
+        },
+        "preview": {
+          "title": "Vista previa",
+          "text": "Esta es una vista previa de cómo aparecerá el texto con la configuración seleccionada."
+        }
+      },
+      "sessions": {
+        "title": "Preferencias de sesión",
+        "description": "Administra tus preferencias de sesiones de consulta y coaching",
+        "preferences": {
+          "title": "Preferencias de sesión",
+          "duration": {
+            "label": "Duración predeterminada de la sesión",
+            "description": "Elige tu duración preferida para nuevas reservas",
+            "options": {
+              "45": "45 minutos",
+              "60": "60 minutos",
+              "75": "75 minutos",
+              "90": "90 minutos"
+            }
+          },
+          "record": {
+            "label": "Grabar sesiones",
+            "description": "Grabar automáticamente todas las sesiones de consulta"
+          },
+          "auto_join": {
+            "label": "Unirse automáticamente",
+            "description": "Unirse automáticamente a las sesiones cuando comiencen"
+          }
+        },
+        "payment": {
+          "title": "Pagos y suscripciones",
+          "methods": {
+            "label": "Métodos de pago",
+            "description": "Agregar, eliminar o actualizar tus métodos de pago",
+            "manage": "Administrar"
+          },
+          "billing": {
+            "label": "Historial de facturación",
+            "description": "Ver tus facturas y detalles de pago",
+            "view": "Ver"
+          },
+          "subscriptions": {
+            "label": "Suscripciones activas",
+            "description": "Revisar y gestionar tus suscripciones actuales",
+            "manage": "Administrar"
+          }
+        }
+      },
+      "others": {
+        "title": "Otros",
+        "description": "Ver documentos legales e información adicional",
+        "privacy_policy": "Política de privacidad",
+        "terms_of_service": "Términos de servicio"
+      }
+    },
+    "buttons": {
+      "back": "Volver",
+      "save": "Guardar configuración"
+    },
+    "privacy_policy": {
+      "title": "Política de privacidad",
+      "last_updated": "Última actualización: 26 de abril de 2025",
+      "intro": "En DaGalow, respetamos tu privacidad y nos comprometemos a proteger tus datos personales. Esta Política de privacidad explica cómo recopilamos, usamos y protegemos tu información cuando utilizas nuestro sitio web y servicios.",
+      "sections": {
+        "information": {
+          "title": "1. Información que recopilamos",
+          "description": "Recopilamos información que nos proporcionas directamente, incluyendo:",
+          "items": [
+            "Información personal (nombre, dirección de correo electrónico, número de teléfono)",
+            "Información de perfil",
+            "Información de pago y transacciones",
+            "Comunicaciones que nos envías",
+            "Información de uso e interacción con nuestros servicios"
+          ]
+        },
+        "usage": {
+          "title": "2. Cómo usamos tu información",
+          "description": "Usamos tu información para:",
+          "items": [
+            "Proporcionar, mantener y mejorar nuestros servicios",
+            "Procesar transacciones y enviar información relacionada",
+            "Enviar avisos técnicos, actualizaciones y mensajes de soporte",
+            "Responder a tus comentarios y preguntas",
+            "Personalizar tu experiencia",
+            "Monitorear y analizar tendencias y uso"
+          ]
+        },
+        "sharing": {
+          "title": "3. Compartir información",
+          "description": "Podemos compartir tu información con:",
+          "items": [
+            "Proveedores de servicios que actúan en nuestro nombre",
+            "Procesadores de pago",
+            "Asesores profesionales",
+            "Cuando la ley lo requiera o para proteger nuestros derechos"
+          ]
+        },
+        "rights": {
+          "title": "4. Tus derechos",
+          "description": "Dependiendo de tu ubicación, puedes tener derechos para:",
+          "items": [
+            "Acceder a los datos personales que tenemos sobre ti",
+            "Solicitar corrección de tus datos personales",
+            "Solicitar eliminación de tus datos personales",
+            "Oponerte al procesamiento de tus datos personales",
+            "Solicitar la restricción del procesamiento de tus datos personales",
+            "Solicitar la transferencia de tus datos personales",
+            "Retirar tu consentimiento"
+          ]
+        },
+        "contact": {
+          "title": "5. Contáctanos",
+          "description": "Si tienes preguntas sobre esta Política de privacidad, contáctanos en privacy@dagalow.com"
+        }
+      }
+    },
+    "terms_of_service": {
+      "title": "Términos de servicio",
+      "last_updated": "Última actualización: 26 de abril de 2025",
+      "intro": "Por favor lee estos Términos de Servicio (‘Términos’) cuidadosamente antes de usar el sitio web y servicios de DaGalow.",
+      "sections": {
+        "acceptance": {
+          "title": "1. Aceptación de los términos",
+          "description": "Al acceder o usar nuestro servicio, aceptas estos Términos. Si no estás de acuerdo con alguna parte, no accedas al servicio."
+        },
+        "accounts": {
+          "title": "2. Cuentas de usuario",
+          "description": "Cuando creas una cuenta, debes proporcionar información precisa y actualizada. Eres responsable de salvaguardar tu contraseña y todas las actividades en tu cuenta. Debes notificarnos de inmediato sobre cualquier uso no autorizado."
+        },
+        "payments": {
+          "title": "3. Pagos y suscripciones",
+          "description": "Para servicios pagos:",
+          "items": [
+            "Aceptas pagar todas las tarifas según los términos de facturación vigentes.",
+            "Debes proporcionar un método de pago válido.",
+            "Las suscripciones se renovarán automáticamente hasta cancelarse.",
+            "Las cancelaciones deben realizarse al menos 24 horas antes del fin del periodo actual."
+          ]
+        },
+        "coaching": {
+          "title": "4. Servicios de coaching",
+          "description": "Nuestros servicios de coaching son informativos y educativos. No garantizamos resultados específicos. La implementación de consejos es bajo tu propio riesgo."
+        },
+        "property": {
+          "title": "5. Propiedad intelectual",
+          "description": "El servicio y su contenido son propiedad exclusiva de DaGalow. Queda prohibido el uso de nuestras marcas sin consentimiento previo."
+        },
+        "termination": {
+          "title": "6. Terminación",
+          "description": "Podemos suspender o terminar tu cuenta inmediatamente por cualquier incumplimiento de estos Términos. Tras la terminación, cesará tu derecho de uso."
+        },
+        "liability": {
+          "title": "7. Limitación de responsabilidad",
+          "description": "DaGalow y sus afiliados no serán responsables por daños indirectos, incidentales o consecuentes."
+        },
+        "changes": {
+          "title": "8. Cambios a los términos",
+          "description": "Nos reservamos el derecho de modificar estos Términos en cualquier momento. Es tu responsabilidad revisarlos periódicamente."
+        },
+        "contact": {
+          "title": "9. Contáctanos",
+          "description": "Si tienes preguntas sobre estos Términos, escríbenos a terms@dagalow.com"
+        }
+      }
+    }
+  },
+
+  "videos": {
+    "title": "Recursos educativos",
+    "description": "Una colección seleccionada de contenido educativo que abarca temas esenciales de la vida. Expande tu conocimiento y desarrolla nuevas habilidades a través de estas listas de reproducción de videos cuidadosamente seleccionadas.",
+    "watch_button": "Ver en YouTube",
+    "playlists": {
+      "psychology": {
+        "title": "Psicología y Salud Mental",
+        "description": "Explora el fascinante mundo de la psicología y el bienestar mental. Desde comprender el comportamiento humano hasta técnicas prácticas de salud mental, esta lista de reproducción ofrece valiosas ideas para el crecimiento personal."
+      },
+      "science": {
+        "title": "Ciencia y Tecnología",
+        "description": "Sumérgete en los últimos descubrimientos científicos y avances tecnológicos. Desde la física cuántica hasta la inteligencia artificial, mantente al día con desarrollos de vanguardia en ciencia y tecnología."
+      },
+      "math": {
+        "title": "Matemáticas y Resolución de Problemas",
+        "description": "Domina conceptos matemáticos y desarrolla habilidades de pensamiento crítico. Esta lista de reproducción cubre desde aritmética básica hasta cálculo avanzado, haciendo las matemáticas accesibles y atractivas."
+      },
+      "health": {
+        "title": "Salud y Fitness",
+        "description": "Aprende sobre nutrición, ejercicio y bienestar integral. Obtén consejos de expertos para mantener un estilo de vida saludable, rutinas de entrenamiento y entender las necesidades de tu cuerpo."
+      },
+      "finance": {
+        "title": "Finanzas Personales e Inversión",
+        "description": "Desarrolla tu alfabetización financiera y aprende estrategias de inversión inteligentes. Desde conceptos básicos de presupuesto hasta técnicas avanzadas de inversión, esta lista te ayuda a tomar decisiones financieras informadas."
+      },
+      "business": {
+        "title": "Negocios y Emprendimiento",
+        "description": "Descubre los fundamentos de los negocios y el emprendimiento. Aprende sobre estrategias de startups, marketing, liderazgo y cómo construir un negocio exitoso desde cero."
+      },
+      "philosophy": {
+        "title": "Filosofía y Pensamiento Crítico",
+        "description": "Explora conceptos filosóficos y desarrolla habilidades de pensamiento crítico. Desde la sabiduría antigua hasta la filosofía moderna, esta lista te invita a la reflexión profunda y al autoconocimiento."
+      }
+    }
+  },
+
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "Introduce tu correo electrónico"
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "Introduce tu contraseña"
+      },
+      "forgot_password": "¿Olvidaste tu contraseña?",
+      "submit": {
+        "default": "Iniciar sesión",
+        "loading": "Iniciando sesión..."
+      },
+      "signup_prompt": "¿No tienes una cuenta?",
+      "signup_link": "Regístrate",
+      "errors": {
+        "default": "Error al iniciar sesión",
+        "invalid_credentials": "Correo o contraseña inválidos",
+        "network_error": "Error de red. Por favor, inténtalo de nuevo."
+      }
+    },
+    "signup": {
+      "title": "Regístrate",
+      "full_name": {
+        "label": "Nombre completo",
+        "placeholder": "Introduce tu nombre completo"
+      },
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "Introduce tu correo electrónico"
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "Introduce tu contraseña"
+      },
+      "confirm_password": {
+        "label": "Confirmar contraseña",
+        "placeholder": "Confirma tu contraseña"
+      },
+      "submit": {
+        "default": "Regístrate",
+        "loading": "Creando cuenta..."
+      },
+      "login_prompt": "¿Ya tienes una cuenta?",
+      "login_link": "Iniciar sesión",
+      "errors": {
+        "default": "Error al crear la cuenta",
+        "password_mismatch": "Las contraseñas no coinciden",
+        "password_length": "La contraseña debe tener al menos 6 caracteres",
+        "network_error": "Error de red. Por favor, inténtalo de nuevo."
+      },
+      "success": {
+        "message": "¡Registro exitoso! Revisa tu correo para el enlace de confirmación."
+      }
+    },
+    "reset_password": {
+      "title": "Restablecer contraseña",
+      "password": {
+        "label": "Nueva contraseña",
+        "placeholder": "Introduce tu nueva contraseña"
+      },
+      "confirm_password": {
+        "label": "Confirmar nueva contraseña",
+        "placeholder": "Confirma tu nueva contraseña"
+      },
+      "submit": {
+        "default": "Restablecer contraseña",
+        "loading": "Restableciendo contraseña…"
+      },
+      "errors": {
+        "default": "Error al restablecer la contraseña",
+        "invalid_link": "Enlace para restablecer la contraseña inválido. Por favor, solicita uno nuevo.",
+        "password_mismatch": "Las contraseñas no coinciden",
+        "password_length": "La contraseña debe tener al menos 6 caracteres"
+      },
+      "success": {
+        "message": "Tu contraseña se ha restablecido correctamente. Redirigiendo al inicio de sesión…"
+      }
+    },
+    "forgot_password": {
+      "title": "Restablecer contraseña",
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "Introduce tu correo electrónico"
+      },
+      "submit": {
+        "default": "Enviar instrucciones de restablecimiento",
+        "loading": "Enviando..."
+      },
+      "back_to_login": "Volver al inicio de sesión",
+      "errors": {
+        "default": "Error al restablecer la contraseña"
+      },
+      "success": {
+        "message": "Instrucciones para restablecer la contraseña enviadas a tu correo."
+      }
+    }
+  }
+}

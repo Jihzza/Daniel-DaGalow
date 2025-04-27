@@ -9,10 +9,12 @@ import PortfolioIcon from "../../assets/icons/Target Branco.svg";
 import BusinessIcon from "../../assets/icons/Bag Branco.svg";
 import { ServiceContext } from "../contexts/ServiceContext";
 import { useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 function ExpertAnalysis() {
   const navigate = useNavigate();
   const { service, setService } = useContext(ServiceContext);
+  const { t } = useTranslation();
 
   const openForm = (service) => {
     setService(service);                          // ① tell the form which one
@@ -36,17 +38,13 @@ function ExpertAnalysis() {
   return (
     <section id="expert-analysis" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
-        <h2 className="text-2xl md:text-3xl font-bold">Expert Analysis</h2>
-        <p className="">
-          Get professional, in-depth analysis of your investments, business, or social media 
-          presence with actionable insights to help you make better decisions and achieve 
-          your goals.
-        </p>
+        <h2 className="text-2xl md:text-3xl font-bold">{t("analysis.analysis_title")}</h2>
+        <p className="">{t("analysis.analysis_description")}</p>
         
         <div className="grid grid-cols-2 gap-6 md:grid-cols-2 text-white">
           {[
             {
-              title: "Social Media Analysis",
+              title: t("analysis.analysis_service_1"),
               icon: (
                 <img
                   src={SocialIcon}
@@ -56,7 +54,7 @@ function ExpertAnalysis() {
               ),
             },
             {
-              title: "Individual Stock Analysis",
+              title: t("analysis.analysis_service_2"),
               icon: (
                 <img
                   src={StocksIcon}
@@ -66,7 +64,7 @@ function ExpertAnalysis() {
               ),
             },
             {
-              title: "Portfolio Evaluation",
+              title: t("analysis.analysis_service_3"),
               icon: (
                 <img
                   src={PortfolioIcon}
@@ -76,7 +74,7 @@ function ExpertAnalysis() {
               ),
             },
             {
-              title: "Business/Company Analysis",
+              title: t("analysis.analysis_service_4"),
               icon: (
                 <img
                   src={BusinessIcon}
@@ -121,11 +119,10 @@ function ExpertAnalysis() {
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Three Quick Consultations
+              {t("analysis.analysis_feature_1_title")}
             </h4>
             <p className="text-white">
-              Includes three brief sessions to gather basic information, ask follow-up questions, 
-              and provide any additional context needed for a comprehensive analysis of your situation.
+              {t("analysis.analysis_feature_1_description")}
             </p>
           </div>
 
@@ -148,12 +145,10 @@ function ExpertAnalysis() {
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Detailed Analysis Report
+              {t("analysis.analysis_feature_2_title")}
             </h4>
             <p className="text-white">
-              Receive a thorough examination of your current situation, market conditions, 
-              competitive landscape, and historical performance. This context helps frame the 
-              analysis and recommendations in the most relevant way.
+              {t("analysis.analysis_feature_2_description")}
             </p>
           </div>
 
@@ -176,33 +171,28 @@ function ExpertAnalysis() {
               </svg>
             </div>
             <h4 className="text-xl font-medium text-white mb-2">
-              Strategic Recommendations
+              {t("analysis.analysis_feature_3_title")}
             </h4>
             <p className="text-white">
-              Get clear, actionable suggestions based on the analysis findings. Each recommendation 
-              is prioritized and explained, with specific steps you can take to implement changes 
-              and improve your outcomes.
+              {t("analysis.analysis_feature_3_description")}
             </p>
           </div>
         </div>
 
         <div className="mt-10 text-center">
           <p className="text-lg text-white max-w-3xl mx-auto">
-            My expert analysis services provide you with professional insights backed by years of 
-            experience. Whether you're looking to optimize your social media presence, evaluate 
-            investment opportunities, or improve your business strategy, I deliver thorough analysis 
-            with practical recommendations you can implement immediately.
+            {t("analysis.analysis_summary")}
           </p>
           <div className="mt-8 w-full">
-          <h1 className="text-white text-2xl py-2 font-bold">
-              Ask For Quote
+            <h1 className="text-white text-2xl py-2 font-bold">
+              {t("analysis.analysis_quote_title")}
             </h1>
-            <p className="text-white text-sm pb-6">Depends on the Project</p>
-          <button
+            <p className="text-white text-sm pb-6">{t("analysis.analysis_quote_subtitle")}</p>
+            <button
               onClick={() => openForm("analysis")}
               className="bg-darkGold w-60 text-black font-bold px-6 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
             >
-              Get My Analysis
+              {t("analysis.analysis_get_analysis")}
             </button>
           </div>
         </div>

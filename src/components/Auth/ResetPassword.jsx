@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../utils/supabaseClient';
+import { useTranslation } from 'react-i18next';
 
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
@@ -10,6 +11,7 @@ const ResetPassword = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Get hash fragment from URL (Supabase appends this when redirecting from password reset email)
   useEffect(() => {
@@ -20,13 +22,13 @@ const ResetPassword = () => {
     const refresh_token = params.get('refresh_token');
 
     if (!access_token) {
-      setError('Invalid password reset link. Please request a new one.');
+      setError(t('auth.reset_password.errors.invalid_link'));
       return;
     }
     supabase.auth
       .setSession({ access_token, refresh_token })
       .catch(err => setError(err.message));
-  }, []);
+  }, [t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,13 +38,13 @@ const ResetPassword = () => {
 
     // Basic validation
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.reset_password.errors.password_mismatch'));
       setLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('auth.reset_password.errors.password_length'));
       setLoading(false);
       return;
     }
@@ -55,10 +57,10 @@ const ResetPassword = () => {
 
       if (error) throw error;
 
-      setMessage('Your password has been successfully reset. Redirecting to login...');
+      setMessage(t('auth.reset_password.success.message'));
       setTimeout(() => navigate('/login'), 3000);
     } catch (error) {
-      setError(error.message || 'Failed to reset password');
+      setError(error.message || t('auth.reset_password.errors.default'));
     } finally {
       setLoading(false);
     }
@@ -66,7 +68,7 @@ const ResetPassword = () => {
 
   return (
     <div className="max-w-md mx-auto my-16 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-oxfordBlue mb-6 text-center">Reset Password</h2>
+      <h2 className="text-2xl font-bold text-oxfordBlue mb-6 text-center">{t('auth.reset_password.title')}</h2>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -83,7 +85,7 @@ const ResetPassword = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
-            New Password
+            {t('auth.reset_password.password.label')}
           </label>
           <input
             id="password"
@@ -91,13 +93,14 @@ const ResetPassword = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            placeholder={t('auth.reset_password.password.placeholder')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
           />
         </div>
 
         <div>
           <label htmlFor="confirmPassword" className="block text-gray-700 font-medium mb-1">
-            Confirm New Password
+            {t('auth.reset_password.confirm_password.label')}
           </label>
           <input
             id="confirmPassword"
@@ -105,6 +108,7 @@ const ResetPassword = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
+            placeholder={t('auth.reset_password.confirm_password.placeholder')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
           />
         </div>
@@ -114,7 +118,7 @@ const ResetPassword = () => {
           disabled={loading}
           className="w-full bg-oxfordBlue text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors disabled:opacity-50"
         >
-          {loading ? 'Resetting Password...' : 'Reset Password'}
+          {loading ? t('auth.reset_password.submit.loading') : t('auth.reset_password.submit.default')}
         </button>
       </form>
     </div>

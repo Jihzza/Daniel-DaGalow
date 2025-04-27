@@ -1,13 +1,15 @@
-// Updated Header.jsx with Music and Videos links
+// src/components/Header.jsx (modified)
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
+import { useTranslation } from "react-i18next"; // Import useTranslation hook
 import DaGalowLogo from "../assets/logos/DaGalow Logo.svg";
 import Hamburger from "../assets/icons/Hamburger.svg";
 import userImage from "../assets/img/Pessoas/Default.svg";
 import { supabase } from "../utils/supabaseClient";
 import AuthModal from "./Auth/AuthModal";
 import OctagonalProfile from "./Subpages/Octagonal Profile";
+import LanguageSwitcher from "./UI/LanguageSwitcher"; // Import the language switcher
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -17,6 +19,7 @@ function Header() {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation(); // Use translation hook
 
   const [avatarUrl, setAvatarUrl] = useState(null);
 
@@ -74,7 +77,10 @@ function Header() {
         </div>
 
         <div className="max-w-5xl mx-auto flex items-center justify-between p-4">
-          <div onClick={handleLogoClick} className="focus:outline-none cursor-pointer">
+          <div
+            onClick={handleLogoClick}
+            className="focus:outline-none cursor-pointer"
+          >
             <img
               src={DaGalowLogo}
               alt="DaGalow Logo"
@@ -90,14 +96,14 @@ function Header() {
               onClick={() => signOut()}
               className="text-white hover:text-gray-300 transition-colors"
             >
-              Logout
+              {t("logout")} {/* Translate logout text */}
             </button>
           ) : (
             <button
               onClick={() => setAuthModalOpen(true)}
               className="bg-darkGold text-black px-3 py-1 rounded hover:bg-opacity-90 transition-colors"
             >
-              Login
+              {t("login")} {/* Translate login text */}
             </button>
           )}
         </div>
@@ -125,41 +131,43 @@ function Header() {
             </button>
           </div>
 
-          {/* Menu links */}
+          {/* Language Switcher in dropdown menu */}
+
+          {/* Menu links - now translated */}
           <div className="flex flex-col space-y-4">
             <Link
               to="/"
               className="text-white text-xl hover:text-gray-300 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
-              Home
+              {t('navigation.home')}
             </Link>
 
-            {/* Added Calendar link */}
+            {/* Calendar link */}
             <Link
               to="/components/Subpages/Calendar"
               className="text-white text-xl hover:text-gray-300 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
-              Calendar
+              {t('navigation.calendar')}
             </Link>
 
-            {/* Added Music link */}
+            {/* Music link */}
             <Link
               to="/components/Subpages/Music"
               className="text-white text-xl hover:text-gray-300 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
-              Music
+              {t('navigation.music')}
             </Link>
 
-            {/* Added Videos link */}
+            {/* Videos link */}
             <Link
               to="/components/Subpages/Videos"
               className="text-white text-xl hover:text-gray-300 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
-              Videos
+              {t('navigation.videos')}
             </Link>
 
             {/* Auth links in mobile menu */}
@@ -170,16 +178,15 @@ function Header() {
                   className="text-white text-xl hover:text-gray-300 transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
-                  Profile
+                  {t('navigation.profile')}
                 </Link>
                 <Link
                   to="/components/Subpages/Settings"
                   className="text-white text-xl hover:text-gray-300 transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
-                  Settings
+                  {t('navigation.settings')}
                 </Link>
-                
               </>
             ) : (
               <button
@@ -189,9 +196,12 @@ function Header() {
                 }}
                 className="text-white text-xl hover:text-gray-300 transition-colors text-left"
               >
-                Login / Sign Up
+                {t('navigation.login_signup')}
               </button>
             )}
+          </div>
+          <div className="mb-6">
+            <LanguageSwitcher />
           </div>
         </div>
       </div>

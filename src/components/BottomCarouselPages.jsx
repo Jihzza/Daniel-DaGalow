@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import FAQs from './BottomPages/FAQs';
 import Bugs from './BottomPages/Bugs';
 import SocialMedia from './BottomPages/SocialMedia';
-export default function PageCarousel(){
-    const pages =[
-        { label: "FAQs", Component: FAQs },
-        { label: "Bugs", Component: Bugs },
-        { label: "Social Media", Component: SocialMedia },
+
+export default function PageCarousel() {
+    const { t } = useTranslation();
+    const pages = [
+        { label: t("bottom_carousel.pages.faqs"), Component: FAQs },
+        { label: t("bottom_carousel.pages.bugs"), Component: Bugs },
+        { label: t("bottom_carousel.pages.social_media"), Component: SocialMedia },
     ];
     
     const [activeIdx, setActiveIdx] = useState(0);

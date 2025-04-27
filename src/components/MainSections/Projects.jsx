@@ -1,18 +1,21 @@
 // components/Projects.js
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import perspectiv from "../../assets/logos/Perspectiv Banner.svg";
 import galow from "../../assets/logos/Galow Banner.png";
 
 function Projects() {
+  const { t } = useTranslation();
+
   const projects = [
     {
-      name: "Perspectiv - AI Company",
-      description: "A tech startup helping businesses entering the automation age, with custom software solutions.",
-      image: perspectiv // replace with actual image URL or local asset
+      name: t("projects.project_1_name"),
+      description: t("projects.project_1_description"),
+      image: perspectiv
     },
     {
-      name: "Galow - Success Club",
-      description: "A social club with real world activities and digital software to help successful people connect and achieve their dreams.",
+      name: t("projects.project_2_name"),
+      description: t("projects.project_2_description"),
       image: galow
     },
     // Add more projects as needed…
@@ -22,7 +25,7 @@ function Projects() {
     <section id="projects" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-8">
         <h2 className="text-2xl md:text-3xl font-bold">
-          My Ventures
+          {t("projects.projects_title")}
         </h2>
         <div className="space-y-8">
           {projects.map((project, index) => (

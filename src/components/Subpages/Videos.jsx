@@ -1,40 +1,36 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 function Videos() {
+  const { t } = useTranslation();
+  
   const educationalPlaylists = [
     {
-      title: "Psychology & Mental Health",
-      description: "Explore the fascinating world of psychology and mental health. From understanding human behavior to practical mental wellness techniques, this playlist offers valuable insights for personal growth.",
+      key: 'psychology',
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     },
     {
-      title: "Science & Technology",
-      description: "Dive into the latest scientific discoveries and technological advancements. From quantum physics to artificial intelligence, stay updated with cutting-edge developments in science and tech.",
+      key: 'science',
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     },
     {
-      title: "Mathematics & Problem Solving",
-      description: "Master mathematical concepts and develop critical thinking skills. This playlist covers everything from basic arithmetic to advanced calculus, making math accessible and engaging.",
+      key: 'math',
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     },
     {
-      title: "Health & Fitness",
-      description: "Learn about nutrition, exercise, and overall wellness. Get expert advice on maintaining a healthy lifestyle, workout routines, and understanding your body's needs.",
+      key: 'health',
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     },
     {
-      title: "Personal Finance & Investment",
-      description: "Build financial literacy and learn smart investment strategies. From budgeting basics to advanced investment techniques, this playlist helps you make informed financial decisions.",
+      key: 'finance',
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     },
     {
-      title: "Business & Entrepreneurship",
-      description: "Discover the fundamentals of business and entrepreneurship. Learn about startup strategies, marketing, leadership, and how to build a successful business from the ground up.",
+      key: 'business',
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     },
     {
-      title: "Philosophy & Critical Thinking",
-      description: "Explore philosophical concepts and develop critical thinking skills. From ancient wisdom to modern philosophy, this playlist encourages deep thinking and self-reflection.",
+      key: 'philosophy',
       link: "https://youtube.com/playlist?list=PLGui09W4vFQOwG2OdqyW9XfZ6VIwcFyYH",
     }
   ];
@@ -44,10 +40,10 @@ function Videos() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center transform transition-all duration-500">
           <h2 className="text-2xl font-bold text-center mb-6 text-white">
-            Educational Resources
+            {t('videos.title')}
           </h2>
           <p className="text-lg text-white mb-8 max-w-3xl mx-auto">
-            A curated collection of educational content covering essential life subjects. Expand your knowledge and develop new skills through these carefully selected video playlists.
+            {t('videos.description')}
           </p>
         </div>
 
@@ -60,10 +56,10 @@ function Videos() {
               >
                 <div className="bg-gentleGray flex flex-col items-center justify-center rounded-xl text-center shadow-md p-6">
                   <h3 className="text-xl font-semibold text-black mb-3 text-center">
-                    {playlist.title}
+                    {t(`videos.playlists.${playlist.key}.title`)}
                   </h3>
                   <p className="text-black mb-6 flex-grow">
-                    {playlist.description}
+                    {t(`videos.playlists.${playlist.key}.description`)}
                   </p>
                   <div className="mt-auto flex justify-center">
                     <a 
@@ -76,7 +72,7 @@ function Videos() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                       </svg>
-                      Watch on YouTube
+                      {t('videos.watch_button')}
                     </a>
                   </div>
                 </div>

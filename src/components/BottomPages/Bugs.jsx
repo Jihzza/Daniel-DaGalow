@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../contexts/AuthContext";
 
 function BugReport() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: user?.user_metadata?.full_name || "",
@@ -32,7 +34,7 @@ function BugReport() {
       setSubmitStatus({
         success: false,
         error: true,
-        message: "Please fill out all required fields.",
+        message: t("bug_report.validation.required_fields"),
       });
       return;
     }
@@ -59,15 +61,14 @@ function BugReport() {
       setSubmitStatus({
         success: true,
         error: false,
-        message:
-          "Thank you for reporting this bug! Our team will investigate soon.",
+        message: t("bug_report.messages.success"),
       });
     } catch (error) {
       console.error("Bug Report Submission Error:", error);
       setSubmitStatus({
         success: false,
         error: true,
-        message: "Failed to submit bug report. Please try again.",
+        message: t("bug_report.messages.error"),
       });
     }
   };
@@ -77,12 +78,10 @@ function BugReport() {
       <div className="max-w-4xl mx-auto h-full flex flex-col">
         <div className="flex flex-col pb-6">
           <h2 className="text-2xl py-4 font-bold text-center text-black">
-            Help Me Improve
+            {t("bug_report.title")}
           </h2>
           <p className="text-center text-black max-w-2xl mx-auto">
-            As the website is in beta, your feedback is crucial. Please provide
-            detailed information about any issues you've encountered to help us
-            enhance the user experience.
+            {t("bug_report.description")}
           </p>
         </div>
 
@@ -93,7 +92,7 @@ function BugReport() {
           {/* Name Input */}
           <div>
             <label htmlFor="name" className="block mb-2 text-white">
-              Your Name
+              {t("bug_report.form.name_label")}
             </label>
             <input
               type="text"
@@ -102,14 +101,14 @@ function BugReport() {
               value={formData.name}
               onChange={handleChange}
               className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
-              placeholder="Your name"
+              placeholder={t("bug_report.form.name_placeholder")}
             />
           </div>
 
           {/* Email Input */}
           <div>
             <label htmlFor="email" className="block mb-2 text-white">
-              Email Address
+              {t("bug_report.form.email_label")}
             </label>
             <input
               type="email"
@@ -118,7 +117,7 @@ function BugReport() {
               value={formData.email}
               onChange={handleChange}
               className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
-              placeholder="Your email"
+              placeholder={t("bug_report.form.email_placeholder")}
               required
             />
           </div>
@@ -126,7 +125,7 @@ function BugReport() {
           {/* Description Textarea */}
           <div>
             <label htmlFor="description" className="block mb-2 text-white">
-              Bug Description
+              {t("bug_report.form.description_label")}
             </label>
             <textarea
               id="description"
@@ -135,7 +134,7 @@ function BugReport() {
               onChange={handleChange}
               rows="4"
               className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
-              placeholder="Provide a detailed description of the bug"
+              placeholder={t("bug_report.form.description_placeholder")}
               required
             ></textarea>
           </div>
@@ -146,7 +145,7 @@ function BugReport() {
               type="submit"
               className="w-full bg-darkGold text-black font-bold py-3 rounded-xl hover:bg-opacity-90 transition-colors"
             >
-              Submit Bug Report
+              {t("bug_report.form.submit_button")}
             </button>
           </div>
 

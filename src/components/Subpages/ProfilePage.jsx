@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
 import { Link } from "react-router-dom";
 import OctagonalProfile from "./Octagonal Profile";
+import { useTranslation } from 'react-i18next';
 
 const tierNames = {
   // Example mappings:
@@ -15,6 +16,7 @@ const tierNames = {
 
 export default function ProfilePage({ onChatOpen }) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -224,7 +226,7 @@ export default function ProfilePage({ onChatOpen }) {
   if (error) {
     return (
       <div className="p-4 bg-red-50 text-red-700 m-4 rounded-lg">
-        Error: {error}
+        {t('profile.error.title')}: {error}
       </div>
     );
   }
@@ -263,16 +265,16 @@ export default function ProfilePage({ onChatOpen }) {
             />
             <div>
               <h2 className="text-xl font-semibold text-gray-800">
-                {profile.full_name || "Unnamed"}
+                {profile.full_name || t('profile.unnamed')}
               </h2>
               <p className="text-sm text-gray-500">
-                {profile.username ? `@${profile.username}` : "No username"}
+                {profile.username ? `@${profile.username}` : t('profile.no_username')}
               </p>
               <Link
                 to="/edit-profile"
                 className="mt-2 inline-block text-darkGold/50 text-sm hover:underline"
               >
-                Edit Profile
+                {t('profile.edit_profile')}
               </Link>
             </div>
           </div>
@@ -280,7 +282,7 @@ export default function ProfilePage({ onChatOpen }) {
           {/* Appointments */}
           <div className="bg-gentleGray p-4 rounded-xl flex flex-col shadow-md">
             <h3 className="text-lg font-bold text-black mb-3">
-              Upcoming Appointments
+              {t('profile.sections.appointments.title')}
             </h3>
             <div className="space-y-3">
               {appointments.length ? (
@@ -291,7 +293,7 @@ export default function ProfilePage({ onChatOpen }) {
                   >
                     <div>
                       <p className="text-sm font-medium text-gray-800">
-                        {a.service_type || "Appointment"}
+                        {a.service_type || t('profile.sections.appointments.appointment')}
                       </p>
                       <p className="text-xs text-gray-500">
                         {new Date(a.appointment_date).toLocaleString()}
@@ -301,7 +303,7 @@ export default function ProfilePage({ onChatOpen }) {
                 ))
               ) : (
                 <p className="text-sm text-gray-500">
-                  No upcoming appointments.
+                  {t('profile.sections.appointments.no_appointments')}
                 </p>
               )}
             </div>
@@ -310,7 +312,7 @@ export default function ProfilePage({ onChatOpen }) {
           {/* Subscriptions */}
           <div className="bg-gentleGray p-4 rounded-xl flex flex-col shadow-md">
             <h3 className="text-lg font-bold text-black mb-3">
-              Active Subscriptions
+              {t('profile.sections.subscriptions.title')}
             </h3>
             <div className="space-y-3">
               {activeSubscriptions.length ? (
@@ -320,19 +322,23 @@ export default function ProfilePage({ onChatOpen }) {
                     className="bg-white rounded-xl shadow-sm p-4 flex justify-between items-center"
                   >
                     <p className="text-sm text-black">{sub.name}</p>
-                    <p className="text-xs text-gray-500">Since {sub.since} | Expires: {sub.expiresOn}g</p>
-                    <p className="text-xs text-black">{sub.daysRemaining} days remaining</p>
+                    <p className="text-xs text-gray-500">
+                      {t('profile.sections.subscriptions.since')} {sub.since} | {t('profile.sections.subscriptions.expires')}: {sub.expiresOn}
+                    </p>
+                    <p className="text-xs text-black">{sub.daysRemaining} {t('profile.sections.subscriptions.days_remaining')}</p>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500">No subscriptions found.</p>
+                <p className="text-sm text-gray-500">{t('profile.sections.subscriptions.no_subscriptions')}</p>
               )}
             </div>
           </div>
 
           {/* Conversation History */}
           <div className="bg-gentleGray p-4 rounded-xl shadow-md">
-            <h4 className="text-lg font-bold text-black mb-3">Your Conversations</h4>
+            <h4 className="text-lg font-bold text-black mb-3">
+              {t('profile.sections.conversations.title')}
+            </h4>
             <div className="bg-white rounded-xl shadow-sm p-4">
               {sessions.length > 0 ? (
                 sessions.map((s) => (
@@ -345,14 +351,14 @@ export default function ProfilePage({ onChatOpen }) {
                     }`}
                     onClick={() => {
                       setSelectedSession(s.session_id);
-                      onChatOpen(s.session_id); // <-- use the same ChatbotWindow
+                      onChatOpen(s.session_id);
                     }}
                   >
                     {new Date(s.lastActivity).toLocaleString()}
                   </button>
                 ))
               ) : (
-                <p className="text-sm text-gray-500">No chats yet.</p>
+                <p className="text-sm text-gray-500">{t('profile.sections.conversations.no_chats')}</p>
               )}
             </div>
           </div>
@@ -360,7 +366,7 @@ export default function ProfilePage({ onChatOpen }) {
           {isAdmin && (
             <div className="bg-gentleGray p-4 rounded-xl shadow-md">
               <h3 className="text-lg font-bold text-black mb-3">
-                Testimonial Review
+                {t('profile.sections.testimonial_review.title')}
               </h3>
               
               {testimonialLoading ? (
@@ -369,7 +375,7 @@ export default function ProfilePage({ onChatOpen }) {
                 </div>
               ) : pendingTestimonials.length === 0 ? (
                 <div className="bg-white p-4 rounded-xl">
-                  <p className="text-gray-500 text-center">No testimonials pending review.</p>
+                  <p className="text-gray-500 text-center">{t('profile.sections.testimonial_review.no_pending')}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -396,13 +402,13 @@ export default function ProfilePage({ onChatOpen }) {
                           onClick={() => handleRejectTestimonial(testimonial.id)}
                           className="px-3 py-1 text-sm border border-red-500 text-red-500 rounded-lg hover:bg-red-50"
                         >
-                          Reject
+                          {t('profile.sections.testimonial_review.reject')}
                         </button>
                         <button
                           onClick={() => handleApproveTestimonial(testimonial.id)}
                           className="px-3 py-1 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700"
                         >
-                          Approve
+                          {t('profile.sections.testimonial_review.approve')}
                         </button>
                       </div>
                     </div>

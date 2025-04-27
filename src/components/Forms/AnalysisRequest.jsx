@@ -1,5 +1,6 @@
 // src/components/AnalysisRequest.jsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
 import InlineChatbotStep from "./InlineChatbotStep";
 import { useAuth } from "../contexts/AuthContext";
@@ -49,6 +50,7 @@ function StepIndicator({
 
 // Step 1: Select Analysis Type
 function TypeSelectionStep({ formData, onChange }) {
+  const { t } = useTranslation();
   const options = [
     { label: "Stock", value: "stock" },
     { label: "Portfolio", value: "portfolio" },
@@ -79,28 +81,29 @@ function TypeSelectionStep({ formData, onChange }) {
 
 // Step 2: Contact Info
 function ContactInfoStep({ formData, onChange }) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <div>
-        <label className="block text-white mb-2">Your Name</label>
+        <label className="block text-white mb-2">{t("analysis_request.form.name_label")}</label>
         <input
           name="name"
           type="text"
           value={formData.name}
           onChange={onChange}
-          placeholder="John Doe"
+          placeholder={t("analysis_request.form.name_placeholder")}
           className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
           required
         />
       </div>
       <div>
-        <label className="block text-white mb-2">Email Address</label>
+        <label className="block text-white mb-2">{t("analysis_request.form.email_label")}</label>
         <input
           name="email"
           type="email"
           value={formData.email}
           onChange={onChange}
-          placeholder="john@example.com"
+          placeholder={t("analysis_request.form.email_placeholder")}
           className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
           required
         />
@@ -110,6 +113,7 @@ function ContactInfoStep({ formData, onChange }) {
 }
 
 export default function AnalysisRequest({ onBackService }) {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const { user } = useAuth(); // Get the current user
   const [formData, setFormData] = useState({
@@ -127,8 +131,8 @@ export default function AnalysisRequest({ onBackService }) {
   };
 
   const STEPS = [
-    { title: "Select analysis type", component: TypeSelectionStep },
-    { title: "Your contact information", component: ContactInfoStep },
+    { title: t("analysis_request.steps.type"), component: TypeSelectionStep },
+    { title: t("analysis_request.steps.contact"), component: ContactInfoStep },
   ];
 
   const UI_STEPS = STEPS.length + 2;
@@ -175,7 +179,7 @@ export default function AnalysisRequest({ onBackService }) {
     <section className="py-8 px-4">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
-          Get My Analysis
+          {t("analysis_request.title")}
         </h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
           {/* Step Content */}
@@ -194,7 +198,7 @@ export default function AnalysisRequest({ onBackService }) {
           {/* Inline Chat Step */}
           {step === 3 && requestId && (
             <>
-              <h3 className="text-xl text-white mb-4">Chat with our analyst</h3>
+              <h3 className="text-xl text-white mb-4">{t("analysis_request.steps.chat")}</h3>
               <InlineChatbotStep
                 requestId={requestId}
                 tableName="analysis_chat_messages"
@@ -208,7 +212,7 @@ export default function AnalysisRequest({ onBackService }) {
               onClick={handleBack}
               className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
             >
-              Back
+              {t("analysis_request.buttons.back")}
             </button>
             {step <= 2 && (
               <button
@@ -216,15 +220,15 @@ export default function AnalysisRequest({ onBackService }) {
                 disabled={!canProceed() || isSubmitting}
                 className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
               >
-                Next
+                {t("analysis_request.buttons.next")}
               </button>
             )}
-            {step >= 3 && ( // step 3 → the chatbot screen
+            {step >= 3 && (
               <button
-                onClick={onBackService} // closes the form the same way “Back” from dot-1 does
+                onClick={onBackService}
                 className="px-3 py-1 bg-darkGold text-black rounded-xl hover:bg-darkGold/90"
               >
-                Done
+                {t("analysis_request.buttons.done")}
               </button>
             )}
           </div>

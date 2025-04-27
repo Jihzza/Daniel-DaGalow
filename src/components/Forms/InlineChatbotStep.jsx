@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import SendIcon from "../../assets/icons/Send.svg";
 import AttachIcon from "../../assets/icons/Anexar.svg";
 import { supabase } from "../../utils/supabaseClient";
@@ -6,6 +7,7 @@ import { format } from "date-fns";
 import TypingMessage from "../UI/TypingMessage";
 
 export default function InlineChatbotStep({ requestId, tableName }) {
+  const { t } = useTranslation();
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -27,7 +29,7 @@ export default function InlineChatbotStep({ requestId, tableName }) {
   // Generate a context-specific welcome message based on the service type
   const getWelcomeMessage = async () => {
     try {
-      let welcomeMessage = "Welcome! How can I help you today?";
+      let welcomeMessage = t("inline_chatbot.welcome_message");
       
       // Default welcome messages for different service types
       if (tableName === "booking_chat_messages") {
@@ -41,9 +43,12 @@ export default function InlineChatbotStep({ requestId, tableName }) {
         if (!error && data) {
           const appointmentDate = new Date(data.appointment_date);
           const formattedDate = format(appointmentDate, "MMMM do, yyyy 'at' h:mm a");
-          welcomeMessage = `Your consultation for ${formattedDate} (${data.duration_minutes} minutes) is confirmed! I'll be your pre-consultation assistant. Would you like to share what specific topics you'd like to discuss during your session?`;
+          welcomeMessage = t("inline_chatbot.booking_welcome_with_date", {
+            date: formattedDate,
+            duration: data.duration_minutes
+          });
         } else {
-          welcomeMessage = "Your consultation has been scheduled! I'll be your pre-consultation assistant. Would you like to share what specific topics you'd like to discuss during your session?";
+          welcomeMessage = t("inline_chatbot.booking_welcome");
         }
       } 
       else if (tableName === "coaching_chat_messages") {
@@ -61,9 +66,9 @@ export default function InlineChatbotStep({ requestId, tableName }) {
             "priority": "Premium"
           }[data.service_type] || "coaching";
           
-          welcomeMessage = `Welcome to your ${tier} coaching program! I'm your assistant and will connect you with Daniel. To make the most of your coaching experience, could you share what specific goals you're hoping to achieve?`;
+          welcomeMessage = t("inline_chatbot.coaching_welcome", { tier });
         } else {
-          welcomeMessage = "Welcome to your coaching program! I'm your assistant and will connect you with Daniel. To make the most of your coaching experience, could you share what specific goals you're hoping to achieve?";
+          welcomeMessage = t("inline_chatbot.coaching_welcome", { tier: "coaching" });
         }
       }
       else if (tableName === "analysis_chat_messages") {
@@ -76,9 +81,9 @@ export default function InlineChatbotStep({ requestId, tableName }) {
           
         if (!error && data) {
           const analysisType = data.service_type || "analysis";
-          welcomeMessage = `Thank you for requesting our ${analysisType} analysis service! I'll be gathering some initial information to help us provide you with the most comprehensive analysis. Could you provide some specific details about what you'd like us to analyze?`;
+          welcomeMessage = t("inline_chatbot.analysis_welcome", { type: analysisType });
         } else {
-          welcomeMessage = "Thank you for requesting our analysis service! I'll be gathering some initial information to help us provide you with the most comprehensive analysis. Could you provide some specific details about what you'd like us to analyze?";
+          welcomeMessage = t("inline_chatbot.analysis_welcome", { type: "analysis" });
         }
       }
       else if (tableName === "pitchdeck_chat_messages") {
@@ -90,16 +95,16 @@ export default function InlineChatbotStep({ requestId, tableName }) {
           .single();
           
         if (!error && data) {
-          welcomeMessage = `Thanks for your interest in the ${data.project} project! I'll be gathering some information to help prepare your pitch deck. Could you tell me a bit about what attracted you to this venture and what kind of investment you're considering?`;
+          welcomeMessage = t("inline_chatbot.pitch_deck_welcome", { project: data.project });
         } else {
-          welcomeMessage = "Thanks for your interest in our investment opportunities! I'll be gathering some information to help prepare your pitch deck. Could you tell me a bit about what attracted you to this venture and what kind of investment you're considering?";
+          welcomeMessage = t("inline_chatbot.pitch_deck_welcome", { project: "investment opportunity" });
         }
       }
       
       return welcomeMessage;
     } catch (err) {
       console.error("Error generating welcome message:", err);
-      return "Welcome! How can I help you today?";
+      return t("inline_chatbot.welcome_message");
     }
   };
 
@@ -261,7 +266,7 @@ export default function InlineChatbotStep({ requestId, tableName }) {
             )}
           </div>
         ))}
-        {busy && <div className="text-gray-400">bot is typing…</div>}
+        {busy && <div className="text-gray-400">{t("inline_chatbot.bot_typing")}</div>}
       </div>
 
       <div className="relative">
@@ -270,7 +275,7 @@ export default function InlineChatbotStep({ requestId, tableName }) {
         </button>
         <input
           className="w-full h-10 bg-oxfordBlue border-2 border-darkGold rounded-full pl-10 pr-10 text-white"
-          placeholder={isTypingAnimationActive ? "Wait for message..." : "Type a message…"}
+          placeholder={isTypingAnimationActive ? t("inline_chatbot.input_placeholder_waiting") : t("inline_chatbot.input_placeholder")}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => !isTypingAnimationActive && e.key === "Enter" && send()}

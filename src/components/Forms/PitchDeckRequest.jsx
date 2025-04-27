@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -47,6 +48,7 @@ function StepIndicator({
 
 // Step1: Project Selection
 function ProjectSelectionStep({ formData, onChange }) {
+  const { t } = useTranslation();
   const projects = [
     { label: "Perspectiv", value: "perspectiv" },
     { label: "Galow.Club", value: "galow" },
@@ -72,41 +74,42 @@ function ProjectSelectionStep({ formData, onChange }) {
 
 // Step2: Contact Info
 function ContactInfoStep({ formData, onChange }) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">Your Name</label>
+        <label className="block text-white mb-2">{t("pitch_deck_request.form.name_label")}</label>
         <input
           name="name"
           type="text"
           value={formData.name}
           onChange={onChange}
-          placeholder="John Doe"
+          placeholder={t("pitch_deck_request.form.name_placeholder")}
           required
           className="w-full text-sm px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">Email Address</label>
+        <label className="block text-white mb-2">{t("pitch_deck_request.form.email_label")}</label>
         <input
           name="email"
           type="email"
           value={formData.email}
           onChange={onChange}
-          placeholder="john@example.com"
+          placeholder={t("pitch_deck_request.form.email_placeholder")}
           required
           className="w-full text-sm px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white font-medium mb-2">Phone Number</label>
+        <label className="block text-white font-medium mb-2">{t("pitch_deck_request.form.phone_label")}</label>
         <PhoneInput
           containerClass="!w-full !h-[38px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
           buttonClass="!bg-white/5 !border-none h-full"
           inputClass="!bg-white/5 !border-none p-4 !h-full !w-full text-white placeholder-white/50"
           country="es"
           enableSearch
-          searchPlaceholder="Search country..."
+          searchPlaceholder={t("pitch_deck_request.form.phone_search_placeholder")}
           value={formData.phone}
           inputProps={{ name: 'phone', required: true }}
           onChange={(phone) => onChange({ target: { name: "phone", value: phone } })}
@@ -118,24 +121,23 @@ function ContactInfoStep({ formData, onChange }) {
   );
 }
 
-
-
 export default function PitchDeckRequest({ onBackService }) {
+  const { t } = useTranslation();
   const STEPS = [
-    { title: "Select your project", component: ProjectSelectionStep },
-    { title: "Your contact information", component: ContactInfoStep },
-    { title: "Chat with our assistant", component: InlineChatbotStep },
+    { title: t("pitch_deck_request.steps.project"), component: ProjectSelectionStep },
+    { title: t("pitch_deck_request.steps.contact"), component: ContactInfoStep },
+    { title: t("pitch_deck_request.steps.chat"), component: InlineChatbotStep },
   ];
 
   const UI_STEPS = STEPS.length + 1;
-  const { user } = useAuth(); // Get the current user
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-  project: "",
-  name: user?.user_metadata?.full_name || "",
+    project: "",
+    name: user?.user_metadata?.full_name || "",
     email: user?.email || "",
-  phone: ""
-});
+    phone: ""
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestId, setRequestId] = useState(null);
 
@@ -216,7 +218,7 @@ export default function PitchDeckRequest({ onBackService }) {
     <section className="py-8 px-4" id="pitch-deck-request">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
-          Request a Pitch Deck
+          {t("pitch_deck_request.title")}
         </h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
           <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
@@ -235,7 +237,7 @@ export default function PitchDeckRequest({ onBackService }) {
               disabled={isSubmitting}
               className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
             >
-              Back
+              {t("pitch_deck_request.buttons.back")}
             </button>
             {step < STEPS.length && (
               <button
@@ -243,18 +245,17 @@ export default function PitchDeckRequest({ onBackService }) {
                 disabled={!canProceed() || isSubmitting}
                 className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
               >
-                Next
+                {t("pitch_deck_request.buttons.next")}
               </button>
             )}
             {step === STEPS.length && (
-  <button
-    onClick={onBackService}
-    className="px-3 py-1 bg-darkGold text-black rounded-xl hover:bg-darkGold/90"
-  >
-    Done
-  </button>
-)}
-
+              <button
+                onClick={onBackService}
+                className="px-3 py-1 bg-darkGold text-black rounded-xl hover:bg-darkGold/90"
+              >
+                {t("pitch_deck_request.buttons.done")}
+              </button>
+            )}
           </div>
 
           <StepIndicator

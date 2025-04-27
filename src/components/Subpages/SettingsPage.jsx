@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../../utils/supabaseClient';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
@@ -736,16 +738,16 @@ const SettingsPage = () => {
   return (
     <div className="min-h-screen py-6 px-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-6 text-white">Settings</h1>
+        <h1 className="text-2xl font-bold text-center mb-6 text-white">{t('settings.title')}</h1>
         
         {activeSection ? (
           // Show detailed settings for active section
           <div className="bg-gentleGray rounded-xl shadow-md p-6">
             <h2 className="text-xl font-semibold text-oxfordBlue mb-6">
-              {activeSection === 'privacy-policy' ? 'Privacy Policy' : 
-               activeSection === 'terms-of-service' ? 'Terms of Service' : 
-               activeSection === 'others' ? 'Others' :
-               activeSection.charAt(0).toUpperCase() + activeSection.slice(1) + ' Settings'}
+              {activeSection === 'privacy-policy' ? t('settings.privacy_policy.title') : 
+               activeSection === 'terms-of-service' ? t('settings.terms_of_service.title') : 
+               activeSection === 'others' ? t('settings.sections.others.title') :
+               t(`settings.sections.${activeSection}.title`)}
             </h2>
             {renderSettingsContent()}
           </div>
@@ -765,8 +767,8 @@ const SettingsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-oxfordBlue">Account Settings</h2>
-                    <p className="text-gray-600 mt-1">Manage your account details, email, and password</p>
+                    <h2 className="text-xl font-semibold text-oxfordBlue">{t('settings.sections.account.title')}</h2>
+                    <p className="text-gray-600 mt-1">{t('settings.sections.account.description')}</p>
                   </div>
                 </div>
                 <svg className="w-6 h-6 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -788,8 +790,8 @@ const SettingsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-oxfordBlue">Notification Preferences</h2>
-                    <p className="text-gray-600 mt-1">Control how and when you receive notifications</p>
+                    <h2 className="text-xl font-semibold text-oxfordBlue">{t('settings.sections.notifications.title')}</h2>
+                    <p className="text-gray-600 mt-1">{t('settings.sections.notifications.description')}</p>
                   </div>
                 </div>
                 <svg className="w-6 h-6 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -811,8 +813,8 @@ const SettingsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-oxfordBlue">Privacy Settings</h2>
-                    <p className="text-gray-600 mt-1">Manage your data and privacy preferences</p>
+                    <h2 className="text-xl font-semibold text-oxfordBlue">{t('settings.sections.privacy.title')}</h2>
+                    <p className="text-gray-600 mt-1">{t('settings.sections.privacy.description')}</p>
                   </div>
                 </div>
                 <svg className="w-6 h-6 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -834,8 +836,8 @@ const SettingsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-oxfordBlue">Appearance Settings</h2>
-                    <p className="text-gray-600 mt-1">Customize the look and feel of your experience</p>
+                    <h2 className="text-xl font-semibold text-oxfordBlue">{t('settings.sections.appearance.title')}</h2>
+                    <p className="text-gray-600 mt-1">{t('settings.sections.appearance.description')}</p>
                   </div>
                 </div>
                 <svg className="w-6 h-6 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -857,8 +859,8 @@ const SettingsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-oxfordBlue">Session Preferences</h2>
-                    <p className="text-gray-600 mt-1">Manage your consultation and coaching session preferences</p>
+                    <h2 className="text-xl font-semibold text-oxfordBlue">{t('settings.sections.sessions.title')}</h2>
+                    <p className="text-gray-600 mt-1">{t('settings.sections.sessions.description')}</p>
                   </div>
                 </div>
                 <svg className="w-6 h-6 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -880,8 +882,8 @@ const SettingsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-oxfordBlue">Others</h2>
-                    <p className="text-gray-600 mt-1">View legal documents and additional information</p>
+                    <h2 className="text-xl font-semibold text-oxfordBlue">{t('settings.sections.others.title')}</h2>
+                    <p className="text-gray-600 mt-1">{t('settings.sections.others.description')}</p>
                   </div>
                 </div>
                 <svg className="w-6 h-6 text-oxfordBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
