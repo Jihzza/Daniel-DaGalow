@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import InlineChatbotStep from "./InlineChatbotStep";
-import { useAuth } from "../contexts/AuthContext";
+import InlineChatbotStep from "../chat/InlineChatbotStep";
+import { useAuth } from "../../contexts/AuthContext";
 // Progress Indicator Component
 function StepIndicator({
   stepCount,

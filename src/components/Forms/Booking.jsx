@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../utils/supabaseClient";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   format,
   addDays,
@@ -14,7 +14,7 @@ import {
   isBefore,
 } from "date-fns";
 import { fetchBookings } from "../../services/bookingService";
-import InlineChatbotStep from "./InlineChatbotStep";
+import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useTranslation } from "react-i18next";
 
 // Shared StepIndicator

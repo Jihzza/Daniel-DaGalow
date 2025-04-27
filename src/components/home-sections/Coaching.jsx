@@ -6,7 +6,7 @@ import DatingIcon from "../../assets/icons/Dating Branco.svg";
 import OnlyFansIcon from "../../assets/icons/Onlyfans Branco.svg";
 import BusinessIcon from "../../assets/icons/Business Branco.svg";
 import HabitsIcon from "../../assets/icons/Habits Branco.svg";
-import { ServiceContext } from "../contexts/ServiceContext";
+import { ServiceContext } from "../../contexts/ServiceContext";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 

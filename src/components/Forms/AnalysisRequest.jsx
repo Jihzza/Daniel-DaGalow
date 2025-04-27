@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
-import InlineChatbotStep from "./InlineChatbotStep";
-import { useAuth } from "../contexts/AuthContext";
+import InlineChatbotStep from "../chat/InlineChatbotStep";
+import { useAuth } from "../../contexts/AuthContext";
 
 // Progress Indicator
 function StepIndicator({

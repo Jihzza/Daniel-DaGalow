@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
-import OctagonalProfile from "./Octagonal Profile";
+import OctagonalProfile from "../../components/common/Octagonal Profile";
 import { useTranslation } from 'react-i18next';
 
 const EditProfilePage = () => {

@@ -1,7 +1,7 @@
 // Update NavigationBar.jsx
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 import home from '../../assets/icons/Home Branco.svg';
 import calendar from '../../assets/icons/Calendar Branco.svg';

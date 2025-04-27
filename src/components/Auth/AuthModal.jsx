@@ -1,4 +1,4 @@
-// components/Auth/AuthModal.jsx
+// components/auth/AuthModal.jsx
 import React, { useState } from 'react';
 import Login from './Login';
 import Signup from './Signup';

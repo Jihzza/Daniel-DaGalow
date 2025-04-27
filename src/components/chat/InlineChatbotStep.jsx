@@ -4,7 +4,7 @@ import SendIcon from "../../assets/icons/Send.svg";
 import AttachIcon from "../../assets/icons/Anexar.svg";
 import { supabase } from "../../utils/supabaseClient";
 import { format } from "date-fns";
-import TypingMessage from "../UI/TypingMessage";
+import TypingMessage from "../common/TypingMessage";
 
 export default function InlineChatbotStep({ requestId, tableName }) {
   const { t } = useTranslation();

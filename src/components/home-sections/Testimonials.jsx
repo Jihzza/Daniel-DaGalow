@@ -7,7 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 // bring in your original assets
 import rafaelImg from "../../assets/img/Pessoas/Rafa.jpeg";
@@ -196,8 +196,8 @@ async function fetchApprovedTestimonials() {
           <Swiper
             modules={[Autoplay]}
             centeredSlides // keep the active slide in the middle
-            slidesPerView={1.5} // let card width decide how many fit
-            spaceBetween={100} // gap between cards
+            slidesPerView={1.2} // let card width decide how many fit
+            spaceBetween={30} // gap between cards
             loop
             autoplay={{ delay: 3000, disableOnInteraction: false }}
             className="testimonial-swiper overflow-visible"
@@ -206,8 +206,8 @@ async function fetchApprovedTestimonials() {
               <SwiperSlide key={index}>
                 <div
                   className="
-                  bg-white
-                  w-56           
+                  bg-white 
+                  w-full          
                   h-72           
                   p-4
                   rounded-lg

@@ -3,9 +3,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Send from "../../assets/icons/Send.svg";
 import Anexar from "../../assets/icons/Anexar.svg";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
-import TypingMessage from "../UI/TypingMessage";
+import TypingMessage from "../common/TypingMessage";
 
 // Fallback function to generate UUID for browsers that don't support crypto.randomUUID
 function generateUUID() {

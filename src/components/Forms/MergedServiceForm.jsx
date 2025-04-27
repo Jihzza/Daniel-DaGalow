@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import AnalysisRequest from "./Forms/AnalysisRequest";
-import Booking from "./Forms/Booking";
-import CoachingRequest from "./Forms/CoachingRequest";
-import PitchDeckRequest from "./Forms/PitchDeckRequest";
+import AnalysisRequest from "./AnalysisRequest";
+import Booking from "./Booking";
+import CoachingRequest from './CoachingRequest';
+import PitchDeckRequest from "./PitchDeckRequest";
 import { useSearchParams } from "react-router-dom";
-import { ServiceContext } from "./contexts/ServiceContext";
+import { ServiceContext } from "../../contexts/ServiceContext";
 import { useContext } from "react";
 
 export default function MergedServiceForm() {

@@ -1,7 +1,7 @@
 // src/components/Admin/TestimonialReview.jsx
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../utils/supabaseClient";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 function TestimonialReview() {

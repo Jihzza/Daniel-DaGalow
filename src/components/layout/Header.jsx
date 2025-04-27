@@ -1,15 +1,15 @@
 // src/components/Header.jsx (modified)
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "./contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { useTranslation } from "react-i18next"; // Import useTranslation hook
-import DaGalowLogo from "../assets/logos/DaGalow Logo.svg";
-import Hamburger from "../assets/icons/Hamburger.svg";
-import userImage from "../assets/img/Pessoas/Default.svg";
-import { supabase } from "../utils/supabaseClient";
-import AuthModal from "./Auth/AuthModal";
-import OctagonalProfile from "./Subpages/Octagonal Profile";
-import LanguageSwitcher from "./UI/LanguageSwitcher"; // Import the language switcher
+import DaGalowLogo from "../../assets/logos/DaGalow Logo.svg";
+import Hamburger from "../../assets/icons/Hamburger.svg";
+import userImage from "../../assets/img/Pessoas/Default.svg";
+import { supabase } from "../../utils/supabaseClient";
+import AuthModal from "../Auth/AuthModal";
+import OctagonalProfile from "../common/Octagonal Profile";
+import LanguageSwitcher from "../common/LanguageSwitcher"; // Import the language switcher
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);

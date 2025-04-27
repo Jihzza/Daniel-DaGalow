@@ -9,7 +9,7 @@ import "swiper/css/pagination";
 import { Autoplay } from "swiper/modules";
 import Marquee from "react-fast-marquee";
 import DaGalow from "../../assets/logos/DaGalow Logo.svg";
-import { ServiceContext } from "../contexts/ServiceContext";
+import { ServiceContext } from "../../contexts/ServiceContext";
 import { useContext } from "react";
 
 
