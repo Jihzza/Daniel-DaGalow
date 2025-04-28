@@ -12,6 +12,7 @@ import {
   isWeekend,
   addMinutes,
   isBefore,
+  addMonths
 } from "date-fns";
 import { fetchBookings } from "../../services/bookingService";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
@@ -21,33 +22,37 @@ import { useTranslation } from "react-i18next";
 function StepIndicator({
   stepCount,
   currentStep,
-  onStepClick,
+  onStepClick = () => {},
   className = "",
 }) {
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div className="flex items-center justify-center gap-1 md:gap-2 mt-6 md:mt-8">
       {Array.from({ length: stepCount }).map((_, idx) => {
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
-        
+
         return (
           <React.Fragment key={stepNum}>
             <button
               type="button"
               onClick={() => onStepClick(stepNum)}
               disabled={stepNum > currentStep}
-              className={`w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full border-2 transition-colors duration-300 ${
+              className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full border-2 transition-colors text-sm md:text-base ${
                 isActive
-                  ? "bg-darkGold border-darkGold text-white"
-                  : "bg-white/20 border-white/50 text-white/50 hover:border-darkGold hover:text-white cursor-pointer"
-              } ${stepNum > currentStep ? "opacity-50 cursor-not-allowed" : ""}`}
+                  ? "bg-darkGold border-darkGold text-white transform scale-110"
+                  : "bg-white/20 border-white/50 text-white/80 hover:border-darkGold hover:text-white"
+              } ${
+                stepNum > currentStep
+                  ? "opacity-40 cursor-not-allowed"
+                  : "cursor-pointer"
+              }`}
               aria-label={`Go to step ${stepNum}`}
             >
-              <span className="text-xs sm:text-sm md:text-base">{stepNum}</span>
+              {stepNum}
             </button>
             {idx < stepCount - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-0.5 sm:mx-1 transition-colors duration-300 ${
+                className={`h-0.5 flex-1 mx-1 md:mx-2 transition-colors ${
                   currentStep > stepNum ? "bg-darkGold" : "bg-white/20"
                 }`}
               />
@@ -60,6 +65,7 @@ function StepIndicator({
 }
 
 // Step 1: Date selection
+// Step 1: Date selection with improved styling
 function DateStep({
   selectedDate,
   onSelectDate,
@@ -85,61 +91,97 @@ function DateStep({
   const calendar = [...prevMonthDays, ...days, ...nextMonthDays];
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex items-center justify-between mb-2 sm:mb-4">
+    <div className="space-y-6">
+      {/* Enhanced Calendar Header */}
+      <div className="flex items-center justify-between bg-oxfordBlue/30 rounded-xl p-3 shadow-sm">
         <button 
           onClick={() => onChangeMonth(-1)} 
-          className="text-white p-1 sm:p-2 hover:text-darkGold transition-colors"
+          className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
+          aria-label="Previous month"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h3 className="text-lg sm:text-xl md:text-2xl text-white font-semibold">
+        <h3 className="text-xl sm:text-2xl md:text-3xl text-white font-bold tracking-wide">
           {format(currentMonth, "MMMM yyyy")}
         </h3>
         <button 
           onClick={() => onChangeMonth(1)} 
-          className="text-white p-1 sm:p-2 md:p-4 hover:text-darkGold transition-colors"
+          className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
+          aria-label="Next month"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
-      <div className="grid grid-cols-7 gap-0.5 xs:gap-1 sm:gap-1">
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-          <div key={d} className="text-center text-white/60 text-xs xs:text-sm md:text-lg font-medium">
-            {d}
-          </div>
-        ))}
-        {calendar.map((date, i) => {
-          const inMonth = isSameMonth(date, currentMonth);
-          const weekend = isWeekend(date);
-          const tooSoon = isBefore(date, minDate);
-          const selected = selectedDate && isSameDay(date, selectedDate);
-          return (
-            <button
-              key={i}
-              onClick={() =>
-                inMonth && !weekend && !tooSoon && onSelectDate(date)
-              }
-              disabled={!inMonth || weekend || tooSoon}
-              className={
-                `h-8 xs:h-10 sm:h-12 md:h-14 aspect-square rounded-lg p-0.5 xs:p-1 sm:p-2 flex flex-col items-center justify-center text-xs relative transition-colors ` +
-                (selected
-                  ? "bg-darkGold text-white shadow-md"
-                  : "bg-white/10 text-white") +
-                (!inMonth || weekend || tooSoon
-                  ? " opacity-50 cursor-not-allowed"
-                  : " hover:bg-darkGold/70 hover:text-white cursor-pointer")
-              }
+
+      {/* Calendar Grid with Improved Styling */}
+      <div className="bg-white/5 rounded-xl p-3 md:p-4 shadow-md">
+        {/* Weekday Headers with Better Styling */}
+        <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
+          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+            <div 
+              key={d} 
+              className="text-center py-2 text-darkGold font-semibold text-xs sm:text-sm md:text-base"
             >
-              <span className="text-[8px] xs:text-xs md:text-sm">{format(date, "MMM")}</span>
-              <span className="font-bold text-xs xs:text-sm sm:text-base md:text-xl">{format(date, "d")}</span>
-            </button>
-          );
-        })}
+              {d}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar Days with Enhanced Cell Styling */}
+        <div className="grid grid-cols-7 gap-1 sm:gap-2">
+          {calendar.map((date, i) => {
+            const inMonth = isSameMonth(date, currentMonth);
+            const weekend = isWeekend(date);
+            const tooSoon = isBefore(date, minDate);
+            const selected = selectedDate && isSameDay(date, selectedDate);
+            const isToday = isSameDay(date, new Date());
+            const disabled = !inMonth || weekend || tooSoon;
+            
+            return (
+              <button
+                key={i}
+                onClick={() => !disabled && onSelectDate(date)}
+                disabled={disabled}
+                className={`
+                  relative h-10 sm:h-12 md:h-14 aspect-square rounded-lg flex flex-col items-center justify-center
+                  transition-all duration-200
+                  ${selected 
+                    ? "bg-darkGold text-white font-bold shadow-lg scale-105 z-10" 
+                    : inMonth && !disabled 
+                      ? "bg-white/10 text-white hover:bg-darkGold/40 hover:scale-105" 
+                      : "bg-white/5 text-white/40"}
+                  ${isToday && !selected ? "ring-2 ring-darkGold ring-opacity-70" : ""}
+                  ${disabled ? "cursor-not-allowed" : "cursor-pointer hover:shadow-md"}
+                `}
+              >
+                {/* Date Display with Month Abbreviation for Non-Current Month */}
+                <div className="flex flex-col items-center">
+                  {!inMonth && (
+                    <span className="text-[8px] xs:text-xs text-white/40 font-light">
+                      {format(date, "MMM")}
+                    </span>
+                  )}
+                  <span className={`
+                    font-medium text-sm sm:text-base md:text-lg
+                    ${selected ? "text-white" : ""}
+                    ${weekend && inMonth ? "text-white/40" : ""}
+                  `}>
+                    {format(date, "d")}
+                  </span>
+                </div>
+                
+                {/* Indicator for Today */}
+                {isToday && !selected && (
+                  <div className="absolute bottom-1 w-1 h-1 bg-darkGold rounded-full"></div>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -485,7 +527,9 @@ export default function Booking({ onBackService }) {
                   selectedDate={selectedDate}
                   onSelectDate={setSelectedDate}
                   currentMonth={currentMonth}
-                  onChangeMonth={inc => setCurrentMonth(m => new Date(m.setMonth(m.getMonth() + inc)))}
+                  onChangeMonth={inc =>
+                    setCurrentMonth(prev => addMonths(prev, inc))
+                  }
                   minDate={minDate}
                 />
               ) : step === 3 ? (

@@ -268,8 +268,8 @@ export default function ProfilePage({ onChatOpen }) {
   );
 
   return (
-    <div className="h-auto py-4 sm:py-6 md:py-16 lg:py-10 px-3 sm:px-4 md:px-6">
-      <div className="max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
+    <div className="-h-auto py-4 sm:py-6 md:py-8 lg:py-10 px-3 sm:px-4 md:px-6">
+      <div className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-2xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
         {/* Profile Header */}
         <div className="bg-gentleGray rounded-lg sm:rounded-xl shadow-md p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4">
           <div className="mb-2 sm:mb-0">
@@ -316,22 +316,14 @@ export default function ProfilePage({ onChatOpen }) {
               appointments.map((a) => (
                 <div
                   key={a.id}
-                  className="bg-white rounded-lg sm:rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4"
+                  className="border-2 border-oxfordBlue rounded-lg sm:rounded-xl shadow-sm flex flex-row sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4"
                 >
-                  <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-800">
-                      {a.service_type ||
-                        t("profile.sections.appointments.appointment")}
-                    </p>
-                    <p className="text-xxs sm:text-xs text-gray-500">
-                      {new Date(a.appointment_date).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="mt-2 sm:mt-0 self-end sm:self-auto">
-                    <span className="bg-oxfordBlue text-white px-2 py-1 rounded text-xxs sm:text-xs">
-                      {a.duration_minutes} min
-                    </span>
-                  </div>
+                  <p className="sm:text-xs py-1 text-black">
+                    {new Date(a.appointment_date).toLocaleString()}
+                  </p>
+                  <span className="bg-oxfordBlue text-white px-2 py-1 rounded text-xxs sm:text-xs">
+                    {a.duration_minutes} min
+                  </span>
                 </div>
               ))
             ) : (
@@ -352,21 +344,20 @@ export default function ProfilePage({ onChatOpen }) {
               activeSubscriptions.map((sub) => (
                 <div
                   key={sub.id}
-                  className="bg-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex flex-col sm:flex-row justify-between"
+                  className="border-2 border-oxfordBlue rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex flex-col justify-between"
                 >
-                  <p className="text-xs sm:text-sm text-black font-medium">{sub.name}</p>
-                  <div className="mt-2 sm:mt-0 flex flex-col sm:flex-row sm:items-center sm:gap-4 text-xxs sm:text-xs text-gray-500">
-                    <p>
+                  <div>
+                  <p className="text-base font-semibold text-black">
+                    {sub.name}
+                  </p>
+                  </div>
+                  <div className="mt-2 sm:mt-0 flex sm:flex-row sm:items-center gap-4 text-xxs sm:text-xs text-black">
+                    <p className="text-sm">
                       {t("profile.sections.subscriptions.since")} {sub.since}
                     </p>
-                    <p className="mt-1 sm:mt-0">
-                      {t("profile.sections.subscriptions.expires")} {sub.expiresOn}
-                    </p>
-                    <p className="mt-1 sm:mt-0 font-medium">
-                      <span className="bg-oxfordBlue/10 px-2 py-1 rounded text-black">
-                        {sub.daysRemaining}{" "}
-                        {t("profile.sections.subscriptions.days_remaining")}
-                      </span>
+                    <p className="text-sm">
+                      {t("profile.sections.subscriptions.expires")}{" "}
+                      {sub.expiresOn}
                     </p>
                   </div>
                 </div>
@@ -403,7 +394,9 @@ export default function ProfilePage({ onChatOpen }) {
                     <div className="flex p-2 flex-col border-2 border-oxfordBlue rounded-lg sm:flex-row sm:justify-between sm:items-center">
                       <span className="text-base line-clamp-1">{s.title}</span>
                       <span className="text-xxs sm:text-xs text-gray-500 mt-1 sm:mt-0">
-                        {new Date(s.updated_at || s.lastActivity).toLocaleDateString()}
+                        {new Date(
+                          s.updated_at || s.lastActivity
+                        ).toLocaleDateString()}
                       </span>
                     </div>
                   </button>
@@ -455,7 +448,9 @@ export default function ProfilePage({ onChatOpen }) {
                           {testimonial.author}
                         </h4>
                         <p className="text-xxs sm:text-xs text-gray-500">
-                          {new Date(testimonial.created_at).toLocaleDateString()}
+                          {new Date(
+                            testimonial.created_at
+                          ).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
