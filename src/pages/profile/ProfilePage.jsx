@@ -268,11 +268,11 @@ export default function ProfilePage({ onChatOpen }) {
   );
 
   return (
-    <div className="h-screen py-4 sm:py-6 md:py-8 lg:py-10 px-3 sm:px-4 md:px-6">
-      <div className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-2xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
-        {/* Profile Header */}
-        <div className="bg-gentleGray rounded-lg sm:rounded-xl shadow-md p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4">
-          <div className="mb-2 sm:mb-0">
+    <div className="py-6 md:py-8 lg:py-12 px-4 md:px-6 lg:px-8 min-h-screen bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray">
+      <div className="max-w-xs sm:max-w-md md:max-w-3xl lg:max-w-6xl mx-auto">
+        {/* Profile Header - Enhanced for tablet/desktop */}
+        <div className="bg-gentleGray rounded-xl shadow-lg p-4 sm:p-6 md:p-8 flex flex-col sm:flex-row items-center gap-4 mb-6 md:mb-8">
+          <div className="">
             <OctagonalProfile
               size={56}
               borderColor="#002147"
@@ -289,186 +289,225 @@ export default function ProfilePage({ onChatOpen }) {
             />
           </div>
           <div className="text-center sm:text-left flex-1">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800">
               {profile.full_name || t("profile.unnamed")}
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500">
+            <p className="text-sm md:text-base text-gray-500">
               {profile.username
                 ? `@${profile.username}`
                 : t("profile.no_username")}
             </p>
             <Link
               to="/edit-profile"
-              className="mt-2 inline-block text-darkGold hover:text-darkGold/80 text-xs sm:text-sm transition-colors duration-200 hover:underline"
+              className="mt-3 inline-block px-3 py-1 border border-oxfordBlue text-oxfordBlue hover:bg-oxfordBlue hover:text-white rounded-lg transition-colors duration-200 text-sm md:text-base"
             >
               {t("profile.edit_profile")}
             </Link>
           </div>
         </div>
 
-        {/* Appointments */}
-        <div className="bg-gentleGray p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl flex flex-col shadow-md">
-          <h3 className="text-base sm:text-lg font-bold text-black mb-2 sm:mb-3">
-            {t("profile.sections.appointments.title")}
-          </h3>
-          <div className="space-y-2 sm:space-y-3">
-            {appointments.length ? (
-              appointments.map((a) => (
-                <div
-                  key={a.id}
-                  className="border-2 border-oxfordBlue rounded-lg sm:rounded-xl shadow-sm flex flex-row sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4"
-                >
-                  <p className="sm:text-xs py-1 text-black">
-                    {new Date(a.appointment_date).toLocaleString()}
-                  </p>
-                  <span className="bg-oxfordBlue text-white px-2 py-1 rounded text-xxs sm:text-xs">
-                    {a.duration_minutes} min
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-xs sm:text-sm text-gray-500 p-2">
-                {t("profile.sections.appointments.no_appointments")}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Subscriptions */}
-        <div className="bg-gentleGray p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl flex flex-col shadow-md">
-          <h3 className="text-base sm:text-lg font-bold text-black mb-2 sm:mb-3">
-            {t("profile.sections.subscriptions.title")}
-          </h3>
-          <div className="space-y-2 sm:space-y-3">
-            {activeSubscriptions.length ? (
-              activeSubscriptions.map((sub) => (
-                <div
-                  key={sub.id}
-                  className="border-2 border-oxfordBlue rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex flex-col justify-between"
-                >
-                  <div>
-                  <p className="text-base font-semibold text-black">
-                    {sub.name}
-                  </p>
-                  </div>
-                  <div className="mt-2 sm:mt-0 flex sm:flex-row sm:items-center gap-4 text-xxs sm:text-xs text-black">
-                    <p className="text-sm">
-                      {t("profile.sections.subscriptions.since")} {sub.since}
-                    </p>
-                    <p className="text-sm">
-                      {t("profile.sections.subscriptions.expires")}{" "}
-                      {sub.expiresOn}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-xs sm:text-sm text-gray-500 p-2">
-                {t("profile.sections.subscriptions.no_subscriptions")}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Conversation History */}
-        <div className="bg-gentleGray p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl shadow-md">
-          <h4 className="text-base sm:text-lg font-bold text-black mb-2 sm:mb-3">
-            {t("profile.sections.conversations.title")}
-          </h4>
-          <div className="shadow-sm overflow-hidden">
-            {sessions.length > 0 ? (
-              <div className="space-y-2">
-                {sessions.map((s) => (
-                  <button
-                    key={s.id}
-                    className={`w-full text-left text-xs sm:text-sm transition-colors hover:bg-gray-50 ${
-                      s.id === selectedSession
-                        ? "border-l-4 border-darkGold bg-gray-50 pl-2 sm:pl-3"
-                        : ""
-                    }`}
-                    onClick={() => {
-                      setSelectedSession(s.id);
-                      onChatOpen(s.id);
-                    }}
-                  >
-                    <div className="flex p-2 flex-col border-2 border-oxfordBlue rounded-lg sm:flex-row sm:justify-between sm:items-center">
-                      <span className="text-base line-clamp-1">{s.title}</span>
-                      <span className="text-xxs sm:text-xs text-gray-500 mt-1 sm:mt-0">
-                        {new Date(
-                          s.updated_at || s.lastActivity
-                        ).toLocaleDateString()}
-                      </span>
+        {/* Main Content - Responsive Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Left column on desktop - Full width on mobile/tablet */}
+          <div className="space-y-6 lg:col-span-1">
+            {/* Appointments Section */}
+            <div className="bg-gentleGray p-4 sm:p-6 md:p-8 rounded-xl shadow-lg h-full">
+              <h3 className="text-lg md:text-xl font-bold text-oxfordBlue pb-2">
+                {t("profile.sections.appointments.title")}
+              </h3>
+              
+              <div className="space-y-3">
+                {appointments.length ? (
+                  appointments.map((a) => (
+                    <div
+                      key={a.id}
+                      className="border-2 border-oxfordBlue rounded-lg shadow-sm p-3 md:p-4 transition-all hover:shadow-md"
+                    >
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <p className="text-sm md:text-base font-medium text-black">
+                          {new Date(a.appointment_date).toLocaleString()}
+                        </p>
+                        <span className="px-3 py-1 bg-oxfordBlue text-white text-xs md:text-sm rounded-full">
+                          {a.duration_minutes} min
+                        </span>
+                      </div>
                     </div>
-                  </button>
-                ))}
+                  ))
+                ) : (
+                  <div className="text-center py-8 px-4 border-2 border-dashed border-gray-300 rounded-lg">
+                    <p className="text-sm md:text-base text-gray-500">
+                      {t("profile.sections.appointments.no_appointments")}
+                    </p>
+                    <button className="mt-4 px-4 py-2 bg-darkGold text-black rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors">
+                      {t("calendar.book_appointment")}
+                    </button>
+                  </div>
+                )}
               </div>
-            ) : (
-              <p className="text-xs sm:text-sm text-gray-500 p-3 sm:p-4 text-center">
-                {t("profile.sections.conversations.no_chats")}
-              </p>
-            )}
+            </div>
+          </div>
+
+          {/* Middle column on desktop */}
+          <div className="space-y-6 lg:col-span-1">
+            {/* Subscriptions Section */}
+            <div className="bg-gentleGray p-4 sm:p-6 md:p-8 rounded-xl shadow-lg h-full">
+              <h3 className="text-lg md:text-xl font-bold text-oxfordBlue pb-2">
+                {t("profile.sections.subscriptions.title")}
+              </h3>
+              
+              <div className="space-y-3">
+                {activeSubscriptions.length ? (
+                  activeSubscriptions.map((sub) => (
+                    <div
+                      key={sub.id}
+                      className="border-2 border-oxfordBlue rounded-lg shadow-sm p-4 transition-all hover:shadow-md"
+                    >
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <p className="text-lg font-semibold text-black">
+                            {sub.name}
+                          </p>
+                          
+                        </div>
+                        
+                        <div className="flex items-center justify-between text-sm text-gray-600 mt-2 pt-2 border-t border-gray-200">
+                          <p>
+                            {t("profile.sections.subscriptions.since")} {sub.since}
+                          </p>
+                          <p>
+                            {t("profile.sections.subscriptions.expires")} {sub.expiresOn}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 px-4 border-2 border-dashed border-gray-300 rounded-lg">
+                    <p className="text-sm md:text-base text-gray-500">
+                      {t("profile.sections.subscriptions.no_subscriptions")}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right column on desktop - Full width on mobile/tablet */}
+          <div className="md:col-span-2 lg:col-span-1">
+            {/* Conversation History */}
+            <div className="bg-gentleGray p-4 sm:p-6 md:p-8 rounded-xl shadow-lg h-full">
+              <h3 className="text-lg md:text-xl font-bold text-oxfordBlue pb-2">
+                {t("profile.sections.conversations.title")}
+              </h3>
+              
+              <div className="overflow-hidden h-full">
+                {sessions.length > 0 ? (
+                  <div className="space-y-3 max-h-[30vh] md:max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                    {sessions.map((s) => (
+                      <button
+                        key={s.id}
+                        className="w-full text-left transition-colors border-2 border-oxfordBlue hover:bg-white/10 rounded-lg overflow-hidden"
+                        onClick={() => {
+                          setSelectedSession(s.id);
+                          onChatOpen(s.id);
+                        }}
+                      >
+                        <div className="p-2 flex justify-between items-center gap-2">
+                          <div className="flex-1">
+                            <p className="font-medium text-sm md:text-base text-gray-800">{s.title || "Chat Session"}</p>
+                          </div>
+                          <span className="text-xs text-gray-500 whitespace-nowrap">
+                            {new Date(s.updated_at || s.lastActivity).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 px-4 border-2 border-dashed border-gray-300 rounded-lg h-full flex flex-col items-center justify-center">
+                    <p className="text-gray-500 mb-4">
+                      {t("profile.sections.conversations.no_chats")}
+                    </p>
+                    <button
+                      onClick={() => onChatOpen()}
+                      className="px-4 py-2 bg-darkGold text-black rounded-lg font-medium hover:bg-opacity-90 transition-colors"
+                    >
+                      Start a conversation
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Admin: Testimonial Review Section */}
+        {/* Admin: Testimonial Review Section - Full width */}
         {isAdmin && (
-          <div className="bg-gentleGray p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl shadow-md">
-            <h3 className="text-base sm:text-lg font-bold text-black mb-2 sm:mb-3">
-              {t("profile.sections.testimonial_review.title")}
-            </h3>
+          <div className="mt-8 bg-gentleGray p-4 sm:p-6 md:p-8 rounded-xl shadow-lg">
+            <div className="flex items-center justify-between pb-2">
+              <h3 className="text-lg md:text-xl font-bold text-oxfordBlue">
+                {t("profile.sections.testimonial_review.title")}
+              </h3>
+              <button 
+                onClick={() => fetchPendingTestimonials()}
+                className="px-3 py-1 text-xs bg-oxfordBlue text-white rounded-lg hover:bg-opacity-90 transition-colors"
+              >
+                Refresh
+              </button>
+            </div>
 
             {testimonialLoading ? (
-              <div className="border-2 border-oxfordBlue p-4 rounded-lg sm:rounded-xl flex justify-center">
-                <div className="animate-spin h-6 w-6 sm:h-8 sm:w-8 border-2 border-oxfordBlue border-t-transparent rounded-full"></div>
+              <div className="flex justify-center py-8">
+                <div className="animate-spin h-8 w-8 border-2 border-oxfordBlue border-t-transparent rounded-full"></div>
               </div>
             ) : pendingTestimonials.length === 0 ? (
-              <div className="border-2 border-oxfordBlue p-4 rounded-lg sm:rounded-xl">
-                <p className="text-gray-500 text-xs sm:text-sm text-center">
+              <div className="text-center py-8 px-4 border-2 border-dashed border-gray-300 rounded-lg">
+                <p className="text-gray-500">
                   {t("profile.sections.testimonial_review.no_pending")}
                 </p>
               </div>
             ) : (
-              <div className="space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {pendingTestimonials.map((testimonial) => (
                   <div
                     key={testimonial.id}
-                    className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm"
+                    className="bg-white rounded-lg p-4 shadow-sm transition-all hover:shadow-md"
                   >
-                    <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                    <div className="flex items-center gap-3 mb-3">
                       <img
                         src={testimonial.image_url}
                         alt={testimonial.author}
-                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-darkGold"
+                        className="w-10 h-10 rounded-full object-cover border-2 border-darkGold"
                         onError={(e) => {
                           e.target.src = "https://via.placeholder.com/40";
                         }}
                       />
                       <div>
-                        <h4 className="font-medium text-gray-800 text-xs sm:text-sm">
+                        <h4 className="font-medium text-gray-800">
                           {testimonial.author}
                         </h4>
-                        <p className="text-xxs sm:text-xs text-gray-500">
-                          {new Date(
-                            testimonial.created_at
-                          ).toLocaleDateString()}
+                        <p className="text-xs text-gray-500">
+                          {new Date(testimonial.created_at).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
 
-                    <p className="italic text-gray-700 my-2 text-xs sm:text-sm px-2 py-1 bg-gray-50 rounded">
-                      "{testimonial.quote}"
-                    </p>
+                    <div className="px-3 py-3 bg-gray-50 rounded-lg mb-3">
+                      <p className="italic text-gray-700 text-sm">
+                        "{testimonial.quote}"
+                      </p>
+                    </div>
 
-                    <div className="flex justify-end gap-2 mt-2 sm:mt-3">
+                    <div className="flex justify-end gap-2">
                       <button
                         onClick={() => handleRejectTestimonial(testimonial.id)}
-                        className="px-2 py-1 sm:px-3 sm:py-1 text-xs border border-red-500 text-red-500 rounded hover:bg-red-50 transition-colors"
+                        className="px-3 py-1 text-xs border border-red-500 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
                       >
                         {t("profile.sections.testimonial_review.reject")}
                       </button>
                       <button
                         onClick={() => handleApproveTestimonial(testimonial.id)}
-                        className="px-2 py-1 sm:px-3 sm:py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                        className="px-3 py-1 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                       >
                         {t("profile.sections.testimonial_review.approve")}
                       </button>
