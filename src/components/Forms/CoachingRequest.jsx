@@ -57,11 +57,11 @@ function StepIndicator({
 function FrequencyStep({ formData, onChange }) {
   const { t } = useTranslation();
   const options = [
-    { label: t("coaching_request.frequency_options.weekly"), value: "weekly" },
-    { label: t("coaching_request.frequency_options.daily"), value: "daily" },
+    { label: t("coaching_request.frequency_options.weekly"), value: "Weekly" },
+    { label: t("coaching_request.frequency_options.daily"), value: "Daily" },
     {
       label: t("coaching_request.frequency_options.priority"),
-      value: "priority",
+      value: "Priority",
     },
   ];
   return (

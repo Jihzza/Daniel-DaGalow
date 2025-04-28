@@ -268,7 +268,7 @@ export default function ProfilePage({ onChatOpen }) {
   );
 
   return (
-    <div className="-h-auto py-4 sm:py-6 md:py-8 lg:py-10 px-3 sm:px-4 md:px-6">
+    <div className="h-screen py-4 sm:py-6 md:py-8 lg:py-10 px-3 sm:px-4 md:px-6">
       <div className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-2xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
         {/* Profile Header */}
         <div className="bg-gentleGray rounded-lg sm:rounded-xl shadow-md p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4">
@@ -418,11 +418,11 @@ export default function ProfilePage({ onChatOpen }) {
             </h3>
 
             {testimonialLoading ? (
-              <div className="bg-white p-4 rounded-lg sm:rounded-xl flex justify-center">
+              <div className="border-2 border-oxfordBlue p-4 rounded-lg sm:rounded-xl flex justify-center">
                 <div className="animate-spin h-6 w-6 sm:h-8 sm:w-8 border-2 border-oxfordBlue border-t-transparent rounded-full"></div>
               </div>
             ) : pendingTestimonials.length === 0 ? (
-              <div className="bg-white p-4 rounded-lg sm:rounded-xl">
+              <div className="border-2 border-oxfordBlue p-4 rounded-lg sm:rounded-xl">
                 <p className="text-gray-500 text-xs sm:text-sm text-center">
                   {t("profile.sections.testimonial_review.no_pending")}
                 </p>
