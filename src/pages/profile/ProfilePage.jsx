@@ -268,7 +268,7 @@ export default function ProfilePage({ onChatOpen }) {
   );
 
   return (
-    <div className="h-screen py-4 sm:py-6 md:py-8 lg:py-10 px-3 sm:px-4 md:px-6">
+    <div className="h-screen py-4 sm:py-6 md:py-16 lg:py-10 px-3 sm:px-4 md:px-6">
       <div className="max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
         {/* Profile Header */}
         <div className="bg-gentleGray rounded-lg sm:rounded-xl shadow-md p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4">
@@ -384,13 +384,13 @@ export default function ProfilePage({ onChatOpen }) {
           <h4 className="text-base sm:text-lg font-bold text-black mb-2 sm:mb-3">
             {t("profile.sections.conversations.title")}
           </h4>
-          <div className="bg-white rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
+          <div className="shadow-sm overflow-hidden">
             {sessions.length > 0 ? (
-              <div className="divide-y divide-gray-100">
+              <div className="space-y-2">
                 {sessions.map((s) => (
                   <button
                     key={s.id}
-                    className={`w-full text-left text-xs sm:text-sm p-3 sm:p-4 transition-colors hover:bg-gray-50 ${
+                    className={`w-full text-left text-xs sm:text-sm transition-colors hover:bg-gray-50 ${
                       s.id === selectedSession
                         ? "border-l-4 border-darkGold bg-gray-50 pl-2 sm:pl-3"
                         : ""
@@ -400,8 +400,8 @@ export default function ProfilePage({ onChatOpen }) {
                       onChatOpen(s.id);
                     }}
                   >
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                      <span className="font-medium line-clamp-1">{s.title}</span>
+                    <div className="flex p-2 flex-col border-2 border-oxfordBlue rounded-lg sm:flex-row sm:justify-between sm:items-center">
+                      <span className="text-base line-clamp-1">{s.title}</span>
                       <span className="text-xxs sm:text-xs text-gray-500 mt-1 sm:mt-0">
                         {new Date(s.updated_at || s.lastActivity).toLocaleDateString()}
                       </span>

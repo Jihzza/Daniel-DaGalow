@@ -85,7 +85,7 @@ function Header() {
     <>
       <header
         className={`
-          fixed flex items-center justify-between top-0 p-4 md:p-8 lg:p-10 left-0 right-0 z-30 h-14 md:h-24 lg:h-20 bg-black text-white shadow-lg
+          sticky flex items-center justify-between top-0 p-4 md:p-8 lg:p-10 left-0 right-0 z-30 h-14 md:h-24 lg:h-20 bg-black text-white shadow-lg
           transform transition-transform duration-300
           ${show ? "translate-y-0" : "-translate-y-full"}
         `}
