@@ -67,7 +67,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto my-16 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-md mx-auto my-16 p-6 bg-gentleGray rounded-lg shadow-md">
       <h2 className="text-2xl font-bold text-oxfordBlue mb-6 text-center">{t('auth.reset_password.title')}</h2>
 
       {error && (
@@ -116,7 +116,7 @@ const ResetPassword = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-oxfordBlue text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors disabled:opacity-50"
+          className="w-full bg-darkGold text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors disabled:opacity-50"
         >
           {loading ? t('auth.reset_password.submit.loading') : t('auth.reset_password.submit.default')}
         </button>

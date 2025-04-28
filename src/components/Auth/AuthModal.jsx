@@ -17,7 +17,7 @@ const AuthModal = ({ isOpen, onClose, initialView = 'login' }) => {
       >
         {/* Modal content */}
         <div 
-          className="bg-white rounded-lg w-full max-w-md mx-4 overflow-hidden"
+          className="bg-gentleGray rounded-lg w-full max-w-md mx-4 overflow-hidden"
           onClick={e => e.stopPropagation()}
         >
           {/* Close button */}

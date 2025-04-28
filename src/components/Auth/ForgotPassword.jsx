@@ -32,7 +32,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto my-16 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-md mx-auto my-16 p-6 bg-gentleGray rounded-lg shadow-md">
       <h2 className="text-2xl font-bold text-oxfordBlue mb-6 text-center">{t('auth.forgot_password.title')}</h2>
       
       {error && (

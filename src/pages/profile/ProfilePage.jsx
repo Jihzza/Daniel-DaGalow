@@ -1,4 +1,3 @@
-// src/components/Subpages/ProfilePage.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
@@ -209,13 +208,13 @@ export default function ProfilePage({ onChatOpen }) {
         prev.filter((testimonial) => testimonial.id !== id)
       );
 
-      alert("Testimonial approved successfully!");
+      alert(t("profile.sections.testimonial_review.approved"));
 
       // Optional: Refresh the pending testimonials list
       fetchPendingTestimonials();
     } catch (err) {
       console.error("Error approving testimonial:", err);
-      alert("Failed to approve testimonial: " + err.message);
+      alert(t("profile.sections.testimonial_review.approve_error"));
     }
   }
 
@@ -233,25 +232,26 @@ export default function ProfilePage({ onChatOpen }) {
         prev.filter((testimonial) => testimonial.id !== id)
       );
 
-      alert("Testimonial rejected successfully");
+      alert(t("profile.sections.testimonial_review.rejected"));
     } catch (err) {
       console.error("Error rejecting testimonial:", err);
-      alert("Failed to reject testimonial");
+      alert(t("profile.sections.testimonial_review.reject_error"));
     }
   }
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <div className="animate-spin h-10 w-10 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 border-2 border-t-transparent border-oxfordBlue"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 text-red-700 m-4 rounded-lg">
-        {t("profile.error.title")}: {error}
+      <div className="p-4 bg-red-50 text-red-700 m-4 rounded-lg text-center">
+        <h3 className="font-bold text-lg">{t("profile.error.title")}</h3>
+        <p>{error}</p>
       </div>
     );
   }
@@ -268,13 +268,13 @@ export default function ProfilePage({ onChatOpen }) {
   );
 
   return (
-    <>
-      <div className="min-h-screen py-6 px-4">
-        <div className="max-w-2xl mx-auto space-y-6">
-          {/* Profile Header */}
-          <div className="bg-gentleGray rounded-xl shadow-md p-6 flex items-center space-x-4">
+    <div className="h-screen py-4 sm:py-6 md:py-8 lg:py-10 px-3 sm:px-4 md:px-6">
+      <div className="max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto space-y-4 sm:space-y-5 md:space-y-6">
+        {/* Profile Header */}
+        <div className="bg-gentleGray rounded-lg sm:rounded-xl shadow-md p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4">
+          <div className="mb-2 sm:mb-0">
             <OctagonalProfile
-              size={64}
+              size={56}
               borderColor="#002147"
               innerBorderColor="#ECEBE5"
               imageSrc={
@@ -287,194 +287,204 @@ export default function ProfilePage({ onChatOpen }) {
                 user.email[0].toUpperCase()
               }
             />
-            <div>
-              <h2 className="text-xl font-semibold text-gray-800">
-                {profile.full_name || t("profile.unnamed")}
-              </h2>
-              <p className="text-sm text-gray-500">
-                {profile.username
-                  ? `@${profile.username}`
-                  : t("profile.no_username")}
+          </div>
+          <div className="text-center sm:text-left flex-1">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+              {profile.full_name || t("profile.unnamed")}
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500">
+              {profile.username
+                ? `@${profile.username}`
+                : t("profile.no_username")}
+            </p>
+            <Link
+              to="/edit-profile"
+              className="mt-2 inline-block text-darkGold hover:text-darkGold/80 text-xs sm:text-sm transition-colors duration-200 hover:underline"
+            >
+              {t("profile.edit_profile")}
+            </Link>
+          </div>
+        </div>
+
+        {/* Appointments */}
+        <div className="bg-gentleGray p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl flex flex-col shadow-md">
+          <h3 className="text-base sm:text-lg font-bold text-black mb-2 sm:mb-3">
+            {t("profile.sections.appointments.title")}
+          </h3>
+          <div className="space-y-2 sm:space-y-3">
+            {appointments.length ? (
+              appointments.map((a) => (
+                <div
+                  key={a.id}
+                  className="bg-white rounded-lg sm:rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4"
+                >
+                  <div>
+                    <p className="text-xs sm:text-sm font-medium text-gray-800">
+                      {a.service_type ||
+                        t("profile.sections.appointments.appointment")}
+                    </p>
+                    <p className="text-xxs sm:text-xs text-gray-500">
+                      {new Date(a.appointment_date).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="mt-2 sm:mt-0 self-end sm:self-auto">
+                    <span className="bg-oxfordBlue text-white px-2 py-1 rounded text-xxs sm:text-xs">
+                      {a.duration_minutes} min
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs sm:text-sm text-gray-500 p-2">
+                {t("profile.sections.appointments.no_appointments")}
               </p>
-              <Link
-                to="/edit-profile"
-                className="mt-2 inline-block text-darkGold/50 text-sm hover:underline"
-              >
-                {t("profile.edit_profile")}
-              </Link>
-            </div>
+            )}
           </div>
+        </div>
 
-          {/* Appointments */}
-          <div className="bg-gentleGray p-4 rounded-xl flex flex-col shadow-md">
-            <h3 className="text-lg font-bold text-black mb-3">
-              {t("profile.sections.appointments.title")}
-            </h3>
-            <div className="space-y-3">
-              {appointments.length ? (
-                appointments.map((a) => (
-                  <div
-                    key={a.id}
-                    className="bg-white rounded-xl shadow-sm flex justify-between items-center p-4"
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        {a.service_type ||
-                          t("profile.sections.appointments.appointment")}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(a.appointment_date).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-gray-500">
-                  {t("profile.sections.appointments.no_appointments")}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Subscriptions */}
-          <div className="bg-gentleGray p-4 rounded-xl flex flex-col shadow-md">
-            <h3 className="text-lg font-bold text-black mb-3">
-              {t("profile.sections.subscriptions.title")}
-            </h3>
-            <div className="space-y-3">
-              {activeSubscriptions.length ? (
-                activeSubscriptions.map((sub) => (
-                  <div
-                    key={sub.id}
-                    className="bg-white rounded-xl shadow-sm p-4 flex justify-between items-center"
-                  >
-                    <p className="text-sm text-black">{sub.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {t("profile.sections.subscriptions.since")} {sub.since} |{" "}
-                      {t("profile.sections.subscriptions.expires")}:{" "}
-                      {sub.expiresOn}
+        {/* Subscriptions */}
+        <div className="bg-gentleGray p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl flex flex-col shadow-md">
+          <h3 className="text-base sm:text-lg font-bold text-black mb-2 sm:mb-3">
+            {t("profile.sections.subscriptions.title")}
+          </h3>
+          <div className="space-y-2 sm:space-y-3">
+            {activeSubscriptions.length ? (
+              activeSubscriptions.map((sub) => (
+                <div
+                  key={sub.id}
+                  className="bg-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 flex flex-col sm:flex-row justify-between"
+                >
+                  <p className="text-xs sm:text-sm text-black font-medium">{sub.name}</p>
+                  <div className="mt-2 sm:mt-0 flex flex-col sm:flex-row sm:items-center sm:gap-4 text-xxs sm:text-xs text-gray-500">
+                    <p>
+                      {t("profile.sections.subscriptions.since")} {sub.since}
                     </p>
-                    <p className="text-xs text-black">
-                      {sub.daysRemaining}{" "}
-                      {t("profile.sections.subscriptions.days_remaining")}
+                    <p className="mt-1 sm:mt-0">
+                      {t("profile.sections.subscriptions.expires")} {sub.expiresOn}
+                    </p>
+                    <p className="mt-1 sm:mt-0 font-medium">
+                      <span className="bg-oxfordBlue/10 px-2 py-1 rounded text-black">
+                        {sub.daysRemaining}{" "}
+                        {t("profile.sections.subscriptions.days_remaining")}
+                      </span>
                     </p>
                   </div>
-                ))
-              ) : (
-                <p className="text-sm text-gray-500">
-                  {t("profile.sections.subscriptions.no_subscriptions")}
-                </p>
-              )}
-            </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs sm:text-sm text-gray-500 p-2">
+                {t("profile.sections.subscriptions.no_subscriptions")}
+              </p>
+            )}
           </div>
+        </div>
 
-          {/* Conversation History */}
-          <div className="bg-gentleGray p-4 rounded-xl shadow-md">
-            <h4 className="text-lg font-bold text-black mb-3">
-              {t("profile.sections.conversations.title")}
-            </h4>
-            <div className="bg-white rounded-xl shadow-sm p-4">
-              {sessions.length > 0 ? (
-                sessions.map((s) => (
+        {/* Conversation History */}
+        <div className="bg-gentleGray p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl shadow-md">
+          <h4 className="text-base sm:text-lg font-bold text-black mb-2 sm:mb-3">
+            {t("profile.sections.conversations.title")}
+          </h4>
+          <div className="bg-white rounded-lg sm:rounded-xl shadow-sm overflow-hidden">
+            {sessions.length > 0 ? (
+              <div className="divide-y divide-gray-100">
+                {sessions.map((s) => (
                   <button
                     key={s.id}
-                    className={`w-full text-left text-sm p-2 ${
+                    className={`w-full text-left text-xs sm:text-sm p-3 sm:p-4 transition-colors hover:bg-gray-50 ${
                       s.id === selectedSession
-                        ? "border-b-2 border-darkGold text-black"
-                        : "hover:bg-gray-100"
+                        ? "border-l-4 border-darkGold bg-gray-50 pl-2 sm:pl-3"
+                        : ""
                     }`}
                     onClick={() => {
                       setSelectedSession(s.id);
                       onChatOpen(s.id);
                     }}
                   >
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">{s.title}</span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(s.updated_at).toLocaleDateString()}
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                      <span className="font-medium line-clamp-1">{s.title}</span>
+                      <span className="text-xxs sm:text-xs text-gray-500 mt-1 sm:mt-0">
+                        {new Date(s.updated_at || s.lastActivity).toLocaleDateString()}
                       </span>
                     </div>
                   </button>
-                ))
-              ) : (
-                <p className="text-sm text-gray-500">
-                  {t("profile.sections.conversations.no_chats")}
-                </p>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs sm:text-sm text-gray-500 p-3 sm:p-4 text-center">
+                {t("profile.sections.conversations.no_chats")}
+              </p>
+            )}
           </div>
+        </div>
 
-          {isAdmin && (
-            <div className="bg-gentleGray p-4 rounded-xl shadow-md">
-              <h3 className="text-lg font-bold text-black mb-3">
-                {t("profile.sections.testimonial_review.title")}
-              </h3>
+        {/* Admin: Testimonial Review Section */}
+        {isAdmin && (
+          <div className="bg-gentleGray p-4 sm:p-5 md:p-6 rounded-lg sm:rounded-xl shadow-md">
+            <h3 className="text-base sm:text-lg font-bold text-black mb-2 sm:mb-3">
+              {t("profile.sections.testimonial_review.title")}
+            </h3>
 
-              {testimonialLoading ? (
-                <div className="bg-white p-4 rounded-xl flex justify-center">
-                  <div className="animate-spin h-8 w-8 border-2 border-oxfordBlue border-t-transparent rounded-full"></div>
-                </div>
-              ) : pendingTestimonials.length === 0 ? (
-                <div className="bg-white p-4 rounded-xl">
-                  <p className="text-gray-500 text-center">
-                    {t("profile.sections.testimonial_review.no_pending")}
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {pendingTestimonials.map((testimonial) => (
-                    <div
-                      key={testimonial.id}
-                      className="bg-white rounded-xl p-4 shadow-sm"
-                    >
-                      <div className="flex items-center space-x-3 mb-2">
-                        <img
-                          src={testimonial.image_url}
-                          alt={testimonial.author}
-                          className="w-12 h-12 rounded-full object-cover border-2 border-darkGold"
-                        />
-                        <div>
-                          <h4 className="font-medium text-gray-800">
-                            {testimonial.author}
-                          </h4>
-                          <p className="text-xs text-gray-500">
-                            {new Date(
-                              testimonial.created_at
-                            ).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-
-                      <p className="italic text-gray-700 my-2 text-sm">
-                        "{testimonial.quote}"
-                      </p>
-
-                      <div className="flex justify-end space-x-2 mt-3">
-                        <button
-                          onClick={() =>
-                            handleRejectTestimonial(testimonial.id)
-                          }
-                          className="px-3 py-1 text-sm border border-red-500 text-red-500 rounded-lg hover:bg-red-50"
-                        >
-                          {t("profile.sections.testimonial_review.reject")}
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleApproveTestimonial(testimonial.id)
-                          }
-                          className="px-3 py-1 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700"
-                        >
-                          {t("profile.sections.testimonial_review.approve")}
-                        </button>
+            {testimonialLoading ? (
+              <div className="bg-white p-4 rounded-lg sm:rounded-xl flex justify-center">
+                <div className="animate-spin h-6 w-6 sm:h-8 sm:w-8 border-2 border-oxfordBlue border-t-transparent rounded-full"></div>
+              </div>
+            ) : pendingTestimonials.length === 0 ? (
+              <div className="bg-white p-4 rounded-lg sm:rounded-xl">
+                <p className="text-gray-500 text-xs sm:text-sm text-center">
+                  {t("profile.sections.testimonial_review.no_pending")}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3 sm:space-y-4">
+                {pendingTestimonials.map((testimonial) => (
+                  <div
+                    key={testimonial.id}
+                    className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm"
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                      <img
+                        src={testimonial.image_url}
+                        alt={testimonial.author}
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-darkGold"
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/40";
+                        }}
+                      />
+                      <div>
+                        <h4 className="font-medium text-gray-800 text-xs sm:text-sm">
+                          {testimonial.author}
+                        </h4>
+                        <p className="text-xxs sm:text-xs text-gray-500">
+                          {new Date(testimonial.created_at).toLocaleDateString()}
+                        </p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+
+                    <p className="italic text-gray-700 my-2 text-xs sm:text-sm px-2 py-1 bg-gray-50 rounded">
+                      "{testimonial.quote}"
+                    </p>
+
+                    <div className="flex justify-end gap-2 mt-2 sm:mt-3">
+                      <button
+                        onClick={() => handleRejectTestimonial(testimonial.id)}
+                        className="px-2 py-1 sm:px-3 sm:py-1 text-xs border border-red-500 text-red-500 rounded hover:bg-red-50 transition-colors"
+                      >
+                        {t("profile.sections.testimonial_review.reject")}
+                      </button>
+                      <button
+                        onClick={() => handleApproveTestimonial(testimonial.id)}
+                        className="px-2 py-1 sm:px-3 sm:py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                      >
+                        {t("profile.sections.testimonial_review.approve")}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }

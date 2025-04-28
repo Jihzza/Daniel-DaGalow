@@ -28,7 +28,7 @@ const Login = ({ isModal = false, onSuccess = () => {} }) => {
         onSuccess();
       } else {
         // Regular redirect for non-modal
-        navigate('/dashboard');
+        navigate('/');
       }
     } catch (error) {
       setError(error.message || t('auth.login.errors.default'));
@@ -49,7 +49,7 @@ const Login = ({ isModal = false, onSuccess = () => {} }) => {
   );
 
   return (
-    <div className="max-w-md mx-auto my-16 p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-md mx-auto rounded-lg">
       {!isModal && <h2 className="text-2xl font-bold text-oxfordBlue mb-6 text-center">{t('auth.login.title')}</h2>}
       
       {error && (
@@ -60,7 +60,7 @@ const Login = ({ isModal = false, onSuccess = () => {} }) => {
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-gray-700 font-medium mb-1">
+          <label htmlFor="email" className="block text-black font-medium mb-1">
             {t('auth.login.email.label')}
           </label>
           <input
@@ -70,12 +70,12 @@ const Login = ({ isModal = false, onSuccess = () => {} }) => {
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder={t('auth.login.email.placeholder')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
+            className="w-full px-3 py-2 border bg-gentleGray border-oxfordBlue rounded-lg focus:outline-none focus:ring-2 focus:ring-oxfordBlue placeholder:text-black/50"
           />
         </div>
         
         <div>
-          <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
+          <label htmlFor="password" className="block text-black font-medium mb-1">
             {t('auth.login.password.label')}
           </label>
           <input
@@ -85,7 +85,7 @@ const Login = ({ isModal = false, onSuccess = () => {} }) => {
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder={t('auth.login.password.placeholder')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
+            className="w-full px-3 py-2 border bg-gentleGray border-oxfordBlue rounded-lg focus:outline-none focus:ring-2 focus:ring-oxfordBlue placeholder:text-black/50"
           />
         </div>
         
@@ -98,7 +98,7 @@ const Login = ({ isModal = false, onSuccess = () => {} }) => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-oxfordBlue text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors disabled:opacity-50"
+          className="w-full bg-oxfordBlue rounded-lg text-white py-2 px-4 hover:bg-opacity-90 transition-colors disabled:opacity-50"
         >
           {loading ? t('auth.login.submit.loading') : t('auth.login.submit.default')}
         </button>

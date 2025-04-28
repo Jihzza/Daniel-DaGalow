@@ -897,7 +897,6 @@
       }
     },
     "signup": {
-      "title": "Regístrate",
       "full_name": {
         "label": "Nombre completo",
         "placeholder": "Introduce tu nombre completo"

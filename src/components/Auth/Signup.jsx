@@ -56,9 +56,7 @@ const Signup = ({ isModal = false, onSuccess = () => {}}) => {
   };
 
   return (
-    <div className="max-w-md mx-auto my-16 p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-oxfordBlue mb-6 text-center">{t('auth.signup.title')}</h2>
-      
+    <div className="max-w-md mx-auto">   
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
@@ -83,7 +81,7 @@ const Signup = ({ isModal = false, onSuccess = () => {}}) => {
             onChange={(e) => setFullName(e.target.value)}
             required
             placeholder={t('auth.signup.full_name.placeholder')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
+            className="w-full px-3 py-2 border bg-gentleGray border-oxfordBlue rounded-lg focus:outline-none focus:ring-2 focus:ring-oxfordBlue placeholder:text-black/50"
           />
         </div>
         
@@ -98,7 +96,7 @@ const Signup = ({ isModal = false, onSuccess = () => {}}) => {
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder={t('auth.signup.email.placeholder')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
+            className="w-full px-3 py-2 border bg-gentleGray border-oxfordBlue rounded-lg focus:outline-none focus:ring-2 focus:ring-oxfordBlue placeholder:text-black/50"
           />
         </div>
         
@@ -113,7 +111,7 @@ const Signup = ({ isModal = false, onSuccess = () => {}}) => {
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder={t('auth.signup.password.placeholder')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
+            className="w-full px-3 py-2 border bg-gentleGray border-oxfordBlue rounded-lg focus:outline-none focus:ring-2 focus:ring-oxfordBlue placeholder:text-black/50"
           />
         </div>
         
@@ -128,23 +126,23 @@ const Signup = ({ isModal = false, onSuccess = () => {}}) => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             placeholder={t('auth.signup.confirm_password.placeholder')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
+            className="w-full px-3 py-2 border bg-gentleGray border-oxfordBlue rounded-lg focus:outline-none focus:ring-2 focus:ring-oxfordBlue placeholder:text-black/50"
           />
         </div>
         
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-oxfordBlue text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors disabled:opacity-50"
+          className="w-full bg-oxfordBlue rounded-lg text-white py-2 px-4 hover:bg-opacity-90 transition-colors disabled:opacity-50"
         >
           {loading ? t('auth.signup.submit.loading') : t('auth.signup.submit.default')}
         </button>
       </form>
       
-      <div className="mt-6 text-center">
-        <p className="text-gray-600">
+      <div className="mt-4 text-center">
+        <p className="text-black/50">
           {t('auth.signup.login_prompt')}{' '}
-          <Link to="/login" className="text-oxfordBlue hover:underline">
+          <Link to="" className="text-oxfordBlue hover:underline">
             {t('auth.signup.login_link')}
           </Link>
         </p>
