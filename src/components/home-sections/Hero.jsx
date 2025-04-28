@@ -63,7 +63,7 @@ function Hero() {
   return (
     <section
       id="hero"
-      className="p-4 px-4 text-white min-h-screen flex flex-col justify-center items-center text-center overflow-hidden"
+      className="p-4 text-white min-h-screen flex flex-col justify-center items-center text-center overflow-hidden"
     >
       {/* Logo */}
       <div className="flex items-center justify-center md:py-4 lg:py-2 space-x-2">

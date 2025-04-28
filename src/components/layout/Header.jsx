@@ -155,24 +155,6 @@ function Header() {
               {t('navigation.calendar')}
             </Link>
 
-            {/* Music link */}
-            <Link
-              to="/components/Subpages/Music"
-              className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
-              onClick={() => setMenuOpen(false)}
-            >
-              {t('navigation.music')}
-            </Link>
-
-            {/* Videos link */}
-            <Link
-              to="/components/Subpages/Videos"
-              className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
-              onClick={() => setMenuOpen(false)}
-            >
-              {t('navigation.videos')}
-            </Link>
-
             {/* Auth links in mobile menu */}
             {user ? (
               <>

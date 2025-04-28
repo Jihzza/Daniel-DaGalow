@@ -66,7 +66,6 @@ const LanguageSwitcher = () => {
                 i18n.language === language.code ? 'bg-gray-100 font-medium' : ''
               }`}
             >
-              <span className="text-lg mr-2">{language.flag}</span>
               <span>{language.name}</span>
             </button>
           ))}

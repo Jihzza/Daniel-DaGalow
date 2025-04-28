@@ -64,7 +64,7 @@ function FAQs2() {
 
   return (
     <section id="faqs2" className="w-full h-[60vh]">
-      <div className="max-w-4xl md:max-w-6xl px-4 md:px-0a mx-auto h-full flex flex-col">
+      <div className="max-w-4xl md:max-w-6xl md:px-0a mx-auto h-full flex flex-col">
         <h2 className="text-2xl md:text-4xl py-4 font-bold text-center text-black">
           {t("faqs.title")}
         </h2>

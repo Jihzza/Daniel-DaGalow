@@ -505,7 +505,7 @@ export default function Booking({ onBackService }) {
           <div className="flex justify-between mt-4 sm:mt-6 md:mt-8">
             <button
               onClick={() => step > 1 ? setStep(step - 1) : onBackService()}
-              className="px-2 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 border-2 border-darkGold text-darkGold rounded-xl hover:bg-darkGold/10 transition-colors text-xs sm:text-sm md:text-base"
+              className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
             >
               {t("booking.back")}
             </button>
@@ -513,7 +513,7 @@ export default function Booking({ onBackService }) {
               <button
                 onClick={handleNext}
                 disabled={!canProceed() || loading}
-                className="px-2 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 bg-darkGold text-white rounded-xl disabled:opacity-50 hover:bg-darkGold/90 transition-colors text-xs sm:text-sm md:text-base"
+                className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
               >
                 {loading ? (
                   <span className="flex items-center">

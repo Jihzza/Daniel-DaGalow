@@ -32,12 +32,10 @@ import Signup from "./components/Auth/Signup";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 import { useAuth } from "./contexts/AuthContext";
-
-import Music from "./pages/content/Music";
-import Videos from "./pages/content/Videos";
 import TestimonialReview from "./pages/admin/TestimonialReview";
 import IncentivePage from "./components/home-sections/IncentivePage";
 import OtherWins from "./components/home-sections/OtherWins";
+import Footer from "./components/layout/Footer";
 // Private route component to protect routes that require authentication
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -171,10 +169,6 @@ function App() {
                 }
               />
 
-              {/* Other Routes */}
-              <Route path="/components/Subpages/Music" element={<Music />} />
-              <Route path="/components/Subpages/Videos" element={<Videos />} />
-
               <Route
                 path="/components/Subpages/Calendar"
                 element={
@@ -211,6 +205,7 @@ function App() {
             isOpen={authModalOpen}
             onClose={() => setAuthModalOpen(false)}
           />
+          <Footer />
         </div>
       </Router>
     </AuthProvider>

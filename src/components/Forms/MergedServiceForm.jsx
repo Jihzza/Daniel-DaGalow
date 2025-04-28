@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import AnalysisRequest from "./AnalysisRequest";
 import Booking from "./Booking";
-import CoachingRequest from './CoachingRequest';
+import CoachingRequest from "./CoachingRequest";
 import PitchDeckRequest from "./PitchDeckRequest";
 import { useSearchParams } from "react-router-dom";
 import { ServiceContext } from "../../contexts/ServiceContext";
@@ -75,22 +75,24 @@ export default function MergedServiceForm() {
           <h2 className="text-2xl md:text-4xl font-bold text-center mb-6 text-black">
             {t("service_form.title")}
           </h2>
-          <div className="gap-6 bg-oxfordBlue shadow-lg rounded-2xl p-4 sm:p-6 md:p-8">
-  <h3 className="text-xl md:text-2xl text-white mb-4 md:mb-6">{t("service_form.choose_service")}</h3>
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-6">
-    {services.map((s) => (
-      <button
-        key={s.value}
-        onClick={() => selectService(s.value)}
-        className="px-3 py-3 sm:px-4 sm:py-4 rounded-xl md:rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg hover:bg-darkGold/20 transition-colors active:bg-darkGold/30 focus:outline-none focus:ring-2 focus:ring-darkGold focus:ring-opacity-50"
-      >
-        <span className="block text-white font-medium text-base sm:text-lg md:text-xl">
-          {s.label}
-        </span>
-      </button>
-    ))}
-  </div>
-</div>
+          <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
+            <h3 className="text-xl md:text-2xl text-white mb-4 md:mb-6">
+              {t("service_form.choose_service")}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-6">
+              {services.map((s) => (
+                <button
+                  key={s.value}
+                  onClick={() => selectService(s.value)}
+                  className="px-3 py-3 sm:px-4 sm:py-4 rounded-xl md:rounded-2xl cursor-pointer text-center border-2 border-darkGold shadow-lg hover:bg-darkGold/20 transition-colors active:bg-darkGold/30 focus:outline-none focus:ring-2 focus:ring-darkGold focus:ring-opacity-50"
+                >
+                  <span className="block text-white font-medium text-base sm:text-lg md:text-xl">
+                    {s.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
     );
