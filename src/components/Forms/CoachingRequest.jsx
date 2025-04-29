@@ -8,6 +8,7 @@ import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { addMonths } from "date-fns";
 import { AuthModalContext } from "../../App";
 import { useContext } from "react";
+import { ServiceContext } from "../../contexts/ServiceContext";
 
 // Progress Indicator Component
 function StepIndicator({
@@ -149,14 +150,16 @@ function ContactStep({ formData, onChange }) {
 // Main Coaching Request Component
 export default function CoachingRequest({ onBackService }) {
   const { t } = useTranslation();
+  const { tier } = useContext(ServiceContext);
   const { user } = useAuth();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(tier ? 2 : 1); // Skip to step 2 if tier is selected
   const [formData, setFormData] = useState({
-    frequency: "",
+    frequency: tier || "", // Use the selected tier if available
     name: user?.user_metadata?.full_name || "",
     email: user?.email || "",
     phone: "",
   });
+
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
@@ -196,6 +199,13 @@ export default function CoachingRequest({ onBackService }) {
     if (step === 3) return paymentDone;
     return true;
   };
+
+  useEffect(() => {
+    if (tier) {
+      setFormData(prev => ({...prev, frequency: tier}));
+      setStep(2); // Skip to contact info step
+    }
+  }, [tier]);
 
   const handleNext = async () => {
     if (step === 2) {
