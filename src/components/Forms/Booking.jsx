@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../../contexts/AuthContext";
+import { AuthModalContext } from "../../App";
+import { useContext } from "react";
 import {
   format,
   addDays,
@@ -17,6 +19,8 @@ import {
 import { fetchBookings } from "../../services/bookingService";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+
 
 // Shared StepIndicator
 function StepIndicator({
@@ -65,7 +69,6 @@ function StepIndicator({
 }
 
 // Step 1: Date selection
-// Step 1: Date selection with improved styling
 function DateStep({
   selectedDate,
   onSelectDate,
@@ -286,7 +289,7 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
 // Step 3: Contact info
 function InfoStep({ formData, onChange }) {
   const { t } = useTranslation();
-  
+  const { openAuthModal } = useContext(AuthModalContext);
   return (
     <div className="space-y-4 max-w-md mx-auto w-full">
       <div className="w-full flex flex-col gap-2">
@@ -309,6 +312,15 @@ function InfoStep({ formData, onChange }) {
           onChange={onChange}
           className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-xs sm:text-sm md:text-base"
         />
+      </div>
+      <div className="text-white text-sm text-right sm:text-base md:text-lg"> 
+        <button
+        type="button"
+          onClick={openAuthModal}
+          className="text-xs text-white underline"
+        >
+          {t("services.common_login_signup")}
+        </button>
       </div>
     </div>
   );
@@ -459,15 +471,16 @@ export default function Booking({ onBackService }) {
       ).toISOString();
   
       try {
+        const payload = {
+          appointment_date,
+          duration_minutes: selectedDuration,
+          name: formData.name,
+          email: formData.email,
+        }
+
         const { data, error } = await supabase
           .from("bookings")
-          .insert({
-            user_id: user.id,
-            appointment_date,
-            duration_minutes: selectedDuration,
-            name: formData.name,
-            email: formData.email,
-          })
+          .insert(payload)
           .select("id")
           .single();
     
@@ -520,12 +533,16 @@ export default function Booking({ onBackService }) {
                   onSelectTime={({ slot, dur }) => {
                     setSelectedTime(slot);
                     setSelectedDuration(dur);
+                    setStep(3);
                   }}
                 />
               ) : step < 2 ? (
                 <DateStep
                   selectedDate={selectedDate}
-                  onSelectDate={setSelectedDate}
+                  onSelectDate={date => {
+                    setSelectedDate(date);
+                    setStep(2);
+                  }}
                   currentMonth={currentMonth}
                   onChangeMonth={inc =>
                     setCurrentMonth(prev => addMonths(prev, inc))

@@ -19,10 +19,11 @@ function Hero() {
     const el = document.getElementById(id);
     if (el) {
       // Calculate the header height (14 is the h-14 in your header)
+      const headerHeight = 56; // 14 * 4 = 56px
 
       // Scroll with an offset to account for the header
       window.scrollTo({
-        top: el.offsetTop,
+        top: el.offsetTop - headerHeight,
         behavior: "smooth",
       });
     }
@@ -359,12 +360,6 @@ function Hero() {
 
               <div className="flex space-x-2 md:space-x-4 mb-4">
                 <label className="w-20 md:w-32 h-18 md:h-24 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
-                  <input
-                    type="radio"
-                    name="tier"
-                    className="hidden"
-                    defaultChecked
-                  />
                   <span className="text-[16px] md:text-2xl font-extrabold">
                     40€
                   </span>
@@ -373,7 +368,6 @@ function Hero() {
                   </span>
                 </label>
                 <label className="w-20 md:w-32 h-18 md:h-24 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
-                  <input type="radio" name="tier" className="hidden" />
                   <span className="text-[16px] md:text-2xl font-extrabold">
                     90€
                   </span>
@@ -381,8 +375,7 @@ function Hero() {
                     {t("hero.hero_coaching_standard")}
                   </span>
                 </label>
-                <label className="w-20 md:w-32 h-18 md:h-24 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
-                  <input type="radio" name="tier" className="hidden" />
+                <label className="w-20 md:w-32 h-20 md:h-24 border border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1">
                   <span className="text-[16px] md:text-2xl font-extrabold">
                     230€
                   </span>

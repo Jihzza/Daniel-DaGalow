@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useAuth } from "../../contexts/AuthContext";
+import { AuthModalContext } from "../../App";
+import { useContext } from "react";
 
 // Progress Indicator
 function StepIndicator({
@@ -14,36 +16,40 @@ function StepIndicator({
 }) {
   return (
     <div className="flex items-center justify-center gap-1 md:gap-2 mt-6 md:mt-8">
-  {Array.from({ length: stepCount }).map((_, idx) => {
-    const stepNum = idx + 1;
-    const isActive = currentStep === stepNum;
-    
-    return (
-      <React.Fragment key={stepNum}>
-        <button
-          type="button"
-          onClick={() => onStepClick(stepNum)}
-          disabled={stepNum > currentStep}
-          className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full border-2 transition-colors text-sm md:text-base ${
-            isActive
-              ? "bg-darkGold border-darkGold text-white transform scale-110"
-              : "bg-white/20 border-white/50 text-white/80 hover:border-darkGold hover:text-white"
-          } ${stepNum > currentStep ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
-          aria-label={`Go to step ${stepNum}`}
-        >
-          {stepNum}
-        </button>
-        {idx < stepCount - 1 && (
-          <div
-            className={`h-0.5 flex-1 mx-1 md:mx-2 transition-colors ${
-              currentStep > stepNum ? "bg-darkGold" : "bg-white/20"
-            }`}
-          />
-        )}
-      </React.Fragment>
-    );
-  })}
-</div>
+      {Array.from({ length: stepCount }).map((_, idx) => {
+        const stepNum = idx + 1;
+        const isActive = currentStep === stepNum;
+
+        return (
+          <React.Fragment key={stepNum}>
+            <button
+              type="button"
+              onClick={() => onStepClick(stepNum)}
+              disabled={stepNum > currentStep}
+              className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full border-2 transition-colors text-sm md:text-base ${
+                isActive
+                  ? "bg-darkGold border-darkGold text-white transform scale-110"
+                  : "bg-white/20 border-white/50 text-white/80 hover:border-darkGold hover:text-white"
+              } ${
+                stepNum > currentStep
+                  ? "opacity-40 cursor-not-allowed"
+                  : "cursor-pointer"
+              }`}
+              aria-label={`Go to step ${stepNum}`}
+            >
+              {stepNum}
+            </button>
+            {idx < stepCount - 1 && (
+              <div
+                className={`h-0.5 flex-1 mx-1 md:mx-2 transition-colors ${
+                  currentStep > stepNum ? "bg-darkGold" : "bg-white/20"
+                }`}
+              />
+            )}
+          </React.Fragment>
+        );
+      })}
+    </div>
   );
 }
 
@@ -81,6 +87,7 @@ function TypeSelectionStep({ formData, onChange }) {
 // Step 2: Contact Info
 function ContactInfoStep({ formData, onChange }) {
   const { t } = useTranslation();
+  const { openAuthModal } = useContext(AuthModalContext);
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
       <div className="space-y-2">
@@ -110,6 +117,15 @@ function ContactInfoStep({ formData, onChange }) {
           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold shadow-inner text-base md:text-lg transition-colors"
           required
         />
+      </div>
+      <div className="text-white text-sm text-right sm:text-base md:text-lg"> 
+        <button
+        type="button"
+          onClick={openAuthModal}
+          className="text-xs text-white underline"
+        >
+          {t("services.common_login_signup")}
+        </button>
       </div>
     </div>
   );
@@ -153,13 +169,17 @@ export default function AnalysisRequest({ onBackService }) {
   const handleNext = async () => {
     if (step === 2) {
       setIsSubmitting(true);
+
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        service_type: formData.type,
+      };
+      if (user?.id) payload.user_id = user.id;
+
       const { data, error } = await supabase
         .from("analysis_requests")
-        .insert({
-          name: formData.name,
-          email: formData.email,
-          service_type: formData.type,
-        })
+        .insert(payload)
         .select("id")
         .maybeSingle();
       if (error) {

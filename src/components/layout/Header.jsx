@@ -82,12 +82,10 @@ function Header() {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-30 w-full">
+    <>
       <header
         className={`
-          flex items-center justify-between
-          p-4 md:p-8 lg:p-10 h-14 md:h-24 lg:h-20
-          bg-black text-white shadow-lg
+          fixed flex items-center justify-between top-0 p-4 md:p-8 lg:p-10 left-0 right-0 z-30 h-14 md:h-24 lg:h-20 bg-black text-white shadow-lg
           transform transition-transform duration-300
           ${show ? "translate-y-0" : "-translate-y-full"}
         `}
@@ -206,7 +204,7 @@ function Header() {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
       />
-    </div>
+    </>
   );
 }
 

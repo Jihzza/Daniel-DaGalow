@@ -6,6 +6,8 @@ import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../../contexts/AuthContext";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { addMonths } from "date-fns";
+import { AuthModalContext } from "../../App";
+import { useContext } from "react";
 
 // Progress Indicator Component
 function StepIndicator({
@@ -70,7 +72,7 @@ function FrequencyStep({ formData, onChange }) {
         <button
           key={opt.value}
           type="button"
-          className={`px-4 py-4 rounded-xl md:rounded-2xl cursor-pointer text-center border-2 shadow-lg text-base md:text-lg bg-oxfordBlue transition-all ${
+          className={`px-3 py-3 rounded-xl md:rounded-2xl cursor-pointer text-center border-2 shadow-lg text-base md:text-lg bg-oxfordBlue transition-all ${
             formData.frequency === opt.value
               ? "border-darkGold bg-darkGold/20 transform scale-[1.01]"
               : "border-darkGold hover:bg-darkGold/10 active:bg-darkGold/20"
@@ -89,12 +91,11 @@ function FrequencyStep({ formData, onChange }) {
 // Step 2: Contact Info
 function ContactStep({ formData, onChange }) {
   const { t } = useTranslation();
+  const { openAuthModal } = useContext(AuthModalContext);
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">
-          {t("coaching_request.form.name_label")}
-        </label>
+        <label className="block text-white mb-2">{t("coaching_request.form.name_label")}</label>
         <input
           name="name"
           type="text"
@@ -106,9 +107,7 @@ function ContactStep({ formData, onChange }) {
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">
-          {t("coaching_request.form.email_label")}
-        </label>
+        <label className="block text-white mb-2">{t("coaching_request.form.email_label")}</label>
         <input
           name="email"
           type="email"
@@ -120,70 +119,29 @@ function ContactStep({ formData, onChange }) {
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2 font-medium">
-          {t("coaching_request.form.phone_label")}
-        </label>
+        <label className="block text-white mb-2 font-medium">{t("coaching_request.form.phone_label")}</label>
         <PhoneInput
           containerClass="!w-full !h-[48px] md:!h-[52px] lg:!h-[46px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
           buttonClass="!bg-white/5 !border-none h-full"
           inputClass="!bg-white/5 !w-full !border-none px-2 md:px-4 !h-full text-white placeholder-white/50 text-base md:text-lg"
           country="es"
           enableSearch
-          searchPlaceholder={t(
-            "coaching_request.form.phone_search_placeholder"
-          )}
+          searchPlaceholder={t("coaching_request.form.phone_search_placeholder")}
           value={formData.phone}
-          onChange={(phone) =>
-            onChange({ target: { name: "phone", value: phone } })
-          }
+          onChange={phone => onChange({ target: { name: "phone", value: phone } })}
           dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
           searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
         />
       </div>
-    </div>
-  );
-}
-
-// Step 3: Payment
-function PaymentStep({ formData, onPaid }) {
-  const { t } = useTranslation();
-  const tiers = {
-    weekly: {
-      label: "Basic Tier",
-      price: "40 € / month",
-      link: "https://buy.stripe.com/3csdRBdlU9hL6dy4gh",
-    },
-    daily: {
-      label: "Mid Tier",
-      price: "90 € / month",
-      link: "https://buy.stripe.com/5kAaFpepY8dH59u146",
-    },
-    priority: {
-      label: "VIP Tier",
-      price: "230 € / month",
-      link: "https://buy.stripe.com/6oEcNx2Hg1PjfO88wz",
-    },
-  };
-  const tier = tiers[formData.frequency] || {};
-  return (
-    <div className="text-center mb-6">
-      <p className="text-white mb-4 text-sm">
-        {t("coaching_request.payment.selected_tier")}{" "}
-        <strong>{tier.label}</strong>.<br />
-        {t("coaching_request.payment.complete_payment")}{" "}
-        <strong>{tier.price}</strong>{" "}
-        {t("coaching_request.payment.to_continue")}
-      </p>
-      <a
-        href={tier.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={onPaid}
-      >
-        <button className="px-3 py-1 md:px-4 md:py-2 bg-darkGold text-black font-bold rounded-xl hover:bg-darkGold/90">
-          {t("coaching_request.payment.pay_with_stripe")}
+      <div className="text-white text-sm text-right sm:text-base md:text-lg"> 
+        <button
+        type="button"
+          onClick={openAuthModal}
+          className="text-xs text-white underline"
+        >
+          {t("services.common_login_signup")}
         </button>
-      </a>
+      </div>
     </div>
   );
 }
@@ -204,10 +162,19 @@ export default function CoachingRequest({ onBackService }) {
   const [paymentDone, setPaymentDone] = useState(false);
 
   useEffect(() => {
-    if (step === 4 && !paymentDone) {
-      setStep(3);
+    if (step === 3 && !paymentDone) {
+      const tiers = {
+        Weekly: "https://buy.stripe.com/3csdRBdlU9hL6dy4gh",
+        Daily:  "https://buy.stripe.com/5kAaFpepY8dH59u146",
+        Priority: "https://buy.stripe.com/6oEcNx2Hg1PjfO88wz",
+      };
+      const link = tiers[formData.frequency];
+      if (link) {
+        window.open(link, "_blank");
+        setPaymentDone(true);
+      }
     }
-  }, [step, paymentDone]);
+  }, [step, formData.frequency, paymentDone]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -218,7 +185,6 @@ export default function CoachingRequest({ onBackService }) {
   const STEPS = [
     { title: t("coaching_request.steps.frequency"), component: FrequencyStep },
     { title: t("coaching_request.steps.contact"), component: ContactStep },
-    { title: t("coaching_request.steps.payment"), component: PaymentStep },
     { title: t("coaching_request.steps.chat"), component: InlineChatbotStep },
   ];
 
@@ -239,17 +205,19 @@ export default function CoachingRequest({ onBackService }) {
       const membershipStartDate = new Date(); // Today's date
       const membershipEndDate = addMonths(membershipStartDate, 1); // 1 month duration
 
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        service_type: formData.frequency,
+        membership_start_date: membershipStartDate.toISOString(),
+        membership_end_date: membershipEndDate.toISOString(),
+      }
+      if (user?.id) payload.user_id = user.id;
+
       const { data, error } = await supabase
         .from("coaching_requests")
-        .insert({
-          user_id: user.id,
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          service_type: formData.frequency,
-          membership_start_date: membershipStartDate.toISOString(),
-          membership_end_date: membershipEndDate.toISOString(),
-        })
+        .insert(payload)
         .select("id")
         .single();
 

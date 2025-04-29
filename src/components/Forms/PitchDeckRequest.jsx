@@ -5,6 +5,8 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useAuth } from "../../contexts/AuthContext";
+import { AuthModalContext } from "../../App";
+import { useContext } from "react";
 // Progress Indicator Component
 function StepIndicator({
   stepCount,
@@ -84,6 +86,7 @@ function ProjectSelectionStep({ formData, onChange }) {
 // Step2: Contact Info
 function ContactInfoStep({ formData, onChange }) {
   const { t } = useTranslation();
+  const { openAuthModal } = useContext(AuthModalContext);
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
       <div className="w-full flex flex-col gap-2">
@@ -134,6 +137,15 @@ function ContactInfoStep({ formData, onChange }) {
           dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
           searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
         />
+      </div>
+      <div className="text-white text-sm text-right sm:text-base md:text-lg"> 
+        <button
+        type="button"
+          onClick={openAuthModal}
+          className="text-xs text-white underline"
+        >
+          {t("services.common_login_signup")}
+        </button>
       </div>
     </div>
   );

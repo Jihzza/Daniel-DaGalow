@@ -107,7 +107,8 @@
     "services_structure_description": "Estas características están diseñadas para maximizar el valor de nuestro tiempo juntos y ofrecerte apoyo continuo incluso después de la consulta. Tu comodidad y progreso son mi máxima prioridad.",
     "services_price": "90€ / hora",
     "services_price_minimum_time": "Mínimo 45 minutos",
-    "services_book_consultation": "Reservar consulta"
+    "services_book_consultation": "Reservar consulta",
+    "common_login_signup": "Iniciar sesión / Registrarse"
   },
 
   "coaching": {

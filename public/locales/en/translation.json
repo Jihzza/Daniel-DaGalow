@@ -76,7 +76,7 @@
     "hero_get_analysis_description": "Get professional, in-depth analysis of your investments, business, or social media presence with actionable insights to help you make better decisions and achieve your goals.",
     "hero_get_analysis": "Get My Analysis",
     "common_learn_more": "Learn More"
-  },
+    },
 
   "about": {
     "about_title": "Meet Daniel DaGalow",
@@ -107,7 +107,9 @@
     "services_structure_description": "These features are designed to maximize the value of our time together and provide you with ongoing support even after our session ends. Your comfort and progress are my top priorities.",
     "services_price": "90€ / hour",
     "services_price_minimum_time": "Minimum 45 minutes",
-    "services_book_consultation": "Book a Consultation"
+    "services_book_consultation": "Book a Consultation",
+    "common_login_signup": "Login / Sign Up"
+
   },
 
   "coaching": {
