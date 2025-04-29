@@ -95,7 +95,7 @@ function App() {
               <Route
                 path="/"
                 element={
-                  <main>
+                  <main className="mt-14 md:mt-24 lg:mt-20">
                     <Hero />
                     <About />
                     <Services />

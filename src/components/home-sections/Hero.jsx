@@ -19,11 +19,10 @@ function Hero() {
     const el = document.getElementById(id);
     if (el) {
       // Calculate the header height (14 is the h-14 in your header)
-      const headerHeight = 56; // 14 * 4 = 56px
 
       // Scroll with an offset to account for the header
       window.scrollTo({
-        top: el.offsetTop - headerHeight,
+        top: el.offsetTop,
         behavior: "smooth",
       });
     }
