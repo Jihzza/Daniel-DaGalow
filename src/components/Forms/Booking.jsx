@@ -119,48 +119,47 @@ function CombinedSelectionStep({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Calendar Header */}
-      <div className="flex items-center justify-between bg-oxfordBlue/30 rounded-lg p-2 shadow-sm">
-        <button 
-          onClick={() => onChangeMonth(-1)} 
-          className="text-white hover:text-darkGold p-1 rounded-full hover:bg-white/10 transition-all duration-200"
-          aria-label="Previous month"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <h3 className="text-lg sm:text-xl text-white font-bold tracking-wide">
-          {format(currentMonth, "MMMM yyyy")}
-        </h3>
-        <button 
-          onClick={() => onChangeMonth(1)} 
-          className="text-white hover:text-darkGold p-1 rounded-full hover:bg-white/10 transition-all duration-200"
-          aria-label="Next month"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
+    <div className="space-y-8">
+      {/* Calendar Header - Modern Design */}
+      <div className="bg-oxfordBlue/90 rounded-xl p-4 shadow-lg">
+        <div className="flex items-center justify-between mb-4">
+          <button 
+            onClick={() => onChangeMonth(-1)} 
+            className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-darkGold focus:ring-opacity-50"
+            aria-label="Previous month"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h3 className="text-xl sm:text-2xl text-white font-bold tracking-wide">
+            {format(currentMonth, "MMMM yyyy")}
+          </h3>
+          <button 
+            onClick={() => onChangeMonth(1)} 
+            className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-darkGold focus:ring-opacity-50"
+            aria-label="Next month"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
 
-      {/* Calendar Grid */}
-      <div className="bg-white/5 rounded-xl p-2 md:p-3 shadow-md">
         {/* Weekday Headers */}
-        <div className="grid grid-cols-7 gap-1 mb-1">
+        <div className="grid grid-cols-7 gap-1 mb-2">
           {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
             <div 
               key={d} 
-              className="text-center py-1 text-darkGold font-semibold text-xs"
+              className="text-center py-2 text-darkGold font-semibold text-xs sm:text-sm"
             >
               {d}
             </div>
           ))}
         </div>
 
-        {/* Calendar Days */}
-        <div className="grid grid-cols-7 gap-1">
+        {/* Calendar Days - Modern Grid */}
+        <div className="grid grid-cols-7 gap-1 sm:gap-2">
           {calendar.map((date, i) => {
             const inMonth = isSameMonth(date, currentMonth);
             const weekend = isWeekend(date);
@@ -168,6 +167,7 @@ function CombinedSelectionStep({
             const selected = selectedDate && isSameDay(date, selectedDate);
             const isToday = isSameDay(date, new Date());
             const disabled = !inMonth || weekend || tooSoon;
+            const hasEvent = bookedEvents && bookedEvents.some(event => isSameDay(event.date, date));
             
             return (
               <button
@@ -175,124 +175,167 @@ function CombinedSelectionStep({
                 onClick={() => !disabled && onSelectDate(date)}
                 disabled={disabled}
                 className={`
-                  relative h-8 sm:h-10 aspect-square rounded-md flex flex-col items-center justify-center
-                  transition-all duration-200
+                  group relative aspect-square rounded-lg flex flex-col items-center justify-center
+                  transition-all duration-300 text-center p-1
                   ${selected 
-                    ? "bg-darkGold text-white font-bold shadow-md scale-102 z-10" 
+                    ? "bg-darkGold text-white font-bold shadow-lg transform scale-105 z-10" 
                     : inMonth && !disabled 
                       ? "bg-white/10 text-white hover:bg-darkGold/40" 
                       : "bg-white/5 text-white/40"}
-                  ${isToday && !selected ? "ring-1 ring-darkGold ring-opacity-70" : ""}
-                  ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
+                  ${isToday && !selected ? "ring-2 ring-darkGold ring-opacity-70" : ""}
+                  ${disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer hover:shadow-md"}
                 `}
               >
-                {/* Date Display */}
-                <div className="flex flex-col items-center">
-                  {!inMonth && (
-                    <span className="text-[7px] text-white/40 font-light">
-                      {format(date, "MMM")}
-                    </span>
-                  )}
-                  <span className={`
-                    font-medium text-xs sm:text-sm
-                    ${selected ? "text-white" : ""}
-                    ${weekend && inMonth ? "text-white/40" : ""}
-                  `}>
-                    {format(date, "d")}
-                  </span>
-                </div>
+                {/* Date Number */}
+                <span className={`
+                  font-medium text-sm sm:text-base
+                  ${selected ? "text-white" : ""}
+                  ${weekend && inMonth ? "text-white/40" : ""}
+                `}>
+                  {format(date, "d")}
+                </span>
                 
-                {/* Indicator for Today */}
-                {isToday && !selected && (
-                  <div className="absolute bottom-0.5 w-1 h-1 bg-darkGold rounded-full"></div>
+                {/* Month indicator for days from other months */}
+                {!inMonth && (
+                  <span className="text-[7px] text-white/40 font-light">
+                    {format(date, "MMM")}
+                  </span>
                 )}
+                
+                {/* Event Indicator */}
+                {hasEvent && (
+                  <span className="absolute bottom-1 w-1.5 h-1.5 bg-darkGold rounded-full"></span>
+                )}
+                
+                {/* Today Indicator */}
+                {isToday && !selected && (
+                  <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-darkGold rounded-full"></span>
+                )}
+                
+                {/* Hover effect */}
+                <span className={`absolute inset-0 rounded-lg bg-darkGold/0 group-hover:bg-darkGold/20 
+                  transition-colors duration-300 ${selected ? 'hidden' : ''}`}></span>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Selected Date Summary */}
+      {/* Selected Date Summary - Modern Card */}
       {selectedDate && (
-        <div className="bg-white/10 p-2 rounded-lg text-center mt-3">
-          <h3 className="text-white text-sm font-semibold">
+        <div className="bg-oxfordBlue/60 p-4 rounded-xl text-center mt-6 backdrop-blur-sm shadow-lg transform transition-all duration-300 animate-fade-in">
+          <h3 className="text-white text-sm md:text-base font-semibold">
             {format(selectedDate, "EEEE, MMMM d, yyyy")}
           </h3>
         </div>
       )}
 
-      {/* Cascading Selection UI */}
-      {/* Duration Selection (appears when date is selected) */}
+      {/* Duration Selection - Modern Horizontal Scroll */}
       {selectedDate && availableDurations.length > 0 && (
-        <div className="mt-4 animate-fadeIn">
-          <h4 className="text-white text-sm mb-2 font-medium">Session Duration</h4>
-          <div className="relative overflow-hidden">
-            <div className="flex overflow-x-auto py-2 gap-2 pb-3 scrollbar-hide">
+        <div className="mt-6 animate-fade-in">
+          <h4 className="text-white text-base font-medium mb-3">Choose Duration</h4>
+          <div className="relative">
+            <div className="flex overflow-x-auto py-2 gap-3 pb-4 scrollbar-hide">
               {availableDurations.map((duration) => (
                 <button
                   key={duration}
                   onClick={() => onSelectDuration(duration)}
                   className={`
-                    flex-none px-4 py-2 rounded-lg text-center min-w-[100px] transition-all
+                    flex-none px-5 py-3 rounded-xl text-center min-w-[120px] transition-all duration-300
                     ${selectedDuration === duration 
-                      ? "bg-darkGold text-black font-semibold transform scale-102" 
-                      : "bg-white/10 text-white hover:bg-white/20"}
+                      ? "bg-darkGold text-black font-semibold shadow-md transform scale-105" 
+                      : "bg-white/10 text-white hover:bg-white/20 hover:shadow-md"}
                   `}
                 >
                   <span className="block text-sm font-medium">{formatDuration(duration)}</span>
                 </button>
               ))}
             </div>
-            <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-oxfordBlue to-transparent pointer-events-none"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-oxfordBlue to-transparent pointer-events-none"></div>
+            {/* Gradient fades for scroll indication */}
+            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-oxfordBlue to-transparent pointer-events-none"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-oxfordBlue to-transparent pointer-events-none"></div>
           </div>
         </div>
       )}
 
-      {/* Time Slots Selection (appears when duration is selected) */}
+      {/* Time Slots Selection - Modern Design */}
       {selectedDate && selectedDuration && availableTimeSlots.length > 0 && (
-        <div className="mt-4 animate-fadeIn">
-          <div className="relative overflow-hidden">
-            <div className="flex overflow-x-auto py-2 gap-2 pb-3 scrollbar-hide">
-              {availableTimeSlots.map((time) => (
-                <button
-                  key={time}
-                  onClick={() => onTimeSelection(time)}
-                  className={`
-                    flex-none px-3 py-2 rounded-lg text-center min-w-[70px] transition-all
-                    ${selectedTime === time 
-                      ? "bg-darkGold text-black font-semibold transform scale-102" 
-                      : "bg-white/10 text-white hover:bg-white/20"}
-                  `}
-                >
-                  <span className="block text-sm font-medium">{time}</span>
-                </button>
-              ))}
-            </div>
-            <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-oxfordBlue to-transparent pointer-events-none"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-oxfordBlue to-transparent pointer-events-none"></div>
+        <div className="mt-6 animate-fade-in">
+          <h4 className="text-white text-base font-medium mb-3">Select Time</h4>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
+            {availableTimeSlots.map((time) => (
+              <button
+                key={time}
+                onClick={() => onTimeSelection(time)}
+                className={`
+                  px-3 py-3 rounded-xl text-center transition-all duration-300
+                  ${selectedTime === time 
+                    ? "bg-darkGold text-black font-semibold shadow-md transform scale-105" 
+                    : "bg-white/10 text-white hover:bg-white/20 hover:shadow-md"}
+                `}
+              >
+                <span className="block text-sm font-medium">{time}</span>
+              </button>
+            ))}
           </div>
         </div>
       )}
 
-      {/* Booking Summary (when all selections are made) */}
+      {/* Booking Summary - Modern Card */}
       {selectedDate && selectedDuration && selectedTime && (
-        <div className="mt-4 p-3 bg-darkGold/20 rounded-lg animate-fadeIn">
-          <h4 className="text-white font-semibold mb-2 text-center text-sm">Booking Summary</h4>
-          <div className="text-white/90 text-xs">
-            <p><span className="font-medium">Date:</span> {format(selectedDate, "EEEE, MMMM d, yyyy")}</p>
-            <p><span className="font-medium">Time:</span> {selectedTime} - {calculateEndTime(selectedTime, selectedDuration)}</p>
-            <p><span className="font-medium">Duration:</span> {formatDuration(selectedDuration)}</p>
+        <div className="mt-8 p-5 bg-darkGold/20 backdrop-blur-md rounded-xl animate-fade-in shadow-lg border border-darkGold/30">
+          <div className="flex items-center justify-center mb-3">
+            <svg className="w-5 h-5 mr-2 text-darkGold" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h4 className="text-white font-semibold text-center text-base">Booking Summary</h4>
+          </div>
+          <div className="bg-oxfordBlue/50 rounded-lg p-4">
+            <div className="text-white/90 space-y-2 text-sm">
+              <div className="grid grid-cols-2">
+                <span className="font-medium text-darkGold">Date:</span>
+                <span className="text-right">{format(selectedDate, "EEEE, MMMM d, yyyy")}</span>
+              </div>
+              <div className="grid grid-cols-2">
+                <span className="font-medium text-darkGold">Time:</span>
+                <span className="text-right">{selectedTime} - {calculateEndTime(selectedTime, selectedDuration)}</span>
+              </div>
+              <div className="grid grid-cols-2">
+                <span className="font-medium text-darkGold">Duration:</span>
+                <span className="text-right">{formatDuration(selectedDuration)}</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* No available options message */}
+      {/* No Available Options Message */}
       {selectedDate && availableDurations.length === 0 && (
-        <div className="mt-6 p-4 bg-white/5 rounded-xl text-center">
-          <p className="text-white/80">No available time slots for this date. Please select another date.</p>
+        <div className="mt-6 p-5 bg-oxfordBlue/60 rounded-xl text-center animate-fade-in shadow-lg backdrop-blur-sm">
+          <svg className="w-8 h-8 mx-auto text-darkGold mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <p className="text-white/90">No available time slots for this date. Please select another date.</p>
         </div>
       )}
+
+      {/* Add CSS for animations */}
+      <style jsx>{`
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.4s ease-out forwards;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none; 
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 }
