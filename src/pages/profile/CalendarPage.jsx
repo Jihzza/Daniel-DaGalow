@@ -100,27 +100,33 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className="min-h-screen py-6 px-4 text-black">
+    <div className="min-h-screen bg-gradient-to-b from-oxfordBlue to-gentleGray py-6 md:py-12 px-4 md:px-8 lg:px-12">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-6 text-white">{t('calendar.title')}</h1>
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 md:mb-8 text-white">
+          {t('calendar.title')}
+        </h1>
         
-        <div className="bg-gentleGray rounded-xl shadow-md p-6">
-          {/* Calendar Header */}
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-gentleGray rounded-xl shadow-lg p-4 md:p-6 lg:p-8">
+          {/* Calendar Header with improved responsive design */}
+          <div className="flex items-center justify-between mb-6 md:mb-8">
             <button 
               onClick={() => setCurrentMonth(prev => addMonths(prev, -1))} 
-              className="bg-oxfordBlue text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-colors"
+              className="bg-oxfordBlue text-white w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-colors shadow-md"
+              aria-label="Previous month"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
               </svg>
             </button>
-            <h2 className="text-2xl font-bold text-black">{format(currentMonth, "MMMM yyyy")}</h2>
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-oxfordBlue">
+              {format(currentMonth, "MMMM yyyy")}
+            </h2>
             <button 
               onClick={() => setCurrentMonth(prev => addMonths(prev, 1))} 
-              className="bg-oxfordBlue text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-colors"
+              className="bg-oxfordBlue text-white w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center hover:bg-opacity-90 transition-colors shadow-md"
+              aria-label="Next month"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
               </svg>
             </button>
@@ -131,95 +137,126 @@ export default function CalendarPage() {
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-oxfordBlue"></div>
             </div>
           ) : (
-            <div className="bg-white rounded-xl shadow-sm p-4">
-              {/* Weekday Headers */}
-              <div className="grid grid-cols-7 gap-2 mb-4">
-                {[
-                  t('calendar.weekdays.monday'),
-                  t('calendar.weekdays.tuesday'),
-                  t('calendar.weekdays.wednesday'),
-                  t('calendar.weekdays.thursday'),
-                  t('calendar.weekdays.friday'),
-                  t('calendar.weekdays.saturday'),
-                  t('calendar.weekdays.sunday')
-                ].map(d => (
-                  <div key={d} className="text-center font-medium text-oxfordBlue py-2">{d}</div>
-                ))}
-              </div>
-
-              {/* Calendar Days */}
-              <div className="grid grid-cols-7 gap-2">
-                {calendar.map((date, idx) => {
-                  const isCurrentMonth = isSameMonth(date, currentMonth);
-                  const isCurrentDay = isToday(date);
-                  const isSelected = selectedDate && isSameDay(date, selectedDate);
-                  const hasEvent = hasEventOn(date);
-                  
-                  return (
-                    <div
-                      key={idx}
-                      onClick={() => setSelectedDate(date)}
-                      className={`
-                        h-14 p-1 border rounded-lg transition-all cursor-pointer flex flex-col items-center justify-between
-                        ${isCurrentMonth ? 'hover:border-darkGold hover:shadow-md' : 'text-gray-400 bg-gray-50'}
-                        ${isSelected ? 'border-darkGold bg-darkGold/10 shadow-md' : 'border-gray-200'}
-                        ${isCurrentDay ? 'ring-2 ring-oxfordBlue' : ''}
-                      `}
-                    >
-                      {/* Day Number - Centered */}
-                      <div className="w-full flex-1 flex items-center justify-center">
-                        <span className={`
-                          font-medium text-center
-                          ${isCurrentDay ? 'text-oxfordBlue' : ''}
-                          ${isSelected ? 'text-oxfordBlue' : ''}
-                        `}>
-                          {format(date, 'd')}
-                        </span>
-                      </div>
-                      
-                      {/* Single Event Indicator */}
-                      <div className="w-full flex justify-center items-center h-4">
-                        {hasEvent && (
-                          <div className="w-2 h-2 rounded-full bg-darkGold"></div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-          
-          {/* Selected Date Events */}
-          {selectedDate && (
-            <div className="mt-6 bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-xl font-bold text-oxfordBlue mb-4">
-                {format(selectedDate, "EEEE, MMMM d, yyyy")}
-              </h3>
-              
-              {selectedEvents.length > 0 ? (
-                <div className="space-y-3">
-                  {selectedEvents.map(event => (
-                    <div key={event.id} className="bg-gentleGray p-4 rounded-lg border-l-4 border-darkGold">
-                      <div className="flex justify-between items-center">
-                        <h4 className="font-semibold text-oxfordBlue">{event.title}</h4>
-                        <span className="bg-oxfordBlue text-white px-2 py-1 rounded text-xs">{event.time}</span>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">Duration: {event.duration} minutes</p>
+            <div className="md:flex md:space-x-6 lg:space-x-8">
+              {/* Calendar Grid - optimized for tablets and desktops */}
+              <div className="md:flex-1 bg-white rounded-xl shadow-md p-4 mb-6 md:mb-0">
+                {/* Weekday Headers with improved styling */}
+                <div className="grid grid-cols-7 gap-1 md:gap-2 mb-2 md:mb-4">
+                  {[
+                    t('calendar.weekdays.monday'),
+                    t('calendar.weekdays.tuesday'),
+                    t('calendar.weekdays.wednesday'),
+                    t('calendar.weekdays.thursday'),
+                    t('calendar.weekdays.friday'),
+                    t('calendar.weekdays.saturday'),
+                    t('calendar.weekdays.sunday')
+                  ].map(d => (
+                    <div key={d} className="text-center font-medium text-oxfordBlue py-2 text-xs md:text-sm lg:text-base">
+                      {d}
                     </div>
                   ))}
                 </div>
-              ) : (
-                <p className="text-gray-600">{t('calendar.no_appointments')}</p>
+
+                {/* Calendar Days - Responsive grid that scales well */}
+                <div className="grid grid-cols-7 gap-1 md:gap-2">
+                  {calendar.map((date, idx) => {
+                    const isCurrentMonth = isSameMonth(date, currentMonth);
+                    const isCurrentDay = isToday(date);
+                    const isSelected = selectedDate && isSameDay(date, selectedDate);
+                    const hasEvent = hasEventOn(date);
+                    
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => setSelectedDate(date)}
+                        className={`
+                          h-10 md:h-14 lg:h-16 p-1 border rounded-lg transition-all cursor-pointer 
+                          flex flex-col items-center justify-between
+                          ${isCurrentMonth ? 'hover:border-darkGold hover:shadow-md' : 'text-gray-400 bg-gray-50'}
+                          ${isSelected ? 'border-darkGold bg-darkGold/10 shadow-md' : 'border-gray-200'}
+                          ${isCurrentDay ? 'ring-2 ring-oxfordBlue' : ''}
+                        `}
+                      >
+                        {/* Day Number - Positioned better for all screen sizes */}
+                        <div className="w-full flex-1 flex items-center justify-center">
+                          <span className={`
+                            font-medium text-center text-sm md:text-base
+                            ${isCurrentDay ? 'text-oxfordBlue font-bold' : ''}
+                            ${isSelected ? 'text-oxfordBlue' : ''}
+                          `}>
+                            {format(date, 'd')}
+                          </span>
+                        </div>
+                        
+                        {/* Event Indicator - Enhanced for better visibility */}
+                        {hasEvent && (
+                          <div className="w-full flex justify-center items-center h-2 md:h-3">
+                            <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-darkGold"></div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Selected Date Events - Now side by side on larger screens */}
+              {selectedDate && (
+                <div className="md:flex-1 bg-white rounded-xl shadow-md p-4 md:p-6">
+                  <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-oxfordBlue mb-4">
+                    {format(selectedDate, "EEEE, MMMM d, yyyy")}
+                  </h3>
+                  
+                  <div className="space-y-3 max-h-80 md:max-h-96 overflow-auto pr-2">
+                    {selectedEvents.length > 0 ? (
+                      selectedEvents.map(event => (
+                        <div 
+                          key={event.id} 
+                          className="bg-gentleGray p-4 rounded-lg border-l-4 border-darkGold hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-semibold text-oxfordBlue">{event.title}</h4>
+                            <span className="bg-oxfordBlue text-white px-2 py-1 rounded text-xs md:text-sm">{event.time}</span>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">Duration: {event.duration} minutes</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-gray-600 border-2 border-dashed border-gray-300 rounded-lg">
+                        <p>{t('calendar.no_appointments')}</p>
+                        <button 
+                          className="mt-4 bg-oxfordBlue text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors"
+                        >
+                          {t('calendar.book_appointment')}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
               
-              <button 
-                className="mt-4 bg-oxfordBlue text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors"
-              >
-                {t('calendar.book_appointment')}
-              </button>
+              {/* Empty state when no date is selected */}
+              {!selectedDate && (
+                <div className="md:flex-1 hidden md:block bg-white rounded-xl shadow-md p-6">
+                  <div className="h-full flex flex-col items-center justify-center">
+                    <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className="text-gray-500 text-center">Select a date to view appointments</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
+          
+          {/* Action button area */}
+          <div className="mt-6 flex justify-center md:justify-end">
+            <button 
+              className="bg-darkGold text-black py-2 px-6 rounded-lg hover:bg-opacity-90 transition-colors font-medium shadow-md"
+            >
+              {t('calendar.book_appointment')}
+            </button>
+          </div>
         </div>
       </div>
     </div>
