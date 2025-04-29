@@ -42,6 +42,9 @@ import TestimonialReview from "./pages/admin/TestimonialReview";
 
 import { useAuth } from "./contexts/AuthContext";
 
+import BookingCanceledPage from "./pages/payments/BookingCanceledPage";
+import BookingSuccessPage from "./pages/payments/BookingSuccessPage";
+
 // Context to expose the AuthModal opener
 export const AuthModalContext = createContext({
   openAuthModal: () => {},
@@ -191,6 +194,8 @@ function App() {
                   </PrivateRoute>
                 }
               />
+              <Route path="/booking-success" element={<BookingSuccessPage />} />
+              <Route path="/booking-canceled" element={<BookingCanceledPage />} />
             </Routes>
 
             {/* Always-on Navigation Bar & Chatbot */}
