@@ -22,7 +22,17 @@ import {
 import { fetchBookings } from "../../services/bookingService";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+
+// Stripe payment links for different durations
+const STRIPE_LINKS = {
+  45: "https://buy.stripe.com/fZe00L3LkbpT31meV4",
+  60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
+  75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
+  90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
+  105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
+  120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
+};
 
 // Shared StepIndicator
 function StepIndicator({
@@ -330,23 +340,21 @@ function CombinedSelectionStep({
                   {format(selectedDate, "EE, MMMM d")}
                 </span>
               </div>
-                <div className="flex flex-row gap-2 justify-center">
-                  <div className="flex flex-col items-center bg-gentleGray rounded-lg p-2 w-1/2">
-                    <span className="text-xs text-gray-600 font-medium">
-                      From
-                    </span>
-                    <span className="font-semibold text-black text-sm">
-                      {selectedTime}
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center bg-gentleGray rounded-lg p-2 w-1/2">
-                    <span className="text-xs text-gray-600 font-medium">
-                      To
-                    </span>
-                    <span className="font-semibold text-black text-sm">
-                      {calculateEndTime(selectedTime, selectedDuration)}
-                    </span>
-                  </div>
+              <div className="flex flex-row gap-2 justify-center">
+                <div className="flex flex-col items-center bg-gentleGray rounded-lg p-2 w-1/2">
+                  <span className="text-xs text-gray-600 font-medium">
+                    From
+                  </span>
+                  <span className="font-semibold text-black text-sm">
+                    {selectedTime}
+                  </span>
+                </div>
+                <div className="flex flex-col items-center bg-gentleGray rounded-lg p-2 w-1/2">
+                  <span className="text-xs text-gray-600 font-medium">To</span>
+                  <span className="font-semibold text-black text-sm">
+                    {calculateEndTime(selectedTime, selectedDuration)}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -447,33 +455,193 @@ function InfoStep({ formData, onChange }) {
   );
 }
 
-// Step 3: Payment step (new)
-function PaymentStep({ selectedDate, selectedTime, selectedDuration, formData }) {
+// Step 3: Payment step with verification
+function PaymentStep({
+  selectedDate,
+  selectedTime,
+  selectedDuration,
+  formData,
+  setPaymentStatus,
+}) {
   const { t } = useTranslation();
-  
-  const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const location = useLocation();
 
+  const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const [paymentInProgress, setPaymentInProgress] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState("pending"); // 'pending', 'success', 'failed'
+  const [verificationId, setVerificationId] = useState(null); // To track verification reference
+  const [bookingReference, setBookingReference] = useState("");
+
+  // Check for stripe_success parameter when component mounts
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const success = urlParams.get("stripe_success");
+    const reference = urlParams.get("reference");
+
+    if (success === "true" && reference) {
+      setVerificationId(reference);
+      setBookingReference(reference);
+      verifyPayment(reference);
+    }
+  }, [location]);
+
+  const checkBookingStatus = async (reference) => {
+    try {
+      const { data, error } = await supabase
+        .from("bookings")
+        .select("payment_status")
+        .eq("payment_reference", reference)
+        .single();
+
+      if (!error && data && data.payment_status === "paid") {
+        setVerificationStatus("success");
+        setPaymentStatus("paid");
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error checking booking status:", error);
+      return false;
+    }
+  };
+
+  // Modify the verification polling to also check bookings table
+ const verifyPayment = async (reference) => {
+  setPaymentInProgress(true);
+  
+  // Define a function to check status directly from Supabase
+  const checkDirectFromDatabase = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("bookings")
+        .select("payment_status")
+        .eq("payment_reference", reference)
+        .single();
+      
+      console.log("Direct DB check result:", data);
+      
+      if (!error && data && data.payment_status === 'paid') {
+        setVerificationStatus('success');
+        setPaymentStatus('paid');
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Direct DB check error:", err);
+      return false;
+    }
+  };
+  
+  try {
+    // Try direct database check first
+    const directCheckResult = await checkDirectFromDatabase();
+    if (directCheckResult) {
+      setPaymentInProgress(false);
+      return;
+    }
+    
+    // If direct check fails, try API
+    const checkViaApi = async () => {
+      try {
+        const response = await fetch(`/api/check-payment-status?reference=${reference}`);
+        const data = await response.json();
+        console.log("API check result:", data);
+        
+        if (data.status === 'paid') {
+          setVerificationStatus('success');
+          setPaymentStatus('paid');
+          setPaymentInProgress(false);
+          return true;
+        }
+        
+        // Always try direct DB check as fallback
+        return await checkDirectFromDatabase();
+      } catch (error) {
+        console.error("API check error:", error);
+        return await checkDirectFromDatabase();
+      }
+    };
+    
+    // Initial API check
+    const apiCheckResult = await checkViaApi();
+    if (apiCheckResult) return;
+    
+    // Set up polling with both methods
+    let attempts = 0;
+    const maxAttempts = 15;
+    
+    const intervalId = setInterval(async () => {
+      attempts++;
+      console.log(`Verification attempt ${attempts} of ${maxAttempts}`);
+      
+      const success = await checkViaApi();
+      
+      if (success || attempts >= maxAttempts) {
+        clearInterval(intervalId);
+        if (!success && attempts >= maxAttempts) {
+          console.log("Max verification attempts reached");
+          // Don't change status yet - leave it pending
+        }
+        setPaymentInProgress(false);
+      }
+    }, 3000);
+    
+    return () => clearInterval(intervalId);
+  } catch (error) {
+    console.error('Error in payment verification:', error);
+    setPaymentInProgress(false);
+  }
+};
+
+  // Handle direct payment link navigation
   const handleProceedToPayment = async () => {
     setLoadingCheckout(true);
+
     try {
-      const res = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      // Generate a unique reference for this booking attempt
+      const reference = `booking_${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2, 9)}`;
+      setVerificationId(reference);
+
+      // Create a pending booking entry
+      const { data, error } = await supabase
+        .from("bookings")
+        .insert({
           appointment_date: selectedDate.toISOString(),
-          duration: selectedDuration,
+          duration_minutes: selectedDuration,
           name: formData.name,
           email: formData.email,
-          // If you have user context, add user_id here
-          // user_id: user?.id,
-        }),
-      });
-      const { sessionUrl } = await res.json();
-      window.location.href = sessionUrl;
+          payment_status: "pending",
+          payment_reference: reference,
+        })
+        .select("id")
+        .single();
+
+      if (error) throw error;
+
+      setBookingReference(reference);
+
+      // Redirect to the appropriate Stripe payment link
+      const paymentUrl = STRIPE_LINKS[selectedDuration];
+      if (!paymentUrl) {
+        throw new Error(
+          `No payment link found for duration: ${selectedDuration} minutes`
+        );
+      }
+
+      const returnUrl = `${window.location.origin}/booking?stripe_success=true&reference=${reference}`;
+
+      const fullUrl = `${paymentUrl}?client_reference_id=${reference}&prefilled_email=${encodeURIComponent(
+        formData.email
+      )}&redirect_url=${encodeURIComponent(returnUrl)}`;
+
+      window.open(fullUrl, "_blank");
     } catch (error) {
-      console.error("Failed to start Stripe Checkout:", error);
+      console.error("Failed to start payment process:", error);
+      alert(
+        "There was a problem starting the payment process. Please try again."
+      );
     } finally {
       setLoadingCheckout(false);
     }
@@ -481,59 +649,67 @@ function PaymentStep({ selectedDate, selectedTime, selectedDuration, formData })
 
   // Generate pricing based on duration
   const price = selectedDuration * 1.5; // Example: €1.5 per minute
-  
+
   // Format end time
   const formatDateAndTime = (date, timeString, duration) => {
     if (!date || !timeString) return "";
-    
+
     const [hours, minutes] = timeString.split(":").map(Number);
     const startTime = new Date(date);
     startTime.setHours(hours, minutes, 0, 0);
-    
+
     const endTime = addMinutes(startTime, duration);
-    
+
     const bookingDetails = formData.bookingSummary || {};
     const formattedDateTime = {
       date: format(date, "EEEE, MMMM d, yyyy"),
       start: format(startTime, "h:mm a"),
-      end: format(endTime, "h:mm a")
+      end: format(endTime, "h:mm a"),
     };
 
     return formattedDateTime;
   };
-  
+
   const bookingDetails = formData.bookingSummary || {};
   const formattedDateTime = formatDateAndTime(
-    selectedDate, 
-    selectedTime, 
+    selectedDate,
+    selectedTime,
     selectedDuration
   );
 
-  
   return (
     <div className="space-y-6 max-w-md mx-auto">
       {/* Booking Summary Card */}
       <div className="bg-white/10 rounded-xl p-6 shadow-md">
-        <h3 className="text-white text-xl mb-4 font-semibold">Booking Summary</h3>
-        
+        <h3 className="text-white text-xl mb-4 font-semibold">
+          Booking Summary
+        </h3>
+
         <div className="space-y-4">
           <div className="flex justify-between text-white">
             <span className="text-white/70">Date:</span>
-            <span className="font-medium">{bookingDetails.dateFormatted || formattedDateTime.date}</span>
+            <span className="font-medium">
+              {bookingDetails.dateFormatted || formattedDateTime.date}
+            </span>
           </div>
           <div className="flex justify-between text-white">
             <span className="text-white/70">Time:</span>
-            <span className="font-medium">{bookingDetails.timeRange || `${formattedDateTime.start} - ${formattedDateTime.end}`}</span>
+            <span className="font-medium">
+              {bookingDetails.timeRange ||
+                `${formattedDateTime.start} - ${formattedDateTime.end}`}
+            </span>
           </div>
           <div className="flex justify-between text-white">
             <span className="text-white/70">Duration:</span>
-            <span className="font-medium">{bookingDetails.duration || `${selectedDuration} minutes`}</span>
+            <span className="font-medium">
+              {bookingDetails.duration || `${selectedDuration} minutes`}
+            </span>
           </div>
           <div className="flex justify-between text-white">
             <span className="text-white/70">Customer:</span>
             <span className="font-medium">{formData.name}</span>
           </div>
-          
+
           <div className="border-t border-white/10 pt-4 mt-4">
             <div className="flex justify-between text-white">
               <span className="text-xl">Total:</span>
@@ -542,39 +718,168 @@ function PaymentStep({ selectedDate, selectedTime, selectedDuration, formData })
           </div>
         </div>
       </div>
-      
-      {/* Payment Button */}
+
+      {/* Payment Status & Buttons */}
       <div className="flex flex-col items-center space-y-3">
-        <button
-          onClick={handleProceedToPayment}
-          disabled={loadingCheckout}
-          className="w-full bg-darkGold text-black font-medium py-3 px-4 rounded-xl flex items-center justify-center space-x-2 hover:bg-opacity-90 transition-colors disabled:opacity-50"
+        {/* Verification Status Messages */}
+        {bookingReference && verificationStatus === "pending" && (
+          <div className="w-full bg-blue-500/20 text-white p-4 rounded-xl text-center">
+            <div className="flex items-center justify-center space-x-3">
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <span>Verifying your payment...</span>
+            </div>
+            <button
+              onClick={() => verifyPayment(bookingReference)}
+              className="mt-3 text-sm underline"
+            >
+              Click here if you've completed payment
+            </button>
+          </div>
+        )}
+
+        {verificationStatus === "success" && (
+          <div className="w-full bg-green-500/20 text-white p-4 rounded-xl text-center">
+            <div className="flex items-center justify-center space-x-3">
+              <svg
+                className="h-5 w-5 text-green-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <span>
+                Payment successful! Click "Confirm Booking" to continue.
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Initial Payment Button (shown if no verification in progress) */}
+        {!bookingReference && !paymentInProgress && (
+          <button
+            onClick={handleProceedToPayment}
+            disabled={loadingCheckout}
+            className="w-full bg-darkGold text-black font-medium py-3 px-4 rounded-xl flex items-center justify-center space-x-2 hover:bg-opacity-90 transition-colors disabled:opacity-50"
           >
-            {loadingCheckout ? "Redirecting..." : "Proceed to Payment"}
+            {loadingCheckout ? (
+              <span className="flex items-center space-x-2">
+                <svg
+                  className="animate-spin h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <span>Redirecting...</span>
+              </span>
+            ) : (
+              <>
+                <svg
+                  className="w-5 h-5 mr-2"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H4C2.89543 20 2 19.1046 2 18V6C2 4.89543 2.89543 4 4 4Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M16 2V6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8 2V6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M2 10H22"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span>Proceed to Payment</span>
+              </>
+            )}
           </button>
-          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H4C2.89543 20 2 19.1046 2 18V6C2 4.89543 2.89543 4 4 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M12 11V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M8 11V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M16 11V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M12 7H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span>Proceed to Payment</span>
+        )}
+
         <p className="text-white/60 text-sm text-center">
-          After completing the payment, click "Next" to confirm your booking
+          {verificationStatus === "success"
+            ? "Payment confirmed! Click 'Confirm Booking' to finalize your appointment."
+            : "Your booking will be confirmed after payment is processed."}
         </p>
       </div>
     </div>
   );
 }
 
-// Step 4: Confirmation step (new)
+// Step 4: Confirmation step
 function ConfirmationStep() {
   return (
     <div className="text-center py-6">
       <div className="bg-green-500/20 rounded-full w-16 h-16 mx-auto flex items-center justify-center mb-4">
-        <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+        <svg
+          className="w-8 h-8 text-green-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M5 13l4 4L19 7"
+          />
         </svg>
       </div>
       <h3 className="text-xl text-white font-bold mb-2">
@@ -606,12 +911,25 @@ export default function Booking({ onBackService }) {
     email: user?.email || "",
     bookingSummary: null,
   });
-  const [paymentDone, setPaymentDone] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState("pending"); // 'pending', 'paid', 'failed'
   const [loading, setLoading] = useState(true);
   const [bookingId, setBookingId] = useState(null);
+  const location = useLocation();
 
   // Business hours buffer - start scheduling from tomorrow
   const minDate = addDays(new Date(), 1);
+
+  // Check for payment verification in URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const stripeSuccess = urlParams.get("stripe_success");
+    const reference = urlParams.get("reference");
+
+    if (stripeSuccess === "true" && reference) {
+      // If returning from successful Stripe payment, move to payment step
+      if (step < 3) setStep(3);
+    }
+  }, [location, step]);
 
   // Load existing bookings
   useEffect(() => {
@@ -781,8 +1099,7 @@ export default function Booking({ onBackService }) {
   const canProceed = () => {
     if (step === 1) return selectedDate && selectedTime && selectedDuration;
     if (step === 2) return formData.name && formData.email;
-    // For step 3 (payment), we'll assume the user has completed the payment externally
-    if (step === 3) return true; // Simulating payment completion
+    if (step === 3) return paymentStatus === "paid"; // Only proceed if payment is verified
     return true;
   };
 
@@ -792,47 +1109,46 @@ export default function Booking({ onBackService }) {
     } else if (step === 2 && formData.name && formData.email) {
       // Move to payment step
       setStep(3);
-    } else if (step === 3) {
-      // This is the payment step
-      // Here we move to confirmation and now save to database
+    } else if (step === 3 && paymentStatus === "paid") {
+      // This is the payment step - only proceed if payment is confirmed
       setLoading(true);
 
       try {
-        // Build the ISO timestamp for the consultation start time
-        const [hours, minutes] = selectedTime.split(":").map(Number);
-        const appointmentDate = new Date(selectedDate);
-        appointmentDate.setHours(hours, minutes, 0, 0);
-        const appointment_date = appointmentDate.toISOString();
+        // Retrieve booking information using the payment reference
+        const urlParams = new URLSearchParams(location.search);
+        const reference = urlParams.get("reference");
 
-        // Now we save to database after "payment" is complete
-        const payload = {
-          appointment_date,
-          duration_minutes: selectedDuration,
-          name: formData.name,
-          email: formData.email,
-          user_id: user?.id, // Add user ID if logged in
-          payment_status: "paid" // Mark as paid
-        };
+        if (reference) {
+          // Find booking ID by payment reference
+          const { data, error } = await supabase
+            .from("bookings")
+            .select("id")
+            .eq("payment_reference", reference)
+            .eq("payment_status", "paid")
+            .single();
 
-        const { data, error } = await supabase
-          .from("bookings")
-          .insert(payload)
-          .select("id")
-          .single();
+          if (error) throw error;
 
-        if (error) throw error;
+          if (data) {
+            setBookingId(data.id);
 
-        setBookingId(data.id);
+            // Refresh bookings data to update availability
+            const { data: fresh } = await fetchBookings();
+            setBookedEvents(fresh || []);
 
-        // Refresh bookings data to update availability
-        const { data: fresh } = await fetchBookings();
-        setBookedEvents(fresh || []);
-
-        // Move to confirmation step
-        setStep(4);
+            // Move to confirmation step
+            setStep(4);
+          } else {
+            throw new Error("Booking not found or not paid");
+          }
+        } else {
+          throw new Error("Payment reference not found");
+        }
       } catch (error) {
-        console.error("Error creating booking:", error);
-        // Here you could add user notification about the error
+        console.error("Error confirming booking:", error);
+        alert(
+          "There was a problem confirming your booking. Please try again or contact support."
+        );
       } finally {
         setLoading(false);
       }
@@ -889,19 +1205,18 @@ export default function Booking({ onBackService }) {
               {step === 2 && (
                 <InfoStep formData={formData} onChange={handleChange} />
               )}
-              
+
               {step === 3 && (
-                <PaymentStep 
+                <PaymentStep
                   selectedDate={selectedDate}
                   selectedTime={selectedTime}
                   selectedDuration={selectedDuration}
                   formData={formData}
+                  setPaymentStatus={setPaymentStatus}
                 />
               )}
-              
-              {step === 4 && (
-                <ConfirmationStep />
-              )}
+
+              {step === 4 && <ConfirmationStep />}
 
               {step === 5 && (
                 <InlineChatbotStep
