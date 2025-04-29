@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../../contexts/AuthContext";
-import { AuthModalContext } from "../../App";
-import { useContext } from "react";
 import {
   format,
   addDays,
@@ -14,25 +12,11 @@ import {
   isWeekend,
   addMinutes,
   isBefore,
-  addMonths,
-  setHours,
-  setMinutes,
-  parseISO,
+  addMonths
 } from "date-fns";
 import { fetchBookings } from "../../services/bookingService";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "react-router-dom";
-
-// Stripe payment links for different durations
-const STRIPE_LINKS = {
-  45: "https://buy.stripe.com/fZe00L3LkbpT31meV4",
-  60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
-  75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
-  90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
-  105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
-  120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
-};
 
 // Shared StepIndicator
 function StepIndicator({
@@ -80,20 +64,15 @@ function StepIndicator({
   );
 }
 
-// Combined Step: Date, Duration, and Time Selection
-function CombinedSelectionStep({
+// Step 1: Date selection
+// Step 1: Date selection with improved styling
+function DateStep({
   selectedDate,
   onSelectDate,
   currentMonth,
   onChangeMonth,
   bookedEvents,
   minDate,
-  selectedDuration,
-  onSelectDuration,
-  availableDurations,
-  selectedTime,
-  onTimeSelection,
-  availableTimeSlots,
 }) {
   const days = eachDayOfInterval({
     start: startOfMonth(currentMonth),
@@ -111,86 +90,48 @@ function CombinedSelectionStep({
     nextMonthDays.push(addDays(days[days.length - 1], i));
   const calendar = [...prevMonthDays, ...days, ...nextMonthDays];
 
-  // Format duration for display
-  const formatDuration = (minutes) => {
-    if (minutes < 60) return `${minutes} minutes`;
-    if (minutes % 60 === 0) return `${Math.floor(minutes / 60)} hours`;
-    return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
-  };
-
-  // Calculate end time
-  const calculateEndTime = (timeString, durationMinutes) => {
-    if (!timeString) return "";
-    const [hours, minutes] = timeString.split(":").map(Number);
-    const startTime = new Date();
-    startTime.setHours(hours, minutes, 0, 0);
-    const endTime = addMinutes(startTime, durationMinutes);
-    return format(endTime, "h:mm a");
-  };
-
   return (
-    <div className="space-y-4">
-      {/* Calendar Header - Modern Design */}
-      <div className="bg-oxfordBlue/90 rounded-xl p-4 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={() => onChangeMonth(-1)}
-            className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-darkGold focus:ring-opacity-50"
-            aria-label="Previous month"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 sm:h-6 sm:w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
-          <h3 className="text-xl sm:text-2xl text-white font-bold tracking-wide">
-            {format(currentMonth, "MMMM yyyy")}
-          </h3>
-          <button
-            onClick={() => onChangeMonth(1)}
-            className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-darkGold focus:ring-opacity-50"
-            aria-label="Next month"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 sm:h-6 sm:w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-        </div>
+    <div className="space-y-6">
+      {/* Enhanced Calendar Header */}
+      <div className="flex items-center justify-between bg-oxfordBlue/30 rounded-xl p-3 shadow-sm">
+        <button 
+          onClick={() => onChangeMonth(-1)} 
+          className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
+          aria-label="Previous month"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h3 className="text-xl sm:text-2xl md:text-3xl text-white font-bold tracking-wide">
+          {format(currentMonth, "MMMM yyyy")}
+        </h3>
+        <button 
+          onClick={() => onChangeMonth(1)} 
+          className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
+          aria-label="Next month"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
 
-        {/* Weekday Headers */}
-        <div className="grid grid-cols-7 gap-1 mb-2">
+      {/* Calendar Grid with Improved Styling */}
+      <div className="bg-white/5 rounded-xl p-3 md:p-4 shadow-md">
+        {/* Weekday Headers with Better Styling */}
+        <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
           {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-            <div
-              key={d}
-              className="text-center py-2 text-darkGold font-semibold text-xs sm:text-sm"
+            <div 
+              key={d} 
+              className="text-center py-2 text-darkGold font-semibold text-xs sm:text-sm md:text-base"
             >
               {d}
             </div>
           ))}
         </div>
 
-        {/* Calendar Days - Modern Grid */}
+        {/* Calendar Days with Enhanced Cell Styling */}
         <div className="grid grid-cols-7 gap-1 sm:gap-2">
           {calendar.map((date, i) => {
             const inMonth = isSameMonth(date, currentMonth);
@@ -199,228 +140,157 @@ function CombinedSelectionStep({
             const selected = selectedDate && isSameDay(date, selectedDate);
             const isToday = isSameDay(date, new Date());
             const disabled = !inMonth || weekend || tooSoon;
-            const hasEvent =
-              bookedEvents &&
-              bookedEvents.some((event) => isSameDay(event.date, date));
-
+            
             return (
               <button
                 key={i}
                 onClick={() => !disabled && onSelectDate(date)}
                 disabled={disabled}
                 className={`
-                  group relative aspect-square rounded-lg flex flex-col items-center justify-center
-                  transition-all duration-300 text-center p-1
-                  ${
-                    selected
-                      ? "bg-darkGold text-white font-bold shadow-lg transform scale-105 z-10"
-                      : inMonth && !disabled
-                      ? "bg-white/10 text-white hover:bg-darkGold/40"
-                      : "bg-white/5 text-white/40"
-                  }
-                  ${
-                    isToday && !selected
-                      ? "ring-2 ring-darkGold ring-opacity-70"
-                      : ""
-                  }
-                  ${
-                    disabled
-                      ? "cursor-not-allowed opacity-40"
-                      : "cursor-pointer hover:shadow-md"
-                  }
+                  relative h-10 sm:h-12 md:h-14 aspect-square rounded-lg flex flex-col items-center justify-center
+                  transition-all duration-200
+                  ${selected 
+                    ? "bg-darkGold text-white font-bold shadow-lg scale-105 z-10" 
+                    : inMonth && !disabled 
+                      ? "bg-white/10 text-white hover:bg-darkGold/40 hover:scale-105" 
+                      : "bg-white/5 text-white/40"}
+                  ${isToday && !selected ? "ring-2 ring-darkGold ring-opacity-70" : ""}
+                  ${disabled ? "cursor-not-allowed" : "cursor-pointer hover:shadow-md"}
                 `}
               >
-                {/* Date Number */}
-                <span
-                  className={`
-                  font-medium text-sm sm:text-base
-                  ${selected ? "text-white" : ""}
-                  ${weekend && inMonth ? "text-white/40" : ""}
-                `}
-                >
-                  {format(date, "d")}
-                </span>
-
-                {/* Month indicator for days from other months */}
-                {!inMonth && (
-                  <span className="text-[7px] text-white/40 font-light">
-                    {format(date, "MMM")}
+                {/* Date Display with Month Abbreviation for Non-Current Month */}
+                <div className="flex flex-col items-center">
+                  {!inMonth && (
+                    <span className="text-[8px] xs:text-xs text-white/40 font-light">
+                      {format(date, "MMM")}
+                    </span>
+                  )}
+                  <span className={`
+                    font-medium text-sm sm:text-base md:text-lg
+                    ${selected ? "text-white" : ""}
+                    ${weekend && inMonth ? "text-white/40" : ""}
+                  `}>
+                    {format(date, "d")}
                   </span>
-                )}
-
-                {/* Event Indicator */}
-                {hasEvent && (
-                  <span className="absolute bottom-1 w-1.5 h-1.5 bg-darkGold rounded-full"></span>
-                )}
-
-                {/* Today Indicator */}
+                </div>
+                
+                {/* Indicator for Today */}
                 {isToday && !selected && (
-                  <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-darkGold rounded-full"></span>
+                  <div className="absolute bottom-1 w-1 h-1 bg-darkGold rounded-full"></div>
                 )}
-
-                {/* Hover effect */}
-                <span
-                  className={`absolute inset-0 rounded-lg bg-darkGold/0 group-hover:bg-darkGold/20 
-                  transition-colors duration-300 ${selected ? "hidden" : ""}`}
-                ></span>
               </button>
             );
           })}
         </div>
       </div>
-
-      {selectedDate && availableDurations.length > 0 && (
-        <div className="mt-6">
-          <h4 className="text-white text-base font-medium mb-3">
-            Choose Duration
-          </h4>
-          <div className="relative">
-            <div className="flex overflow-x-auto p-2 gap-2 pb-4 scrollbar-hide">
-              {availableDurations.map((duration) => (
-                <button
-                  key={duration}
-                  onClick={() => onSelectDuration(duration)}
-                  className={`flex-none px-3 py-2 rounded-lg text-xs text-center min-w-[70px] transition-all duration-300
-                    ${
-                      selectedDuration === duration
-                        ? "bg-gentleGray text-black font-semibold shadow transform scale-102"
-                        : "text-white border-2 border-gentleGray"
-                    }`}
-                >
-                  {formatDuration(duration)}
-                </button>
-              ))}
-            </div>
-            {/* Left/Right fade indicators */}
-            <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-oxfordBlue to-transparent pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-oxfordBlue to-transparent pointer-events-none" />
-          </div>
-        </div>
-      )}
-
-      {/* Time Slots Selection - Slide-Up Animation */}
-      {selectedDate && selectedDuration && availableTimeSlots.length > 0 && (
-        <div className="animate-wheel-reveal">
-          <h4 className="text-white text-sm font-medium mb-2">Select Time</h4>
-          <div className="relative mx-auto max-w-xs">
-            <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 h-12 bg-darkGold/15 border-t border-b border-darkGold pointer-events-none z-10 rounded-lg" />
-
-            <div className="h-48 overflow-auto time-wheel-container py-16 mask-gradient">
-              <div className="flex flex-col items-center space-y-1">
-                {availableTimeSlots.map((time) => (
-                  <div
-                    key={time}
-                    onClick={() => onTimeSelection(time)}
-                    className={`w-full py-2 flex justify-center items-center transition-transform duration-200 cursor-pointer snap-center
-                      ${
-                        selectedTime === time
-                          ? "text-darkGold font-semibold text-lg scale-115"
-                          : "text-white text-base hover:text-darkGold/80"
-                      }`}
-                  >
-                    {time}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Fade gradients */}
-            <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-oxfordBlue to-transparent pointer-events-none" />
-            <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-oxfordBlue to-transparent pointer-events-none" />
-          </div>
-        </div>
-      )}
-      {/* Booking Summary - Modern Card */}
-      {selectedDate && selectedDuration && selectedTime && (
-        <div className="p-5 rounded-xl">
-          <div className="rounded-lg p-4 flex flex-col items-center">
-            <div className="text-white/90 text-center space-y-2 text-sm">
-              <div>
-                <span className="block bg-gentleGray rounded-lg py-1 px-2 font-medium text-black w-[60vw] text-lg mb-1">
-                  {format(selectedDate, "EE, MMMM d")}
-                </span>
-              </div>
-              <div className="flex flex-row gap-2 justify-center">
-                <div className="flex flex-col items-center bg-gentleGray rounded-lg p-2 w-1/2">
-                  <span className="text-xs text-gray-600 font-medium">
-                    From
-                  </span>
-                  <span className="font-semibold text-black text-sm">
-                    {selectedTime}
-                  </span>
-                </div>
-                <div className="flex flex-col items-center bg-gentleGray rounded-lg p-2 w-1/2">
-                  <span className="text-xs text-gray-600 font-medium">To</span>
-                  <span className="font-semibold text-black text-sm">
-                    {calculateEndTime(selectedTime, selectedDuration)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* No Available Options Message */}
-      {selectedDate && availableDurations.length === 0 && (
-        <div className="mt-6 p-5 bg-oxfordBlue/60 rounded-xl text-center animate-fade-in shadow-lg backdrop-blur-sm">
-          <svg
-            className="w-8 h-8 mx-auto text-darkGold mb-2"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
-          <p className="text-white/90">
-            No available time slots for this date. Please select another date.
-          </p>
-        </div>
-      )}
-
-      {/* Add CSS for animations */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.4s ease-out forwards;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 }
 
-// Step 2: Contact info
+// Step 2: Time selection with improved UI
+function TimeStep({ availability, selectedTime, onSelectTime }) {
+  const [selectedHour, setSelectedHour] = useState(null);
+  
+  // Group availability by time slot for easier rendering
+  const timeSlots = availability.filter(slot => slot.allowed.length > 0);
+  
+  // Handle hour selection
+  const handleHourSelect = (hour) => {
+    setSelectedHour(hour);
+  };
+  
+  // Handle duration selection
+  const handleDurationSelect = (hour, duration) => {
+    onSelectTime({ slot: hour, dur: duration });
+  };
+  
+  // Convert duration minutes to readable format
+  const formatDuration = (minutes) => {
+    if (minutes < 60) return `${minutes}m`;
+    if (minutes % 60 === 0) return `${Math.floor(minutes / 60)}h`;
+    return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
+  };
+
+  // Calculate end time for a given start time and duration
+  const calculateEndTime = (startTime, durationMinutes) => {
+    const [h, m] = startTime.split(":").map(Number);
+    const endMinutes = m + durationMinutes;
+    const endHours = h + Math.floor(endMinutes / 60);
+    const endMinutesRemainder = endMinutes % 60;
+    return `${endHours}:${endMinutesRemainder.toString().padStart(2, '0')}`;
+  };
+  
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      {/* If no hour is selected yet, show the hour selection grid */}
+      {!selectedHour ? (
+        <div>
+          <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 sm:gap-3">
+            {timeSlots.map(({ slot, allowed }) => (
+              <button
+                key={slot}
+                onClick={() => handleHourSelect(slot)}
+                className="bg-white/10 hover:bg-darkGold/70 text-white rounded-xl p-2 sm:p-3 transition-colors duration-200 flex flex-col items-center"
+              >
+                <span className="text-base sm:text-xl md:text-2xl font-semibold">{slot}</span>
+                <span className="text-[10px] xs:text-xs md:text-base mt-1">
+                  {allowed.length} {allowed.length === 1 ? 'option' : 'options'}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        /* If hour is selected, show duration options for that hour */
+        <div>
+          <div className="flex items-center mb-2 sm:mb-4">
+            <button 
+              onClick={() => setSelectedHour(null)}
+              className="text-white mr-2 hover:text-darkGold transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
+            {timeSlots
+              .find(item => item.slot === selectedHour)?.allowed
+              .map(duration => (
+                <button
+                  key={duration}
+                  onClick={() => handleDurationSelect(selectedHour, duration)}
+                  className={`relative overflow-hidden shadow-lg rounded-xl p-2 sm:p-3 transition-all duration-200
+                    ${selectedTime?.slot === selectedHour && selectedTime?.dur === duration
+                      ? " bg-darkGold/30"
+                      : " bg-white/10 hover:border-darkGold/70 hover:bg-white/20"
+                    }`}
+                >
+                  <div className="flex flex-col items-center justify-center text-white">
+                    <span className="text-base sm:text-lg md:text-xl font-bold mb-1">{formatDuration(duration)}</span>
+                    <span className="text-[10px] xs:text-xs md:text-base opacity-70">
+                      {selectedHour} - {calculateEndTime(selectedHour, duration)}
+                    </span>
+                  </div>
+                </button>
+              ))
+            }
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Step 3: Contact info
 function InfoStep({ formData, onChange }) {
   const { t } = useTranslation();
-  const { openAuthModal } = useContext(AuthModalContext);
+  
   return (
     <div className="space-y-4 max-w-md mx-auto w-full">
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white text-sm sm:text-base md:text-lg">
-          {t("booking.name_label")}
-        </label>
+        <label className="block text-white text-sm sm:text-base md:text-lg">{t("booking.name_label")}</label>
         <input
           name="name"
           placeholder={t("booking.name_placeholder")}
@@ -430,9 +300,7 @@ function InfoStep({ formData, onChange }) {
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white text-sm sm:text-base md:text-lg">
-          {t("booking.email_label")}
-        </label>
+        <label className="block text-white text-sm sm:text-base md:text-lg">{t("booking.email_label")}</label>
         <input
           name="email"
           type="email"
@@ -442,455 +310,6 @@ function InfoStep({ formData, onChange }) {
           className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-xs sm:text-sm md:text-base"
         />
       </div>
-      <div className="text-white text-sm text-right sm:text-base md:text-lg">
-        <button
-          type="button"
-          onClick={openAuthModal}
-          className="text-xs text-white underline"
-        >
-          {t("services.common_login_signup")}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// Step 3: Payment step with verification
-function PaymentStep({
-  selectedDate,
-  selectedTime,
-  selectedDuration,
-  formData,
-  setPaymentStatus,
-}) {
-  const { t } = useTranslation();
-  const location = useLocation();
-
-  const [loadingCheckout, setLoadingCheckout] = useState(false);
-  const [paymentInProgress, setPaymentInProgress] = useState(false);
-  const [verificationStatus, setVerificationStatus] = useState("pending"); // 'pending', 'success', 'failed'
-  const [verificationId, setVerificationId] = useState(null); // To track verification reference
-  const [bookingReference, setBookingReference] = useState("");
-
-  // Check for stripe_success parameter when component mounts
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const success = urlParams.get("stripe_success");
-    const reference = urlParams.get("reference");
-
-    if (success === "true" && reference) {
-      setVerificationId(reference);
-      setBookingReference(reference);
-      verifyPayment(reference);
-    }
-  }, [location]);
-
-  const checkBookingStatus = async (reference) => {
-    try {
-      const { data, error } = await supabase
-        .from("bookings")
-        .select("payment_status")
-        .eq("payment_reference", reference)
-        .single();
-
-      if (!error && data && data.payment_status === "paid") {
-        setVerificationStatus("success");
-        setPaymentStatus("paid");
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error("Error checking booking status:", error);
-      return false;
-    }
-  };
-
-  // Modify the verification polling to also check bookings table
- const verifyPayment = async (reference) => {
-  setPaymentInProgress(true);
-  
-  // Define a function to check status directly from Supabase
-  const checkDirectFromDatabase = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("bookings")
-        .select("payment_status")
-        .eq("payment_reference", reference)
-        .single();
-      
-      console.log("Direct DB check result:", data);
-      
-      if (!error && data && data.payment_status === 'paid') {
-        setVerificationStatus('success');
-        setPaymentStatus('paid');
-        return true;
-      }
-      return false;
-    } catch (err) {
-      console.error("Direct DB check error:", err);
-      return false;
-    }
-  };
-  
-  try {
-    // Try direct database check first
-    const directCheckResult = await checkDirectFromDatabase();
-    if (directCheckResult) {
-      setPaymentInProgress(false);
-      return;
-    }
-    
-    // If direct check fails, try API
-    const checkViaApi = async () => {
-      try {
-        const response = await fetch(`/api/check-payment-status?reference=${reference}`);
-        const data = await response.json();
-        console.log("API check result:", data);
-        
-        if (data.status === 'paid') {
-          setVerificationStatus('success');
-          setPaymentStatus('paid');
-          setPaymentInProgress(false);
-          return true;
-        }
-        
-        // Always try direct DB check as fallback
-        return await checkDirectFromDatabase();
-      } catch (error) {
-        console.error("API check error:", error);
-        return await checkDirectFromDatabase();
-      }
-    };
-    
-    // Initial API check
-    const apiCheckResult = await checkViaApi();
-    if (apiCheckResult) return;
-    
-    // Set up polling with both methods
-    let attempts = 0;
-    const maxAttempts = 15;
-    
-    const intervalId = setInterval(async () => {
-      attempts++;
-      console.log(`Verification attempt ${attempts} of ${maxAttempts}`);
-      
-      const success = await checkViaApi();
-      
-      if (success || attempts >= maxAttempts) {
-        clearInterval(intervalId);
-        if (!success && attempts >= maxAttempts) {
-          console.log("Max verification attempts reached");
-          // Don't change status yet - leave it pending
-        }
-        setPaymentInProgress(false);
-      }
-    }, 3000);
-    
-    return () => clearInterval(intervalId);
-  } catch (error) {
-    console.error('Error in payment verification:', error);
-    setPaymentInProgress(false);
-  }
-};
-
-  // Handle direct payment link navigation
-  const handleProceedToPayment = async () => {
-    setLoadingCheckout(true);
-
-    try {
-      // Generate a unique reference for this booking attempt
-      const reference = `booking_${Date.now()}_${Math.random()
-        .toString(36)
-        .substring(2, 9)}`;
-      setVerificationId(reference);
-
-      // Create a pending booking entry
-      const { data, error } = await supabase
-        .from("bookings")
-        .insert({
-          appointment_date: selectedDate.toISOString(),
-          duration_minutes: selectedDuration,
-          name: formData.name,
-          email: formData.email,
-          payment_status: "pending",
-          payment_reference: reference,
-        })
-        .select("id")
-        .single();
-
-      if (error) throw error;
-
-      setBookingReference(reference);
-
-      // Redirect to the appropriate Stripe payment link
-      const paymentUrl = STRIPE_LINKS[selectedDuration];
-      if (!paymentUrl) {
-        throw new Error(
-          `No payment link found for duration: ${selectedDuration} minutes`
-        );
-      }
-
-      const returnUrl = `${window.location.origin}/booking?stripe_success=true&reference=${reference}`;
-
-      const fullUrl = `${paymentUrl}?client_reference_id=${reference}&prefilled_email=${encodeURIComponent(
-        formData.email
-      )}&redirect_url=${encodeURIComponent(returnUrl)}`;
-
-      window.open(fullUrl, "_blank");
-    } catch (error) {
-      console.error("Failed to start payment process:", error);
-      alert(
-        "There was a problem starting the payment process. Please try again."
-      );
-    } finally {
-      setLoadingCheckout(false);
-    }
-  };
-
-  // Generate pricing based on duration
-  const price = selectedDuration * 1.5; // Example: €1.5 per minute
-
-  // Format end time
-  const formatDateAndTime = (date, timeString, duration) => {
-    if (!date || !timeString) return "";
-
-    const [hours, minutes] = timeString.split(":").map(Number);
-    const startTime = new Date(date);
-    startTime.setHours(hours, minutes, 0, 0);
-
-    const endTime = addMinutes(startTime, duration);
-
-    const bookingDetails = formData.bookingSummary || {};
-    const formattedDateTime = {
-      date: format(date, "EEEE, MMMM d, yyyy"),
-      start: format(startTime, "h:mm a"),
-      end: format(endTime, "h:mm a"),
-    };
-
-    return formattedDateTime;
-  };
-
-  const bookingDetails = formData.bookingSummary || {};
-  const formattedDateTime = formatDateAndTime(
-    selectedDate,
-    selectedTime,
-    selectedDuration
-  );
-
-  return (
-    <div className="space-y-6 max-w-md mx-auto">
-      {/* Booking Summary Card */}
-      <div className="bg-white/10 rounded-xl p-6 shadow-md">
-        <h3 className="text-white text-xl mb-4 font-semibold">
-          Booking Summary
-        </h3>
-
-        <div className="space-y-4">
-          <div className="flex justify-between text-white">
-            <span className="text-white/70">Date:</span>
-            <span className="font-medium">
-              {bookingDetails.dateFormatted || formattedDateTime.date}
-            </span>
-          </div>
-          <div className="flex justify-between text-white">
-            <span className="text-white/70">Time:</span>
-            <span className="font-medium">
-              {bookingDetails.timeRange ||
-                `${formattedDateTime.start} - ${formattedDateTime.end}`}
-            </span>
-          </div>
-          <div className="flex justify-between text-white">
-            <span className="text-white/70">Duration:</span>
-            <span className="font-medium">
-              {bookingDetails.duration || `${selectedDuration} minutes`}
-            </span>
-          </div>
-          <div className="flex justify-between text-white">
-            <span className="text-white/70">Customer:</span>
-            <span className="font-medium">{formData.name}</span>
-          </div>
-
-          <div className="border-t border-white/10 pt-4 mt-4">
-            <div className="flex justify-between text-white">
-              <span className="text-xl">Total:</span>
-              <span className="text-xl font-bold">€{price}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Payment Status & Buttons */}
-      <div className="flex flex-col items-center space-y-3">
-        {/* Verification Status Messages */}
-        {bookingReference && verificationStatus === "pending" && (
-          <div className="w-full bg-blue-500/20 text-white p-4 rounded-xl text-center">
-            <div className="flex items-center justify-center space-x-3">
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              <span>Verifying your payment...</span>
-            </div>
-            <button
-              onClick={() => verifyPayment(bookingReference)}
-              className="mt-3 text-sm underline"
-            >
-              Click here if you've completed payment
-            </button>
-          </div>
-        )}
-
-        {verificationStatus === "success" && (
-          <div className="w-full bg-green-500/20 text-white p-4 rounded-xl text-center">
-            <div className="flex items-center justify-center space-x-3">
-              <svg
-                className="h-5 w-5 text-green-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              <span>
-                Payment successful! Click "Confirm Booking" to continue.
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Initial Payment Button (shown if no verification in progress) */}
-        {!bookingReference && !paymentInProgress && (
-          <button
-            onClick={handleProceedToPayment}
-            disabled={loadingCheckout}
-            className="w-full bg-darkGold text-black font-medium py-3 px-4 rounded-xl flex items-center justify-center space-x-2 hover:bg-opacity-90 transition-colors disabled:opacity-50"
-          >
-            {loadingCheckout ? (
-              <span className="flex items-center space-x-2">
-                <svg
-                  className="animate-spin h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                <span>Redirecting...</span>
-              </span>
-            ) : (
-              <>
-                <svg
-                  className="w-5 h-5 mr-2"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M4 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H4C2.89543 20 2 19.1046 2 18V6C2 4.89543 2.89543 4 4 4Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M16 2V6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M8 2V6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M2 10H22"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <span>Proceed to Payment</span>
-              </>
-            )}
-          </button>
-        )}
-
-        <p className="text-white/60 text-sm text-center">
-          {verificationStatus === "success"
-            ? "Payment confirmed! Click 'Confirm Booking' to finalize your appointment."
-            : "Your booking will be confirmed after payment is processed."}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// Step 4: Confirmation step
-function ConfirmationStep() {
-  return (
-    <div className="text-center py-6">
-      <div className="bg-green-500/20 rounded-full w-16 h-16 mx-auto flex items-center justify-center mb-4">
-        <svg
-          className="w-8 h-8 text-green-500"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
-      </div>
-      <h3 className="text-xl text-white font-bold mb-2">
-        Your booking is confirmed!
-      </h3>
-      <p className="text-white/80 mb-4">
-        We've sent a confirmation email with all the details.
-      </p>
-      <p className="text-white/60 text-sm">
-        You can now chat with our assistant to prepare for your consultation.
-      </p>
     </div>
   );
 }
@@ -902,34 +321,35 @@ export default function Booking({ onBackService }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedDuration, setSelectedDuration] = useState(null);
-  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
-  const [availableDurations, setAvailableDurations] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [bookedEvents, setBookedEvents] = useState([]);
   const [formData, setFormData] = useState({
     name: user?.user_metadata?.full_name || "",
-    email: user?.email || "",
-    bookingSummary: null,
+    email: user?.email || ""
   });
-  const [paymentStatus, setPaymentStatus] = useState("pending"); // 'pending', 'paid', 'failed'
-  const [loading, setLoading] = useState(true);
+  const [paymentDone, setPaymentDone] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [bookingId, setBookingId] = useState(null);
-  const location = useLocation();
 
   // Business hours buffer - start scheduling from tomorrow
   const minDate = addDays(new Date(), 1);
 
-  // Check for payment verification in URL
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const stripeSuccess = urlParams.get("stripe_success");
-    const reference = urlParams.get("reference");
+  // Stripe checkout links by duration (minutes)
+  const STRIPE_LINKS = {
+    45: "https://buy.stripe.com/9AQ4h1gy6fG90Te7sw",
+    60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
+    75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
+    90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
+    105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
+    120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
+  };
 
-    if (stripeSuccess === "true" && reference) {
-      // If returning from successful Stripe payment, move to payment step
-      if (step < 3) setStep(3);
+  // Auto-redirect to Stripe at payment step
+  useEffect(() => {
+    if (step === 4 && selectedDuration) {
+      window.open(STRIPE_LINKS[selectedDuration], "_blank");
     }
-  }, [location, step]);
+  }, [step, selectedDuration]);
 
   // Load existing bookings
   useEffect(() => {
@@ -944,93 +364,9 @@ export default function Booking({ onBackService }) {
         setLoading(false);
       }
     }
-
+    
     loadBookings();
   }, []);
-
-  // Define time slots and durations
-  const generateTimeSlots = () => {
-    // Generate time slots from 10:00 to 21:00
-    return Array.from({ length: 12 }, (_, i) => `${10 + i}:00`);
-  };
-
-  const ALL_TIME_SLOTS = generateTimeSlots();
-  const ALL_DURATIONS = [45, 60, 75, 90, 105, 120]; // in minutes
-
-  // When a date is selected, check which durations are available
-  useEffect(() => {
-    if (selectedDate) {
-      // Filter durations based on availability
-      const availableDurs = ALL_DURATIONS.filter((duration) =>
-        // Check if any time slot works with this duration
-        ALL_TIME_SLOTS.some((timeSlot) =>
-          isSlotFree(selectedDate, timeSlot, duration)
-        )
-      );
-
-      setAvailableDurations(availableDurs);
-
-      // Reset selections when date changes
-      setSelectedDuration(null);
-      setSelectedTime(null);
-      setAvailableTimeSlots([]);
-    } else {
-      setAvailableDurations([]);
-    }
-  }, [selectedDate, bookedEvents]);
-
-  // When duration is selected, compute available time slots
-  useEffect(() => {
-    if (selectedDate && selectedDuration) {
-      // Filter time slots based on availability for selected duration
-      const availableTimes = ALL_TIME_SLOTS.filter((timeSlot) =>
-        isSlotFree(selectedDate, timeSlot, selectedDuration)
-      );
-
-      setAvailableTimeSlots(availableTimes);
-      setSelectedTime(null); // Reset time selection
-    } else {
-      setAvailableTimeSlots([]);
-    }
-  }, [selectedDate, selectedDuration]);
-
-  // Update booking summary when all details are selected
-  useEffect(() => {
-    if (selectedDate && selectedTime && selectedDuration) {
-      // Format the times for summary
-      const dateFormatted = format(selectedDate, "EEEE, MMMM d, yyyy");
-      const [hours, minutes] = selectedTime.split(":").map(Number);
-      const startDate = new Date(selectedDate);
-      startDate.setHours(hours, minutes, 0, 0);
-
-      const endTime = addMinutes(startDate, selectedDuration);
-      const timeRange = `${selectedTime} - ${format(endTime, "h:mm a")}`;
-
-      // Format duration
-      let duration;
-      if (selectedDuration < 60) {
-        duration = `${selectedDuration} minutes`;
-      } else if (selectedDuration % 60 === 0) {
-        duration = `${selectedDuration / 60} hour${
-          selectedDuration > 60 ? "s" : ""
-        }`;
-      } else {
-        duration = `${Math.floor(selectedDuration / 60)}h ${
-          selectedDuration % 60
-        }m`;
-      }
-
-      // Update form data with booking summary
-      setFormData((prev) => ({
-        ...prev,
-        bookingSummary: {
-          dateFormatted,
-          timeRange,
-          duration,
-        },
-      }));
-    }
-  }, [selectedDate, selectedTime, selectedDuration]);
 
   // Build blocked intervals based on existing bookings
   // Each booking blocks from 30min before the start time to the end time
@@ -1040,7 +376,7 @@ export default function Booking({ onBackService }) {
       const end = new Date(event.end);
       return {
         from: addMinutes(start, -30), // 30min prep time before consultation
-        to: end, // End of consultation
+        to: end                       // End of consultation
       };
     });
   };
@@ -1050,21 +386,21 @@ export default function Booking({ onBackService }) {
   // Check if a specific hour and duration is available on the selected date
   function isSlotFree(date, hourString, durationMinutes) {
     if (!date) return false;
-
+    
     // Create datetime objects for the proposed booking
     const [hour, minute] = hourString.split(":").map(Number);
-
+    
     const consultationStart = new Date(date);
     consultationStart.setHours(hour, minute, 0, 0);
-
+    
     const prepStart = addMinutes(consultationStart, -30); // 30min prep time
     const consultationEnd = addMinutes(consultationStart, durationMinutes);
-
+    
     // Check if the booking would extend past 10pm (22:00)
     if (consultationEnd.getHours() >= 22 && consultationEnd.getMinutes() > 0) {
       return false;
     }
-
+    
     // Check for conflicts with existing bookings
     for (const block of blocked) {
       // Check if there's any overlap between the proposed booking (including prep time)
@@ -1076,93 +412,89 @@ export default function Booking({ onBackService }) {
         return false; // Conflict detected
       }
     }
-
+    
     return true; // No conflicts found
   }
 
-  // Now with 4 steps:
-  // 1: Date/Duration/Time selection
-  // 2: Contact info
-  // 3: Payment (no database save yet)
-  // 4: Confirmation (only save to database after successful payment)
-  // 5: Chat
+  // Define durations and hours
+  const DURS = [45, 60, 75, 90, 105, 120]; // Duration options in minutes
+  const timeOptions = Array.from({ length: 12 }, (_, i) => `${10 + i}:00`); // Hours from 10am to 9pm
+
+  // Compute availability per hour based on the selected date
+  const availability = timeOptions.map(slot => ({
+    slot,
+    allowed: DURS.filter(dur => isSlotFree(selectedDate, slot, dur)),
+  }));
+
+  // Booking steps
   const STEPS = [
-    { title: t("booking.step_1"), component: CombinedSelectionStep },
-    { title: t("booking.step_2"), component: InfoStep },
-    { title: "Payment", component: PaymentStep },
-    { title: "Confirmation", component: ConfirmationStep },
+    { title: t("booking.step_1"), component: DateStep },
+    { title: t("booking.step_2"), component: TimeStep },
+    { title: t("booking.step_3"), component: InfoStep },
     { title: t("booking.step_4"), component: InlineChatbotStep },
   ];
+  const Current = STEPS[step - 1].component;
   const UI_STEPS = STEPS.length + 1;
 
   // Navigation logic
   const canProceed = () => {
-    if (step === 1) return selectedDate && selectedTime && selectedDuration;
-    if (step === 2) return formData.name && formData.email;
-    if (step === 3) return paymentStatus === "paid"; // Only proceed if payment is verified
+    if (step === 2) return !!selectedDuration;
+    if (step === 3) return formData.name && formData.email;
+    if (step === 4) return paymentDone;
     return true;
   };
 
   const handleNext = async () => {
-    if (step === 1 && selectedDate && selectedTime && selectedDuration) {
-      setStep(2);
-    } else if (step === 2 && formData.name && formData.email) {
-      // Move to payment step
-      setStep(3);
-    } else if (step === 3 && paymentStatus === "paid") {
-      // This is the payment step - only proceed if payment is confirmed
+    if (step < 3) {
+      setStep(step + 1);
+    } else if (step === 3) {
       setLoading(true);
-
+  
+      // Build the ISO timestamp for the consultation start time
+      const appointment_date = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        ...selectedTime.split(":").map(Number)
+      ).toISOString();
+  
       try {
-        // Retrieve booking information using the payment reference
-        const urlParams = new URLSearchParams(location.search);
-        const reference = urlParams.get("reference");
-
-        if (reference) {
-          // Find booking ID by payment reference
-          const { data, error } = await supabase
-            .from("bookings")
-            .select("id")
-            .eq("payment_reference", reference)
-            .eq("payment_status", "paid")
-            .single();
-
-          if (error) throw error;
-
-          if (data) {
-            setBookingId(data.id);
-
-            // Refresh bookings data to update availability
-            const { data: fresh } = await fetchBookings();
-            setBookedEvents(fresh || []);
-
-            // Move to confirmation step
-            setStep(4);
-          } else {
-            throw new Error("Booking not found or not paid");
-          }
-        } else {
-          throw new Error("Payment reference not found");
-        }
+        const { data, error } = await supabase
+          .from("bookings")
+          .insert({
+            user_id: user.id,
+            appointment_date,
+            duration_minutes: selectedDuration,
+            name: formData.name,
+            email: formData.email,
+          })
+          .select("id")
+          .single();
+    
+        if (error) throw error;
+        
+        setBookingId(data.id);
+        
+        // Refresh bookings data to update availability
+        const { data: fresh } = await fetchBookings();
+        setBookedEvents(fresh || []);
+        
+        setStep(4); // Move to the next step
       } catch (error) {
-        console.error("Error confirming booking:", error);
-        alert(
-          "There was a problem confirming your booking. Please try again or contact support."
-        );
+        console.error("Error creating booking:", error);
+        // Here you could add user notification about the error
       } finally {
         setLoading(false);
       }
-    } else if (step === 4) {
-      // Move to chat step after confirmation
-      setStep(5);
+    } else {
+      setStep(step + 1);
     }
   };
 
-  const handleChange = (e) =>
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-
-  const handleStepClick = (dot) => {
-    if (dot === 1) onBackService();
+  const handleChange = e => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  
+  const handleStepClick = dot => {
+    if (dot === 1) onBackService(); 
     else setStep(dot - 1);
   };
 
@@ -1172,53 +504,40 @@ export default function Booking({ onBackService }) {
         <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-4 sm:mb-6 text-black">
           {t("booking.title")}
         </h2>
-        <div className="bg-oxfordBlue rounded-xl p-6 sm:p-6 md:p-8 shadow-xl">
-          <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-4 sm:mb-6 font-semibold">
-            {STEPS[step - 1].title}
-          </h3>
-
+        <div className="bg-oxfordBlue rounded-xl p-3 sm:p-6 md:p-8 shadow-xl">
+          <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-4 sm:mb-6 font-semibold">{STEPS[step - 1].title}</h3>
+          
           {loading && step === 1 ? (
             <div className="flex justify-center py-6 sm:py-10">
               <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 md:h-16 md:w-16 border-t-2 border-b-2 border-darkGold"></div>
             </div>
           ) : (
             <>
-              {step === 1 && (
-                <CombinedSelectionStep
+              {step === 2 ? (
+                <TimeStep
+                  availability={availability}
+                  selectedTime={{ slot: selectedTime, dur: selectedDuration }}
+                  onSelectTime={({ slot, dur }) => {
+                    setSelectedTime(slot);
+                    setSelectedDuration(dur);
+                  }}
+                />
+              ) : step < 2 ? (
+                <DateStep
                   selectedDate={selectedDate}
                   onSelectDate={setSelectedDate}
                   currentMonth={currentMonth}
-                  onChangeMonth={(inc) =>
-                    setCurrentMonth((prev) => addMonths(prev, inc))
+                  onChangeMonth={inc =>
+                    setCurrentMonth(prev => addMonths(prev, inc))
                   }
                   minDate={minDate}
-                  selectedDuration={selectedDuration}
-                  onSelectDuration={setSelectedDuration}
-                  availableDurations={availableDurations}
-                  selectedTime={selectedTime}
-                  onTimeSelection={setSelectedTime}
-                  availableTimeSlots={availableTimeSlots}
-                  bookedEvents={bookedEvents}
                 />
-              )}
-
-              {step === 2 && (
-                <InfoStep formData={formData} onChange={handleChange} />
-              )}
-
-              {step === 3 && (
-                <PaymentStep
-                  selectedDate={selectedDate}
-                  selectedTime={selectedTime}
-                  selectedDuration={selectedDuration}
+              ) : step === 3 ? (
+                <InfoStep
                   formData={formData}
-                  setPaymentStatus={setPaymentStatus}
+                  onChange={handleChange}
                 />
-              )}
-
-              {step === 4 && <ConfirmationStep />}
-
-              {step === 5 && (
+              ) : (
                 <InlineChatbotStep
                   requestId={bookingId}
                   tableName="booking_chat_messages"
@@ -1227,10 +546,10 @@ export default function Booking({ onBackService }) {
             </>
           )}
 
-          <div className="flex justify-between mt-4 sm:mt-5">
+          <div className="flex justify-between mt-4 sm:mt-6 md:mt-8">
             <button
-              onClick={() => (step > 1 ? setStep(step - 1) : onBackService())}
-              className="px-2 py-1 border border-darkGold text-darkGold rounded-lg text-sm"
+              onClick={() => step > 1 ? setStep(step - 1) : onBackService()}
+              className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
             >
               {t("booking.back")}
             </button>
@@ -1238,36 +557,18 @@ export default function Booking({ onBackService }) {
               <button
                 onClick={handleNext}
                 disabled={!canProceed() || loading}
-                className="px-3 py-1 bg-darkGold text-black rounded-lg text-sm disabled:opacity-50"
+                className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
               >
                 {loading ? (
                   <span className="flex items-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-1 h-3 w-3 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
+                    <svg className="animate-spin -ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     {t("booking.processing")}
                   </span>
-                ) : step === 3 ? (
-                  "Confirm Booking"
                 ) : (
-                  t("booking.next")
+                  step === 3 ? t("booking.complete_booking") : t("booking.next")
                 )}
               </button>
             )}
@@ -1277,34 +578,10 @@ export default function Booking({ onBackService }) {
             stepCount={UI_STEPS}
             currentStep={step + 1}
             onStepClick={handleStepClick}
-            className="pt-3 sm:pt-4"
+            className="pt-4 sm:pt-6"
           />
         </div>
       </div>
-
-      {/* Add CSS for animations */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out forwards;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none; /* IE and Edge */
-          scrollbar-width: none; /* Firefox */
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none; /* Chrome, Safari and Opera */
-        }
-      `}</style>
     </section>
   );
 }
