@@ -150,7 +150,7 @@ function DateStep({
                 onClick={() => !disabled && onSelectDate(date)}
                 disabled={disabled}
                 className={`
-                  relative h-10 sm:h-12 md:h-14 aspect-square rounded-lg flex flex-col items-center justify-center
+                  relative h-8 sm:h-12 md:h-14 aspect-square rounded-lg flex flex-col items-center justify-center
                   transition-all duration-200
                   ${selected 
                     ? "bg-darkGold text-white font-bold shadow-lg scale-105 z-10" 
@@ -517,7 +517,7 @@ export default function Booking({ onBackService }) {
         <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-4 sm:mb-6 text-black">
           {t("booking.title")}
         </h2>
-        <div className="bg-oxfordBlue rounded-xl p-3 sm:p-6 md:p-8 shadow-xl">
+        <div className="bg-oxfordBlue rounded-xl p-6 sm:p-6 md:p-8 shadow-xl">
           <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-4 sm:mb-6 font-semibold">{STEPS[step - 1].title}</h3>
           
           {loading && step === 1 ? (
