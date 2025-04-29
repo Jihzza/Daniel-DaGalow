@@ -1,5 +1,5 @@
 // components/DirectCoaching.jsx
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import InvestIcon from "../../assets/icons/Stocks Branco.svg";
 import TrainerIcon from "../../assets/icons/PersonalTrainer Branco.svg";
 import DatingIcon from "../../assets/icons/Dating Branco.svg";
@@ -7,16 +7,24 @@ import OnlyFansIcon from "../../assets/icons/Onlyfans Branco.svg";
 import BusinessIcon from "../../assets/icons/Business Branco.svg";
 import HabitsIcon from "../../assets/icons/Habits Branco.svg";
 import { ServiceContext } from "../../contexts/ServiceContext";
-import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 
 function DirectCoaching() {
-  const { setService } = useContext(ServiceContext);
+  const { setService, setServiceWithTier } = useContext(ServiceContext);
   const [tier, setTier] = useState("basic");
   const { t } = useTranslation();
 
-  const openForm = (service) => {
+  const openStandardForm = (service) => {
     setService(service);
+    document
+      .getElementById("service-selection")
+      ?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // New handler to open coaching form with the selected tier
+  const openCoachingForm = () => {
+    // Use setServiceWithTier to pass both service and chosen tier
+    setServiceWithTier("coaching", tier);
     document
       .getElementById("service-selection")
       ?.scrollIntoView({ behavior: "smooth" });
@@ -228,7 +236,7 @@ function DirectCoaching() {
             {tiers.map(t => (
               <label
                 key={t.id}
-                className={`cursor-pointer border-2 rounded-lg py-4 px-2 flex flex-col items-center justify-center transition-all duration-200 ${tier === t.id ? 'border-darkGold bg-darkGold bg-opacity-20' : 'border-darkGold'}`}
+                className={`cursor-pointer border-2 rounded-lg py-4 px-2 flex flex-col items-center justify-center transition-all duration-200 ${tier === t.id ? 'border-darkGold transform scale-110 z-10' : 'border-darkGold'}`}
               >
                 <input
                   type="radio"
@@ -248,8 +256,8 @@ function DirectCoaching() {
           <p className="text-sm md:text-lg font-normal">{t("coaching.coaching_limited_spots")}</p>
 
           <div className="flex justify-center pt-2">
-            <button
-              onClick={() => openForm("coaching")}
+          <button
+              onClick={openCoachingForm}
               className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               {t("coaching.coaching_get_number")}
