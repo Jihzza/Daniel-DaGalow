@@ -451,6 +451,34 @@ function InfoStep({ formData, onChange }) {
 function PaymentStep({ selectedDate, selectedTime, selectedDuration, formData }) {
   const { t } = useTranslation();
   
+  const [loadingCheckout, setLoadingCheckout] = useState(false);
+
+  const handleProceedToPayment = async () => {
+    setLoadingCheckout(true);
+    try {
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          appointment_date: selectedDate.toISOString(),
+          duration: selectedDuration,
+          name: formData.name,
+          email: formData.email,
+          // If you have user context, add user_id here
+          // user_id: user?.id,
+        }),
+      });
+      const { sessionUrl } = await res.json();
+      window.location.href = sessionUrl;
+    } catch (error) {
+      console.error("Failed to start Stripe Checkout:", error);
+    } finally {
+      setLoadingCheckout(false);
+    }
+  };
+
   // Generate pricing based on duration
   const price = selectedDuration * 1.5; // Example: €1.5 per minute
   
@@ -464,11 +492,14 @@ function PaymentStep({ selectedDate, selectedTime, selectedDuration, formData })
     
     const endTime = addMinutes(startTime, duration);
     
-    return {
+    const bookingDetails = formData.bookingSummary || {};
+    const formattedDateTime = {
       date: format(date, "EEEE, MMMM d, yyyy"),
       start: format(startTime, "h:mm a"),
       end: format(endTime, "h:mm a")
     };
+
+    return formattedDateTime;
   };
   
   const bookingDetails = formData.bookingSummary || {};
@@ -477,16 +508,7 @@ function PaymentStep({ selectedDate, selectedTime, selectedDuration, formData })
     selectedTime, 
     selectedDuration
   );
-  
-  // Stripe checkout links by duration (minutes)
-  const STRIPE_LINKS = {
-    45: "https://buy.stripe.com/9AQ4h1gy6fG90Te7sw",
-    60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
-    75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
-    90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
-    105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
-    120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
-  };
+
   
   return (
     <div className="space-y-6 max-w-md mx-auto">
@@ -523,12 +545,13 @@ function PaymentStep({ selectedDate, selectedTime, selectedDuration, formData })
       
       {/* Payment Button */}
       <div className="flex flex-col items-center space-y-3">
-        <a
-          href={STRIPE_LINKS[selectedDuration]}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full bg-darkGold text-black font-medium py-3 px-4 rounded-xl flex items-center justify-center space-x-2 hover:bg-opacity-90 transition-colors"
-        >
+        <button
+          onClick={handleProceedToPayment}
+          disabled={loadingCheckout}
+          className="w-full bg-darkGold text-black font-medium py-3 px-4 rounded-xl flex items-center justify-center space-x-2 hover:bg-opacity-90 transition-colors disabled:opacity-50"
+          >
+            {loadingCheckout ? "Redirecting..." : "Proceed to Payment"}
+          </button>
           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H4C2.89543 20 2 19.1046 2 18V6C2 4.89543 2.89543 4 4 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M12 11V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -537,7 +560,6 @@ function PaymentStep({ selectedDate, selectedTime, selectedDuration, formData })
             <path d="M12 7H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span>Proceed to Payment</span>
-        </a>
         <p className="text-white/60 text-sm text-center">
           After completing the payment, click "Next" to confirm your booking
         </p>
@@ -774,7 +796,6 @@ export default function Booking({ onBackService }) {
       // This is the payment step
       // Here we move to confirmation and now save to database
       setLoading(true);
-<<<<<<< HEAD
 
       try {
         // Build the ISO timestamp for the consultation start time
@@ -784,26 +805,13 @@ export default function Booking({ onBackService }) {
         const appointment_date = appointmentDate.toISOString();
 
         // Now we save to database after "payment" is complete
-=======
-
-      // Build the ISO timestamp for the consultation start time
-      const [hours, minutes] = selectedTime.split(":").map(Number);
-      const appointmentDate = new Date(selectedDate);
-      appointmentDate.setHours(hours, minutes, 0, 0);
-      const appointment_date = appointmentDate.toISOString();
-
-      try {
->>>>>>> 375cf1072df6606e5ee800a65648e58d8b49c08f
         const payload = {
           appointment_date,
           duration_minutes: selectedDuration,
           name: formData.name,
           email: formData.email,
           user_id: user?.id, // Add user ID if logged in
-<<<<<<< HEAD
           payment_status: "paid" // Mark as paid
-=======
->>>>>>> 375cf1072df6606e5ee800a65648e58d8b49c08f
         };
 
         const { data, error } = await supabase
@@ -820,24 +828,17 @@ export default function Booking({ onBackService }) {
         const { data: fresh } = await fetchBookings();
         setBookedEvents(fresh || []);
 
-<<<<<<< HEAD
         // Move to confirmation step
         setStep(4);
-=======
-        setStep(3); // Move to the next step
->>>>>>> 375cf1072df6606e5ee800a65648e58d8b49c08f
       } catch (error) {
         console.error("Error creating booking:", error);
         // Here you could add user notification about the error
       } finally {
         setLoading(false);
       }
-<<<<<<< HEAD
     } else if (step === 4) {
       // Move to chat step after confirmation
       setStep(5);
-=======
->>>>>>> 375cf1072df6606e5ee800a65648e58d8b49c08f
     }
   };
 
