@@ -774,7 +774,6 @@ export default function Booking({ onBackService }) {
       // This is the payment step
       // Here we move to confirmation and now save to database
       setLoading(true);
-<<<<<<< HEAD
 
       try {
         // Build the ISO timestamp for the consultation start time
@@ -784,26 +783,13 @@ export default function Booking({ onBackService }) {
         const appointment_date = appointmentDate.toISOString();
 
         // Now we save to database after "payment" is complete
-=======
-
-      // Build the ISO timestamp for the consultation start time
-      const [hours, minutes] = selectedTime.split(":").map(Number);
-      const appointmentDate = new Date(selectedDate);
-      appointmentDate.setHours(hours, minutes, 0, 0);
-      const appointment_date = appointmentDate.toISOString();
-
-      try {
->>>>>>> 375cf1072df6606e5ee800a65648e58d8b49c08f
         const payload = {
           appointment_date,
           duration_minutes: selectedDuration,
           name: formData.name,
           email: formData.email,
           user_id: user?.id, // Add user ID if logged in
-<<<<<<< HEAD
           payment_status: "paid" // Mark as paid
-=======
->>>>>>> 375cf1072df6606e5ee800a65648e58d8b49c08f
         };
 
         const { data, error } = await supabase
@@ -820,24 +806,17 @@ export default function Booking({ onBackService }) {
         const { data: fresh } = await fetchBookings();
         setBookedEvents(fresh || []);
 
-<<<<<<< HEAD
         // Move to confirmation step
         setStep(4);
-=======
-        setStep(3); // Move to the next step
->>>>>>> 375cf1072df6606e5ee800a65648e58d8b49c08f
       } catch (error) {
         console.error("Error creating booking:", error);
         // Here you could add user notification about the error
       } finally {
         setLoading(false);
       }
-<<<<<<< HEAD
     } else if (step === 4) {
       // Move to chat step after confirmation
       setStep(5);
-=======
->>>>>>> 375cf1072df6606e5ee800a65648e58d8b49c08f
     }
   };
 
