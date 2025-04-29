@@ -39,7 +39,7 @@ import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 
 import TestimonialReview from "./pages/admin/TestimonialReview";
-
+import BookingSuccess from "./pages/BookingSuccess";
 import { useAuth } from "./contexts/AuthContext";
 
 // Context to expose the AuthModal opener
@@ -118,6 +118,9 @@ function App() {
                   </main>
                 }
               />
+
+              {/* Stripe redirects here on successful payment */}
+              <Route path="/booking-success" element={<BookingSuccess />} />
 
               <Route
                 path="/admin/testimonials"
