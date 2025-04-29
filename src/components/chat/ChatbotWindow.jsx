@@ -301,7 +301,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
       {/* Header */}
       <div
         ref={headerRef}
-        className={`relative w-full flex items-center justify-center py-6 px-4 cursor-row-resize touch-none ${
+        className={`relative w-full flex items-center justify-center py-6 md:pt-10 px-4 cursor-row-resize touch-none ${
           resizing ? "bg-opacity-50" : ""
         }`}
         onPointerDown={onPointerDown}
@@ -311,7 +311,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
         <div className="w-10 h-1 bg-darkGold rounded-full"></div>
         <button
           onClick={onClose}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-darkGold text-2xl leading-none focus:outline-none"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-darkGold text-2xl md:text-3xl leading-none focus:outline-none"
         >
           x
         </button>
@@ -328,8 +328,8 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
               key={i}
               className={`px-4 py-2 ${
                 m.from === "user"
-                  ? "bg-gentleGray/20 self-end text-white"
-                  : "self-start text-white"
+                  ? "bg-gentleGray/20 md:text-xl self-end text-white"
+                  : "self-start md:text-xl text-white"
               }`}
             >
               {m.from === "bot" ? (
@@ -362,13 +362,13 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
         </div>
       </div>
       {/* Input & attachments - Disabled while typing animation is active */}
-      <div className="pb-2 px-2">
+      <div className="pb-2 md:pb-10 px-2">
         <div className="relative w-full">
           <button className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-            <img src={Anexar} alt="Anexar" className="w-6 h-6" />
+            <img src={Anexar} alt="Anexar" className="w-6 h-6 md:w-10 md:h-10" />
           </button>
           <input
-            className="w-full h-12 border-2 border-darkGold bg-oxfordBlue text-white rounded-full p-4 px-12"
+            className="w-full h-12 md:h-16 border-2 border-darkGold bg-oxfordBlue text-white md:text-xl rounded-full p-4 px-12 md:px-16"
             value={userText}
             onChange={(e) => setUserText(e.target.value)}
             onKeyDown={(e) =>
@@ -389,7 +389,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
             <img
               src={Send}
               alt="Send"
-              className={`w-6 h-6 ${
+              className={`w-6 h-6 md:w-10 md:h-10 ${
                 loading || isTypingAnimationActive ? "opacity-50" : ""
               }`}
             />

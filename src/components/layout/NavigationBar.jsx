@@ -41,7 +41,7 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   ];
   
   return (
-    <div className="fixed h-[56px] bottom-0 left-0 w-full px-8 lg:h-[80px] z-50 bg-black flex justify-between items-center">
+    <div className="fixed h-[56px] bottom-0 left-0 w-full px-8 lg:px-10 lg:h-[80px] z-50 bg-black flex justify-between items-center">
       {icons.map((icon, i) => (
         <img
           key={i}

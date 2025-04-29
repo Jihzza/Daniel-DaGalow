@@ -3,8 +3,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import MergedServiceForm from "../../components/forms/MergedServiceForm";
-import BottomCarouselPages from "../../components/carousel/BottomCarouselPages";
 
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
@@ -102,16 +100,16 @@ const SettingsPage = () => {
     setActiveSection(null); // Close the section after saving
   };
 
-  // Helper component for toggle switch
+  // Helper component for toggle switch with improved responsive design
   const ToggleSwitch = ({ name, isChecked, onChange, label, description }) => (
-    <div className="flex items-center justify-between py-4 border-b border-gray-200">
-      <div>
+    <div className="flex flex-col md:flex-row md:items-center justify-between py-4 border-b border-gray-200 gap-2 md:gap-4">
+      <div className="md:flex-1">
         <h3 className="font-semibold text-gray-700">{label}</h3>
         {description && (
-          <p className="text-sm text-gray-500 mt-1">{description}</p>
+          <p className="text-sm text-gray-500 mt-1 md:pr-8">{description}</p>
         )}
       </div>
-      <label className="relative inline-flex items-center cursor-pointer">
+      <label className="relative inline-flex items-center cursor-pointer self-start md:self-center mt-2 md:mt-0">
         <input
           type="checkbox"
           name={name}
@@ -124,7 +122,7 @@ const SettingsPage = () => {
     </div>
   );
 
-  // Helper component for select input
+  // Helper component for select input with improved responsive design
   const SelectInput = ({
     name,
     value,
@@ -134,24 +132,26 @@ const SettingsPage = () => {
     options,
   }) => (
     <div className="py-4 border-b border-gray-200">
-      <div className="mb-2">
-        <h3 className="font-semibold text-gray-700">{label}</h3>
-        {description && (
-          <p className="text-sm text-gray-500 mt-1">{description}</p>
-        )}
+      <div className="mb-2 md:flex md:justify-between md:items-start">
+        <div className="md:flex-1 md:pr-8">
+          <h3 className="font-semibold text-gray-700">{label}</h3>
+          {description && (
+            <p className="text-sm text-gray-500 mt-1">{description}</p>
+          )}
+        </div>
+        <select
+          name={name}
+          value={value}
+          onChange={onChange}
+          className="w-full md:w-72 lg:w-96 mt-2 md:mt-0 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue bg-white"
+        >
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
-      <select
-        name={name}
-        value={value}
-        onChange={onChange}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue bg-white"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
     </div>
   );
 
@@ -163,23 +163,25 @@ const SettingsPage = () => {
     );
   }
 
-  // Privacy Policy Content
+  // Privacy Policy Content with improved formatting for tablet/desktop
   const renderPrivacyPolicy = () => (
-    <div className="prose prose-sm max-w-none">
-      <h3 className="text-xl font-bold text-oxfordBlue mb-4">Privacy Policy</h3>
-      <p className="mb-4">Last updated: April 26, 2025</p>
+    <div className="prose prose-sm md:prose lg:prose-lg max-w-none">
+      <h3 className="text-xl md:text-2xl font-bold text-oxfordBlue mb-4">
+        {t("settings.privacy_policy.title")}
+      </h3>
+      <p className="mb-4 text-sm md:text-base">Last updated: April 26, 2025</p>
 
-      <p className="mb-2">
+      <p className="mb-2 text-sm md:text-base">
         At DaGalow, we respect your privacy and are committed to protecting your
         personal data. This Privacy Policy explains how we collect, use, and
         safeguard your information when you use our website and services.
       </p>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">1. Information We Collect</h4>
-      <p className="mb-2">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">1. Information We Collect</h4>
+      <p className="mb-2 text-sm md:text-base">
         We collect information you provide directly to us, including:
       </p>
-      <ul className="list-disc pl-6 mb-4">
+      <ul className="list-disc pl-6 mb-4 text-sm md:text-base">
         <li>Personal information (name, email address, phone number)</li>
         <li>Profile information</li>
         <li>Payment and transaction information</li>
@@ -187,11 +189,11 @@ const SettingsPage = () => {
         <li>Usage information and interaction with our services</li>
       </ul>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">
         2. How We Use Your Information
       </h4>
-      <p className="mb-2">We use your information to:</p>
-      <ul className="list-disc pl-6 mb-4">
+      <p className="mb-2 text-sm md:text-base">We use your information to:</p>
+      <ul className="list-disc pl-6 mb-4 text-sm md:text-base">
         <li>Provide, maintain, and improve our services</li>
         <li>Process transactions and send related information</li>
         <li>Send you technical notices, updates, and support messages</li>
@@ -200,20 +202,20 @@ const SettingsPage = () => {
         <li>Monitor and analyze trends and usage</li>
       </ul>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">3. Sharing of Information</h4>
-      <p className="mb-2">We may share your information with:</p>
-      <ul className="list-disc pl-6 mb-4">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">3. Sharing of Information</h4>
+      <p className="mb-2 text-sm md:text-base">We may share your information with:</p>
+      <ul className="list-disc pl-6 mb-4 text-sm md:text-base">
         <li>Service providers who perform services on our behalf</li>
         <li>Payment processors</li>
         <li>Professional advisors</li>
         <li>When required by law or to protect rights</li>
       </ul>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">4. Your Rights</h4>
-      <p className="mb-2">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">4. Your Rights</h4>
+      <p className="mb-2 text-sm md:text-base">
         Depending on your location, you may have rights to:
       </p>
-      <ul className="list-disc pl-6 mb-4">
+      <ul className="list-disc pl-6 mb-4 text-sm md:text-base">
         <li>Access personal data we hold about you</li>
         <li>Request correction of your personal data</li>
         <li>Request deletion of your personal data</li>
@@ -223,47 +225,47 @@ const SettingsPage = () => {
         <li>Withdraw consent</li>
       </ul>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">5. Contact Us</h4>
-      <p className="mb-4">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">5. Contact Us</h4>
+      <p className="mb-4 text-sm md:text-base">
         If you have any questions about this Privacy Policy, please contact us
         at privacy@dagalow.com
       </p>
     </div>
   );
 
-  // Terms of Service Content
+  // Terms of Service Content with improved formatting for tablet/desktop
   const renderTermsOfService = () => (
-    <div className="prose prose-sm max-w-none">
-      <h3 className="text-xl font-bold text-oxfordBlue mb-4">
-        Terms of Service
+    <div className="prose prose-sm md:prose lg:prose-lg max-w-none">
+      <h3 className="text-xl md:text-2xl font-bold text-oxfordBlue mb-4">
+        {t("settings.terms_of_service.title")}
       </h3>
-      <p className="mb-4">Last updated: April 26, 2025</p>
+      <p className="mb-4 text-sm md:text-base">Last updated: April 26, 2025</p>
 
-      <p className="mb-2">
+      <p className="mb-2 text-sm md:text-base">
         Please read these Terms of Service ("Terms") carefully before using the
         DaGalow website and services operated by DaGalow ("we," "us," or "our").
       </p>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">1. Acceptance of Terms</h4>
-      <p className="mb-4">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">1. Acceptance of Terms</h4>
+      <p className="mb-4 text-sm md:text-base">
         By accessing or using our service, you agree to be bound by these Terms.
         If you disagree with any part of the terms, you may not access the
         service.
       </p>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">2. User Accounts</h4>
-      <p className="mb-4">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">2. User Accounts</h4>
+      <p className="mb-4 text-sm md:text-base">
         When you create an account with us, you must provide accurate, complete,
         and up-to-date information. You are responsible for safeguarding the
         password and for all activities that occur under your account. You agree
         to notify us immediately of any unauthorized use of your account.
       </p>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">
         3. Payments and Subscriptions
       </h4>
-      <p className="mb-2">For paid services:</p>
-      <ul className="list-disc pl-6 mb-4">
+      <p className="mb-2 text-sm md:text-base">For paid services:</p>
+      <ul className="list-disc pl-6 mb-4 text-sm md:text-base">
         <li>
           You agree to pay all fees or charges to your account based on the
           fees, charges, and billing terms in effect at the time a fee or charge
@@ -277,15 +279,15 @@ const SettingsPage = () => {
         </li>
       </ul>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">4. Coaching Services</h4>
-      <p className="mb-4">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">4. Coaching Services</h4>
+      <p className="mb-4 text-sm md:text-base">
         Our coaching services are provided for informational and educational
         purposes only. We do not guarantee specific results. Implementation of
         advice and recommendations is at your own risk and discretion.
       </p>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">5. Intellectual Property</h4>
-      <p className="mb-4">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">5. Intellectual Property</h4>
+      <p className="mb-4 text-sm md:text-base">
         The Service and its original content, features, and functionality are
         and will remain the exclusive property of DaGalow. Our service is
         protected by copyright, trademark, and other laws. Our trademarks may
@@ -293,18 +295,18 @@ const SettingsPage = () => {
         written consent.
       </p>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">6. Termination</h4>
-      <p className="mb-4">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">6. Termination</h4>
+      <p className="mb-4 text-sm md:text-base">
         We may terminate or suspend your account immediately, without prior
         notice or liability, for any reason, including without limitation if you
         breach the Terms. Upon termination, your right to use the Service will
         immediately cease.
       </p>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">
         7. Limitation of Liability
       </h4>
-      <p className="mb-4">
+      <p className="mb-4 text-sm md:text-base">
         In no event shall DaGalow, its directors, employees, partners, agents,
         suppliers, or affiliates, be liable for any indirect, incidental,
         special, consequential or punitive damages, including without
@@ -312,43 +314,44 @@ const SettingsPage = () => {
         losses.
       </p>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">8. Changes to Terms</h4>
-      <p className="mb-4">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">8. Changes to Terms</h4>
+      <p className="mb-4 text-sm md:text-base">
         We reserve the right to modify or replace these Terms at any time. It is
         your responsibility to review these Terms periodically for changes.
       </p>
 
-      <h4 className="font-bold text-lg mt-6 mb-2">9. Contact Us</h4>
-      <p className="mb-4">
+      <h4 className="font-bold text-lg md:text-xl mt-6 mb-2">9. Contact Us</h4>
+      <p className="mb-4 text-sm md:text-base">
         If you have any questions about these Terms, please contact us at
         terms@dagalow.com
       </p>
     </div>
   );
 
-  // Helper function to render the appropriate settings content
+  // Helper function to render the appropriate settings content with improved responsive layout
   const renderSettingsContent = () => {
     switch (activeSection) {
       case "account":
         return (
           <div>
-            <div className="bg-white rounded-xl shadow-sm p-4">
-              <div className="py-2 border-b border-gray-200">
-                <h3 className="font-semibold text-black">Email Address</h3>
-                <div className="flex flex-col space-y-4">
+            <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
+              <div className="py-4 border-b border-gray-200">
+                <h3 className="font-semibold text-black text-lg md:text-xl">Email Address</h3>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-2 space-y-4 md:space-y-0">
                   <p className="text-black">{user.email}</p>
-                  <button className="w-1/2 text-oxfordBlue hover:underline text-xs px-3 py-1 border justify-start items-start border-oxfordBlue rounded-lg">
+                  <button className="w-full md:w-auto text-oxfordBlue hover:underline text-xs md:text-sm px-3 py-1 border border-oxfordBlue rounded-lg">
                     Change Email
                   </button>
                 </div>
               </div>
-              <div className="py-2 border-b border-gray-200">
-                <h3 className="font-semibold text-black">Password</h3>
-                <div className="flex flex-col space-y-4">
+              
+              <div className="py-4 border-b border-gray-200">
+                <h3 className="font-semibold text-black text-lg md:text-xl">Password</h3>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-2 space-y-4 md:space-y-0">
                   <p className="text-black">••••••••••••</p>
                   <Link
                     to="/forgot-password"
-                    className="w-1/2 text-oxfordBlue hover:underline text-xs px-3 py-1 border justify-start items-start border-oxfordBlue rounded-lg"
+                    className="w-full md:w-auto text-oxfordBlue hover:underline text-xs md:text-sm px-3 py-1 border border-oxfordBlue rounded-lg text-center"
                   >
                     Reset Password
                   </Link>
@@ -356,29 +359,29 @@ const SettingsPage = () => {
               </div>
 
               <div className="py-4 border-b border-gray-200">
-                <h3 className="font-semibold pb-4 text-black">
+                <h3 className="font-semibold text-black text-lg md:text-xl pb-4">
                   Profile Information
                 </h3>
                 <Link
                   to="/edit-profile"
-                  className="w-1/2 text-oxfordBlue hover:underline text-xs px-3 py-1 border justify-start items-start border-oxfordBlue rounded-lg"
+                  className="w-full md:w-auto text-oxfordBlue hover:underline text-xs md:text-sm px-3 py-1 border border-oxfordBlue rounded-lg inline-block text-center"
                 >
                   Edit Profile
                 </Link>
               </div>
 
               <div className="py-4 space-y-4">
-                <h3 className="font-semibold text-black">
+                <h3 className="font-semibold text-black text-lg md:text-xl">
                   Account Actions
                 </h3>
-                <div className="flex justify-between">
+                <div className="flex flex-col md:flex-row justify-between gap-3 md:gap-0">
                   <button
                     onClick={handleSignOut}
-                    className="text-oxfordBlue text-sm px-3 py-1 border border-oxfordBlue rounded-lg"
+                    className="text-oxfordBlue text-sm px-3 py-2 border border-oxfordBlue rounded-lg hover:bg-oxfordBlue/10 transition-colors"
                   >
                     Sign Out
                   </button>
-                  <button className="text-sm text-red-600 hover:bg-red-50 px-3 py-1 border border-red-600 rounded-lg">
+                  <button className="text-sm text-red-600 hover:bg-red-50 px-3 py-2 border border-red-600 rounded-lg transition-colors">
                     Delete Account
                   </button>
                 </div>
@@ -387,13 +390,13 @@ const SettingsPage = () => {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setActiveSection(null)}
-                className="border-2 border-oxfordBlue text-black py-1 px-3 rounded-lg hover:bg-gray-300 transition-colors mr-4"
+                className="border-2 border-oxfordBlue text-black py-2 px-3 md:px-4 rounded-lg hover:bg-gray-300 transition-colors mr-4 text-sm md:text-base"
               >
                 Back
               </button>
               <button
                 onClick={() => saveSettings("account")}
-                className="bg-oxfordBlue text-white py-2 px-6 rounded-lg hover:bg-opacity-90 transition-colors"
+                className="bg-oxfordBlue text-white py-2 px-4 md:px-6 rounded-lg hover:bg-opacity-90 transition-colors text-sm md:text-base"
               >
                 Save Settings
               </button>
@@ -401,11 +404,98 @@ const SettingsPage = () => {
           </div>
         );
 
+        case "privacy":
+          return (
+            <div>
+              <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
+                <div className="bg-gray-50 p-4 md:p-6 rounded-lg mb-4">
+                  <SelectInput
+                    name="profileVisibility"
+                    value={privacySettings.profileVisibility}
+                    onChange={handlePrivacyChange}
+                    label="Profile Visibility"
+                    description="Control who can see your profile information"
+                    options={[
+                      { value: "public", label: "Public - Anyone can view" },
+                      { value: "connections", label: "Connections Only" },
+                      { value: "private", label: "Private - Only you" },
+                    ]}
+                  />
+        
+                  <ToggleSwitch
+                    name="shareAnalytics"
+                    isChecked={privacySettings.shareAnalytics}
+                    onChange={handlePrivacyChange}
+                    label="Usage Analytics"
+                    description="Allow us to collect anonymous usage data to improve our services"
+                  />
+        
+                  <SelectInput
+                    name="chatRetention"
+                    value={privacySettings.chatRetention}
+                    onChange={handlePrivacyChange}
+                    label="Data Retention"
+                    description="Choose how long we keep your consultation chat history"
+                    options={[
+                      { value: "1month", label: "1 Month" },
+                      { value: "3months", label: "3 Months" },
+                      { value: "6months", label: "6 Months" },
+                      { value: "1year", label: "1 Year" },
+                      { value: "forever", label: "Indefinitely" },
+                    ]}
+                  />
+                </div>
+        
+                <div className="py-4 border-b border-gray-200">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0">
+                    <div>
+                      <h3 className="font-semibold text-gray-700">Data Download</h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Download a copy of all your personal data
+                      </p>
+                    </div>
+                    <button className="text-oxfordBlue border border-oxfordBlue hover:bg-oxfordBlue/10 py-1 px-3 rounded-lg transition-colors text-sm mt-2 md:mt-0">
+                      Request Data
+                    </button>
+                  </div>
+                </div>
+        
+                <div className="py-4">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0">
+                    <div>
+                      <h3 className="font-semibold text-gray-700">Communication Preferences</h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Manage email notifications and marketing communications
+                      </p>
+                    </div>
+                    <button className="text-oxfordBlue border border-oxfordBlue hover:bg-oxfordBlue/10 py-1 px-3 rounded-lg transition-colors text-sm mt-2 md:mt-0">
+                      Manage
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setActiveSection(null)}
+                  className="bg-gray-200 text-gray-800 py-2 px-3 md:px-4 rounded-lg hover:bg-gray-300 transition-colors mr-4 text-sm md:text-base"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => saveSettings("privacy")}
+                  className="bg-oxfordBlue text-white py-2 px-4 md:px-6 rounded-lg hover:bg-opacity-90 transition-colors text-sm md:text-base"
+                >
+                  Save Settings
+                </button>
+              </div>
+            </div>
+          );
+
       case "appearance":
         return (
           <div>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+            <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
+              <div className="bg-gray-50 p-4 md:p-6 rounded-lg mb-4">
                 <SelectInput
                   name="language"
                   value={appearanceSettings.language}
@@ -445,9 +535,9 @@ const SettingsPage = () => {
               </div>
 
               <div className="py-4">
-                <h3 className="font-semibold text-gray-700 mb-2">Preview</h3>
+                <h3 className="font-semibold text-gray-700 text-lg md:text-xl mb-2">Preview</h3>
                 <div
-                  className={`p-4 border rounded-lg ${
+                  className={`p-4 md:p-6 border rounded-lg ${
                     appearanceSettings.highContrast
                       ? "bg-white text-black border-black"
                       : "bg-gray-50 text-gray-800 border-gray-200"
@@ -473,13 +563,13 @@ const SettingsPage = () => {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setActiveSection(null)}
-                className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors mr-4"
+                className="bg-gray-200 text-gray-800 py-2 px-3 md:px-4 rounded-lg hover:bg-gray-300 transition-colors mr-4 text-sm md:text-base"
               >
                 Back
               </button>
               <button
                 onClick={() => saveSettings("appearance")}
-                className="bg-oxfordBlue text-white py-2 px-6 rounded-lg hover:bg-opacity-90 transition-colors"
+                className="bg-oxfordBlue text-white py-2 px-4 md:px-6 rounded-lg hover:bg-opacity-90 transition-colors text-sm md:text-base"
               >
                 Save Settings
               </button>
@@ -490,12 +580,12 @@ const SettingsPage = () => {
       case "sessions":
         return (
           <div>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="mb-4">
-                <h3 className="font-semibold text-gray-700 mb-2">
+            <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-700 text-lg md:text-xl mb-4">
                   Session Preferences
                 </h3>
-                <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="bg-gray-50 p-4 md:p-6 rounded-lg">
                   <SelectInput
                     name="defaultDuration"
                     value={sessionPreferences.defaultDuration}
@@ -529,50 +619,56 @@ const SettingsPage = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-700 mb-2">
+                <h3 className="font-semibold text-gray-700 text-lg md:text-xl mb-4">
                   Payment & Subscriptions
                 </h3>
-                <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="bg-gray-50 p-4 md:p-6 rounded-lg">
                   <div className="py-4 border-b border-gray-200">
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-semibold text-gray-700">
-                        Payment Methods
-                      </h3>
-                      <button className="text-oxfordBlue border border-oxfordBlue hover:bg-oxfordBlue/10 py-1 px-3 rounded-lg transition-colors text-sm">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0">
+                      <div>
+                        <h3 className="font-semibold text-gray-700">
+                          Payment Methods
+                        </h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Add, remove, or update your payment methods
+                        </p>
+                      </div>
+                      <button className="text-oxfordBlue border border-oxfordBlue hover:bg-oxfordBlue/10 py-1 px-3 rounded-lg transition-colors text-sm mt-2 md:mt-0">
                         Manage
                       </button>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Add, remove, or update your payment methods
-                    </p>
                   </div>
 
                   <div className="py-4 border-b border-gray-200">
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-semibold text-gray-700">
-                        Billing History
-                      </h3>
-                      <button className="text-oxfordBlue border border-oxfordBlue hover:bg-oxfordBlue/10 py-1 px-3 rounded-lg transition-colors text-sm">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0">
+                      <div>
+                        <h3 className="font-semibold text-gray-700">
+                          Billing History
+                        </h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                          See your past invoices and payment details
+                        </p>
+                      </div>
+                      <button className="text-oxfordBlue border border-oxfordBlue hover:bg-oxfordBlue/10 py-1 px-3 rounded-lg transition-colors text-sm mt-2 md:mt-0">
                         View
                       </button>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      See your past invoices and payment details
-                    </p>
                   </div>
 
                   <div className="py-4">
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-semibold text-gray-700">
-                        Active Subscriptions
-                      </h3>
-                      <button className="text-oxfordBlue border border-oxfordBlue hover:bg-oxfordBlue/10 py-1 px-3 rounded-lg transition-colors text-sm">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0">
+                      <div>
+                        <h3 className="font-semibold text-gray-700">
+                          Active Subscriptions
+                        </h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Review and manage your current subscriptions
+                        </p>
+                      </div>
+                      <button className="text-oxfordBlue border border-oxfordBlue hover:bg-oxfordBlue/10 py-1 px-3 rounded-lg transition-colors text-sm mt-2 md:mt-0">
                         Manage
                       </button>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Review and manage your current subscriptions
-                    </p>
                   </div>
                 </div>
               </div>
@@ -580,13 +676,13 @@ const SettingsPage = () => {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setActiveSection(null)}
-                className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors mr-4"
+                className="bg-gray-200 text-gray-800 py-2 px-3 md:px-4 rounded-lg hover:bg-gray-300 transition-colors mr-4 text-sm md:text-base"
               >
                 Back
               </button>
               <button
                 onClick={() => saveSettings("session")}
-                className="bg-oxfordBlue text-white py-2 px-6 rounded-lg hover:bg-opacity-90 transition-colors"
+                className="bg-oxfordBlue text-white py-2 px-4 md:px-6 rounded-lg hover:bg-opacity-90 transition-colors text-sm md:text-base"
               >
                 Save Settings
               </button>
@@ -597,17 +693,17 @@ const SettingsPage = () => {
       case "others":
         return (
           <div>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="space-y-4">
+            <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
+              <div className="md:grid md:grid-cols-2 md:gap-6">
                 {/* Privacy Policy Link */}
                 <div
-                  className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all mb-3 flex justify-between items-center"
+                  className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all mb-4 md:mb-0 flex justify-between items-center"
                   onClick={() => setActiveSection("privacy-policy")}
                 >
                   <div className="flex items-center">
                     <div className="bg-oxfordBlue/10 p-2 rounded-full mr-3">
                       <svg
-                        className="w-5 h-5 text-oxfordBlue"
+                        className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -621,7 +717,7 @@ const SettingsPage = () => {
                         ></path>
                       </svg>
                     </div>
-                    <span className="font-medium">Privacy Policy</span>
+                    <span className="font-medium text-sm md:text-base">Privacy Policy</span>
                   </div>
                   <svg
                     className="w-5 h-5 text-oxfordBlue"
@@ -647,7 +743,7 @@ const SettingsPage = () => {
                   <div className="flex items-center">
                     <div className="bg-oxfordBlue/10 p-2 rounded-full mr-3">
                       <svg
-                        className="w-5 h-5 text-oxfordBlue"
+                        className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -661,7 +757,7 @@ const SettingsPage = () => {
                         ></path>
                       </svg>
                     </div>
-                    <span className="font-medium">Terms of Service</span>
+                    <span className="font-medium text-sm md:text-base">Terms of Service</span>
                   </div>
                   <svg
                     className="w-5 h-5 text-oxfordBlue"
@@ -683,7 +779,7 @@ const SettingsPage = () => {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setActiveSection(null)}
-                className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors mr-4"
+                className="bg-gray-200 text-gray-800 py-2 px-3 md:px-4 rounded-lg hover:bg-gray-300 transition-colors mr-4 text-sm md:text-base"
               >
                 Back
               </button>
@@ -694,15 +790,15 @@ const SettingsPage = () => {
       case "privacy-policy":
         return (
           <div>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
+              <div className="max-h-[60vh] md:max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
                 {renderPrivacyPolicy()}
               </div>
             </div>
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setActiveSection("others")}
-                className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+                className="bg-gray-200 text-gray-800 py-2 px-3 md:px-4 rounded-lg hover:bg-gray-300 transition-colors text-sm md:text-base"
               >
                 Back
               </button>
@@ -713,15 +809,15 @@ const SettingsPage = () => {
       case "terms-of-service":
         return (
           <div>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
+              <div className="max-h-[60vh] md:max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
                 {renderTermsOfService()}
               </div>
             </div>
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setActiveSection("others")}
-                className="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+                className="bg-gray-200 text-gray-800 py-2 px-3 md:px-4 rounded-lg hover:bg-gray-300 transition-colors text-sm md:text-base"
               >
                 Back
               </button>
@@ -735,16 +831,16 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen py-6 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-oxfordBlue to-gentleGray py-6 md:py-12 px-4 md:px-8 lg:px-12">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-6 text-white">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 md:mb-10 text-white">
           {t("settings.title")}
         </h1>
 
         {activeSection ? (
-          // Show detailed settings for active section
-          <div className="bg-gentleGray rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-oxfordBlue mb-6">
+          // Show detailed settings for active section - more responsive layout
+          <div className="bg-gentleGray rounded-xl shadow-md md:shadow-lg p-4 md:p-6 lg:p-8">
+            <h2 className="text-xl md:text-2xl font-semibold text-oxfordBlue mb-6">
               {activeSection === "privacy-policy"
                 ? t("settings.privacy_policy.title")
                 : activeSection === "terms-of-service"
@@ -756,18 +852,18 @@ const SettingsPage = () => {
             {renderSettingsContent()}
           </div>
         ) : (
-          // Show settings categories
-          <div className="space-y-4">
+          // Show settings categories in a grid for tablet/desktop
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6">
             {/* Account Settings */}
             <div
-              className="bg-gentleGray rounded-xl shadow-md p-6 cursor-pointer transition-all hover:shadow-lg"
+              className="bg-gentleGray rounded-xl shadow-md p-4 md:p-6 cursor-pointer transition-all hover:shadow-lg"
               onClick={() => setActiveSection("account")}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="bg-oxfordBlue/10 p-3 rounded-full mr-4">
+                  <div className="bg-oxfordBlue/10 p-2 md:p-3 rounded-full mr-4">
                     <svg
-                      className="w-6 h-6 text-oxfordBlue"
+                      className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -782,16 +878,16 @@ const SettingsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-oxfordBlue">
+                    <h2 className="text-lg md:text-xl font-semibold text-oxfordBlue">
                       {t("settings.sections.account.title")}
                     </h2>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-600 mt-1 text-sm md:text-base">
                       {t("settings.sections.account.description")}
                     </p>
                   </div>
                 </div>
                 <svg
-                  className="w-6 h-6 text-oxfordBlue"
+                  className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -809,14 +905,14 @@ const SettingsPage = () => {
 
             {/* Privacy Settings */}
             <div
-              className="bg-gentleGray rounded-xl shadow-md p-6 cursor-pointer transition-all hover:shadow-lg"
+              className="bg-gentleGray rounded-xl shadow-md p-4 md:p-6 cursor-pointer transition-all hover:shadow-lg"
               onClick={() => setActiveSection("privacy")}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="bg-oxfordBlue/10 p-3 rounded-full mr-4">
+                  <div className="bg-oxfordBlue/10 p-2 md:p-3 rounded-full mr-4">
                     <svg
-                      className="w-6 h-6 text-oxfordBlue"
+                      className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -831,16 +927,16 @@ const SettingsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-oxfordBlue">
+                    <h2 className="text-lg md:text-xl font-semibold text-oxfordBlue">
                       {t("settings.sections.privacy.title")}
                     </h2>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-600 mt-1 text-sm md:text-base">
                       {t("settings.sections.privacy.description")}
                     </p>
                   </div>
                 </div>
                 <svg
-                  className="w-6 h-6 text-oxfordBlue"
+                  className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -858,14 +954,14 @@ const SettingsPage = () => {
 
             {/* Appearance Settings */}
             <div
-              className="bg-gentleGray rounded-xl shadow-md p-6 cursor-pointer transition-all hover:shadow-lg"
+              className="bg-gentleGray rounded-xl shadow-md p-4 md:p-6 cursor-pointer transition-all hover:shadow-lg"
               onClick={() => setActiveSection("appearance")}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="bg-oxfordBlue/10 p-3 rounded-full mr-4">
+                  <div className="bg-oxfordBlue/10 p-2 md:p-3 rounded-full mr-4">
                     <svg
-                      className="w-6 h-6 text-oxfordBlue"
+                      className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -880,16 +976,16 @@ const SettingsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-oxfordBlue">
+                    <h2 className="text-lg md:text-xl font-semibold text-oxfordBlue">
                       {t("settings.sections.appearance.title")}
                     </h2>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-600 mt-1 text-sm md:text-base">
                       {t("settings.sections.appearance.description")}
                     </p>
                   </div>
                 </div>
                 <svg
-                  className="w-6 h-6 text-oxfordBlue"
+                  className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -907,14 +1003,14 @@ const SettingsPage = () => {
 
             {/* Session Settings */}
             <div
-              className="bg-gentleGray rounded-xl shadow-md p-6 cursor-pointer transition-all hover:shadow-lg"
+              className="bg-gentleGray rounded-xl shadow-md p-4 md:p-6 cursor-pointer transition-all hover:shadow-lg"
               onClick={() => setActiveSection("sessions")}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="bg-oxfordBlue/10 p-3 rounded-full mr-4">
+                  <div className="bg-oxfordBlue/10 p-2 md:p-3 rounded-full mr-4">
                     <svg
-                      className="w-6 h-6 text-oxfordBlue"
+                      className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -929,16 +1025,16 @@ const SettingsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-oxfordBlue">
+                    <h2 className="text-lg md:text-xl font-semibold text-oxfordBlue">
                       {t("settings.sections.sessions.title")}
                     </h2>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-600 mt-1 text-sm md:text-base">
                       {t("settings.sections.sessions.description")}
                     </p>
                   </div>
                 </div>
                 <svg
-                  className="w-6 h-6 text-oxfordBlue"
+                  className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -954,16 +1050,16 @@ const SettingsPage = () => {
               </div>
             </div>
 
-            {/* Others Section */}
+            {/* Others Section - spans full width on tablets/desktops */}
             <div
-              className="bg-gentleGray rounded-xl shadow-md p-6 cursor-pointer transition-all hover:shadow-lg"
+              className="bg-gentleGray rounded-xl shadow-md p-4 md:p-6 cursor-pointer transition-all hover:shadow-lg md:col-span-2"
               onClick={() => setActiveSection("others")}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="bg-oxfordBlue/10 p-3 rounded-full mr-4">
+                  <div className="bg-oxfordBlue/10 p-2 md:p-3 rounded-full mr-4">
                     <svg
-                      className="w-6 h-6 text-oxfordBlue"
+                      className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -978,16 +1074,16 @@ const SettingsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-oxfordBlue">
+                    <h2 className="text-lg md:text-xl font-semibold text-oxfordBlue">
                       {t("settings.sections.others.title")}
                     </h2>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-600 mt-1 text-sm md:text-base">
                       {t("settings.sections.others.description")}
                     </p>
                   </div>
                 </div>
                 <svg
-                  className="w-6 h-6 text-oxfordBlue"
+                  className="w-5 h-5 md:w-6 md:h-6 text-oxfordBlue"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
