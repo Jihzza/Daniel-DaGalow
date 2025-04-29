@@ -100,7 +100,7 @@ export default function MergedServiceForm() {
 
   // Internal form
   return (
-    <section>
+    <section id="service-selection">
       <div className="max-w-3xl mx-auto">
         <StepIndicator />
         {CurrentForm && <CurrentForm onBackService={() => onStepClick(1)} />}
