@@ -467,7 +467,7 @@ export default function Booking({ onBackService }) {
   const [paymentDone, setPaymentDone] = useState(false);
   const [loading, setLoading] = useState(true);
   const [bookingId, setBookingId] = useState(null);
-  const [error, setError] = useState("");
+
   // Business hours buffer - start scheduling from tomorrow
   const minDate = addDays(new Date(), 1);
 
@@ -658,72 +658,43 @@ export default function Booking({ onBackService }) {
       setStep(2);
     } else if (step === 2) {
       setLoading(true);
-      setError("");
-      
-      try {
-        // Build the ISO timestamp for the consultation start time
-        const [hours, minutes] = selectedTime.split(":").map(Number);
-        const appointmentDate = new Date(selectedDate);
-        appointmentDate.setHours(hours, minutes, 0, 0);
-        const appointment_date = appointmentDate.toISOString();
 
-        // Create a pending booking record
+      // Build the ISO timestamp for the consultation start time
+      const [hours, minutes] = selectedTime.split(":").map(Number);
+      const appointmentDate = new Date(selectedDate);
+      appointmentDate.setHours(hours, minutes, 0, 0);
+      const appointment_date = appointmentDate.toISOString();
+
+      try {
+        const payload = {
+          appointment_date,
+          duration_minutes: selectedDuration,
+          name: formData.name,
+          email: formData.email,
+          user_id: user?.id, // Add user ID if logged in
+        };
+
         const { data, error } = await supabase
           .from("bookings")
-          .insert({
-            appointment_date,
-            duration_minutes: selectedDuration,
-            name: formData.name,
-            email: formData.email,
-            user_id: user?.id, 
-            status: "pending" // Important: status starts as pending
-          })
+          .insert(payload)
           .select("id")
           .single();
 
         if (error) throw error;
-        
-        // Save the booking ID for reference
+
         setBookingId(data.id);
-        
-        // Redirect to payment
-        initiatePayment(data.id);
+
+        // Refresh bookings data to update availability
+        const { data: fresh } = await fetchBookings();
+        setBookedEvents(fresh || []);
+
+        setStep(3); // Move to the next step
       } catch (error) {
         console.error("Error creating booking:", error);
-        setError("Failed to create booking. Please try again.");
+        // Here you could add user notification about the error
+      } finally {
         setLoading(false);
       }
-    }
-  };
-
-  const initiatePayment = async (bookingId) => {
-    try {
-      // Call your payment API endpoint
-      const response = await fetch("https://danieldagalow.com/api/whsec_4Tm30c2TwwErVhwJHpy7VKhaFdfpiRbz", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          bookingId,
-          duration: selectedDuration,
-          name: formData.name,
-          email: formData.email
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error("Failed to create checkout session");
-      }
-      
-      const { url } = await response.json();
-      
-      // Redirect to Stripe Checkout
-      window.location.href = url;
-    } catch (error) {
-      console.error("Payment initiation error:", error);
-      setError("Failed to initiate payment. Please try again.");
-      setLoading(false);
     }
   };
 
