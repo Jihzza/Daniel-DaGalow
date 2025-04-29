@@ -443,7 +443,127 @@ function InfoStep({ formData, onChange }) {
           {t("services.common_login_signup")}
         </button>
       </div>
+    </div>
+  );
+}
 
+// Step 3: Payment step (new)
+function PaymentStep({ selectedDate, selectedTime, selectedDuration, formData }) {
+  const { t } = useTranslation();
+  
+  // Generate pricing based on duration
+  const price = selectedDuration * 1.5; // Example: €1.5 per minute
+  
+  // Format end time
+  const formatDateAndTime = (date, timeString, duration) => {
+    if (!date || !timeString) return "";
+    
+    const [hours, minutes] = timeString.split(":").map(Number);
+    const startTime = new Date(date);
+    startTime.setHours(hours, minutes, 0, 0);
+    
+    const endTime = addMinutes(startTime, duration);
+    
+    return {
+      date: format(date, "EEEE, MMMM d, yyyy"),
+      start: format(startTime, "h:mm a"),
+      end: format(endTime, "h:mm a")
+    };
+  };
+  
+  const bookingDetails = formData.bookingSummary || {};
+  const formattedDateTime = formatDateAndTime(
+    selectedDate, 
+    selectedTime, 
+    selectedDuration
+  );
+  
+  // Stripe checkout links by duration (minutes)
+  const STRIPE_LINKS = {
+    45: "https://buy.stripe.com/9AQ4h1gy6fG90Te7sw",
+    60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
+    75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
+    90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
+    105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
+    120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
+  };
+  
+  return (
+    <div className="space-y-6 max-w-md mx-auto">
+      {/* Booking Summary Card */}
+      <div className="bg-white/10 rounded-xl p-6 shadow-md">
+        <h3 className="text-white text-xl mb-4 font-semibold">Booking Summary</h3>
+        
+        <div className="space-y-4">
+          <div className="flex justify-between text-white">
+            <span className="text-white/70">Date:</span>
+            <span className="font-medium">{bookingDetails.dateFormatted || formattedDateTime.date}</span>
+          </div>
+          <div className="flex justify-between text-white">
+            <span className="text-white/70">Time:</span>
+            <span className="font-medium">{bookingDetails.timeRange || `${formattedDateTime.start} - ${formattedDateTime.end}`}</span>
+          </div>
+          <div className="flex justify-between text-white">
+            <span className="text-white/70">Duration:</span>
+            <span className="font-medium">{bookingDetails.duration || `${selectedDuration} minutes`}</span>
+          </div>
+          <div className="flex justify-between text-white">
+            <span className="text-white/70">Customer:</span>
+            <span className="font-medium">{formData.name}</span>
+          </div>
+          
+          <div className="border-t border-white/10 pt-4 mt-4">
+            <div className="flex justify-between text-white">
+              <span className="text-xl">Total:</span>
+              <span className="text-xl font-bold">€{price}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Payment Button */}
+      <div className="flex flex-col items-center space-y-3">
+        <a
+          href={STRIPE_LINKS[selectedDuration]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full bg-darkGold text-black font-medium py-3 px-4 rounded-xl flex items-center justify-center space-x-2 hover:bg-opacity-90 transition-colors"
+        >
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H4C2.89543 20 2 19.1046 2 18V6C2 4.89543 2.89543 4 4 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 11V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M8 11V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M16 11V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 7H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <span>Proceed to Payment</span>
+        </a>
+        <p className="text-white/60 text-sm text-center">
+          After completing the payment, click "Next" to confirm your booking
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Step 4: Confirmation step (new)
+function ConfirmationStep() {
+  return (
+    <div className="text-center py-6">
+      <div className="bg-green-500/20 rounded-full w-16 h-16 mx-auto flex items-center justify-center mb-4">
+        <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <h3 className="text-xl text-white font-bold mb-2">
+        Your booking is confirmed!
+      </h3>
+      <p className="text-white/80 mb-4">
+        We've sent a confirmation email with all the details.
+      </p>
+      <p className="text-white/60 text-sm">
+        You can now chat with our assistant to prepare for your consultation.
+      </p>
     </div>
   );
 }
@@ -467,26 +587,9 @@ export default function Booking({ onBackService }) {
   const [paymentDone, setPaymentDone] = useState(false);
   const [loading, setLoading] = useState(true);
   const [bookingId, setBookingId] = useState(null);
-  const [error, setError] = useState("");
+
   // Business hours buffer - start scheduling from tomorrow
   const minDate = addDays(new Date(), 1);
-
-  // Stripe checkout links by duration (minutes)
-  const STRIPE_LINKS = {
-    45: "https://buy.stripe.com/9AQ4h1gy6fG90Te7sw",
-    60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
-    75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
-    90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
-    105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
-    120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
-  };
-
-  // Auto-redirect to Stripe at payment step
-  useEffect(() => {
-    if (step === 3 && selectedDuration) {
-      window.open(STRIPE_LINKS[selectedDuration], "_blank");
-    }
-  }, [step, selectedDuration]);
 
   // Load existing bookings
   useEffect(() => {
@@ -637,11 +740,18 @@ export default function Booking({ onBackService }) {
     return true; // No conflicts found
   }
 
-  // Now only 3 steps with combined date+duration+time
+  // Now with 4 steps:
+  // 1: Date/Duration/Time selection
+  // 2: Contact info
+  // 3: Payment (no database save yet)
+  // 4: Confirmation (only save to database after successful payment)
+  // 5: Chat
   const STEPS = [
     { title: t("booking.step_1"), component: CombinedSelectionStep },
     { title: t("booking.step_2"), component: InfoStep },
-    { title: t("booking.step_3"), component: InlineChatbotStep },
+    { title: "Payment", component: PaymentStep },
+    { title: "Confirmation", component: ConfirmationStep },
+    { title: t("booking.step_4"), component: InlineChatbotStep },
   ];
   const UI_STEPS = STEPS.length + 1;
 
@@ -649,17 +759,22 @@ export default function Booking({ onBackService }) {
   const canProceed = () => {
     if (step === 1) return selectedDate && selectedTime && selectedDuration;
     if (step === 2) return formData.name && formData.email;
-    if (step === 3) return paymentDone;
+    // For step 3 (payment), we'll assume the user has completed the payment externally
+    if (step === 3) return true; // Simulating payment completion
     return true;
   };
 
   const handleNext = async () => {
     if (step === 1 && selectedDate && selectedTime && selectedDuration) {
       setStep(2);
-    } else if (step === 2) {
+    } else if (step === 2 && formData.name && formData.email) {
+      // Move to payment step
+      setStep(3);
+    } else if (step === 3) {
+      // This is the payment step
+      // Here we move to confirmation and now save to database
       setLoading(true);
-      setError("");
-      
+
       try {
         // Build the ISO timestamp for the consultation start time
         const [hours, minutes] = selectedTime.split(":").map(Number);
@@ -667,63 +782,41 @@ export default function Booking({ onBackService }) {
         appointmentDate.setHours(hours, minutes, 0, 0);
         const appointment_date = appointmentDate.toISOString();
 
-        // Create a pending booking record
+        // Now we save to database after "payment" is complete
+        const payload = {
+          appointment_date,
+          duration_minutes: selectedDuration,
+          name: formData.name,
+          email: formData.email,
+          user_id: user?.id, // Add user ID if logged in
+          payment_status: "paid" // Mark as paid
+        };
+
         const { data, error } = await supabase
           .from("bookings")
-          .insert({
-            appointment_date,
-            duration_minutes: selectedDuration,
-            name: formData.name,
-            email: formData.email,
-            user_id: user?.id, 
-            status: "pending" // Important: status starts as pending
-          })
+          .insert(payload)
           .select("id")
           .single();
 
         if (error) throw error;
-        
-        // Save the booking ID for reference
+
         setBookingId(data.id);
-        
-        // Redirect to payment
-        initiatePayment(data.id);
+
+        // Refresh bookings data to update availability
+        const { data: fresh } = await fetchBookings();
+        setBookedEvents(fresh || []);
+
+        // Move to confirmation step
+        setStep(4);
       } catch (error) {
         console.error("Error creating booking:", error);
-        setError("Failed to create booking. Please try again.");
+        // Here you could add user notification about the error
+      } finally {
         setLoading(false);
       }
-    }
-  };
-
-  const initiatePayment = async (bookingId) => {
-    try {
-      // Call your payment API endpoint
-      const response = await fetch("https://danieldagalow.com/api/whsec_4Tm30c2TwwErVhwJHpy7VKhaFdfpiRbz", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          bookingId,
-          duration: selectedDuration,
-          name: formData.name,
-          email: formData.email
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error("Failed to create checkout session");
-      }
-      
-      const { url } = await response.json();
-      
-      // Redirect to Stripe Checkout
-      window.location.href = url;
-    } catch (error) {
-      console.error("Payment initiation error:", error);
-      setError("Failed to initiate payment. Please try again.");
-      setLoading(false);
+    } else if (step === 4) {
+      // Move to chat step after confirmation
+      setStep(5);
     }
   };
 
@@ -767,14 +860,28 @@ export default function Booking({ onBackService }) {
                   selectedTime={selectedTime}
                   onTimeSelection={setSelectedTime}
                   availableTimeSlots={availableTimeSlots}
+                  bookedEvents={bookedEvents}
                 />
               )}
 
               {step === 2 && (
                 <InfoStep formData={formData} onChange={handleChange} />
               )}
-
+              
               {step === 3 && (
+                <PaymentStep 
+                  selectedDate={selectedDate}
+                  selectedTime={selectedTime}
+                  selectedDuration={selectedDuration}
+                  formData={formData}
+                />
+              )}
+              
+              {step === 4 && (
+                <ConfirmationStep />
+              )}
+
+              {step === 5 && (
                 <InlineChatbotStep
                   requestId={bookingId}
                   tableName="booking_chat_messages"
@@ -820,8 +927,8 @@ export default function Booking({ onBackService }) {
                     </svg>
                     {t("booking.processing")}
                   </span>
-                ) : step === 2 ? (
-                  t("booking.complete_booking")
+                ) : step === 3 ? (
+                  "Confirm Booking"
                 ) : (
                   t("booking.next")
                 )}

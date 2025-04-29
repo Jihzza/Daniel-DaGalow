@@ -22,7 +22,7 @@ import Testimonials from "./components/home-sections/Testimonials";
 import Interviews from "./components/home-sections/Interviews";
 import IncentivePage from "./components/home-sections/IncentivePage";
 import OtherWins from "./components/home-sections/OtherWins";
-import MergedServiceForm from "./components/forms/MergedServiceForm";
+import MergedServiceForm from "./components/Forms/MergedServiceForm";
 import BottomCarouselPages from "./components/carousel/BottomCarouselPages";
 import NavigationBar from "./components/layout/NavigationBar";
 import ChatbotWindow from "./components/chat/ChatbotWindow";
