@@ -19,16 +19,6 @@ import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 
-// Stripe checkout links by duration (minutes)
-const STRIPE_LINKS = {
-  45: "https://buy.stripe.com/fZe00L3LkbpT31meV4",
-  60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
-  75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
-  90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
-  105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
-  120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
-};
-
 // Shared StepIndicator
 function StepIndicator({
   stepCount,
@@ -377,24 +367,27 @@ function InfoStep({ formData, onChange }) {
   );
 }
 
-function PaymentStep({
-  selectedDuration,
-  bookingId,
-  onPaymentConfirmed,
-  formData,
-}) {
+function PaymentStep({selectedDuration, bookingId, onPaymentConfirmed, formData}) {
   const [paymentStarted, setPaymentStarted] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-
+  const [isTestBooking, setIsTestBooking] = useState(false);
+  
   const handleStripeRedirect = async () => {
     try {
       const { data } = await axios.post("/.netlify/functions/createStripeSession", {
         bookingId, 
         duration: selectedDuration, 
-        email: formData.email
+        email: formData.email,
+        isTestBooking
       });
       
+      // Store the session ID in localStorage before opening Stripe
+      localStorage.setItem('pendingPaymentId', bookingId);
+      
+      // Open Stripe checkout in a new tab
       window.open(data.url, '_blank');
+      
+      // Start polling immediately (don't wait for user to return)
       setPaymentStarted(true);
     } catch (error) {
       console.error("Error creating Stripe session:", error);
@@ -411,7 +404,7 @@ function PaymentStep({
         );
         if (response.data.paymentStatus === "paid") {
           setPaymentConfirmed(true);
-          onPaymentConfirmed(true); // notify parent Booking component
+          onPaymentConfirmed(true);
           clearInterval(interval);
         }
       } catch (error) {
@@ -424,15 +417,31 @@ function PaymentStep({
 
   return (
     <div className="text-white text-center space-y-4 max-w-lg mx-auto">
+      {/* Show test toggle only in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mb-4 flex items-center justify-center">
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isTestBooking}
+              onChange={() => setIsTestBooking(!isTestBooking)}
+              className="form-checkbox h-5 w-5 text-darkGold"
+            />
+            <span>Test Booking (0€)</span>
+          </label>
+        </div>
+      )}
+      
       <p className="text-lg sm:text-xl">
         Please click the button below to pay. Once Stripe confirms your payment,
         the "Next" button will be unlocked.
       </p>
+      
       <button
         onClick={handleStripeRedirect}
         className="px-4 py-2 bg-darkGold text-black rounded-xl shadow-md hover:bg-yellow-400 transition"
       >
-        Open Payment Checkout
+        {isTestBooking ? 'Proceed with Test Checkout (0€)' : 'Open Payment Checkout'}
       </button>
 
       {paymentStarted && !paymentConfirmed && (

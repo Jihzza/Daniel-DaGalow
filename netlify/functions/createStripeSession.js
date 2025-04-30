@@ -20,9 +20,15 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: "Invalid JSON" };
   }
 
-  const { bookingId, duration, email } = body;
+  const { bookingId, duration, email, isTestBooking } = body;
   if (!bookingId || !duration || !email) {
     return { statusCode: 400, body: "Missing parameters" };
+  }
+
+  // Calculate price - free for test bookings in development or 45-min sessions
+  let unitAmount = duration * 100;
+  if (isTestBooking === true || duration === 45) {
+    unitAmount = 0;
   }
 
   // Create the session
@@ -32,10 +38,10 @@ exports.handler = async (event) => {
       line_items: [
         {
           price_data: {
-            currency: "eur",                 // or your currency
-            unit_amount: duration * 100,     // or map duration→price
+            currency: "eur",
+            unit_amount: unitAmount,
             product_data: {
-              name: `Consultation (${duration}m)`,
+              name: isTestBooking ? `Test Consultation (${duration}m)` : `Consultation (${duration}m)`,
             },
           },
           quantity: 1,
@@ -43,14 +49,17 @@ exports.handler = async (event) => {
       ],
       client_reference_id: bookingId,
       customer_email: email,
-      success_url: `${process.env.URL}/?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.URL}/cancel`,
+      success_url: `${process.env.URL || 'http://localhost:8888'}/payment-complete.html`,
+      cancel_url: `${process.env.URL || 'http://localhost:8888'}/payment-cancelled.html`,
     });
 
-    // Optionally record the Stripe session id in your booking row
+    // Record Stripe session ID in booking row
     await supabase
       .from("bookings")
-      .update({ stripe_session_id: session.id })
+      .update({ 
+        stripe_session_id: session.id,
+        is_test_booking: isTestBooking === true
+      })
       .eq("id", bookingId);
 
     return {
