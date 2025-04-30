@@ -12,11 +12,22 @@ import {
   isWeekend,
   addMinutes,
   isBefore,
-  addMonths
+  addMonths,
 } from "date-fns";
 import { fetchBookings } from "../../services/bookingService";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
+
+// Stripe checkout links by duration (minutes)
+const STRIPE_LINKS = {
+  45: "https://buy.stripe.com/fZe00L3LkbpT31meV4",
+  60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
+  75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
+  90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
+  105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
+  120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
+};
 
 // Shared StepIndicator
 function StepIndicator({
@@ -65,7 +76,6 @@ function StepIndicator({
 }
 
 // Step 1: Date selection
-// Step 1: Date selection with improved styling
 function DateStep({
   selectedDate,
   onSelectDate,
@@ -94,25 +104,47 @@ function DateStep({
     <div className="space-y-6">
       {/* Enhanced Calendar Header */}
       <div className="flex items-center justify-between bg-oxfordBlue/30 rounded-xl p-3 shadow-sm">
-        <button 
-          onClick={() => onChangeMonth(-1)} 
+        <button
+          onClick={() => onChangeMonth(-1)}
           className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
           aria-label="Previous month"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 sm:h-6 sm:w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
         <h3 className="text-xl sm:text-2xl md:text-3xl text-white font-bold tracking-wide">
           {format(currentMonth, "MMMM yyyy")}
         </h3>
-        <button 
-          onClick={() => onChangeMonth(1)} 
+        <button
+          onClick={() => onChangeMonth(1)}
           className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
           aria-label="Next month"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 sm:h-6 sm:w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
       </div>
@@ -122,8 +154,8 @@ function DateStep({
         {/* Weekday Headers with Better Styling */}
         <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
           {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-            <div 
-              key={d} 
+            <div
+              key={d}
               className="text-center py-2 text-darkGold font-semibold text-xs sm:text-sm md:text-base"
             >
               {d}
@@ -140,7 +172,7 @@ function DateStep({
             const selected = selectedDate && isSameDay(date, selectedDate);
             const isToday = isSameDay(date, new Date());
             const disabled = !inMonth || weekend || tooSoon;
-            
+
             return (
               <button
                 key={i}
@@ -149,13 +181,23 @@ function DateStep({
                 className={`
                   relative h-10 sm:h-12 md:h-14 aspect-square rounded-lg flex flex-col items-center justify-center
                   transition-all duration-200
-                  ${selected 
-                    ? "bg-darkGold text-white font-bold shadow-lg scale-105 z-10" 
-                    : inMonth && !disabled 
-                      ? "bg-white/10 text-white hover:bg-darkGold/40 hover:scale-105" 
-                      : "bg-white/5 text-white/40"}
-                  ${isToday && !selected ? "ring-2 ring-darkGold ring-opacity-70" : ""}
-                  ${disabled ? "cursor-not-allowed" : "cursor-pointer hover:shadow-md"}
+                  ${
+                    selected
+                      ? "bg-darkGold text-white font-bold shadow-lg scale-105 z-10"
+                      : inMonth && !disabled
+                      ? "bg-white/10 text-white hover:bg-darkGold/40 hover:scale-105"
+                      : "bg-white/5 text-white/40"
+                  }
+                  ${
+                    isToday && !selected
+                      ? "ring-2 ring-darkGold ring-opacity-70"
+                      : ""
+                  }
+                  ${
+                    disabled
+                      ? "cursor-not-allowed"
+                      : "cursor-pointer hover:shadow-md"
+                  }
                 `}
               >
                 {/* Date Display with Month Abbreviation for Non-Current Month */}
@@ -165,15 +207,17 @@ function DateStep({
                       {format(date, "MMM")}
                     </span>
                   )}
-                  <span className={`
+                  <span
+                    className={`
                     font-medium text-sm sm:text-base md:text-lg
                     ${selected ? "text-white" : ""}
                     ${weekend && inMonth ? "text-white/40" : ""}
-                  `}>
+                  `}
+                  >
                     {format(date, "d")}
                   </span>
                 </div>
-                
+
                 {/* Indicator for Today */}
                 {isToday && !selected && (
                   <div className="absolute bottom-1 w-1 h-1 bg-darkGold rounded-full"></div>
@@ -190,20 +234,20 @@ function DateStep({
 // Step 2: Time selection with improved UI
 function TimeStep({ availability, selectedTime, onSelectTime }) {
   const [selectedHour, setSelectedHour] = useState(null);
-  
+
   // Group availability by time slot for easier rendering
-  const timeSlots = availability.filter(slot => slot.allowed.length > 0);
-  
+  const timeSlots = availability.filter((slot) => slot.allowed.length > 0);
+
   // Handle hour selection
   const handleHourSelect = (hour) => {
     setSelectedHour(hour);
   };
-  
+
   // Handle duration selection
   const handleDurationSelect = (hour, duration) => {
     onSelectTime({ slot: hour, dur: duration });
   };
-  
+
   // Convert duration minutes to readable format
   const formatDuration = (minutes) => {
     if (minutes < 60) return `${minutes}m`;
@@ -217,9 +261,9 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
     const endMinutes = m + durationMinutes;
     const endHours = h + Math.floor(endMinutes / 60);
     const endMinutesRemainder = endMinutes % 60;
-    return `${endHours}:${endMinutesRemainder.toString().padStart(2, '0')}`;
+    return `${endHours}:${endMinutesRemainder.toString().padStart(2, "0")}`;
   };
-  
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* If no hour is selected yet, show the hour selection grid */}
@@ -232,9 +276,11 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
                 onClick={() => handleHourSelect(slot)}
                 className="bg-white/10 hover:bg-darkGold/70 text-white rounded-xl p-2 sm:p-3 transition-colors duration-200 flex flex-col items-center"
               >
-                <span className="text-base sm:text-xl md:text-2xl font-semibold">{slot}</span>
+                <span className="text-base sm:text-xl md:text-2xl font-semibold">
+                  {slot}
+                </span>
                 <span className="text-[10px] xs:text-xs md:text-base mt-1">
-                  {allowed.length} {allowed.length === 1 ? 'option' : 'options'}
+                  {allowed.length} {allowed.length === 1 ? "option" : "options"}
                 </span>
               </button>
             ))}
@@ -244,38 +290,51 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
         /* If hour is selected, show duration options for that hour */
         <div>
           <div className="flex items-center mb-2 sm:mb-4">
-            <button 
+            <button
               onClick={() => setSelectedHour(null)}
               className="text-white mr-2 hover:text-darkGold transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 sm:h-5 sm:w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
           </div>
-          
+
           <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
             {timeSlots
-              .find(item => item.slot === selectedHour)?.allowed
-              .map(duration => (
+              .find((item) => item.slot === selectedHour)
+              ?.allowed.map((duration) => (
                 <button
                   key={duration}
                   onClick={() => handleDurationSelect(selectedHour, duration)}
                   className={`relative overflow-hidden shadow-lg rounded-xl p-2 sm:p-3 transition-all duration-200
-                    ${selectedTime?.slot === selectedHour && selectedTime?.dur === duration
-                      ? " bg-darkGold/30"
-                      : " bg-white/10 hover:border-darkGold/70 hover:bg-white/20"
+                    ${
+                      selectedTime?.slot === selectedHour &&
+                      selectedTime?.dur === duration
+                        ? " bg-darkGold/30"
+                        : " bg-white/10 hover:border-darkGold/70 hover:bg-white/20"
                     }`}
                 >
                   <div className="flex flex-col items-center justify-center text-white">
-                    <span className="text-base sm:text-lg md:text-xl font-bold mb-1">{formatDuration(duration)}</span>
+                    <span className="text-base sm:text-lg md:text-xl font-bold mb-1">
+                      {formatDuration(duration)}
+                    </span>
                     <span className="text-[10px] xs:text-xs md:text-base opacity-70">
-                      {selectedHour} - {calculateEndTime(selectedHour, duration)}
+                      {selectedHour} -{" "}
+                      {calculateEndTime(selectedHour, duration)}
                     </span>
                   </div>
                 </button>
-              ))
-            }
+              ))}
           </div>
         </div>
       )}
@@ -286,11 +345,13 @@ function TimeStep({ availability, selectedTime, onSelectTime }) {
 // Step 3: Contact info
 function InfoStep({ formData, onChange }) {
   const { t } = useTranslation();
-  
+
   return (
     <div className="space-y-4 max-w-md mx-auto w-full">
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white text-sm sm:text-base md:text-lg">{t("booking.name_label")}</label>
+        <label className="block text-white text-sm sm:text-base md:text-lg">
+          {t("booking.name_label")}
+        </label>
         <input
           name="name"
           placeholder={t("booking.name_placeholder")}
@@ -300,7 +361,9 @@ function InfoStep({ formData, onChange }) {
         />
       </div>
       <div className="w-full flex flex-col gap-2">
-        <label className="block text-white text-sm sm:text-base md:text-lg">{t("booking.email_label")}</label>
+        <label className="block text-white text-sm sm:text-base md:text-lg">
+          {t("booking.email_label")}
+        </label>
         <input
           name="email"
           type="email"
@@ -310,6 +373,79 @@ function InfoStep({ formData, onChange }) {
           className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-xs sm:text-sm md:text-base"
         />
       </div>
+    </div>
+  );
+}
+
+function PaymentStep({
+  selectedDuration,
+  bookingId,
+  onPaymentConfirmed,
+  formData,
+}) {
+  const [paymentStarted, setPaymentStarted] = useState(false);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+
+  const handleStripeRedirect = async () => {
+    try {
+      const { data } = await axios.post("/.netlify/functions/createStripeSession", {
+        bookingId, 
+        duration: selectedDuration, 
+        email: formData.email
+      });
+      
+      window.open(data.url, '_blank');
+      setPaymentStarted(true);
+    } catch (error) {
+      console.error("Error creating Stripe session:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!paymentStarted || !bookingId) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await axios.get(
+          `/.netlify/functions/getBookingStatus?id=${bookingId}`
+        );
+        if (response.data.paymentStatus === "paid") {
+          setPaymentConfirmed(true);
+          onPaymentConfirmed(true); // notify parent Booking component
+          clearInterval(interval);
+        }
+      } catch (error) {
+        console.error("Error checking payment status:", error);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [paymentStarted, bookingId, onPaymentConfirmed]);
+
+  return (
+    <div className="text-white text-center space-y-4 max-w-lg mx-auto">
+      <p className="text-lg sm:text-xl">
+        Please click the button below to pay. Once Stripe confirms your payment,
+        the "Next" button will be unlocked.
+      </p>
+      <button
+        onClick={handleStripeRedirect}
+        className="px-4 py-2 bg-darkGold text-black rounded-xl shadow-md hover:bg-yellow-400 transition"
+      >
+        Open Payment Checkout
+      </button>
+
+      {paymentStarted && !paymentConfirmed && (
+        <p className="text-white/80 text-sm pt-2">
+          Waiting for Stripe confirmation...
+        </p>
+      )}
+
+      {paymentConfirmed && (
+        <p className="text-green-500 font-semibold pt-2">
+          Payment confirmed ✅ — you can now proceed.
+        </p>
+      )}
     </div>
   );
 }
@@ -325,31 +461,18 @@ export default function Booking({ onBackService }) {
   const [bookedEvents, setBookedEvents] = useState([]);
   const [formData, setFormData] = useState({
     name: user?.user_metadata?.full_name || "",
-    email: user?.email || ""
+    email: user?.email || "",
   });
   const [paymentDone, setPaymentDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [bookingId, setBookingId] = useState(null);
 
-  // Business hours buffer - start scheduling from tomorrow
-  const minDate = addDays(new Date(), 1);
-
-  // Stripe checkout links by duration (minutes)
-  const STRIPE_LINKS = {
-    45: "https://buy.stripe.com/9AQ4h1gy6fG90Te7sw",
-    60: "https://buy.stripe.com/5kA4h12HgalPbxSeUZ",
-    75: "https://buy.stripe.com/8wM4h1fu265z9pK8wE",
-    90: "https://buy.stripe.com/fZe6p9a9I79D7hC6ov",
-    105: "https://buy.stripe.com/9AQ4h195Edy11Xi28h",
-    120: "https://buy.stripe.com/28o7tdfu2eC50Te4gm",
+  const handlePaymentConfirmed = (confirmed) => {
+    setPaymentDone(confirmed);
   };
 
-  // Auto-redirect to Stripe at payment step
-  useEffect(() => {
-    if (step === 4 && selectedDuration) {
-      window.open(STRIPE_LINKS[selectedDuration], "_blank");
-    }
-  }, [step, selectedDuration]);
+  // Business hours buffer - start scheduling from tomorrow
+  const minDate = addDays(new Date(), 1);
 
   // Load existing bookings
   useEffect(() => {
@@ -364,7 +487,7 @@ export default function Booking({ onBackService }) {
         setLoading(false);
       }
     }
-    
+
     loadBookings();
   }, []);
 
@@ -376,7 +499,7 @@ export default function Booking({ onBackService }) {
       const end = new Date(event.end);
       return {
         from: addMinutes(start, -30), // 30min prep time before consultation
-        to: end                       // End of consultation
+        to: end, // End of consultation
       };
     });
   };
@@ -386,21 +509,21 @@ export default function Booking({ onBackService }) {
   // Check if a specific hour and duration is available on the selected date
   function isSlotFree(date, hourString, durationMinutes) {
     if (!date) return false;
-    
+
     // Create datetime objects for the proposed booking
     const [hour, minute] = hourString.split(":").map(Number);
-    
+
     const consultationStart = new Date(date);
     consultationStart.setHours(hour, minute, 0, 0);
-    
+
     const prepStart = addMinutes(consultationStart, -30); // 30min prep time
     const consultationEnd = addMinutes(consultationStart, durationMinutes);
-    
+
     // Check if the booking would extend past 10pm (22:00)
     if (consultationEnd.getHours() >= 22 && consultationEnd.getMinutes() > 0) {
       return false;
     }
-    
+
     // Check for conflicts with existing bookings
     for (const block of blocked) {
       // Check if there's any overlap between the proposed booking (including prep time)
@@ -412,7 +535,7 @@ export default function Booking({ onBackService }) {
         return false; // Conflict detected
       }
     }
-    
+
     return true; // No conflicts found
   }
 
@@ -421,9 +544,9 @@ export default function Booking({ onBackService }) {
   const timeOptions = Array.from({ length: 12 }, (_, i) => `${10 + i}:00`); // Hours from 10am to 9pm
 
   // Compute availability per hour based on the selected date
-  const availability = timeOptions.map(slot => ({
+  const availability = timeOptions.map((slot) => ({
     slot,
-    allowed: DURS.filter(dur => isSlotFree(selectedDate, slot, dur)),
+    allowed: DURS.filter((dur) => isSlotFree(selectedDate, slot, dur)),
   }));
 
   // Booking steps
@@ -431,7 +554,8 @@ export default function Booking({ onBackService }) {
     { title: t("booking.step_1"), component: DateStep },
     { title: t("booking.step_2"), component: TimeStep },
     { title: t("booking.step_3"), component: InfoStep },
-    { title: t("booking.step_4"), component: InlineChatbotStep },
+    { title: t("booking.step_4"), component: PaymentStep },
+    { title: t("booking.step_5"), component: InlineChatbotStep },
   ];
   const Current = STEPS[step - 1].component;
   const UI_STEPS = STEPS.length + 1;
@@ -440,7 +564,7 @@ export default function Booking({ onBackService }) {
   const canProceed = () => {
     if (step === 2) return !!selectedDuration;
     if (step === 3) return formData.name && formData.email;
-    if (step === 4) return paymentDone;
+    if (step === 4) return paymentDone; // ⬅️ Unlock Next only when Stripe confirms
     return true;
   };
 
@@ -448,8 +572,6 @@ export default function Booking({ onBackService }) {
     if (step < 3) {
       setStep(step + 1);
     } else if (step === 3) {
-      setLoading(true);
-  
       // Build the ISO timestamp for the consultation start time
       const appointment_date = new Date(
         selectedDate.getFullYear(),
@@ -457,7 +579,47 @@ export default function Booking({ onBackService }) {
         selectedDate.getDate(),
         ...selectedTime.split(":").map(Number)
       ).toISOString();
-  
+
+      try {
+        setLoading(true);
+
+        const { data, error } = await supabase
+          .from("bookings")
+          .insert({
+            user_id: user?.id,
+            appointment_date,
+            duration_minutes: selectedDuration,
+            name: formData.name,
+            email: formData.email,
+            payment_status: "pending",
+          })
+          .select("id")
+          .single();
+
+        if (error || !data) {
+          throw error || new Error("Booking creation failed: No data returned");
+        }
+
+        setBookingId(data.id);
+        setStep(4);
+      } catch (error) {
+        console.error("Error creating booking:", error.message);
+      } finally {
+        setLoading(false);
+      }
+
+      // go to payment
+    } else if (step === 4) {
+      setStep(5); // go to chatbot
+    } else if (step === 5) {
+      // Build the ISO timestamp for the consultation start time
+      const appointment_date = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        ...selectedTime.split(":").map(Number)
+      ).toISOString();
+
       try {
         const { data, error } = await supabase
           .from("bookings")
@@ -470,15 +632,15 @@ export default function Booking({ onBackService }) {
           })
           .select("id")
           .single();
-    
+
         if (error) throw error;
-        
+
         setBookingId(data.id);
-        
+
         // Refresh bookings data to update availability
         const { data: fresh } = await fetchBookings();
         setBookedEvents(fresh || []);
-        
+
         setStep(4); // Move to the next step
       } catch (error) {
         console.error("Error creating booking:", error);
@@ -491,10 +653,11 @@ export default function Booking({ onBackService }) {
     }
   };
 
-  const handleChange = e => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  
-  const handleStepClick = dot => {
-    if (dot === 1) onBackService(); 
+  const handleChange = (e) =>
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleStepClick = (dot) => {
+    if (dot === 1) onBackService();
     else setStep(dot - 1);
   };
 
@@ -505,8 +668,10 @@ export default function Booking({ onBackService }) {
           {t("booking.title")}
         </h2>
         <div className="bg-oxfordBlue rounded-xl p-3 sm:p-6 md:p-8 shadow-xl">
-          <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-4 sm:mb-6 font-semibold">{STEPS[step - 1].title}</h3>
-          
+          <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-4 sm:mb-6 font-semibold">
+            {STEPS[step - 1].title}
+          </h3>
+
           {loading && step === 1 ? (
             <div className="flex justify-center py-6 sm:py-10">
               <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 md:h-16 md:w-16 border-t-2 border-b-2 border-darkGold"></div>
@@ -527,15 +692,19 @@ export default function Booking({ onBackService }) {
                   selectedDate={selectedDate}
                   onSelectDate={setSelectedDate}
                   currentMonth={currentMonth}
-                  onChangeMonth={inc =>
-                    setCurrentMonth(prev => addMonths(prev, inc))
+                  onChangeMonth={(inc) =>
+                    setCurrentMonth((prev) => addMonths(prev, inc))
                   }
                   minDate={minDate}
                 />
               ) : step === 3 ? (
-                <InfoStep
-                  formData={formData}
-                  onChange={handleChange}
+                <InfoStep formData={formData} onChange={handleChange} />
+              ) : step === 4 ? (
+                <PaymentStep
+                  selectedDuration={selectedDuration}
+                  bookingId={bookingId}
+                  formData={formData} // ✅ add this
+                  onPaymentConfirmed={handlePaymentConfirmed}
                 />
               ) : (
                 <InlineChatbotStep
@@ -548,7 +717,7 @@ export default function Booking({ onBackService }) {
 
           <div className="flex justify-between mt-4 sm:mt-6 md:mt-8">
             <button
-              onClick={() => step > 1 ? setStep(step - 1) : onBackService()}
+              onClick={() => (step > 1 ? setStep(step - 1) : onBackService())}
               className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
             >
               {t("booking.back")}
@@ -561,14 +730,32 @@ export default function Booking({ onBackService }) {
               >
                 {loading ? (
                   <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     {t("booking.processing")}
                   </span>
+                ) : step === 3 ? (
+                  t("booking.complete_booking")
                 ) : (
-                  step === 3 ? t("booking.complete_booking") : t("booking.next")
+                  t("booking.next")
                 )}
               </button>
             )}

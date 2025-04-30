@@ -1,15 +1,14 @@
 [build]
   functions = "netlify/functions"
+  publish = "build"
+  command = "npm run build"
 
 [[redirects]]
-  # Ensure function endpoints are served by Netlify functions
   from = "/.netlify/functions/*"
   to = "/.netlify/functions/:splat"
   status = 200
   force = true
 
-[[redirects]]
-  # Then your SPA fallback
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[functions."stripe-webhook"]
+  node_bundler = "esbuild"
+  external_node_modules = ["stripe", "@netlify/functions"]
