@@ -253,9 +253,9 @@
       "chat": "Chatea con tu coach"
     },
     "frequency_options": {
-      "weekly": "Una vez por semana",
-      "daily": "Todos los días",
-      "priority": "Coaching prioritario"
+      "weekly": "Básico",
+      "daily": "Estándar",
+      "priority": "Premium"
     },
     "form": {
       "name_label": "Tu nombre",
@@ -999,5 +999,9 @@
     "cta": {
       "button": "Crea tu cuenta gratis"
     }
+  },
+
+  "window_chatbot": {
+    "welcome_message": "¡Bienvenido al asistente personal de DaGalow! Puedo ayudarte con información sobre servicios, reservas o responder preguntas sobre la experiencia de Daniel. ¿En qué puedo ayudarte hoy?"
   }
 }

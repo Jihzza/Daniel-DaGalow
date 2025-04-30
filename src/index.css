@@ -23,3 +23,11 @@ code {
     monospace;
 }
 
+/* only hides scrollbars inside #bottom-carousel */
+#bottom-carousel .hide-scrollbar {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+#bottom-carousel .hide-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera */
+}

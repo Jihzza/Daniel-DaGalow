@@ -9,7 +9,7 @@ import userImage from "../../assets/img/Pessoas/Default.svg";
 import { supabase } from "../../utils/supabaseClient";
 import AuthModal from "../Auth/AuthModal";
 import OctagonalProfile from "../common/Octagonal Profile";
-import LanguageSwitcher from "../common/LanguageSwitcher"; // Import the language switcher
+import { ReactComponent as GlobeIcon } from "../../assets/icons/Globe Branco.svg";
 
 function useBreakpoint() {
   const getBreakpoint = () => {
@@ -38,7 +38,9 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation(); // Use translation hook
-
+  const { i18n } = useTranslation();
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef(null);
   const [avatarUrl, setAvatarUrl] = useState(null);
 
   const breakpoint = useBreakpoint();
@@ -46,7 +48,8 @@ function Header() {
   if (breakpoint === "lg") profileSize = 50; // or your desired lg size
   else if (breakpoint === "md") profileSize = 56; // md size
   else profileSize = 40; // mobile size
-
+  const allLangs = (i18n.options.supportedLngs || [])
+  .filter(l => l !== "cimode" && l !== "*");
   useEffect(() => {
     if (!user?.id) return;
     (async () => {
@@ -62,6 +65,16 @@ function Header() {
       }
     })();
   }, [user]);
+
+  useEffect(() => {
+    function onClick(e) {
+      if (langRef.current && !langRef.current.contains(e.target)) {
+        setLangOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
 
   const handleProfileClick = () => {
     if (user) {
@@ -90,35 +103,69 @@ function Header() {
           ${show ? "translate-y-0" : "-translate-y-full"}
         `}
       >
-        <div onClick={handleProfileClick} className="cursor-pointer">
-          <OctagonalProfile
-            size={profileSize}
-            borderColor="#002147"
-            innerBorderColor="#000"
-            imageSrc={avatarUrl}
-            fallbackText={user?.email?.[0]?.toUpperCase() || "?"}
-          />
-        </div>
+         <div
+        onClick={handleProfileClick}
+        className="absolute left-4 md:left-8 lg:left-10 top-1/2 transform -translate-y-1/2 cursor-pointer"
+      >
+        <OctagonalProfile
+          size={profileSize}
+          borderColor="#002147"
+          innerBorderColor="#000"
+          imageSrc={avatarUrl}
+          fallbackText={user?.email?.[0]?.toUpperCase() || "?"}
+        />
+      </div>
 
-        <div className="max-w-5xl mx-auto flex items-center justify-between p-4">
-          <div
-            onClick={handleLogoClick}
-            className="focus:outline-none cursor-pointer"
+      {/* 2) Logo absolutely centered */}
+      <div
+        onClick={handleLogoClick}
+        className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+      >
+        <img
+          src={DaGalowLogo}
+          alt="DaGalow Logo"
+          className="w-[150px] md:w-[275px] h-auto object-cover"
+        />
+      </div>
+
+      {/* 3) Globe + Hamburger on the right */}
+      <div className="absolute right-4 md:right-8 lg:right-10 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+        <div ref={langRef} className="relative">
+          <button
+            onClick={() => setLangOpen(o => !o)}
+            className="focus:outline-none p-1"
+            aria-label="Switch language"
           >
-            <img
-              src={DaGalowLogo}
-              alt="DaGalow Logo"
-              className="w-[150px] md:w-[275px] h-auto object-cover"
-            />
-          </div>
+            <GlobeIcon className="w-6 h-6 md:w-8 md:h-8" />
+          </button>
+          {langOpen && (
+            <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-lg z-50">
+              {allLangs.map(lng => (
+                <button
+                  key={lng}
+                  onClick={() => {
+                    i18n.changeLanguage(lng);
+                    setLangOpen(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                >
+                  {lng.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-
         <button
-          onClick={() => setMenuOpen((o) => !o)}
+          onClick={() => setMenuOpen(o => !o)}
           className="focus:outline-none"
         >
-          <img src={Hamburger} alt="Hamburger" className="w-6 h-6 md:w-10 md:h-10 lg:w-8 lg:h-8" />
+          <img
+            src={Hamburger}
+            alt="Menu"
+            className="w-6 h-6 md:w-8 md:h-8"
+          />
         </button>
+      </div>
       </header>
 
       {/* Dropdown Menu */}
@@ -143,7 +190,7 @@ function Header() {
               className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
-              {t('navigation.home')}
+              {t("navigation.home")}
             </Link>
 
             {/* Calendar link */}
@@ -152,7 +199,7 @@ function Header() {
               className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
-              {t('navigation.calendar')}
+              {t("navigation.calendar")}
             </Link>
 
             {/* Auth links in mobile menu */}
@@ -163,14 +210,14 @@ function Header() {
                   className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
-                  {t('navigation.profile')}
+                  {t("navigation.profile")}
                 </Link>
                 <Link
                   to="/components/Subpages/Settings"
                   className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
-                  {t('navigation.settings')}
+                  {t("navigation.settings")}
                 </Link>
               </>
             ) : (
@@ -181,12 +228,9 @@ function Header() {
                 }}
                 className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors text-left"
               >
-                {t('navigation.login_signup')}
+                {t("navigation.login_signup")}
               </button>
             )}
-          </div>
-          <div className="mb-6 md:mt-12">
-            <LanguageSwitcher />
           </div>
         </div>
       </div>

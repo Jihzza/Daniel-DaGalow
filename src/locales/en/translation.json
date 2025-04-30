@@ -260,9 +260,9 @@
       "chat": "Chat with your coach"
     },
     "frequency_options": {
-      "weekly": "Once per Week",
-      "daily": "Every Day",
-      "priority": "Priority Coaching"
+      "weekly": "Basic",
+      "daily": "Standard",
+      "priority": "Premium"
     },
     "form": {
       "name_label": "Your Name",
@@ -332,7 +332,8 @@
     "input_placeholder_waiting": "Wait for message...",
     "bot_typing": "bot is typing…",
     "error_message": "Oops, something went wrong.",
-    "welcome_message": "Welcome! How can I help you today?",
+    "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?"
+    ,
     "booking_welcome": "Your consultation has been scheduled! I'll be your pre-consultation assistant. Would you like to share what specific topics you'd like to discuss during your session?",
     "booking_welcome_with_date": "Your consultation for {{date}} ({{duration}} minutes) is confirmed! I'll be your pre-consultation assistant. Would you like to share what specific topics you'd like to discuss during your session?",
     "coaching_welcome": "Welcome to your {{tier}} coaching program! I'm your assistant and will connect you with Daniel. To make the most of your coaching experience, could you share what specific goals you're hoping to achieve?",
@@ -491,34 +492,6 @@
       "save_changes": "Save Changes",
       "saving": "Saving..."
     }
-  },
-
-  "music": {
-    "title": "Music Recommendations",
-    "description": "A carefully curated collection of exceptional music, filtering through the noise to bring you only the finest songs worth your time.",
-    "playlists": {
-      "classic_rock": {
-        "title": "Classic Rock Essentials",
-        "description": "A curated selection of timeless rock hits that defined generations. From Led Zeppelin to Pink Floyd, these tracks showcase the golden era of rock music."
-      },
-      "reggae": {
-        "title": "Reggae Roots & Culture",
-        "description": "Immerse yourself in the soulful rhythms of reggae. From Bob Marley to modern reggae artists, this playlist captures the essence of Jamaican music culture."
-      },
-      "jazz": {
-        "title": "Jazz Standards Collection",
-        "description": "The finest collection of jazz classics that shaped the genre. Featuring legends like Miles Davis, John Coltrane, and Ella Fitzgerald."
-      },
-      "electronic": {
-        "title": "Electronic Evolution",
-        "description": "A journey through electronic music's evolution. From ambient to techno, this playlist explores the cutting edge of electronic sound."
-      },
-      "classical": {
-        "title": "Classical Masterpieces",
-        "description": "Timeless compositions from the greatest classical composers. Perfect for focused work or deep relaxation."
-      }
-    },
-    "listen_button": "Listen on YouTube"
   },
 
   "profile": {
@@ -844,42 +817,6 @@
     }
   },
 
-  "videos": {
-    "title": "Educational Resources",
-    "description": "A curated collection of educational content covering essential life subjects. Expand your knowledge and develop new skills through these carefully selected video playlists.",
-    "watch_button": "Watch on YouTube",
-    "playlists": {
-      "psychology": {
-        "title": "Psychology & Mental Health",
-        "description": "Explore the fascinating world of psychology and mental health. From understanding human behavior to practical mental wellness techniques, this playlist offers valuable insights for personal growth."
-      },
-      "science": {
-        "title": "Science & Technology",
-        "description": "Dive into the latest scientific discoveries and technological advancements. From quantum physics to artificial intelligence, stay updated with cutting-edge developments in science and tech."
-      },
-      "math": {
-        "title": "Mathematics & Problem Solving",
-        "description": "Master mathematical concepts and develop critical thinking skills. This playlist covers everything from basic arithmetic to advanced calculus, making math accessible and engaging."
-      },
-      "health": {
-        "title": "Health & Fitness",
-        "description": "Learn about nutrition, exercise, and overall wellness. Get expert advice on maintaining a healthy lifestyle, workout routines, and understanding your body's needs."
-      },
-      "finance": {
-        "title": "Personal Finance & Investment",
-        "description": "Build financial literacy and learn smart investment strategies. From budgeting basics to advanced investment techniques, this playlist helps you make informed financial decisions."
-      },
-      "business": {
-        "title": "Business & Entrepreneurship",
-        "description": "Discover the fundamentals of business and entrepreneurship. Learn about startup strategies, marketing, leadership, and how to build a successful business from the ground up."
-      },
-      "philosophy": {
-        "title": "Philosophy & Critical Thinking",
-        "description": "Explore philosophical concepts and develop critical thinking skills. From ancient wisdom to modern philosophy, this playlist encourages deep thinking and self-reflection."
-      }
-    }
-  },
-
   "auth": {
     "login": {
       "title": "Log In",
@@ -1004,7 +941,11 @@
       }
     },
     "cta": {
-      "button": "Create Your Free Account"
+      "button": "Create Your Account"
     }
+  },
+
+  "window_chatbot": {
+    "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?"
   }
 }

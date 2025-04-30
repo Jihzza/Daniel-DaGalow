@@ -16,7 +16,7 @@ function About() {
           <p className="mb-6 md:text-xl">
             {t("about.about_description_2")}
           </p>
-          <p className="italic md:text-xl">
+          <p className="md:text-xl">
             {t("about.about_mission")}
           </p>
         </div>  

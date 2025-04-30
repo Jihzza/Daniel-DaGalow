@@ -6,7 +6,7 @@ import Anexar from "../../assets/icons/Anexar.svg";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
 import TypingMessage from "../common/TypingMessage";
-
+import { useTranslation } from "react-i18next";
 // Fallback function to generate UUID for browsers that don't support crypto.randomUUID
 function generateUUID() {
   // Check if the browser supports crypto.randomUUID
@@ -40,7 +40,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
   const { user } = useAuth();
   const userId = user?.id;
   const [isNewChat, setIsNewChat] = useState(true);
-
+  const { t } = useTranslation();
   // Check if any messages still have active typing animations
   const checkTypingAnimations = () => {
     const anyStillTyping = messages.some(
@@ -115,7 +115,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
           // Add welcome message immediately to avoid double display
           const welcomeMessage = {
             from: "bot",
-            text: "👋 Welcome to DaGalow's personal assistant! I can help you with information about services, booking consultations, or answering questions about Daniel's expertise in mindset, finance, health, and more. How can I assist you today?",
+            text: t("window_chatbot.welcome_message"),
             isTyping: true,
           };
 
