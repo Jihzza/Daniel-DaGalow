@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 
 function DirectCoaching() {
   const { setService, setServiceWithTier } = useContext(ServiceContext);
-  const [tier, setTier] = useState("basic");
+  const [tier, setTier] = useState("null");
   const { t } = useTranslation();
 
   const openStandardForm = (service) => {

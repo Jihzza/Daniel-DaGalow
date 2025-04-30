@@ -158,98 +158,91 @@ function ContactStep({ formData, onChange }) {
   );
 }
 
-// Step 3: Payment Step
-// Step 3: Payment Step
+// Step 3: Payment Step - Responsive, Mobile-First Design
 function PaymentStep({selectedTier, requestId, onPaymentConfirmed, formData}) {
   const [paymentStarted, setPaymentStarted] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-  const [isTestBooking, setIsTestBooking] = useState(false);
   const [pollingError, setPollingError] = useState(null);
   
+  // Map the coaching tiers to the correct monthly subscription prices
+  const getPriceForTier = (tier) => {
+    const prices = {
+      Weekly: "€40", // Basic plan
+      Daily: "€90",  // Standard plan
+      Priority: "€230" // Premium plan
+    };
+    return prices[tier] || "€40"; // Default to Basic if tier not found
+  };
+  
+  // Map your tier names to plan names for clearer communication
+  const getPlanNameForTier = (tier) => {
+    const planNames = {
+      Weekly: "Basic",
+      Daily: "Standard",
+      Priority: "Premium"
+    };
+    return planNames[tier] || "Basic";
+  };
+
   // Check for pending payments when component mounts
   useEffect(() => {
-    // Check if there's a pending coaching payment in localStorage
     const pendingId = localStorage.getItem('pendingCoachingId');
     
     if (pendingId && pendingId === requestId.toString()) {
-      console.log("Found pending coaching payment in localStorage:", pendingId);
       setPaymentStarted(true);
-      
-      // Clear it to prevent repeated attempts
       localStorage.removeItem('pendingCoachingId');
     }
   }, [requestId]);
   
   const handleStripeRedirect = async () => {
     try {
-      console.log("Starting payment process for coaching request ID:", requestId);
-      
-      const { data } = await axios.post("/.netlify/functions/createCoachingSession", {
-        requestId, 
-        tier: selectedTier, 
-        email: formData.email,
-        isTestBooking
-      });
-      
-      // Store the coaching request ID in localStorage before redirecting
       localStorage.setItem('pendingCoachingId', requestId.toString());
       
-      console.log("Received Stripe checkout URL:", data.url);
+      const { data } = await axios.post("/.netlify/functions/createCoachingSession", {
+        requestId,
+        tier: selectedTier,
+        email: formData.email,
+        productId: "prod_SBC2yFeKHqFXZr",
+        isTestBooking: false
+      });
+      
       window.open(data.url, '_blank');
       setPaymentStarted(true);
     } catch (error) {
-      console.error("Error creating Stripe session:", error);
-      setPollingError("Failed to start payment process");
+      console.error("Error creating Stripe subscription:", error);
+      setPollingError("Failed to start subscription process");
     }
   };
 
+  // Payment status polling effect remains the same
   useEffect(() => {
     if (!paymentStarted || !requestId) return;
-
-    console.log("Starting payment status polling for ID:", requestId);
     
     const interval = setInterval(async () => {
       try {
-        console.log("Checking payment status...");
-        
-        const response = await axios.get(
-          `/.netlify/functions/getCoachingStatus?id=${requestId}`
-        );
-        
-        console.log("Payment status response:", response.data);
+        const response = await axios.get(`/.netlify/functions/getCoachingStatus?id=${requestId}`);
         
         if (response.data.paymentStatus === "paid") {
-          console.log("Payment confirmed!");
           setPaymentConfirmed(true);
           onPaymentConfirmed(true);
           clearInterval(interval);
-        } else if (response.data.paymentStatus === "pending") {
-          // If still pending after multiple attempts, try a direct force update
-          // This is a fallback mechanism in case the webhook failed
-          if (Math.random() < 0.2) { // 20% chance on each poll to try a force update
-            try {
-              console.log("Trying direct payment verification...");
-              await axios.get(`/.netlify/functions/forceUpdateCoaching?id=${requestId}`);
-              
-              // Check again immediately
-              const verifyResponse = await axios.get(
-                `/.netlify/functions/getCoachingStatus?id=${requestId}`
-              );
-              
-              if (verifyResponse.data.paymentStatus === "paid") {
-                console.log("Payment verified with fallback mechanism!");
-                setPaymentConfirmed(true);
-                onPaymentConfirmed(true);
-                clearInterval(interval);
-              }
-            } catch (verifyError) {
-              console.error("Fallback verification failed:", verifyError);
+        } else if (response.data.paymentStatus === "pending" && Math.random() < 0.2) {
+          try {
+            await axios.get(`/.netlify/functions/forceUpdateCoaching?id=${requestId}`);
+            const verifyResponse = await axios.get(`/.netlify/functions/getCoachingStatus?id=${requestId}`);
+            
+            if (verifyResponse.data.paymentStatus === "paid") {
+              setPaymentConfirmed(true);
+              onPaymentConfirmed(true);
+              clearInterval(interval);
             }
+          } catch (verifyError) {
+            console.error("Fallback verification failed:", verifyError);
           }
         }
       } catch (error) {
         console.error("Error checking payment status:", error);
-        setPollingError("Error checking payment status");
+        setPollingError("Error checking subscription status");
         clearInterval(interval);
       }
     }, 5000);
@@ -258,68 +251,94 @@ function PaymentStep({selectedTier, requestId, onPaymentConfirmed, formData}) {
   }, [paymentStarted, requestId, onPaymentConfirmed]);
 
   return (
-    <div className="text-white text-center space-y-4 max-w-lg mx-auto">
-      {/* Dev-only manual override button */}
-      {process.env.NODE_ENV === 'development' && requestId && (
-        <div className="mt-4">
+    <div className="w-full px-4 mx-auto sm:max-w-md">
+      {/* Subscription Card - Mobile First Design */}
+      <div className="bg-oxfordBlue/40 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg sm:shadow-xl border border-white/10 mb-4 sm:mb-6">
+        <h4 className="text-white text-base sm:text-lg font-medium mb-3 sm:mb-4 text-center">
+          Subscription Summary
+        </h4>
+        
+        <div className="space-y-3 sm:space-y-4">
+          {/* Plan name */}
+          <div className="flex justify-between items-center border-b border-white/10 pb-2 sm:pb-3">
+            <span className="text-white/80 text-sm sm:text-base">Plan:</span>
+            <span className="text-white font-medium text-sm sm:text-base">
+              {getPlanNameForTier(selectedTier)}
+            </span>
+          </div>
+          
+          {/* Coaching type */}
+          <div className="flex justify-between items-center border-b border-white/10 pb-2 sm:pb-3">
+            <span className="text-white/80 text-sm sm:text-base">Coaching Level:</span>
+            <span className="text-white font-medium text-sm sm:text-base">
+              {selectedTier}
+            </span>
+          </div>
+          
+          {/* Monthly price - Highlighted with slightly larger text */}
+          <div className="flex justify-between items-center border-b border-white/10 pb-2 sm:pb-3">
+            <span className="text-white/80 text-sm sm:text-base">Monthly Price:</span>
+            <span className="text-white font-semibold text-base sm:text-lg">
+              {getPriceForTier(selectedTier)}/month
+            </span>
+          </div>
+          
+          {/* Billing cycle */}
+          <div className="flex justify-between items-center">
+            <span className="text-white/80 text-sm sm:text-base">Billing:</span>
+            <span className="text-white font-medium text-sm sm:text-base">
+              Monthly, auto-renews
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Subscription notice - Smaller on mobile */}
+      <div className="text-white/70 text-xs sm:text-sm text-center mb-4 sm:mb-6 italic px-2">
+        You can cancel your subscription at any time from your account settings.
+      </div>
+      
+      {/* Subscribe button area */}
+      <div className="text-center">
+        {!paymentStarted ? (
           <button
-            onClick={async () => {
-              try {
-                console.log("Force updating coaching request:", requestId);
-                await axios.get(`/.netlify/functions/forceUpdateCoaching?id=${requestId}`);
-                setPaymentConfirmed(true);
-                onPaymentConfirmed(true);
-              } catch (error) {
-                console.error("Manual override failed:", error);
-              }
-            }}
-            className="px-3 py-1 bg-red-500 text-white rounded-md text-xs"
+            onClick={handleStripeRedirect}
+            className="w-full py-2.5 sm:py-3 bg-darkGold text-black rounded-lg sm:rounded-xl shadow-md hover:bg-yellow-400 transition font-medium text-sm sm:text-base"
           >
-            Force Payment Confirmation (Dev Only)
+            Subscribe Now
           </button>
-        </div>
-      )}
-      
-      <p className="text-lg sm:text-xl">
-        Please click the button below to pay for your {selectedTier} coaching. Once payment is confirmed,
-        the "Next" button will be unlocked.
-      </p>
-      
-      <button
-        onClick={handleStripeRedirect}
-        className="px-4 py-2 bg-darkGold text-black rounded-xl shadow-md hover:bg-yellow-400 transition"
-      >
-        {isTestBooking ? 'Proceed with Test Checkout (0€)' : 'Open Payment Checkout'}
-      </button>
-
-      {paymentStarted && !paymentConfirmed && !pollingError && (
-        <p className="text-white/80 text-sm pt-2">
-          Waiting for payment confirmation...
-        </p>
-      )}
-
-      {pollingError && (
-        <p className="text-red-400 text-sm pt-2">
-          {pollingError}. Please try refreshing the page after payment.
-        </p>
-      )}
-
-      {paymentConfirmed && (
-        <p className="text-green-500 font-semibold pt-2">
-          Payment confirmed ✅ — you can now proceed.
-        </p>
-      )}
-      
-      {/* Debug information in development */}
-      {process.env.NODE_ENV === 'development' && requestId && (
-        <div className="mt-4 p-2 bg-black/30 rounded text-xs text-left">
-          <p>Debug Info:</p>
-          <p>Request ID: {requestId}</p>
-          <p>Payment Started: {paymentStarted ? 'Yes' : 'No'}</p>
-          <p>Payment Confirmed: {paymentConfirmed ? 'Yes' : 'No'}</p>
-          <p>LocalStorage ID: {localStorage.getItem('pendingCoachingId')}</p>
-        </div>
-      )}
+        ) : paymentConfirmed ? (
+          <div className="bg-green-500/20 border border-green-500/50 rounded-lg sm:rounded-xl p-3 sm:p-4">
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500 sm:w-5 sm:h-5">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span className="text-green-500 font-medium text-sm sm:text-base">
+                Subscription activated
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white/5 border border-white/20 rounded-lg sm:rounded-xl p-3 sm:p-4">
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+              <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span className="text-white/80 text-sm sm:text-base">
+                Waiting for confirmation...
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {pollingError && (
+          <p className="text-red-400 text-xs sm:text-sm mt-3 sm:mt-4 px-2">
+            {pollingError}. Please try refreshing the page.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

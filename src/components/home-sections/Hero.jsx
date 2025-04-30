@@ -15,7 +15,7 @@ import { useContext } from "react";
 function Hero() {
   const { t } = useTranslation(); // Use translation hook
   const { setService, setServiceWithTier } = useContext(ServiceContext);
-  const [selectedTier, setSelectedTier] = useState("Weekly"); // Default to Basic tier
+  const [selectedTier, setSelectedTier] = useState(null); // Default to Basic tier
 
   const scrollTo = (id) => {
     const el = document.getElementById(id);
