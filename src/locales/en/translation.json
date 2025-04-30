@@ -75,7 +75,13 @@
     "hero_get_analysis_title": "Get My Analysis",
     "hero_get_analysis_description": "Get professional, in-depth analysis of your investments, business, or social media presence with actionable insights to help you make better decisions and achieve your goals.",
     "hero_get_analysis": "Get My Analysis",
-    "common_learn_more": "Learn More"
+    "common_learn_more": "Learn More",
+    "steps": {
+      "payment": "Payment Information"
+    },
+    "buttons": {
+      "processing": "Processing..."
+    }
     },
 
   "about": {
