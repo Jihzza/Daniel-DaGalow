@@ -1,5 +1,4 @@
 // netlify/functions/createStripeSession.js
-const { buffer } = require("@netlify/functions");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require("@supabase/supabase-js");
 
@@ -7,6 +6,16 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+
+// Pricing map for booking durations (in cents)
+const DURATION_PRICES = {
+  45: 6800,   // €68.00
+  60: 9000,   // €90.00
+  75: 11300,  // €113.00
+  90: 13500,  // €135.00
+  105: 15800, // €158.00
+  120: 18000  // €180.00
+};
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -25,13 +34,11 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: "Missing parameters" };
   }
 
-  // Calculate price - free for test bookings in development or 45-min sessions
-  let unitAmount = duration * 100;
-  if (isTestBooking === true || duration === 45) {
-    unitAmount = 0;
-  }
+  // Calculate price - free for test bookings only
+  const unitAmount = isTestBooking === true
+    ? 0
+    : DURATION_PRICES[duration] || 0;
 
-  // Create the session
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -41,7 +48,9 @@ exports.handler = async (event) => {
             currency: "eur",
             unit_amount: unitAmount,
             product_data: {
-              name: isTestBooking ? `Test Consultation (${duration}m)` : `Consultation (${duration}m)`,
+              name: isTestBooking
+                ? `Test Consultation (${duration}m)`
+                : `Consultation (${duration}m)`,
             },
           },
           quantity: 1,
@@ -53,7 +62,6 @@ exports.handler = async (event) => {
       cancel_url: `${process.env.URL || 'http://localhost:8888'}/payment-cancelled.html`,
     });
 
-    // Record Stripe session ID in booking row
     await supabase
       .from("bookings")
       .update({ 

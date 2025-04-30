@@ -9,9 +9,9 @@ const supabase = createClient(
 
 // Pricing map for coaching tiers (in cents)
 const TIER_PRICES = {
-  Weekly: 0,  // €99.00
-  Daily: 59900,  // €599.00
-  Priority: 99900, // €999.00
+  Weekly: 4000,  // €40.00
+  Daily: 9000,  // €90.00
+  Priority: 23000, // €230.00
 };
 
 exports.handler = async (event) => {
