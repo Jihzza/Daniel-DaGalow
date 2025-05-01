@@ -167,241 +167,282 @@ function DateTimeStep({
   };
 
   return (
-    <div className="flex flex-col">
-      {/* Calendar Header */}
-      <div className="flex items-center justify-between bg-oxfordBlue/30 rounded-xl p-3 shadow-sm">
-        <button
-          onClick={() => onChangeMonth(-1)}
-          className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
-          aria-label="Previous month"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 sm:h-6 sm:w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+    <div className="flex flex-col md:flex-row md:gap-6 md:items-start">
+      {/* Calendar Section - Takes more horizontal space on tablet/desktop */}
+      <div className="md:w-2/3 lg:w-3/5">
+        {/* Calendar Header - Keeping original mobile styling, adding responsive classes */}
+        <div className="flex items-center justify-between bg-oxfordBlue/30 rounded-xl p-3 shadow-sm">
+          <button
+            onClick={() => onChangeMonth(-1)}
+            className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
+            aria-label="Previous month"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-        <h3 className="text-xl sm:text-2xl text-white font-bold tracking-wide">
-          {format(currentMonth, "MMMM yyyy")}
-        </h3>
-        <button
-          onClick={() => onChangeMonth(1)}
-          className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
-          aria-label="Next month"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 sm:h-6 sm:w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      </div>
-
-      {/* Calendar Grid */}
-      <div className="bg-white/5 rounded-xl p-3 md:p-4 shadow-md">
-        {/* Weekday Headers */}
-        <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
-          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-            <div
-              key={d}
-              className="text-center py-2 text-darkGold font-semibold text-xs sm:text-sm md:text-base"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 sm:h-6 sm:w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              {d}
-            </div>
-          ))}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <h3 className="text-xl sm:text-2xl text-white font-bold tracking-wide">
+            {format(currentMonth, "MMMM yyyy")}
+          </h3>
+          <button
+            onClick={() => onChangeMonth(1)}
+            className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
+            aria-label="Next month"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 sm:h-6 sm:w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
         </div>
 
-        {/* Calendar Days */}
-        <div className="grid grid-cols-7 gap-1 sm:gap-2">
-          {calendar.map((date, i) => {
-            const inMonth = isSameMonth(date, currentMonth);
-            const weekend = isWeekend(date);
-            const tooSoon = isBefore(date, minDate);
-            const selected = selectedDate && isSameDay(date, selectedDate);
-            const isToday = isSameDay(date, new Date());
-            const disabled = !inMonth || weekend || tooSoon;
-
-            return (
-              <button
-                key={i}
-                onClick={() => !disabled && onSelectDate(date)}
-                disabled={disabled}
-                className={`
-                  relative h-8 sm:h-12 md:h-14 aspect-square rounded-lg flex flex-col items-center justify-center transition-all duration-200
-                  ${
-                    selected
-                      ? "bg-darkGold text-white font-bold shadow-lg scale-105 z-10"
-                      : inMonth && !disabled
-                      ? "bg-white/10 text-white hover:bg-darkGold/40 hover:scale-105"
-                      : "bg-white/5 text-white/40"
-                  }
-                  ${
-                    isToday && !selected
-                      ? "ring-2 ring-darkGold ring-opacity-70"
-                      : ""
-                  }
-                  ${
-                    disabled
-                      ? "cursor-not-allowed"
-                      : "cursor-pointer hover:shadow-md"
-                  }
-                `}
+        {/* Calendar Grid - Enhanced for larger screens */}
+        <div className="bg-white/5 rounded-xl p-3 md:p-4 lg:p-5 shadow-md">
+          {/* Weekday Headers */}
+          <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
+            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+              <div
+                key={d}
+                className="text-center py-2 text-darkGold font-semibold text-xs sm:text-sm md:text-base"
               >
-                <span className={`text-sm font-medium`}>
-                  {format(date, "d")}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+                {d}
+              </div>
+            ))}
+          </div>
 
-      {/* Duration Carousel (Horizontal) */}
-      <div className="relative pb-4 pt-8">
-        <h4 className="text-white text-sm md:text-base font-medium mb-2">
-          Select Duration:
-        </h4>
-        {/* The negative margin container that breaks out of parent padding */}
-        <div className="mx-[-12px] sm:mx-[-24px] relative">
-          <div className="">
-            <Swiper
-              modules={[Navigation, Pagination]}
-              slidesPerView={3}
-              spaceBetween={10}
-              centeredSlides={true}
-              onSwiper={(swiper) => {
-                durationSwiperRef.current = swiper;
-              }}
-              onSlideChange={(swiper) => {
-                // Auto-select the centered duration
-                if (
-                  availableDurations.length > 0 &&
-                  swiper.realIndex < availableDurations.length
-                ) {
-                  const centeredDuration = availableDurations[swiper.realIndex];
-                  if (
-                    isDurationAvailable(centeredDuration) &&
-                    centeredDuration !== selectedDuration
-                  ) {
-                    handleDurationSelect(centeredDuration);
-                  }
-                }
-              }}
-              className="duration-swiper px-4"
-            >
-              {availableDurations.map((duration) => (
-                <SwiperSlide key={duration}>
-                  <button
-                    onClick={() => handleDurationSelect(duration)}
-                    disabled={!isDurationAvailable(duration)}
-                    className={`w-full py-2 rounded-lg text-center transition-all duration-150 
+          {/* Calendar Days - Keeping original structure but enhancing for larger screens */}
+          <div className="grid grid-cols-7 gap-2 justify-center items-center">
+            {calendar.map((date, i) => {
+              const inMonth = isSameMonth(date, currentMonth);
+              const weekend = isWeekend(date);
+              const tooSoon = isBefore(date, minDate);
+              const selected = selectedDate && isSameDay(date, selectedDate);
+              const isToday = isSameDay(date, new Date());
+              const disabled = !inMonth || weekend || tooSoon;
+
+              return (
+                <button
+                  key={i}
+                  onClick={() => !disabled && onSelectDate(date)}
+                  disabled={disabled}
+                  className={`
+                    relative h-8 md:h-10 lg:h-12 aspect-square rounded-lg flex flex-col items-center justify-center transition-all duration-200
                     ${
-                      selectedDuration === duration
-                        ? "bg-darkGold text-black font-bold"
-                        : isDurationAvailable(duration)
-                        ? "bg-white/10 text-white hover:bg-darkGold/40"
-                        : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
-                    }`}
-                  >
-                    {formatDuration(duration)}
-                  </button>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                      selected
+                        ? "bg-darkGold text-white font-bold shadow-lg scale-105 z-10"
+                        : inMonth && !disabled
+                        ? "bg-white/10 text-white hover:bg-darkGold/40 hover:scale-105"
+                        : "bg-white/5 text-white/40"
+                    }
+                    ${
+                      isToday && !selected
+                        ? "ring-2 ring-darkGold ring-opacity-70"
+                        : ""
+                    }
+                    ${
+                      disabled
+                        ? "cursor-not-allowed"
+                        : "cursor-pointer hover:shadow-md"
+                    }
+                  `}
+                >
+                  <span className="text-sm md:text-base font-medium">
+                    {format(date, "d")}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Time Carousel (Vertical) */}
-      <div className="py-4 h-44">
-        <h4 className="text-white text-sm md:text-base font-medium mb-2">
-          Select Time:
-        </h4>
-        {selectedDate && availableTimes.length > 0 ? (
-          <div className="relative bg-white/5 rounded-xl py-2 h-full border border-white/10 shadow-inner">
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="h-8 w-full bg-darkGold/20 opacity-70 rounded"></div>
-            </div>
-            <Swiper
-              modules={[Virtual]}
-              direction="vertical"
-              slidesPerView={5}
-              centeredSlides={true}
-              spaceBetween={1}
-              virtual
-              onSwiper={(swiper) => {
-                timeSwiperRef.current = swiper;
-              }}
-              onSlideChange={(swiper) => {
-                // Get the time from the centered slide and select it
-                if (
-                  availableTimes.length > 0 &&
-                  swiper.realIndex < availableTimes.length
-                ) {
-                  const centeredTime = availableTimes[swiper.realIndex];
+      {/* Time & Duration Selection Section */}
+      <div className="md:w-1/3 lg:w-2/5 md:pl-4 md:border-l md:border-white/10">
+        {/* Duration Carousel (Horizontal) - Keeping original mobile structure */}
+        <div className="relative pb-4 pt-8 md:pt-4">
+          <h4 className="text-white text-sm md:text-base font-medium mb-2">
+            Select Duration:
+          </h4>
+          {/* The negative margin container as in original, but adjusted for desktop */}
+          <div className="mx-[-12px] sm:mx-[-24px] md:mx-0 relative">
+            <div className="">
+              <Swiper
+                modules={[Navigation, Pagination]}
+                slidesPerView={3}
+                spaceBetween={10}
+                centeredSlides={true}
+                onSwiper={(swiper) => {
+                  durationSwiperRef.current = swiper;
+                }}
+                onSlideChange={(swiper) => {
+                  // Auto-select the centered duration
                   if (
-                    isTimeAvailable(centeredTime) &&
-                    centeredTime !== selectedTime
+                    availableDurations.length > 0 &&
+                    swiper.realIndex < availableDurations.length
                   ) {
-                    handleTimeSelect(centeredTime);
+                    const centeredDuration = availableDurations[swiper.realIndex];
+                    if (
+                      isDurationAvailable(centeredDuration) &&
+                      centeredDuration !== selectedDuration
+                    ) {
+                      handleDurationSelect(centeredDuration);
+                    }
                   }
-                }
-              }}
-              className="h-full"
-            >
-              {availableTimes.map((time, index) => (
-                <SwiperSlide key={time} virtualIndex={index}>
-                  <button
-                    onClick={() => handleTimeSelect(time)}
-                    disabled={!isTimeAvailable(time)}
-                    className={`w-full py-1 text-center transition-all duration-150
+                }}
+                className="duration-swiper px-4 md:px-0"
+              >
+                {availableDurations.map((duration) => (
+                  <SwiperSlide key={duration}>
+                    <button
+                      onClick={() => handleDurationSelect(duration)}
+                      disabled={!isDurationAvailable(duration)}
+                      className={`w-full py-2 rounded-lg text-center transition-all duration-150 
                       ${
-                        selectedTime === time
-                          ? "text-white font-bold"
-                          : isTimeAvailable(time)
-                          ? "text-white/80 hover:text-white"
-                          : "text-white/40 cursor-not-allowed"
+                        selectedDuration === duration
+                          ? "bg-darkGold text-black font-bold"
+                          : isDurationAvailable(duration)
+                          ? "bg-white/10 text-white hover:bg-darkGold/40"
+                          : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
                       }`}
-                  >
-                    {time}
-                  </button>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                    >
+                      {formatDuration(duration)}
+                    </button>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
           </div>
-        ) : (
-          <div className="flex items-center justify-center h-full bg-white/5 rounded-xl border border-white/10">
-            <p className="text-white/50">
-              {selectedDate
-                ? "No available times for selected date"
-                : "Please select a date first"}
-            </p>
+        </div>
+
+        {/* Time Carousel (Vertical) - Keeping original structure but enhancing height for larger screens */}
+        <div className="py-4 h-44 md:h-56 lg:h-64">
+          <h4 className="text-white text-sm md:text-base font-medium mb-2">
+            Select Time:
+          </h4>
+          {selectedDate && availableTimes.length > 0 ? (
+            <div className="relative bg-white/5 rounded-xl py-2 h-full border border-white/10 shadow-inner">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="h-8 w-full bg-darkGold/20 opacity-70 rounded"></div>
+              </div>
+              <Swiper
+                modules={[Virtual]}
+                direction="vertical"
+                slidesPerView={5}
+                centeredSlides={true}
+                spaceBetween={1}
+                virtual
+                onSwiper={(swiper) => {
+                  timeSwiperRef.current = swiper;
+                }}
+                onSlideChange={(swiper) => {
+                  // Get the time from the centered slide and select it
+                  if (
+                    availableTimes.length > 0 &&
+                    swiper.realIndex < availableTimes.length
+                  ) {
+                    const centeredTime = availableTimes[swiper.realIndex];
+                    if (
+                      isTimeAvailable(centeredTime) &&
+                      centeredTime !== selectedTime
+                    ) {
+                      handleTimeSelect(centeredTime);
+                    }
+                  }
+                }}
+                className="h-full"
+              >
+                {availableTimes.map((time, index) => (
+                  <SwiperSlide key={time} virtualIndex={index}>
+                    <button
+                      onClick={() => handleTimeSelect(time)}
+                      disabled={!isTimeAvailable(time)}
+                      className={`w-full py-1 md:py-2 text-center transition-all duration-150
+                        ${
+                          selectedTime === time
+                            ? "text-white font-bold"
+                            : isTimeAvailable(time)
+                            ? "text-white/80 hover:text-white"
+                            : "text-white/40 cursor-not-allowed"
+                        }`}
+                    >
+                      {time}
+                    </button>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-full bg-white/5 rounded-xl border border-white/10">
+              <p className="text-white/50">
+                {selectedDate
+                  ? "No available times for selected date"
+                  : "Please select a date first"}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Enhanced Booking Summary for tablet/desktop - This is new and only shows on larger screens */}
+        <div className="hidden md:block mt-4 p-4 bg-white/5 rounded-xl border border-white/10">
+          <h4 className="text-white text-base font-medium mb-3 text-center">
+            Booking Summary
+          </h4>
+          
+          <div className="flex justify-between items-center border-b border-white/20 pb-2 mb-2">
+            <span className="text-white/80">Date:</span>
+            <span className="text-white font-medium">
+              {selectedDate ? format(selectedDate, "EEEE, MMMM d, yyyy") : "Not selected"}
+            </span>
           </div>
-        )}
+          
+          <div className="flex justify-between items-center border-b border-white/20 pb-2 mb-2">
+            <span className="text-white/80">Time:</span>
+            <span className="text-white font-medium">
+              {selectedTime || "Not selected"}
+            </span>
+          </div>
+          
+          <div className="flex justify-between items-center border-b border-white/20 pb-2 mb-2">
+            <span className="text-white/80">Duration:</span>
+            <span className="text-white font-medium">
+              {selectedDuration ? formatDuration(selectedDuration) : "Not selected"}
+            </span>
+          </div>
+          
+          <div className="flex justify-between items-center">
+            <span className="text-white/80">End Time:</span>
+            <span className="text-white font-medium">
+              {selectedTime && selectedDuration
+                ? calculateEndTime(selectedTime, selectedDuration)
+                : "Not selected"}
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="h-8"></div>
-
-      {/* Booking Summary */}
-      <div className="py-4 flex flex-col items-center">
+      {/* Booking Summary - Original mobile view, preserved exactly as it was */}
+      <div className="py-4 mt-4 md:mt-6 flex flex-col items-center md:hidden">
         {/* Date display in center */}
         <div className="mb-2">
           <div className="bg-white/10 rounded-lg px-4 py-1 text-white text-center">
