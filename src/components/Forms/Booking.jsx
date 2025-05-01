@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -19,6 +19,13 @@ import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 
+// Import Swiper React components and styles
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Virtual } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+
 // Shared StepIndicator
 function StepIndicator({
   stepCount,
@@ -27,7 +34,7 @@ function StepIndicator({
   className = "",
 }) {
   return (
-    <div className="flex items-center justify-center gap-1 md:gap-2 mt-6 md:mt-8">
+    <div className="flex items-center justify-center py-4 gap-1 md:gap-2">
       {Array.from({ length: stepCount }).map((_, idx) => {
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
@@ -65,15 +72,19 @@ function StepIndicator({
   );
 }
 
-// Step 1: Date selection
-function DateStep({
+// Combined Date, Time and Duration Selection Step with Swiper Carousels
+function DateTimeStep({
   selectedDate,
   onSelectDate,
   currentMonth,
   onChangeMonth,
-  bookedEvents,
+  selectedTime,
+  selectedDuration,
+  onSelectTime,
+  availability,
   minDate,
 }) {
+  // Calendar setup
   const days = eachDayOfInterval({
     start: startOfMonth(currentMonth),
     end: endOfMonth(currentMonth),
@@ -90,9 +101,74 @@ function DateStep({
     nextMonthDays.push(addDays(days[days.length - 1], i));
   const calendar = [...prevMonthDays, ...days, ...nextMonthDays];
 
+  // Time slots and available times
+  const timeSlots = availability.filter((slot) => slot.allowed.length > 0);
+
+  // All available times for the selected date (to show in vertical carousel)
+  const availableTimes = timeSlots.map((slot) => slot.slot).sort();
+
+  // All durations (these are fixed)
+  const availableDurations = [45, 60, 75, 90, 105, 120];
+
+  // References for Swipers
+  const durationSwiperRef = useRef(null);
+  const timeSwiperRef = useRef(null);
+
+  // Convert duration minutes to readable format
+  const formatDuration = (minutes) => {
+    if (minutes < 60) return `${minutes}min`;
+    if (minutes % 60 === 0) return `${Math.floor(minutes / 60)}h`;
+    return `${Math.floor(minutes / 60)}h${minutes % 60}min`;
+  };
+  // Calculate end time for a given start time and duration
+  const calculateEndTime = (startTime, durationMinutes) => {
+    if (!startTime) return "";
+    const [h, m] = startTime.split(":").map(Number);
+    const endMinutes = m + durationMinutes;
+    const endHours = h + Math.floor(endMinutes / 60);
+    const endMinutesRemainder = endMinutes % 60;
+    return `${endHours}:${endMinutesRemainder.toString().padStart(2, "0")}`;
+  };
+
+  // Handle duration selection
+  const handleDurationSelect = (duration) => {
+    if (selectedTime) {
+      onSelectTime({ slot: selectedTime, dur: duration });
+    } else if (availableTimes.length > 0) {
+      // If time not selected but times are available, select the first available time
+      onSelectTime({ slot: availableTimes[0], dur: duration });
+    }
+  };
+
+  // Handle time selection
+  const handleTimeSelect = (time) => {
+    if (selectedDuration) {
+      onSelectTime({ slot: time, dur: selectedDuration });
+    } else if (availableDurations.length > 0) {
+      // If duration not selected, select the first available duration
+      const firstAvailableDuration =
+        timeSlots.find((slot) => slot.slot === time)?.allowed[0] ||
+        availableDurations[0];
+      onSelectTime({ slot: time, dur: firstAvailableDuration });
+    }
+  };
+
+  // Check if a specific duration is available for the selected time
+  const isDurationAvailable = (duration) => {
+    if (!selectedTime) return true; // If no time selected, all durations are visually available
+    const timeSlot = timeSlots.find((slot) => slot.slot === selectedTime);
+    return timeSlot && timeSlot.allowed.includes(duration);
+  };
+
+  // Check if a specific time has any available durations
+  const isTimeAvailable = (time) => {
+    const timeSlot = timeSlots.find((slot) => slot.slot === time);
+    return timeSlot && timeSlot.allowed.length > 0;
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Enhanced Calendar Header */}
+    <div className="flex flex-col">
+      {/* Calendar Header */}
       <div className="flex items-center justify-between bg-oxfordBlue/30 rounded-xl p-3 shadow-sm">
         <button
           onClick={() => onChangeMonth(-1)}
@@ -114,7 +190,7 @@ function DateStep({
             />
           </svg>
         </button>
-        <h3 className="text-xl sm:text-2xl md:text-3xl text-white font-bold tracking-wide">
+        <h3 className="text-xl sm:text-2xl text-white font-bold tracking-wide">
           {format(currentMonth, "MMMM yyyy")}
         </h3>
         <button
@@ -139,9 +215,9 @@ function DateStep({
         </button>
       </div>
 
-      {/* Calendar Grid with Improved Styling */}
+      {/* Calendar Grid */}
       <div className="bg-white/5 rounded-xl p-3 md:p-4 shadow-md">
-        {/* Weekday Headers with Better Styling */}
+        {/* Weekday Headers */}
         <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
           {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
             <div
@@ -153,7 +229,7 @@ function DateStep({
           ))}
         </div>
 
-        {/* Calendar Days with Enhanced Cell Styling */}
+        {/* Calendar Days */}
         <div className="grid grid-cols-7 gap-1 sm:gap-2">
           {calendar.map((date, i) => {
             const inMonth = isSameMonth(date, currentMonth);
@@ -169,8 +245,7 @@ function DateStep({
                 onClick={() => !disabled && onSelectDate(date)}
                 disabled={disabled}
                 className={`
-                  relative h-10 sm:h-12 md:h-14 aspect-square rounded-lg flex flex-col items-center justify-center
-                  transition-all duration-200
+                  relative h-8 sm:h-12 md:h-14 aspect-square rounded-lg flex flex-col items-center justify-center transition-all duration-200
                   ${
                     selected
                       ? "bg-darkGold text-white font-bold shadow-lg scale-105 z-10"
@@ -190,144 +265,170 @@ function DateStep({
                   }
                 `}
               >
-                {/* Date Display with Month Abbreviation for Non-Current Month */}
-                <div className="flex flex-col items-center">
-                  {!inMonth && (
-                    <span className="text-[8px] xs:text-xs text-white/40 font-light">
-                      {format(date, "MMM")}
-                    </span>
-                  )}
-                  <span
-                    className={`
-                    font-medium text-sm sm:text-base md:text-lg
-                    ${selected ? "text-white" : ""}
-                    ${weekend && inMonth ? "text-white/40" : ""}
-                  `}
-                  >
-                    {format(date, "d")}
-                  </span>
-                </div>
-
-                {/* Indicator for Today */}
-                {isToday && !selected && (
-                  <div className="absolute bottom-1 w-1 h-1 bg-darkGold rounded-full"></div>
-                )}
+                <span className={`text-sm font-medium`}>
+                  {format(date, "d")}
+                </span>
               </button>
             );
           })}
         </div>
       </div>
-    </div>
-  );
-}
 
-// Step 2: Time selection with improved UI
-function TimeStep({ availability, selectedTime, onSelectTime }) {
-  const [selectedHour, setSelectedHour] = useState(null);
-
-  // Group availability by time slot for easier rendering
-  const timeSlots = availability.filter((slot) => slot.allowed.length > 0);
-
-  // Handle hour selection
-  const handleHourSelect = (hour) => {
-    setSelectedHour(hour);
-  };
-
-  // Handle duration selection
-  const handleDurationSelect = (hour, duration) => {
-    onSelectTime({ slot: hour, dur: duration });
-  };
-
-  // Convert duration minutes to readable format
-  const formatDuration = (minutes) => {
-    if (minutes < 60) return `${minutes}m`;
-    if (minutes % 60 === 0) return `${Math.floor(minutes / 60)}h`;
-    return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
-  };
-
-  // Calculate end time for a given start time and duration
-  const calculateEndTime = (startTime, durationMinutes) => {
-    const [h, m] = startTime.split(":").map(Number);
-    const endMinutes = m + durationMinutes;
-    const endHours = h + Math.floor(endMinutes / 60);
-    const endMinutesRemainder = endMinutes % 60;
-    return `${endHours}:${endMinutesRemainder.toString().padStart(2, "0")}`;
-  };
-
-  return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* If no hour is selected yet, show the hour selection grid */}
-      {!selectedHour ? (
-        <div>
-          <div className="grid grid-cols-2 xs:grid-cols-3 gap-2 sm:gap-3">
-            {timeSlots.map(({ slot, allowed }) => (
-              <button
-                key={slot}
-                onClick={() => handleHourSelect(slot)}
-                className="bg-white/10 hover:bg-darkGold/70 text-white rounded-xl p-2 sm:p-3 transition-colors duration-200 flex flex-col items-center"
-              >
-                <span className="text-base sm:text-xl md:text-2xl font-semibold">
-                  {slot}
-                </span>
-                <span className="text-[10px] xs:text-xs md:text-base mt-1">
-                  {allowed.length} {allowed.length === 1 ? "option" : "options"}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : (
-        /* If hour is selected, show duration options for that hour */
-        <div>
-          <div className="flex items-center mb-2 sm:mb-4">
-            <button
-              onClick={() => setSelectedHour(null)}
-              className="text-white mr-2 hover:text-darkGold transition-colors"
+      {/* Duration Carousel (Horizontal) */}
+      <div className="relative pb-4 pt-8">
+        <h4 className="text-white text-sm md:text-base font-medium mb-2">
+          Select Duration:
+        </h4>
+        {/* The negative margin container that breaks out of parent padding */}
+        <div className="mx-[-12px] sm:mx-[-24px] relative">
+          <div className="">
+            <Swiper
+              modules={[Navigation, Pagination]}
+              slidesPerView={3}
+              spaceBetween={10}
+              centeredSlides={true}
+              onSwiper={(swiper) => {
+                durationSwiperRef.current = swiper;
+              }}
+              onSlideChange={(swiper) => {
+                // Auto-select the centered duration
+                if (
+                  availableDurations.length > 0 &&
+                  swiper.realIndex < availableDurations.length
+                ) {
+                  const centeredDuration = availableDurations[swiper.realIndex];
+                  if (
+                    isDurationAvailable(centeredDuration) &&
+                    centeredDuration !== selectedDuration
+                  ) {
+                    handleDurationSelect(centeredDuration);
+                  }
+                }
+              }}
+              className="duration-swiper px-4"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 sm:h-5 sm:w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
-            {timeSlots
-              .find((item) => item.slot === selectedHour)
-              ?.allowed.map((duration) => (
-                <button
-                  key={duration}
-                  onClick={() => handleDurationSelect(selectedHour, duration)}
-                  className={`relative overflow-hidden shadow-lg rounded-xl p-2 sm:p-3 transition-all duration-200
+              {availableDurations.map((duration) => (
+                <SwiperSlide key={duration}>
+                  <button
+                    onClick={() => handleDurationSelect(duration)}
+                    disabled={!isDurationAvailable(duration)}
+                    className={`w-full py-2 rounded-lg text-center transition-all duration-150 
                     ${
-                      selectedTime?.slot === selectedHour &&
-                      selectedTime?.dur === duration
-                        ? " bg-darkGold/30"
-                        : " bg-white/10 hover:border-darkGold/70 hover:bg-white/20"
+                      selectedDuration === duration
+                        ? "bg-darkGold text-black font-bold"
+                        : isDurationAvailable(duration)
+                        ? "bg-white/10 text-white hover:bg-darkGold/40"
+                        : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
                     }`}
-                >
-                  <div className="flex flex-col items-center justify-center text-white">
-                    <span className="text-base sm:text-lg md:text-xl font-bold mb-1">
-                      {formatDuration(duration)}
-                    </span>
-                    <span className="text-[10px] xs:text-xs md:text-base opacity-70">
-                      {selectedHour} -{" "}
-                      {calculateEndTime(selectedHour, duration)}
-                    </span>
-                  </div>
-                </button>
+                  >
+                    {formatDuration(duration)}
+                  </button>
+                </SwiperSlide>
               ))}
+            </Swiper>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Time Carousel (Vertical) */}
+      <div className="py-4 h-44">
+        <h4 className="text-white text-sm md:text-base font-medium mb-2">
+          Select Time:
+        </h4>
+        {selectedDate && availableTimes.length > 0 ? (
+          <div className="relative bg-white/5 rounded-xl py-2 h-full border border-white/10 shadow-inner">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="h-8 w-full bg-darkGold/20 opacity-70 rounded"></div>
+            </div>
+            <Swiper
+              modules={[Virtual]}
+              direction="vertical"
+              slidesPerView={5}
+              centeredSlides={true}
+              spaceBetween={1}
+              virtual
+              onSwiper={(swiper) => {
+                timeSwiperRef.current = swiper;
+              }}
+              onSlideChange={(swiper) => {
+                // Get the time from the centered slide and select it
+                if (
+                  availableTimes.length > 0 &&
+                  swiper.realIndex < availableTimes.length
+                ) {
+                  const centeredTime = availableTimes[swiper.realIndex];
+                  if (
+                    isTimeAvailable(centeredTime) &&
+                    centeredTime !== selectedTime
+                  ) {
+                    handleTimeSelect(centeredTime);
+                  }
+                }
+              }}
+              className="h-full"
+            >
+              {availableTimes.map((time, index) => (
+                <SwiperSlide key={time} virtualIndex={index}>
+                  <button
+                    onClick={() => handleTimeSelect(time)}
+                    disabled={!isTimeAvailable(time)}
+                    className={`w-full py-1 text-center transition-all duration-150
+                      ${
+                        selectedTime === time
+                          ? "text-white font-bold"
+                          : isTimeAvailable(time)
+                          ? "text-white/80 hover:text-white"
+                          : "text-white/40 cursor-not-allowed"
+                      }`}
+                  >
+                    {time}
+                  </button>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-full bg-white/5 rounded-xl border border-white/10">
+            <p className="text-white/50">
+              {selectedDate
+                ? "No available times for selected date"
+                : "Please select a date first"}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="h-8"></div>
+
+      {/* Booking Summary */}
+      <div className="py-4 flex flex-col items-center">
+        {/* Date display in center */}
+        <div className="mb-2">
+          <div className="bg-white/10 rounded-lg px-4 py-1 text-white text-center">
+            {selectedDate ? format(selectedDate, "EEE, MMM d") : "Tue, Apr 29"}
+          </div>
+        </div>
+
+        {/* From/To Labels - centered */}
+        <div className="flex w-auto justify-center gap-6">
+          <div className="flex flex-col items-center justify-between w-full">
+            <div className="text-white/80 text-sm">from</div>
+            <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-14 text-center">
+              {selectedTime || "10:00"}
+            </div>
+          </div>
+
+          {/* Time boxes - centered */}
+          <div className="flex flex-col items-center justify-between w-full">
+            <div className="text-white/80 text-sm">to</div>
+            <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-14 text-center">
+              {selectedTime && selectedDuration
+                ? calculateEndTime(selectedTime, selectedDuration)
+                : "10:00"}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -367,26 +468,34 @@ function InfoStep({ formData, onChange }) {
   );
 }
 
-function PaymentStep({selectedDuration, bookingId, onPaymentConfirmed, formData}) {
+function PaymentStep({
+  selectedDuration,
+  bookingId,
+  onPaymentConfirmed,
+  formData,
+}) {
   const [paymentStarted, setPaymentStarted] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [isTestBooking, setIsTestBooking] = useState(false);
-  
+
   const handleStripeRedirect = async () => {
     try {
-      const { data } = await axios.post("/.netlify/functions/createStripeSession", {
-        bookingId, 
-        duration: selectedDuration, 
-        email: formData.email,
-        isTestBooking
-      });
-      
+      const { data } = await axios.post(
+        "/.netlify/functions/createStripeSession",
+        {
+          bookingId,
+          duration: selectedDuration,
+          email: formData.email,
+          isTestBooking,
+        }
+      );
+
       // Store the session ID in localStorage before opening Stripe
-      localStorage.setItem('pendingPaymentId', bookingId);
-      
+      localStorage.setItem("pendingPaymentId", bookingId);
+
       // Open Stripe checkout in a new tab
-      window.open(data.url, '_blank');
-      
+      window.open(data.url, "_blank");
+
       // Start polling immediately (don't wait for user to return)
       setPaymentStarted(true);
     } catch (error) {
@@ -418,7 +527,7 @@ function PaymentStep({selectedDuration, bookingId, onPaymentConfirmed, formData}
   return (
     <div className="text-white text-center space-y-4 max-w-lg mx-auto">
       {/* Show test toggle only in development */}
-      {process.env.NODE_ENV === 'development' && (
+      {process.env.NODE_ENV === "development" && (
         <div className="mb-4 flex items-center justify-center">
           <label className="flex items-center space-x-2 cursor-pointer">
             <input
@@ -431,17 +540,19 @@ function PaymentStep({selectedDuration, bookingId, onPaymentConfirmed, formData}
           </label>
         </div>
       )}
-      
+
       <p className="text-lg sm:text-xl">
         Please click the button below to pay. Once Stripe confirms your payment,
         the "Next" button will be unlocked.
       </p>
-      
+
       <button
         onClick={handleStripeRedirect}
         className="px-4 py-2 bg-darkGold text-black rounded-xl shadow-md hover:bg-yellow-400 transition"
       >
-        {isTestBooking ? 'Proceed with Test Checkout (0€)' : 'Open Payment Checkout'}
+        {isTestBooking
+          ? "Proceed with Test Checkout (0€)"
+          : "Open Payment Checkout"}
       </button>
 
       {paymentStarted && !paymentConfirmed && (
@@ -550,18 +661,38 @@ export default function Booking({ onBackService }) {
 
   // Define durations and hours
   const DURS = [45, 60, 75, 90, 105, 120]; // Duration options in minutes
-  const timeOptions = Array.from({ length: 12 }, (_, i) => `${10 + i}:00`); // Hours from 10am to 9pm
 
-  // Compute availability per hour based on the selected date
+  // Create time options that include 15-minute intervals (10:00, 10:15, 10:30, 10:45, 11:00, etc.)
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let hour = 10; hour <= 21; hour++) {
+      // 10am to 9pm
+      ["00", "15", "30", "45"].forEach((minute) => {
+        // Skip 9:45pm as any booking at this time would go past 10pm
+        if (
+          !(
+            hour === 21 &&
+            (minute === "45" || minute === "30" || minute === "15")
+          )
+        ) {
+          times.push(`${hour}:${minute}`);
+        }
+      });
+    }
+    return times;
+  };
+
+  const timeOptions = generateTimeOptions();
+
+  // Compute availability per time slot based on the selected date
   const availability = timeOptions.map((slot) => ({
     slot,
     allowed: DURS.filter((dur) => isSlotFree(selectedDate, slot, dur)),
   }));
 
-  // Booking steps
+  // Booking steps - now with merged date/time step
   const STEPS = [
-    { title: t("booking.step_1"), component: DateStep },
-    { title: t("booking.step_2"), component: TimeStep },
+    { title: t("booking.step_1"), component: DateTimeStep },
     { title: t("booking.step_3"), component: InfoStep },
     { title: t("booking.step_4"), component: PaymentStep },
     { title: t("booking.step_5"), component: InlineChatbotStep },
@@ -571,22 +702,24 @@ export default function Booking({ onBackService }) {
 
   // Navigation logic
   const canProceed = () => {
-    if (step === 2) return !!selectedDuration;
-    if (step === 3) return formData.name && formData.email;
-    if (step === 4) return paymentDone; // ⬅️ Unlock Next only when Stripe confirms
+    if (step === 1) return selectedDate && selectedTime && selectedDuration;
+    if (step === 2) return formData.name && formData.email;
+    if (step === 3) return paymentDone;
     return true;
   };
 
   const handleNext = async () => {
-    if (step < 3) {
-      setStep(step + 1);
-    } else if (step === 3) {
+    if (step === 1) {
+      setStep(2);
+    } else if (step === 2) {
       // Build the ISO timestamp for the consultation start time
+      const [hours, minutes] = selectedTime.split(":").map(Number);
       const appointment_date = new Date(
         selectedDate.getFullYear(),
         selectedDate.getMonth(),
         selectedDate.getDate(),
-        ...selectedTime.split(":").map(Number)
+        hours,
+        minutes
       ).toISOString();
 
       try {
@@ -610,56 +743,20 @@ export default function Booking({ onBackService }) {
         }
 
         setBookingId(data.id);
-        setStep(4);
+        setStep(3); // Go to payment step
       } catch (error) {
         console.error("Error creating booking:", error.message);
       } finally {
         setLoading(false);
       }
-
-      // go to payment
-    } else if (step === 4) {
-      setStep(5); // go to chatbot
-    } else if (step === 5) {
-      // Build the ISO timestamp for the consultation start time
-      const appointment_date = new Date(
-        selectedDate.getFullYear(),
-        selectedDate.getMonth(),
-        selectedDate.getDate(),
-        ...selectedTime.split(":").map(Number)
-      ).toISOString();
-
-      try {
-        const { data, error } = await supabase
-          .from("bookings")
-          .insert({
-            user_id: user.id,
-            appointment_date,
-            duration_minutes: selectedDuration,
-            name: formData.name,
-            email: formData.email,
-          })
-          .select("id")
-          .single();
-
-        if (error) throw error;
-
-        setBookingId(data.id);
-
-        // Refresh bookings data to update availability
-        const { data: fresh } = await fetchBookings();
-        setBookedEvents(fresh || []);
-
-        setStep(4); // Move to the next step
-      } catch (error) {
-        console.error("Error creating booking:", error);
-        // Here you could add user notification about the error
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setStep(step + 1);
+    } else if (step === 3) {
+      setStep(4); // Go to chatbot step
     }
+  };
+
+  const handleSelectTime = ({ slot, dur }) => {
+    setSelectedTime(slot);
+    setSelectedDuration(dur);
   };
 
   const handleChange = (e) =>
@@ -670,14 +767,46 @@ export default function Booking({ onBackService }) {
     else setStep(dot - 1);
   };
 
+  // Add Swiper CSS styles
+  useEffect(() => {
+    // Add custom styling for Swiper
+    const style = document.createElement("style");
+    style.textContent = `
+      .swiper-slide {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      .time-swiper .swiper-slide-active {
+        font-weight: bold;
+        color: white;
+      }
+      
+      .time-swiper {
+        height: 120px;
+      }
+      
+      .duration-swiper .swiper-slide-active button {
+        transform: scale(1.05);
+        transition: all 0.3s ease;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
     <section className="py-4 sm:py-6 md:py-8 px-4 sm:px-4" id="bookingForm">
-      <div className="max-w-full sm:max-w-2xl md:max-w-4xl mx-auto">
+      <div className="max-w-full sm:max-w-2xl md:max-w-3xl mx-auto">
         <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-4 sm:mb-6 text-black">
           {t("booking.title")}
         </h2>
-        <div className="bg-oxfordBlue rounded-xl p-3 sm:p-6 md:p-8 shadow-xl">
-          <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-4 sm:mb-6 font-semibold">
+        <div className="bg-oxfordBlue rounded-xl p-3 sm:p-6 shadow-xl">
+          <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-4 font-semibold">
             {STEPS[step - 1].title}
           </h3>
 
@@ -687,17 +816,8 @@ export default function Booking({ onBackService }) {
             </div>
           ) : (
             <>
-              {step === 2 ? (
-                <TimeStep
-                  availability={availability}
-                  selectedTime={{ slot: selectedTime, dur: selectedDuration }}
-                  onSelectTime={({ slot, dur }) => {
-                    setSelectedTime(slot);
-                    setSelectedDuration(dur);
-                  }}
-                />
-              ) : step < 2 ? (
-                <DateStep
+              {step === 1 ? (
+                <DateTimeStep
                   selectedDate={selectedDate}
                   onSelectDate={setSelectedDate}
                   currentMonth={currentMonth}
@@ -705,14 +825,18 @@ export default function Booking({ onBackService }) {
                     setCurrentMonth((prev) => addMonths(prev, inc))
                   }
                   minDate={minDate}
+                  availability={availability}
+                  selectedTime={selectedTime}
+                  selectedDuration={selectedDuration}
+                  onSelectTime={handleSelectTime}
                 />
-              ) : step === 3 ? (
+              ) : step === 2 ? (
                 <InfoStep formData={formData} onChange={handleChange} />
-              ) : step === 4 ? (
+              ) : step === 3 ? (
                 <PaymentStep
                   selectedDuration={selectedDuration}
                   bookingId={bookingId}
-                  formData={formData} // ✅ add this
+                  formData={formData}
                   onPaymentConfirmed={handlePaymentConfirmed}
                 />
               ) : (
@@ -724,7 +848,13 @@ export default function Booking({ onBackService }) {
             </>
           )}
 
-          <div className="flex justify-between mt-4 sm:mt-6 md:mt-8">
+          <StepIndicator
+            stepCount={UI_STEPS}
+            currentStep={step + 1}
+            onStepClick={handleStepClick}
+          />
+
+          <div className="flex justify-between mt-4 sm:mt-6">
             <button
               onClick={() => (step > 1 ? setStep(step - 1) : onBackService())}
               className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
@@ -761,7 +891,7 @@ export default function Booking({ onBackService }) {
                     </svg>
                     {t("booking.processing")}
                   </span>
-                ) : step === 3 ? (
+                ) : step === 2 ? (
                   t("booking.complete_booking")
                 ) : (
                   t("booking.next")
@@ -769,13 +899,6 @@ export default function Booking({ onBackService }) {
               </button>
             )}
           </div>
-
-          <StepIndicator
-            stepCount={UI_STEPS}
-            currentStep={step + 1}
-            onStepClick={handleStepClick}
-            className="pt-4 sm:pt-6"
-          />
         </div>
       </div>
     </section>

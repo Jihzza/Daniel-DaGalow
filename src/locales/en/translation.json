@@ -237,10 +237,13 @@
 
   "booking": {
     "title": "Schedule Your Consultation",
+    "step_datetime": "Select Date & Time",
+    
     "step_1": "Choose a date",
     "step_2": "Select a time",
     "step_3": "Your information",
     "step_4": "Chat with our assistant",
+    "step_5": "Chatbot Step",
     "back": "Back",
     "next": "Next",
     "complete_booking": "Complete Booking",

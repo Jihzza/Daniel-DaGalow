@@ -230,10 +230,12 @@
 
   "booking": {
     "title": "Programa tu consulta",
+    "step_datetime": "Selecciona una fecha y hora",
     "step_1": "Elige una fecha",
     "step_2": "Selecciona una hora",
     "step_3": "Tu información",
     "step_4": "Chatea con nuestro asistente",
+    "step_5": "Paso del chatbot",
     "back": "Atrás",
     "next": "Siguiente",
     "complete_booking": "Completar reserva",

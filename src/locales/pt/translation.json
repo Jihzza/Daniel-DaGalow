@@ -236,10 +236,12 @@
 
 "booking": {
 "title": "Agende a Sua Consulta",
+"step_datetime": "Selecione a Data e o Horário",
 "step_1": "Escolha uma data",
 "step_2": "Selecione uma hora",
 "step_3": "As suas informações",
 "step_4": "Converse com o nosso assistente",
+"step_5": "Paso do chatbot",
 "back": "Anterior",
 "next": "Seguinte",
 "complete_booking": "Concluir Agendamento",

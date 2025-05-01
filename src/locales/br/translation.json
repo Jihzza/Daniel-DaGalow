@@ -230,10 +230,12 @@
   
     "booking": {
       "title": "Marque sua consulta",
+      "step_datetime": "Selecione a Data e o Horário",
       "step_1": "Escolha uma data",
       "step_2": "Selecione um horário",
       "step_3": "Suas informações",
       "step_4": "Converse com nosso assistente",
+      "step_5": "Paso do chatbot",
       "back": "Voltar",
       "next": "Próximo",
       "complete_booking": "Concluir agendamento",
