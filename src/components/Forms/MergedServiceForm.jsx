@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import AnalysisRequest from "./AnalysisRequest";
 import Booking from "./Booking";
@@ -6,7 +6,7 @@ import CoachingRequest from "./CoachingRequest";
 import PitchDeckRequest from "./PitchDeckRequest";
 import { useSearchParams } from "react-router-dom";
 import { ServiceContext } from "../../contexts/ServiceContext";
-import { useContext } from "react";
+import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange"; // Import the custom hook
 
 export default function MergedServiceForm() {
   const { t } = useTranslation();
@@ -15,6 +15,10 @@ export default function MergedServiceForm() {
 
   const { service, setService } = useContext(ServiceContext);
   const [step, setStep] = useState(service ? 2 : 1);
+  
+  // IMPORTANT: Only use the custom hook AFTER all state variables are declared
+  const formRef = useScrollToTopOnChange([step, service]);
+  
   const services = [
     { label: t("service_form.services.consultation"), value: "booking" },
     { label: t("service_form.services.coaching"), value: "coaching" },
@@ -70,7 +74,7 @@ export default function MergedServiceForm() {
   // Service selection view
   if (!service) {
     return (
-      <section id="service-selection" className="py-8 px-4">
+      <section id="service-selection" className="py-8 px-4" ref={formRef}>
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center mb-6 text-black">
             {t("service_form.title")}
@@ -100,7 +104,7 @@ export default function MergedServiceForm() {
 
   // Internal form
   return (
-    <section id="service-selection">
+    <section id="service-selection" ref={formRef}>
       <div className="max-w-3xl mx-auto">
         <StepIndicator />
         {CurrentForm && <CurrentForm onBackService={() => onStepClick(1)} />}

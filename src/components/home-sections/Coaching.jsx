@@ -55,7 +55,7 @@ function DirectCoaching() {
     <section id="coaching" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
         <h2 className="text-2xl md:text-4xl font-bold">{t("coaching.coaching_title")}</h2>
-        <p className="text-sm md:text-xl">{t("coaching.coaching_description")}</p>
+        <p className="md:text-xl">{t("coaching.coaching_description")}</p>
 
         <div className="grid grid-cols-2 gap-6 md:grid-cols-3 text-white">
           {[

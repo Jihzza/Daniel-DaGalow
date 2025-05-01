@@ -424,7 +424,7 @@ export default function ProfilePage({ onChatOpen }) {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 px-4 border-2 border-dashed border-gray-300 rounded-lg h-full flex flex-col items-center justify-center">
+                  <div className="text-center py-12 px-4 border-2 border-dashed border-gray-300  rounded-lg h-full flex flex-col items-center justify-center">
                     <p className="text-gray-500 mb-4">
                       {t("profile.sections.conversations.no_chats")}
                     </p>

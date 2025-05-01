@@ -1,10 +1,9 @@
-// src/components/Pages/Testimonials.jsx
-
-import React, { useState, useEffect } from "react";
+// Final fixed Testimonials.jsx - resolving DOM props and loop warnings
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
+import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useAuth } from "../../contexts/AuthContext";
@@ -15,7 +14,8 @@ import goncaloImg from "../../assets/img/Pessoas/Gonçalo.png";
 
 function Testimonials({ onAuthModalOpen }) {
   const { t } = useTranslation();
-
+  const swiperRef = useRef(null);
+  
   const defaultTestimonials = [
     {
       id: "static-1",
@@ -41,6 +41,18 @@ function Testimonials({ onAuthModalOpen }) {
       author: t("testimonials.testimonial_2_author"),
       image_url: goncaloImg,
     },
+    {
+      id: "static-5",
+      quote: t("testimonials.testimonial_1_quote"),
+      author: t("testimonials.testimonial_1_author"),
+      image_url: rafaelImg,
+    },
+    {
+      id: "static-6",
+      quote: t("testimonials.testimonial_2_quote"),
+      author: t("testimonials.testimonial_2_author"),
+      image_url: goncaloImg,
+    },
   ];
 
   // start with your default ones
@@ -56,8 +68,40 @@ function Testimonials({ onAuthModalOpen }) {
   const [imageFile, setImageFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // In the useEffect that fetches testimonials
+  // Add custom CSS via style tag directly in the component
+  useEffect(() => {
+    // Create style element
+    const style = document.createElement('style');
+    style.textContent = `
+      .swiper-pagination {
+        position: relative !important;
+        bottom: 0 !important;
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        z-index: 10;
+      }
+      .swiper-pagination-bullet {
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0.5;
+        margin: 0 5px;
+      }
+      .swiper-pagination-bullet-active {
+        background: #d4af37;
+        opacity: 1;
+      }
+    `;
+    
+    // Append to document head
+    document.head.appendChild(style);
+    
+    // Cleanup on unmount
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
+  // In the useEffect that fetches testimonials
   useEffect(() => {
     // Initial fetch of approved testimonials
     fetchApprovedTestimonials();
@@ -84,6 +128,30 @@ function Testimonials({ onAuthModalOpen }) {
       supabase.removeChannel(subscription);
     };
   }, []);
+
+  // Add a safe swiper update effect
+  useEffect(() => {
+    if (!loading) {
+      const timer = setTimeout(() => {
+        if (swiperRef.current && swiperRef.current.swiper) {
+          swiperRef.current.swiper.update();
+          
+          // Check if pagination exists before updating
+          if (swiperRef.current.swiper.pagination && 
+              typeof swiperRef.current.swiper.pagination.update === 'function') {
+            swiperRef.current.swiper.pagination.update();
+          }
+          
+          // Check if slideToLoop exists before calling
+          if (typeof swiperRef.current.swiper.slideToLoop === 'function') {
+            swiperRef.current.swiper.slideToLoop(0, 0);
+          }
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [testimonials, loading]);
 
   async function fetchApprovedTestimonials() {
     try {
@@ -187,30 +255,58 @@ function Testimonials({ onAuthModalOpen }) {
         <h2 className="text-2xl md:text-4xl font-bold">
           {t("testimonials.testimonials_title")}
         </h2>
-        <p className="text-lg md:text-xl">{t("testimonials.testimonials_description")}</p>
-
-        {/* leave static + dynamic */}
+        <p className="md:text-xl">{t("testimonials.testimonials_description")}</p>
 
         {loading ? (
           <p>Loading…</p>
         ) : (
           <Swiper
-            modules={[Autoplay]}
-            centeredSlides // keep the active slide in the middle
-            slidesPerView={1.2} // let card width decide how many fit
-            spaceBetween={30} // gap between cards
-            loop
-            autoplay={{ delay: 3000, disableOnInteraction: false }}
-            className="testimonial-swiper  overflow-visible"
+            ref={swiperRef}
+            modules={[Autoplay, Pagination]}
+            slidesPerView={1.2}
+            spaceBetween={30}
+            centeredSlides={true}
+            initialSlide={0}
+            loop={true}
+            loopedSlides={testimonials.length} // Use loopedSlides instead
+            autoplay={{
+              delay: 3000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true
+            }}
+            pagination={{
+              clickable: true,
+              dynamicBullets: true,
+              renderBullet: function (index, className) {
+                return '<span class="' + className + '" style="margin: 0 5px;"></span>';
+              }
+            }}
+            className="testimonial-swiper overflow-visible"
             breakpoints={{
               768: {
-                slidesPerView: 1.5,
-                spaceBetween: 100,
+                slidesPerView: 1, // Reduced from 1.2 to ensure loop works
+                spaceBetween: 50,
               },
+            }}
+            watchSlidesProgress={true}
+            observer={true}
+            observeParents={true}
+            updateOnWindowResize={true}
+            onInit={(swiper) => {
+              // Force update after init
+              setTimeout(() => {
+                if (swiper && typeof swiper.update === 'function') {
+                  swiper.update();
+                  
+                  if (swiper.pagination && typeof swiper.pagination.update === 'function') {
+                    swiper.pagination.update();
+                  }
+                }
+              }, 50);
             }}
           >
             {testimonials.map((testimonial, index) => (
-              <SwiperSlide key={index}>
+              <SwiperSlide key={`testimonial-${testimonial.id || index}`}>
                 <div
                   className="
                   bg-white 
@@ -221,9 +317,9 @@ function Testimonials({ onAuthModalOpen }) {
                   shadow-md
                   flex
                   flex-col
-                  items-center  /* center horizontally */
-                  justify-center/* center vertically */
-                  text-center   /* center text inside */
+                  items-center
+                  justify-center
+                  text-center
                   overflow-hidden
                   text-base
                 "
@@ -247,6 +343,7 @@ function Testimonials({ onAuthModalOpen }) {
             ))}
           </Swiper>
         )}
+        
         <button
           onClick={handleTestimonialButtonClick}
           className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"

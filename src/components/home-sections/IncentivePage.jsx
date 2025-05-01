@@ -19,7 +19,7 @@ function SimpleAccountIncentive() {
           {t('incentive.title')}
         </h2>
         
-        <p className="text-sm md:text-xl">
+        <p className="md:text-xl">
           {t('incentive.description')}
         </p>
         

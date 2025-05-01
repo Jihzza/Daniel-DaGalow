@@ -7,6 +7,7 @@ import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useAuth } from "../../contexts/AuthContext";
 import { AuthModalContext } from "../../App";
 import { useContext } from "react";
+import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 // Progress Indicator Component
 function StepIndicator({
   stepCount,
@@ -164,6 +165,8 @@ export default function PitchDeckRequest({ onBackService }) {
     },
     { title: t("pitch_deck_request.steps.chat"), component: InlineChatbotStep },
   ];
+  const formRef = useScrollToTopOnChange([step]);
+
 
   const UI_STEPS = STEPS.length + 1;
   const { user } = useAuth();
@@ -254,7 +257,7 @@ export default function PitchDeckRequest({ onBackService }) {
   const Current = STEPS[step - 1].component;
 
   return (
-    <section className="py-8 px-4" id="pitch-deck-request">
+    <section className="py-8 px-4" id="pitch-deck-request" ref={formRef}>
       <div className="max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
           {t("pitch_deck_request.title")}

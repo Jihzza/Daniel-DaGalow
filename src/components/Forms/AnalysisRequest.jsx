@@ -6,7 +6,7 @@ import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useAuth } from "../../contexts/AuthContext";
 import { AuthModalContext } from "../../App";
 import { useContext } from "react";
-
+import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 // Progress Indicator
 function StepIndicator({
   stepCount,
@@ -58,7 +58,6 @@ function TypeSelectionStep({ formData, onChange }) {
   const { t } = useTranslation();
   const options = [
     { label: "Stock", value: "stock" },
-    { label: "Portfolio", value: "portfolio" },
     { label: "Social Media", value: "socialmedia" },
     { label: "Business", value: "business" },
   ];
@@ -142,6 +141,7 @@ export default function AnalysisRequest({ onBackService }) {
   });
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useScrollToTopOnChange([step]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -199,7 +199,7 @@ export default function AnalysisRequest({ onBackService }) {
   };
 
   return (
-    <section className="py-8 px-4">
+    <section className="py-8 px-4" ref={formRef}>
       <div className="max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
           {t("analysis_request.title")}

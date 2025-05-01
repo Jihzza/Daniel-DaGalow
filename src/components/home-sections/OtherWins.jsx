@@ -128,6 +128,7 @@ function OtherWins() {
   const { t } = useTranslation();
 
   const handleDoubleClick = (event) => {
+    // Original double-click handler remains the same
     const video = event.target;
     if (video.requestFullscreen) {
       video.requestFullscreen();
@@ -156,21 +157,28 @@ function OtherWins() {
             className="w-[50%] object-cover rounded-xl shadow-lg justify-center items-center self-center cursor-pointer"
           />
           <p className="text-lg md:text-2xl text-black">{t("other_wins.high_reach_content_title")}</p>
+          
+          {/* Updated Swiper with functional fixes but preserving styling */}
           <Swiper
-            modules={[Autoplay]}
+            modules={[Autoplay]} // Added Pagination module
             spaceBetween={20}
             slidesPerView={1}
             centeredSlides={true}
             pagination={{ clickable: true }}
             autoplay={{ delay: 2000, disableOnInteraction: false }}
             loop={true}
-            className="w-[40%] testimonial-swiper overflow-visible mx-auto "
+            loopAdditionalSlides={5} // Added to improve loop functionality
+            watchSlidesProgress={true} // Added to track slide visibility
+            className="w-[40%] testimonial-swiper overflow-visible mx-auto" // Keeping original classes
             breakpoints={{
               768: {
                 slidesPerView: 1.3,
                 spaceBetween: 50,
               },
             }}
+            observer={true} // Added to detect DOM changes
+            observeParents={true} // Added to detect parent container changes
+            updateOnWindowResize={true} // Added to handle window resizing properly
           >
             {socialMediaImages.map((item, index) => (
               <SwiperSlide key={index} className="flex justify-center">

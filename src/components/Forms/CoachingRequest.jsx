@@ -10,7 +10,7 @@ import { AuthModalContext } from "../../App";
 import { useContext } from "react";
 import { ServiceContext } from "../../contexts/ServiceContext";
 import axios from "axios";
-
+import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 // Progress Indicator Component
 function StepIndicator({
   stepCount,
@@ -355,6 +355,7 @@ export default function CoachingRequest({ onBackService }) {
     email: user?.email || "",
     phone: "",
   });
+  const formRef = useScrollToTopOnChange([step]);
 
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -444,7 +445,7 @@ export default function CoachingRequest({ onBackService }) {
   };
 
   return (
-    <section className="py-8 px-4" id="coaching-journey">
+    <section className="py-8 px-4" id="coaching-journey" ref={formRef}>
       <div className="max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-6 text-black">
           {t("coaching_request.title")}

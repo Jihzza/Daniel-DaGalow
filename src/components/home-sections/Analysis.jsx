@@ -39,7 +39,7 @@ function ExpertAnalysis() {
     <section id="expert-analysis" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
         <h2 className="text-2xl md:text-4xl font-bold">{t("analysis.analysis_title")}</h2>
-        <p className="text-sm md:text-xl">{t("analysis.analysis_description")}</p>
+        <p className="md:text-xl">{t("analysis.analysis_description")}</p>
         
         <div className="grid grid-cols-2 gap-6 md:grid-cols-2 text-white">
           {[

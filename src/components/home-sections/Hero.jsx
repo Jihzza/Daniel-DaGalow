@@ -105,8 +105,8 @@ function Hero() {
           </Marquee>
         </div>
 
-        {/* Hero text - now using translations */}
-        <h1 className="text-2xl md:text-4xl font-extrabold my-8">
+         {/* Hero text - now using translations */}
+         <h1 className="text-2xl md:text-4xl font-extrabold my-8">
           {t("hero.hero_title")}
         </h1>
         <p className="text-lg md:text-2xl my-8 max-w-md mx-auto md:max-w-2xl">
@@ -136,6 +136,11 @@ function Hero() {
             autoplay={{ delay: 2000, disableOnInteraction: false }}
             loop={true}
             modules={[Autoplay]}
+            loopAdditionalSlides={5}
+            watchSlidesProgress={true}
+            observer={true}
+            observeParents={true}
+            updateOnWindowResize={true}
             className="w-full overflow-visible mx-auto max-w-[800px] md:w-full px-10 md:px-20"
           >
             <SwiperSlide>

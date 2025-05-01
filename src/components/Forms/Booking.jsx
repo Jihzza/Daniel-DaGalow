@@ -25,7 +25,7 @@ import { Navigation, Pagination, Virtual } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-
+import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 // Shared StepIndicator
 function StepIndicator({
   stepCount,
@@ -465,7 +465,7 @@ function DateTimeStep({
             <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-14 text-center">
               {selectedTime && selectedDuration
                 ? calculateEndTime(selectedTime, selectedDuration)
-                : "10:00"}
+                : "--:--"}
             </div>
           </div>
         </div>
@@ -627,6 +627,7 @@ export default function Booking({ onBackService }) {
   const [paymentDone, setPaymentDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [bookingId, setBookingId] = useState(null);
+  const formRef = useScrollToTopOnChange([step]);
 
   const handlePaymentConfirmed = (confirmed) => {
     setPaymentDone(confirmed);
@@ -841,7 +842,7 @@ export default function Booking({ onBackService }) {
   }, []);
 
   return (
-    <section className="py-4 sm:py-6 md:py-8 px-4 sm:px-4" id="bookingForm">
+    <section className="py-4 sm:py-6 md:py-8 px-4 sm:px-4" id="bookingForm" ref={formRef}>
       <div className="max-w-full sm:max-w-2xl md:max-w-3xl mx-auto">
         <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-4 sm:mb-6 text-black">
           {t("booking.title")}
