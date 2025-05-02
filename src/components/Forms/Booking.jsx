@@ -73,7 +73,6 @@ function StepIndicator({
   );
 }
 
-// Step 1: Date, Time and Duration Selection
 function DateTimeStep({
   selectedDate,
   onSelectDate,
@@ -105,7 +104,7 @@ function DateTimeStep({
   // Time slots and available times
   const timeSlots = availability.filter((slot) => slot.allowed.length > 0);
 
-  // All available times for the selected date (to show in vertical carousel)
+  // All available times for the selected date (to show in carousel)
   const availableTimes = timeSlots.map((slot) => slot.slot).sort();
 
   // All durations (these are fixed)
@@ -121,6 +120,7 @@ function DateTimeStep({
     if (minutes % 60 === 0) return `${Math.floor(minutes / 60)}h`;
     return `${Math.floor(minutes / 60)}h${minutes % 60}min`;
   };
+
   // Calculate end time for a given start time and duration
   const calculateEndTime = (startTime, durationMinutes) => {
     if (!startTime) return "";
@@ -168,19 +168,19 @@ function DateTimeStep({
   };
 
   return (
-    <div className="flex flex-col md:flex-row md:gap-6 md:items-start">
-      {/* Calendar Section - Takes more horizontal space on tablet/desktop */}
-      <div className="md:w-2/3 lg:w-3/5">
-        {/* Calendar Header - Keeping original mobile styling, adding responsive classes */}
-        <div className="flex items-center justify-between bg-oxfordBlue/30 rounded-xl p-3 shadow-sm">
+    <div className="flex flex-col space-y-6">
+      {/* Calendar Section */}
+      <div className="bg-white/5 rounded-xl shadow-md overflow-hidden">
+        {/* Calendar Header */}
+        <div className="flex items-center justify-between bg-oxfordBlue/30 p-3">
           <button
             onClick={() => onChangeMonth(-1)}
-            className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
+            className="text-white hover:text-darkGold p-1.5 rounded-full hover:bg-white/10 transition-all duration-200"
             aria-label="Previous month"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 sm:h-6 sm:w-6"
+              className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -193,17 +193,17 @@ function DateTimeStep({
               />
             </svg>
           </button>
-          <h3 className="text-xl sm:text-2xl text-white font-bold tracking-wide">
+          <h3 className="text-xl text-white font-bold">
             {format(currentMonth, "MMMM yyyy")}
           </h3>
           <button
             onClick={() => onChangeMonth(1)}
-            className="text-white hover:text-darkGold p-2 rounded-full hover:bg-white/10 transition-all duration-200"
+            className="text-white hover:text-darkGold p-1.5 rounded-full hover:bg-white/10 transition-all duration-200"
             aria-label="Next month"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 sm:h-6 sm:w-6"
+              className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -218,22 +218,22 @@ function DateTimeStep({
           </button>
         </div>
 
-        {/* Calendar Grid - Enhanced for larger screens */}
-        <div className="bg-white/5 rounded-xl p-3 md:p-4 lg:p-5 shadow-md">
+        {/* Calendar Grid */}
+        <div className="p-2 md:p-3">
           {/* Weekday Headers */}
-          <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
-            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+          <div className="grid grid-cols-7 gap-1 mb-1">
+            {["M", "T", "W", "T", "F", "S", "S"].map((d) => (
               <div
                 key={d}
-                className="text-center py-2 text-darkGold font-semibold text-xs sm:text-sm md:text-base"
+                className="text-center py-1 text-darkGold font-semibold text-xs"
               >
                 {d}
               </div>
             ))}
           </div>
 
-          {/* Calendar Days - Keeping original structure but enhancing for larger screens */}
-          <div className="grid grid-cols-7 gap-2 justify-center items-center">
+          {/* Calendar Days */}
+          <div className="grid grid-cols-7 gap-1">
             {calendar.map((date, i) => {
               const inMonth = isSameMonth(date, currentMonth);
               const weekend = isWeekend(date);
@@ -248,27 +248,23 @@ function DateTimeStep({
                   onClick={() => !disabled && onSelectDate(date)}
                   disabled={disabled}
                   className={`
-                    relative h-8 md:h-10 lg:h-12 aspect-square rounded-lg flex flex-col items-center justify-center transition-all duration-200
+                    relative h-8 aspect-square rounded-md flex items-center justify-center transition-all duration-200
                     ${
                       selected
-                        ? "bg-darkGold text-white font-bold shadow-lg scale-105 z-10"
+                        ? "bg-darkGold text-black font-bold shadow-md"
                         : inMonth && !disabled
-                        ? "bg-white/10 text-white hover:bg-darkGold/40 hover:scale-105"
+                        ? "bg-white/10 text-white hover:bg-darkGold/40"
                         : "bg-white/5 text-white/40"
                     }
                     ${
                       isToday && !selected
-                        ? "ring-2 ring-darkGold ring-opacity-70"
+                        ? "ring-1 ring-darkGold ring-opacity-70"
                         : ""
                     }
-                    ${
-                      disabled
-                        ? "cursor-not-allowed"
-                        : "cursor-pointer hover:shadow-md"
-                    }
+                    ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
                   `}
                 >
-                  <span className="text-sm md:text-base font-medium">
+                  <span className="text-xs font-medium">
                     {format(date, "d")}
                   </span>
                 </button>
@@ -278,87 +274,72 @@ function DateTimeStep({
         </div>
       </div>
 
-      {/* Time & Duration Selection Section */}
-      <div className="md:w-1/3 lg:w-2/5 md:pl-4 md:border-l md:border-white/10">
-        {/* Duration Carousel (Horizontal) - Keeping original mobile structure */}
-        <div className="relative pb-4 pt-8 md:pt-4">
-          <h4 className="text-white text-sm md:text-base font-medium mb-2">
-            Select Duration:
-          </h4>
-          {/* The negative margin container as in original, but adjusted for desktop */}
-          <div className="mx-[-12px] sm:mx-[-24px] md:mx-0 relative">
-            <div className="">
-              <Swiper
-                modules={[Navigation, Pagination]}
-                slidesPerView={3}
-                spaceBetween={10}
-                centeredSlides={true}
-                onSwiper={(swiper) => {
-                  durationSwiperRef.current = swiper;
-                }}
-                onSlideChange={(swiper) => {
-                  // Auto-select the centered duration
+      {/* Time & Duration Selection */}
+      <div className="space-y-4">
+        {/* Duration Carousel */}
+        <div>
+          <h4 className="text-white text-sm font-medium mb-2">Duration</h4>
+          <div className="carousel-container">
+            <Swiper
+              modules={[Navigation, Pagination]}
+              slidesPerView={3}
+              spaceBetween={8}
+              centeredSlides={true}
+              onSwiper={(swiper) => {
+                durationSwiperRef.current = swiper;
+              }}
+              onSlideChange={(swiper) => {
+                if (
+                  availableDurations.length > 0 &&
+                  swiper.realIndex < availableDurations.length
+                ) {
+                  const centeredDuration = availableDurations[swiper.realIndex];
                   if (
-                    availableDurations.length > 0 &&
-                    swiper.realIndex < availableDurations.length
+                    isDurationAvailable(centeredDuration) &&
+                    centeredDuration !== selectedDuration
                   ) {
-                    const centeredDuration =
-                      availableDurations[swiper.realIndex];
-                    if (
-                      isDurationAvailable(centeredDuration) &&
-                      centeredDuration !== selectedDuration
-                    ) {
-                      handleDurationSelect(centeredDuration);
-                    }
+                    handleDurationSelect(centeredDuration);
                   }
-                }}
-                className="duration-swiper px-4 md:px-0"
-              >
-                {availableDurations.map((duration) => (
-                  <SwiperSlide key={duration}>
-                    <button
-                      onClick={() => handleDurationSelect(duration)}
-                      disabled={!isDurationAvailable(duration)}
-                      className={`w-full py-2 rounded-lg text-center transition-all duration-150 
-                      ${
-                        selectedDuration === duration
-                          ? "bg-darkGold text-black font-bold"
-                          : isDurationAvailable(duration)
-                          ? "bg-white/10 text-white hover:bg-darkGold/40"
-                          : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
-                      }`}
-                    >
-                      {formatDuration(duration)}
-                    </button>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
+                }
+              }}
+              className="carousel-swiper"
+            >
+              {availableDurations.map((duration) => (
+                <SwiperSlide key={duration}>
+                  <button
+                    onClick={() => handleDurationSelect(duration)}
+                    disabled={!isDurationAvailable(duration)}
+                    className={`carousel-item
+                    ${
+                      selectedDuration === duration
+                        ? "bg-darkGold text-black font-bold"
+                        : isDurationAvailable(duration)
+                        ? "bg-white/10 text-white hover:bg-darkGold/40"
+                        : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
+                    }`}
+                  >
+                    {formatDuration(duration)}
+                  </button>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </div>
 
-        {/* Time Carousel (Vertical) - Keeping original structure but enhancing height for larger screens */}
-        <div className="py-4 h-44 md:h-56 lg:h-64">
-          <h4 className="text-white text-sm md:text-base font-medium mb-2">
-            Select Time:
-          </h4>
+        {/* Time Carousel - Using identical structure and classes */}
+        <div>
+          <h4 className="text-white text-sm font-medium mb-2">Time</h4>
           {selectedDate && availableTimes.length > 0 ? (
-            <div className="relative bg-white/5 rounded-xl py-2 h-full border border-white/10 shadow-inner">
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="h-8 w-full bg-darkGold/20 opacity-70 rounded"></div>
-              </div>
+            <div className="carousel-container">
               <Swiper
-                modules={[Virtual]}
-                direction="vertical"
-                slidesPerView={5}
+                modules={[Navigation, Pagination]}
+                slidesPerView={3}
+                spaceBetween={8}
                 centeredSlides={true}
-                spaceBetween={1}
-                virtual
                 onSwiper={(swiper) => {
                   timeSwiperRef.current = swiper;
                 }}
                 onSlideChange={(swiper) => {
-                  // Get the time from the centered slide and select it
                   if (
                     availableTimes.length > 0 &&
                     swiper.realIndex < availableTimes.length
@@ -372,21 +353,21 @@ function DateTimeStep({
                     }
                   }
                 }}
-                className="h-full"
+                className="carousel-swiper"
               >
-                {availableTimes.map((time, index) => (
-                  <SwiperSlide key={time} virtualIndex={index}>
+                {availableTimes.map((time) => (
+                  <SwiperSlide key={time}>
                     <button
                       onClick={() => handleTimeSelect(time)}
                       disabled={!isTimeAvailable(time)}
-                      className={`w-full py-1 md:py-2 text-center transition-all duration-150
-                        ${
-                          selectedTime === time
-                            ? "text-white font-bold"
-                            : isTimeAvailable(time)
-                            ? "text-white/80 hover:text-white"
-                            : "text-white/40 cursor-not-allowed"
-                        }`}
+                      className={`carousel-item
+                      ${
+                        selectedTime === time
+                          ? "bg-darkGold text-black font-bold"
+                          : isTimeAvailable(time)
+                          ? "bg-white/10 text-white hover:bg-darkGold/40"
+                          : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
+                      }`}
                     >
                       {time}
                     </button>
@@ -395,87 +376,93 @@ function DateTimeStep({
               </Swiper>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-full bg-white/5 rounded-xl border border-white/10">
-              <p className="text-white/50">
-                {selectedDate
-                  ? "No available times for selected date"
-                  : "Please select a date first"}
+            <div className="empty-carousel-container">
+              <p className="text-white/50 text-sm">
+                {selectedDate ? "No available times" : "Select a date first"}
               </p>
             </div>
           )}
         </div>
-
-        {/* Enhanced Booking Summary for tablet/desktop - This is new and only shows on larger screens */}
-        <div className="hidden md:block mt-4 p-4 bg-white/5 rounded-xl border border-white/10">
-          <h4 className="text-white text-base font-medium mb-3 text-center">
-            Booking Summary
-          </h4>
-
-          <div className="flex justify-between items-center border-b border-white/20 pb-2 mb-2">
-            <span className="text-white/80">Date:</span>
-            <span className="text-white font-medium">
-              {selectedDate
-                ? format(selectedDate, "EEEE, MMMM d, yyyy")
-                : "Not selected"}
-            </span>
-          </div>
-
-          <div className="flex justify-between items-center border-b border-white/20 pb-2 mb-2">
-            <span className="text-white/80">Time:</span>
-            <span className="text-white font-medium">
-              {selectedTime || "Not selected"}
-            </span>
-          </div>
-
-          <div className="flex justify-between items-center border-b border-white/20 pb-2 mb-2">
-            <span className="text-white/80">Duration:</span>
-            <span className="text-white font-medium">
-              {selectedDuration
-                ? formatDuration(selectedDuration)
-                : "Not selected"}
-            </span>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-white/80">End Time:</span>
-            <span className="text-white font-medium">
-              {selectedTime && selectedDuration
-                ? calculateEndTime(selectedTime, selectedDuration)
-                : "Not selected"}
-            </span>
-          </div>
-        </div>
       </div>
 
-      {/* Booking Summary - Original mobile view, preserved exactly as it was */}
-      <div className="py-4 mt-4 md:mt-6 flex flex-col items-center md:hidden">
-        {/* Date display in center */}
-        <div className="mb-2">
-          <div className="bg-white/10 rounded-lg px-4 py-1 text-white text-center">
-            {selectedDate ? format(selectedDate, "EEE, MMM d") : "Tue, Apr 29"}
-          </div>
-        </div>
+      {/* Compact Booking Summary */}
+      {/* Compact Booking Summary - Centered Layout */}
+<div className="py-4 mt-2 flex flex-col items-center">
+  {/* Date display centered */}
+  <div className="mb-2">
+    <div className="bg-white/10 rounded-lg px-4 py-1 text-white text-center">
+      {selectedDate ? format(selectedDate, "EEE, MMM d") : "Tue, Apr 29"}
+    </div>
+  </div>
 
-        {/* From/To Labels - centered */}
-        <div className="flex w-auto justify-center gap-6">
-          <div className="flex flex-col items-center justify-between w-full">
-            <div className="text-white/80 text-sm">from</div>
-            <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-14 text-center">
-              {selectedTime || "10:00"}
-            </div>
-          </div>
-
-          {/* Time boxes - centered */}
-          <div className="flex flex-col items-center justify-between w-full">
-            <div className="text-white/80 text-sm">to</div>
-            <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-14 text-center">
-              {selectedTime && selectedDuration
-                ? calculateEndTime(selectedTime, selectedDuration)
-                : "--:--"}
-            </div>
-          </div>
-        </div>
+  {/* From/To labels - centered */}
+  <div className="flex w-full justify-center gap-6">
+    <div className="flex flex-col items-center">
+      <div className="text-white/80 text-sm">from</div>
+      <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-16 text-center">
+        {selectedTime || "10:00"}
       </div>
+    </div>
+
+    {/* To label and time */}
+    <div className="flex flex-col items-center">
+      <div className="text-white/80 text-sm">to</div>
+      <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-16 text-center">
+        {selectedTime && selectedDuration
+          ? calculateEndTime(selectedTime, selectedDuration)
+          : "10:00"}
+      </div>
+    </div>
+  </div>
+</div>
+
+      {/* CSS to ensure both carousels have identical styling */}
+      <style jsx>{`
+        .carousel-container {
+          height: 40px;
+          overflow: hidden;
+          background-color: rgba(255, 255, 255, 0.05);
+          border-radius: 8px;
+        }
+
+        .empty-carousel-container {
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: rgba(255, 255, 255, 0.05);
+          border-radius: 8px;
+        }
+
+        .carousel-swiper {
+          height: 100%;
+        }
+
+        .carousel-item {
+          width: 100%;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 6px;
+          font-size: 14px;
+          padding: 0 6px;
+          margin: 4px 0;
+          transition: all 0.15s ease;
+        }
+
+        :global(.swiper-slide) {
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        :global(.swiper-slide-active .carousel-item) {
+          transform: scale(1.05);
+          box-shadow: 0 0 8px rgba(255, 215, 0, 0.25);
+        }
+      `}</style>
     </div>
   );
 }
@@ -577,8 +564,6 @@ function PaymentStep({
 
   return (
     <div className="max-w-md mx-auto">
-      
-
       <div className="flex flex-col gap-5">
         {/* Booking Details Summary */}
         <div className="rounded-lg border border-white/10 overflow-hidden">
@@ -602,13 +587,15 @@ function PaymentStep({
         </div>
 
         {/* Payment Status */}
-        <div className={`p-4 rounded-lg border ${
-          paymentConfirmed 
-            ? 'border-green-500/30 bg-green-500/10' 
-            : paymentStarted 
-              ? 'border-yellow-500/30 bg-yellow-500/10' 
-              : 'border-white/10 bg-white/5'
-        }`}>
+        <div
+          className={`p-4 rounded-lg border ${
+            paymentConfirmed
+              ? "border-green-500/30 bg-green-500/10"
+              : paymentStarted
+              ? "border-yellow-500/30 bg-yellow-500/10"
+              : "border-white/10 bg-white/5"
+          }`}
+        >
           <div className="flex items-center">
             {paymentConfirmed ? (
               // Confirmed state
@@ -638,8 +625,8 @@ function PaymentStep({
             onClick={handleStripeRedirect}
             className="mt-2 py-3 px-4 bg-gradient-to-r from-darkGold to-yellow-500 text-black font-medium rounded-lg transition-transform hover:scale-[1.02] active:scale-[0.98]"
           >
-            {isTestBooking 
-              ? "Process Test Payment (€0.00)" 
+            {isTestBooking
+              ? "Process Test Payment (€0.00)"
               : `Complete Payment (€${sessionPrice})`}
           </button>
         )}
@@ -647,13 +634,15 @@ function PaymentStep({
         {/* Help Text */}
         {paymentStarted && !paymentConfirmed && (
           <p className="text-center text-white/70 text-sm mt-2">
-            The payment window has opened in a new tab. We're waiting for Stripe to confirm your payment.
+            The payment window has opened in a new tab. We're waiting for Stripe
+            to confirm your payment.
           </p>
         )}
 
         {paymentConfirmed && (
           <p className="text-center text-green-400 text-sm mt-2">
-            Your payment has been successfully processed. You can now proceed to the next step.
+            Your payment has been successfully processed. You can now proceed to
+            the next step.
           </p>
         )}
       </div>

@@ -75,7 +75,7 @@ function ProjectSelectionStep({ formData, onChange }) {
           onClick={() =>
             onChange({ target: { name: "project", value: p.value } })
           }
-          className={`px-4 py-4 rounded-xl md:rounded-2xl cursor-pointer text-center border-2 shadow-lg text-base md:text-lg bg-oxfordBlue transition-all ${
+          className={`px-3 py-3 rounded-xl md:rounded-2xl cursor-pointer text-center border-2 shadow-lg text-base md:text-lg bg-oxfordBlue transition-all ${
             formData.project === p.value
               ? "border-darkGold bg-darkGold/20 transform scale-[1.01]"
               : "border-darkGold hover:bg-darkGold/10 active:bg-darkGold/20"
