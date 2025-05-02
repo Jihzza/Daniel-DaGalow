@@ -86,6 +86,18 @@ function App() {
     setIsChatOpen(true);
   };
 
+  const OptionalAuthRoute = ({ children }) => {
+    const { loading } = useAuth();
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center h-screen">
+          Loading...
+        </div>
+      );
+    }
+    return children;
+  };
+
   // State & handler for AuthModal
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const openAuthModal = () => setAuthModalOpen(true);
@@ -168,14 +180,8 @@ function App() {
                   </PrivateRoute>
                 }
               />
-              <Route
-                path="/settings"
-                element={
-                  <PrivateRoute>
-                    <SettingsPage />
-                  </PrivateRoute>
-                }
-              />
+              <Route path="/settings" element={<OptionalAuthRoute><SettingsPage /></OptionalAuthRoute>} />
+
 
               <Route
                 path="/components/Subpages/Calendar"
@@ -185,15 +191,8 @@ function App() {
                   </PrivateRoute>
                 }
               />
-              <Route path="/components/Subpages/Home" element={<HomePage />} />
-              <Route
-                path="/components/Subpages/Settings"
-                element={
-                  <PrivateRoute>
-                    <SettingsPage />
-                  </PrivateRoute>
-                }
-              />
+             <Route path="/components/Subpages/Settings" element={<OptionalAuthRoute><SettingsPage /></OptionalAuthRoute>} />
+
             </Routes>
 
             {/* Always-on Navigation Bar & Chatbot */}

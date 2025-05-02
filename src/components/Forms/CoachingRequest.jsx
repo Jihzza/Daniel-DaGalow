@@ -11,6 +11,7 @@ import { useContext } from "react";
 import { ServiceContext } from "../../contexts/ServiceContext";
 import axios from "axios";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
+import { autoCreateAccount } from "../../utils/autoSignup";
 // Progress Indicator Component
 function StepIndicator({
   stepCount,
@@ -398,37 +399,52 @@ export default function CoachingRequest({ onBackService }) {
   const handleNext = async () => {
     if (step === 2) {
       setIsSubmitting(true);
-
-      // Calculate membership dates
-      const membershipStartDate = new Date();
-      const membershipEndDate = addMonths(membershipStartDate, 1);
-
-      const payload = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        service_type: formData.frequency,
-        membership_start_date: membershipStartDate.toISOString(),
-        membership_end_date: membershipEndDate.toISOString(),
-        payment_status: "pending", // Add this field
-      };
-      if (user?.id) payload.user_id = user.id;
-
-      const { data, error } = await supabase
-        .from("coaching_requests")
-        .insert(payload)
-        .select("id")
-        .single();
-
-      if (error) {
-        console.error(error);
-        alert("Failed to create coaching request.");
+  
+      try {
+        // Auto-create account if user is not logged in
+        if (!user && formData.name && formData.email) {
+          const accountResult = await autoCreateAccount(formData.name, formData.email);
+          
+          // Optional: If you're using notifications
+          if (accountResult.success && !accountResult.userExists) {
+            console.log("Account created successfully");
+          }
+        }
+  
+        // Calculate membership dates
+        const membershipStartDate = new Date();
+        const membershipEndDate = addMonths(membershipStartDate, 1);
+  
+        const payload = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          service_type: formData.frequency,
+          membership_start_date: membershipStartDate.toISOString(),
+          membership_end_date: membershipEndDate.toISOString(),
+          payment_status: "pending",
+        };
+        if (user?.id) payload.user_id = user.id;
+  
+        const { data, error } = await supabase
+          .from("coaching_requests")
+          .insert(payload)
+          .select("id")
+          .single();
+  
+        if (error) {
+          console.error(error);
+          alert("Failed to create coaching request.");
+          setIsSubmitting(false);
+          return;
+        }
+        setRequestId(data.id);
         setIsSubmitting(false);
-        return;
+        setStep(3); // Go to payment step
+      } catch (error) {
+        console.error("Error creating coaching request:", error);
+        setIsSubmitting(false);
       }
-      setRequestId(data.id);
-      setIsSubmitting(false);
-      setStep(3); // Go to payment step
     } else if (step === 3) {
       setStep(4); // Go to chatbot after payment
     }

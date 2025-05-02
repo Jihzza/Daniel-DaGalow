@@ -7,6 +7,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { AuthModalContext } from "../../App";
 import { useContext } from "react";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
+import { autoCreateAccount } from "../../utils/autoSignup";
 // Progress Indicator
 function StepIndicator({
   stepCount,
@@ -169,27 +170,44 @@ export default function AnalysisRequest({ onBackService }) {
   const handleNext = async () => {
     if (step === 2) {
       setIsSubmitting(true);
-
-      const payload = {
-        name: formData.name,
-        email: formData.email,
-        service_type: formData.type,
-      };
-      if (user?.id) payload.user_id = user.id;
-
-      const { data, error } = await supabase
-        .from("analysis_requests")
-        .insert(payload)
-        .select("id")
-        .maybeSingle();
-      if (error) {
-        console.error(error);
+  
+      try {
+        // Auto-create account if user is not logged in
+        if (!user && formData.name && formData.email) {
+          const accountResult = await autoCreateAccount(formData.name, formData.email);
+          
+          // Optional: If you're using a notification library like react-toastify
+          if (accountResult.success && !accountResult.userExists) {
+            // If using react-toastify:
+            // toast.success("Account created! Check your email for login details.");
+            console.log("Account created successfully");
+          }
+        }
+  
+        // Continue with your existing form submission code
+        const payload = {
+          name: formData.name,
+          email: formData.email,
+          service_type: formData.type,
+        };
+        
+        if (user?.id) payload.user_id = user.id;
+  
+        const { data, error } = await supabase
+          .from("analysis_requests")
+          .insert(payload)
+          .select("id")
+          .maybeSingle();
+          
+        if (error) throw error;
+        
+        setRequestId(data.id);
         setIsSubmitting(false);
-        return;
+        setStep(3);
+      } catch (error) {
+        console.error("Error submitting request:", error);
+        setIsSubmitting(false);
       }
-      setRequestId(data.id);
-      setIsSubmitting(false);
-      setStep(3);
     }
   };
 

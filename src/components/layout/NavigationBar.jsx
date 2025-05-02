@@ -36,7 +36,7 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
     {src: home, alt: "Home", action: handleDagalowIconClick},
     {src: calendar, alt: "Calendar", to: user ? "/components/Subpages/Calendar" : null, action: user ? null : onAuthModalOpen},
     {src: chatbot, alt: "Chatbot", action: onChatbotClick},
-    {src: settings, alt: "Settings", to: user ? "/components/Subpages/Settings" : null, action: user ? null : onAuthModalOpen},
+    {src: settings, alt: "Settings", to: "/components/Subpages/Settings", action: null},
     {src: account, alt: "Account", action: handleAccountClick},
   ];
   

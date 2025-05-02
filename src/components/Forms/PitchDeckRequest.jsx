@@ -8,6 +8,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { AuthModalContext } from "../../App";
 import { useContext } from "react";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
+import { autoCreateAccount } from "../../utils/autoSignup";
 // Progress Indicator Component
 function StepIndicator({
   stepCount,
@@ -220,6 +221,16 @@ export default function PitchDeckRequest({ onBackService }) {
     if (step === 2) {
       setIsSubmitting(true);
       try {
+        // Auto-create account if user is not logged in
+        if (!user && formData.name && formData.email) {
+          const accountResult = await autoCreateAccount(formData.name, formData.email);
+          
+          // Optional: If you're using notifications
+          if (accountResult.success && !accountResult.userExists) {
+            console.log("Account created successfully");
+          }
+        }
+  
         const { data, error } = await supabase
           .from("pitch_requests")
           .insert({
@@ -227,12 +238,13 @@ export default function PitchDeckRequest({ onBackService }) {
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
+            user_id: user?.id // Add user ID if available
           })
           .select("id")
           .single();
-
+  
         if (error) throw error;
-
+  
         setRequestId(data.id);
         setStep(3);
       } catch (error) {

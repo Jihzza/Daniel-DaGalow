@@ -3,14 +3,16 @@ import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import AuthModal from "../../components/Auth/AuthModal"; // Import the AuthModal component
 
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Privacy settings states
   const [privacySettings, setPrivacySettings] = useState({
@@ -36,6 +38,8 @@ const SettingsPage = () => {
   useEffect(() => {
     if (user) {
       fetchProfile();
+    } else {
+      setLoading(false);
     }
   }, [user]);
 
@@ -51,9 +55,6 @@ const SettingsPage = () => {
 
       if (error) throw error;
       setProfile(data);
-
-      // In a real app, you would fetch these settings from your database
-      // For now we'll use our default state values
     } catch (error) {
       console.error("Error fetching settings:", error.message);
     } finally {
@@ -95,6 +96,11 @@ const SettingsPage = () => {
   };
 
   const saveSettings = async (section) => {
+    if (!user && (section === "account" || section === "privacy" || section === "sessions")) {
+      setShowAuthModal(true);
+      return;
+    }
+    
     // In a real app, you would save these settings to your database
     alert(`${section} settings saved!`);
     setActiveSection(null); // Close the section after saving
@@ -162,6 +168,20 @@ const SettingsPage = () => {
       </div>
     );
   }
+
+  const LoginPrompt = () => (
+    <div className="text-center py-8 px-4 border-2 border-dashed border-gray-300 rounded-lg">
+      <p className="text-gray-500 mb-4">
+        {t('settings.login_required')}
+      </p>
+      <button
+        onClick={() => setShowAuthModal(true)}
+        className="px-4 py-2 bg-oxfordBlue text-white rounded-lg font-medium hover:bg-opacity-90 transition-colors"
+      >
+        {t('auth.login.title')}
+      </button>
+    </div>
+  );
 
   // Privacy Policy Content with improved formatting for tablet/desktop
   const renderPrivacyPolicy = () => (
@@ -332,7 +352,7 @@ const SettingsPage = () => {
   const renderSettingsContent = () => {
     switch (activeSection) {
       case "account":
-        return (
+        return user ? (
           <div>
             <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
               <div className="py-4 border-b border-gray-200">
@@ -402,10 +422,12 @@ const SettingsPage = () => {
               </button>
             </div>
           </div>
+        ) : (
+          <LoginPrompt />
         );
 
         case "privacy":
-          return (
+          return user ? (
             <div>
               <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
                 <div className="bg-gray-50 p-4 md:p-6 rounded-lg mb-4">
@@ -489,10 +511,12 @@ const SettingsPage = () => {
                 </button>
               </div>
             </div>
+          ) : (
+            <LoginPrompt />
           );
 
       case "appearance":
-        return (
+        return user ? (
           <div>
             <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
               <div className="bg-gray-50 p-4 md:p-6 rounded-lg mb-4">
@@ -575,10 +599,12 @@ const SettingsPage = () => {
               </button>
             </div>
           </div>
+        ) : (
+          <LoginPrompt />
         );
 
       case "sessions":
-        return (
+        return user ? (
           <div>
             <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
               <div className="mb-6">
@@ -688,10 +714,12 @@ const SettingsPage = () => {
               </button>
             </div>
           </div>
+        ) : (
+          <LoginPrompt />
         );
 
       case "others":
-        return (
+        return user ? (
           <div>
             <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
               <div className="md:grid md:grid-cols-2 md:gap-6">
@@ -785,10 +813,12 @@ const SettingsPage = () => {
               </button>
             </div>
           </div>
+        ) : (
+          <LoginPrompt />
         );
 
       case "privacy-policy":
-        return (
+        return user ? (
           <div>
             <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
               <div className="max-h-[60vh] md:max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
@@ -804,10 +834,12 @@ const SettingsPage = () => {
               </button>
             </div>
           </div>
+        ) : (
+          <LoginPrompt />
         );
 
       case "terms-of-service":
-        return (
+        return user ? (
           <div>
             <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
               <div className="max-h-[60vh] md:max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
@@ -823,6 +855,8 @@ const SettingsPage = () => {
               </button>
             </div>
           </div>
+        ) : (
+          <LoginPrompt />
         );
 
       default:
@@ -832,26 +866,26 @@ const SettingsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-oxfordBlue to-gentleGray py-6 md:py-12 px-4 md:px-8 lg:px-12">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 md:mb-10 text-white">
-          {t("settings.title")}
-        </h1>
+    <div className="max-w-4xl mx-auto">
+      <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 md:mb-10 text-white">
+        {t("settings.title")}
+      </h1>
 
-        {activeSection ? (
-          // Show detailed settings for active section - more responsive layout
-          <div className="bg-gentleGray rounded-xl shadow-md md:shadow-lg p-4 md:p-6 lg:p-8">
-            <h2 className="text-xl md:text-2xl font-semibold text-oxfordBlue mb-6">
-              {activeSection === "privacy-policy"
-                ? t("settings.privacy_policy.title")
-                : activeSection === "terms-of-service"
-                ? t("settings.terms_of_service.title")
-                : activeSection === "others"
-                ? t("settings.sections.others.title")
-                : t(`settings.sections.${activeSection}.title`)}
-            </h2>
-            {renderSettingsContent()}
-          </div>
-        ) : (
+      {activeSection ? (
+        // Show detailed settings for active section - more responsive layout
+        <div className="bg-gentleGray rounded-xl shadow-md md:shadow-lg p-4 md:p-6 lg:p-8">
+          <h2 className="text-xl md:text-2xl font-semibold text-oxfordBlue mb-6">
+            {activeSection === "privacy-policy"
+              ? t("settings.privacy_policy.title")
+              : activeSection === "terms-of-service"
+              ? t("settings.terms_of_service.title")
+              : activeSection === "others"
+              ? t("settings.sections.others.title")
+              : t(`settings.sections.${activeSection}.title`)}
+          </h2>
+          {renderSettingsContent()}
+        </div>
+      ) : (
           // Show settings categories in a grid for tablet/desktop
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6">
             {/* Account Settings */}
@@ -1100,6 +1134,12 @@ const SettingsPage = () => {
             </div>
           </div>
         )}
+
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          initialView="login"
+        />
       </div>
     </div>
   );

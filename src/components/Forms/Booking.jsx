@@ -26,6 +26,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
+import { autoCreateAccount } from "../../utils/autoSignup";
 // Shared StepIndicator
 function StepIndicator({
   stepCount,
@@ -751,9 +752,7 @@ export default function Booking({ onBackService }) {
   };
 
   const handleNext = async () => {
-    if (step === 1) {
-      setStep(2);
-    } else if (step === 2) {
+    if (step === 2) {
       // Build the ISO timestamp for the consultation start time
       const [hours, minutes] = selectedTime.split(":").map(Number);
       const appointment_date = new Date(
@@ -763,10 +762,20 @@ export default function Booking({ onBackService }) {
         hours,
         minutes
       ).toISOString();
-
+  
       try {
         setLoading(true);
-
+  
+        // Auto-create account if user is not logged in
+        if (!user && formData.name && formData.email) {
+          const accountResult = await autoCreateAccount(formData.name, formData.email);
+          
+          // Optional: If you're using notifications
+          if (accountResult.success && !accountResult.userExists) {
+            console.log("Account created successfully");
+          }
+        }
+  
         const { data, error } = await supabase
           .from("bookings")
           .insert({
@@ -779,11 +788,11 @@ export default function Booking({ onBackService }) {
           })
           .select("id")
           .single();
-
+  
         if (error || !data) {
           throw error || new Error("Booking creation failed: No data returned");
         }
-
+  
         setBookingId(data.id);
         setStep(3); // Go to payment step
       } catch (error) {

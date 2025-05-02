@@ -12,3 +12,7 @@
 [functions."stripe-webhook"]
   node_bundler = "esbuild"
   external_node_modules = ["stripe", "@netlify/functions"]
+
+[functions."send-welcome-email"]
+  node_bundler = "esbuild"
+  external_node_modules = ["node-fetch"]
