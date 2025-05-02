@@ -220,14 +220,14 @@ function DateTimeStep({
 
         {/* Calendar Grid */}
         <div className="p-2 md:p-3">
-          {/* Weekday Headers */}
+          {/* Weekday Headers - With unique keys */}
           <div className="grid grid-cols-7 gap-1 mb-1">
-            {["M", "T", "W", "T", "F", "S", "S"].map((d) => (
+            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
               <div
-                key={d}
+                key={day}
                 className="text-center py-1 text-darkGold font-semibold text-xs"
               >
-                {d}
+                {day.charAt(0)}
               </div>
             ))}
           </div>
@@ -279,51 +279,58 @@ function DateTimeStep({
         {/* Duration Carousel */}
         <div>
           <h4 className="text-white text-sm font-medium mb-2">Duration</h4>
-          <div className="carousel-container">
-            <Swiper
-              modules={[Navigation, Pagination]}
-              slidesPerView={3}
-              spaceBetween={8}
-              centeredSlides={true}
-              onSwiper={(swiper) => {
-                durationSwiperRef.current = swiper;
-              }}
-              onSlideChange={(swiper) => {
-                if (
-                  availableDurations.length > 0 &&
-                  swiper.realIndex < availableDurations.length
-                ) {
-                  const centeredDuration = availableDurations[swiper.realIndex];
+          {selectedDate ? (
+            <div className="carousel-container">
+              <Swiper
+                modules={[Navigation, Pagination]}
+                slidesPerView={3}
+                spaceBetween={8}
+                centeredSlides={true}
+                onSwiper={(swiper) => {
+                  durationSwiperRef.current = swiper;
+                }}
+                onSlideChange={(swiper) => {
                   if (
-                    isDurationAvailable(centeredDuration) &&
-                    centeredDuration !== selectedDuration
+                    availableDurations.length > 0 &&
+                    swiper.realIndex < availableDurations.length
                   ) {
-                    handleDurationSelect(centeredDuration);
+                    const centeredDuration =
+                      availableDurations[swiper.realIndex];
+                    if (
+                      isDurationAvailable(centeredDuration) &&
+                      centeredDuration !== selectedDuration
+                    ) {
+                      handleDurationSelect(centeredDuration);
+                    }
                   }
-                }
-              }}
-              className="carousel-swiper"
-            >
-              {availableDurations.map((duration) => (
-                <SwiperSlide key={duration}>
-                  <button
-                    onClick={() => handleDurationSelect(duration)}
-                    disabled={!isDurationAvailable(duration)}
-                    className={`carousel-item
-                    ${
-                      selectedDuration === duration
-                        ? "bg-darkGold text-black font-bold"
-                        : isDurationAvailable(duration)
-                        ? "bg-white/10 text-white hover:bg-darkGold/40"
-                        : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
-                    }`}
-                  >
-                    {formatDuration(duration)}
-                  </button>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
+                }}
+                className="carousel-swiper"
+              >
+                {availableDurations.map((duration) => (
+                  <SwiperSlide key={duration}>
+                    <button
+                      onClick={() => handleDurationSelect(duration)}
+                      disabled={!isDurationAvailable(duration)}
+                      className={`carousel-item
+              ${
+                selectedDuration === duration
+                  ? "bg-darkGold text-black font-bold"
+                  : isDurationAvailable(duration)
+                  ? "bg-white/10 text-white hover:bg-darkGold/40"
+                  : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
+              }`}
+                    >
+                      {formatDuration(duration)}
+                    </button>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          ) : (
+            <div className="empty-carousel-container">
+              <p className="text-white/50 text-sm">Select a date first</p>
+            </div>
+          )}
         </div>
 
         {/* Time Carousel - Using identical structure and classes */}
@@ -386,35 +393,34 @@ function DateTimeStep({
       </div>
 
       {/* Compact Booking Summary */}
-      {/* Compact Booking Summary - Centered Layout */}
-<div className="py-4 mt-2 flex flex-col items-center">
-  {/* Date display centered */}
-  <div className="mb-2">
-    <div className="bg-white/10 rounded-lg px-4 py-1 text-white text-center">
-      {selectedDate ? format(selectedDate, "EEE, MMM d") : "Tue, Apr 29"}
-    </div>
-  </div>
+      <div className="py-4 mt-2 flex flex-col items-center">
+        {/* Date display centered */}
+        <div className="mb-2">
+          <div className="bg-white/10 rounded-lg px-4 py-1 text-white text-center">
+            {selectedDate ? format(selectedDate, "EEE, MMM d") : "Tue, Apr 29"}
+          </div>
+        </div>
 
-  {/* From/To labels - centered */}
-  <div className="flex w-full justify-center gap-6">
-    <div className="flex flex-col items-center">
-      <div className="text-white/80 text-sm">from</div>
-      <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-16 text-center">
-        {selectedTime || "10:00"}
-      </div>
-    </div>
+        {/* From/To labels - centered */}
+        <div className="flex w-full justify-center gap-6">
+          <div className="flex flex-col items-center">
+            <div className="text-white/80 text-sm">from</div>
+            <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-16 text-center">
+              {selectedTime || "10:00"}
+            </div>
+          </div>
 
-    {/* To label and time */}
-    <div className="flex flex-col items-center">
-      <div className="text-white/80 text-sm">to</div>
-      <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-16 text-center">
-        {selectedTime && selectedDuration
-          ? calculateEndTime(selectedTime, selectedDuration)
-          : "10:00"}
+          {/* To label and time */}
+          <div className="flex flex-col items-center">
+            <div className="text-white/80 text-sm">to</div>
+            <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-16 text-center">
+              {selectedTime && selectedDuration
+                ? calculateEndTime(selectedTime, selectedDuration)
+                : "10:00"}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
 
       {/* CSS to ensure both carousels have identical styling */}
       <style jsx>{`
