@@ -4,7 +4,7 @@
   command = "npm run build"
 
 [[redirects]]
-  from = "/.netlify/functions/*"
+  from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
   force = true
@@ -15,4 +15,8 @@
 
 [functions."send-welcome-email"]
   node_bundler = "esbuild"
-  external_node_modules = ["node-fetch"]
+  external_node_modules = ["resend", "node-fetch"]
+
+[functions."handle-verification"]
+  node_bundler = "esbuild"
+  external_node_modules = ["resend", "@supabase/supabase-js"]

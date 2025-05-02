@@ -867,9 +867,6 @@ const SettingsPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-oxfordBlue to-gentleGray py-6 md:py-12 px-4 md:px-8 lg:px-12">
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 md:mb-10 text-white">
-        {t("settings.title")}
-      </h1>
 
       {activeSection ? (
         // Show detailed settings for active section - more responsive layout
