@@ -315,7 +315,7 @@ export default function ProfilePage({ onChatOpen }) {
               <h3 className="text-lg md:text-xl font-bold text-oxfordBlue pb-2">
                 {t("profile.sections.appointments.title")}
               </h3>
-              
+
               <div className="space-y-3">
                 {appointments.length ? (
                   appointments.map((a) => (
@@ -338,9 +338,7 @@ export default function ProfilePage({ onChatOpen }) {
                     <p className="text-sm md:text-base text-gray-500">
                       {t("profile.sections.appointments.no_appointments")}
                     </p>
-                    <button className="mt-4 px-4 py-2 bg-darkGold text-black rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors">
-                      {t("calendar.book_appointment")}
-                    </button>
+                    
                   </div>
                 )}
               </div>
@@ -354,7 +352,7 @@ export default function ProfilePage({ onChatOpen }) {
               <h3 className="text-lg md:text-xl font-bold text-oxfordBlue pb-2">
                 {t("profile.sections.subscriptions.title")}
               </h3>
-              
+
               <div className="space-y-3">
                 {activeSubscriptions.length ? (
                   activeSubscriptions.map((sub) => (
@@ -367,15 +365,16 @@ export default function ProfilePage({ onChatOpen }) {
                           <p className="text-lg font-semibold text-black">
                             {sub.name}
                           </p>
-                          
                         </div>
-                        
+
                         <div className="flex items-center justify-between text-sm text-gray-600 mt-2 pt-2 border-t border-gray-200">
                           <p>
-                            {t("profile.sections.subscriptions.since")} {sub.since}
+                            {t("profile.sections.subscriptions.since")}{" "}
+                            {sub.since}
                           </p>
                           <p>
-                            {t("profile.sections.subscriptions.expires")} {sub.expiresOn}
+                            {t("profile.sections.subscriptions.expires")}{" "}
+                            {sub.expiresOn}
                           </p>
                         </div>
                       </div>
@@ -395,14 +394,14 @@ export default function ProfilePage({ onChatOpen }) {
           {/* Right column on desktop - Full width on mobile/tablet */}
           <div className="md:col-span-2 lg:col-span-1">
             {/* Conversation History */}
-            <div className="bg-gentleGray p-4 sm:p-6 md:p-8 rounded-xl shadow-lg h-full">
+            <div className="bg-gentleGray p-4 sm:p-6 md:p-8 rounded-xl shadow-lg h-full flex flex-col">
               <h3 className="text-lg md:text-xl font-bold text-oxfordBlue pb-2">
                 {t("profile.sections.conversations.title")}
               </h3>
-              
-              <div className="overflow-hidden h-full">
+
+              <div className="flex-grow overflow-hidden">
                 {sessions.length > 0 ? (
-                  <div className="space-y-3 max-h-[30vh] md:max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                  <div className="space-y-3 h-full max-h-[30vh] md:max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
                     {sessions.map((s) => (
                       <button
                         key={s.id}
@@ -414,17 +413,21 @@ export default function ProfilePage({ onChatOpen }) {
                       >
                         <div className="p-2 flex justify-between items-center gap-2">
                           <div className="flex-1">
-                            <p className="font-medium text-sm md:text-base text-gray-800">{s.title || "Chat Session"}</p>
+                            <p className="font-medium text-sm md:text-base text-gray-800">
+                              {s.title || "Chat Session"}
+                            </p>
                           </div>
                           <span className="text-xs text-gray-500 whitespace-nowrap">
-                            {new Date(s.updated_at || s.lastActivity).toLocaleDateString()}
+                            {new Date(
+                              s.updated_at || s.lastActivity
+                            ).toLocaleDateString()}
                           </span>
                         </div>
                       </button>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 px-4 border-2 border-dashed border-gray-300  rounded-lg h-full flex flex-col items-center justify-center">
+                  <div className="text-center py-8 px-4 border-2 border-dashed border-gray-300 rounded-lg h-full flex flex-col items-center justify-center">
                     <p className="text-gray-500 mb-4">
                       {t("profile.sections.conversations.no_chats")}
                     </p>
@@ -448,7 +451,7 @@ export default function ProfilePage({ onChatOpen }) {
               <h3 className="text-lg md:text-xl font-bold text-oxfordBlue">
                 {t("profile.sections.testimonial_review.title")}
               </h3>
-              <button 
+              <button
                 onClick={() => fetchPendingTestimonials()}
                 className="px-3 py-1 text-xs bg-oxfordBlue text-white rounded-lg hover:bg-opacity-90 transition-colors"
               >
@@ -487,7 +490,9 @@ export default function ProfilePage({ onChatOpen }) {
                           {testimonial.author}
                         </h4>
                         <p className="text-xs text-gray-500">
-                          {new Date(testimonial.created_at).toLocaleDateString()}
+                          {new Date(
+                            testimonial.created_at
+                          ).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
