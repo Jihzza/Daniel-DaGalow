@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
 import PhoneInput from "react-phone-input-2";
@@ -9,6 +9,9 @@ import { AuthModalContext } from "../../App";
 import { useContext } from "react";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 import { autoCreateAccount } from "../../utils/autoSignup";
+import { validatePhoneNumber } from "../../utils/phoneValidation";
+
+
 // Progress Indicator Component
 function StepIndicator({
   stepCount,
@@ -89,6 +92,63 @@ function ProjectSelectionStep({ formData, onChange }) {
 function ContactInfoStep({ formData, onChange }) {
   const { t } = useTranslation();
   const { openAuthModal } = useContext(AuthModalContext);
+  
+  // Phone validation state
+  const [validatingPhone, setValidatingPhone] = useState(false);
+  const [phoneValidated, setPhoneValidated] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+  
+  // Debounce phone validation
+  const phoneValidationTimeout = useRef(null);
+  
+  const handlePhoneChange = (phone) => {
+    // Update parent form state
+    onChange({ target: { name: "phone", value: phone } });
+    
+    // Reset validation states
+    setPhoneValidated(false);
+    setPhoneError("");
+    
+    // Clear any existing timeout
+    if (phoneValidationTimeout.current) {
+      clearTimeout(phoneValidationTimeout.current);
+    }
+    
+    // Only validate if sufficient digits are entered
+    if (phone.replace(/\D/g, '').length < 8) {
+      return;
+    }
+    
+    // Debounce the validation call
+    phoneValidationTimeout.current = setTimeout(async () => {
+      setValidatingPhone(true);
+      
+      try {
+        const result = await validatePhoneNumber(phone);
+        
+        setValidatingPhone(false);
+        setPhoneValidated(result.isValid);
+        
+        if (!result.isValid) {
+          setPhoneError(t("pitch_deck_request.form.phone_validation_error"));
+        }
+      } catch (error) {
+        setValidatingPhone(false);
+        setPhoneError("Validation service unavailable");
+        console.error("Phone validation error:", error);
+      }
+    }, 800); // Validate after 800ms of inactivity
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (phoneValidationTimeout.current) {
+        clearTimeout(phoneValidationTimeout.current);
+      }
+    };
+  }, []);
+  
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
       <div className="w-full flex flex-col gap-2">
@@ -105,6 +165,7 @@ function ContactInfoStep({ formData, onChange }) {
           required
         />
       </div>
+      
       <div className="w-full flex flex-col gap-2">
         <label className="block text-white mb-2">
           {t("pitch_deck_request.form.email_label")}
@@ -119,30 +180,63 @@ function ContactInfoStep({ formData, onChange }) {
           required
         />
       </div>
+      
       <div className="w-full flex flex-col gap-2">
         <label className="block text-white mb-2 font-medium">
           {t("coaching_request.form.phone_label")}
         </label>
-        <PhoneInput
-          containerClass="!w-full !h-[48px] md:!h-[52px] lg:!h-[46px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
-          buttonClass="!bg-white/5 !border-none h-full"
-          inputClass="!bg-white/5 !w-full !border-none px-2 md:px-4 !h-full text-white placeholder-white/50 text-base md:text-lg"
-          country="es"
-          enableSearch
-          searchPlaceholder={t(
-            "coaching_request.form.phone_search_placeholder"
+        <div className="relative">
+          <PhoneInput
+            containerClass="!w-full !h-[48px] md:!h-[52px] lg:!h-[46px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
+            buttonClass="!bg-white/5 !border-none h-full"
+            inputClass={`!bg-white/5 !w-full !border-none px-2 md:px-4 !h-full text-white placeholder-white/50 text-base md:text-lg ${
+              phoneError ? "!border !border-red-500" : ""
+            }`}
+            country="es"
+            enableSearch
+            searchPlaceholder={t(
+              "coaching_request.form.phone_search_placeholder"
+            )}
+            value={formData.phone}
+            onChange={handlePhoneChange}
+            dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
+            searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
+          />
+          
+          {/* Validation indicator */}
+          {formData.phone && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
+              {validatingPhone && (
+                <svg className="animate-spin h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              )}
+              
+              {!validatingPhone && phoneValidated && (
+                <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              )}
+              
+              {!validatingPhone && !phoneValidated && formData.phone && formData.phone.replace(/\D/g, '').length >= 8 && (
+                <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              )}
+            </div>
           )}
-          value={formData.phone}
-          onChange={(phone) =>
-            onChange({ target: { name: "phone", value: phone } })
-          }
-          dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
-          searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
-        />
+        </div>
+        
+        {/* Phone validation error message */}
+        {phoneError && (
+          <p className="text-red-500 text-sm mt-1">{phoneError}</p>
+        )}
       </div>
+      
       <div className="text-white text-sm text-right sm:text-base md:text-lg"> 
         <button
-        type="button"
+          type="button"
           onClick={openAuthModal}
           className="text-xs text-white underline"
         >
@@ -155,6 +249,9 @@ function ContactInfoStep({ formData, onChange }) {
 
 export default function PitchDeckRequest({ onBackService }) {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const [step, setStep] = useState(1);
+
   const STEPS = [
     {
       title: t("pitch_deck_request.steps.project"),
@@ -166,12 +263,11 @@ export default function PitchDeckRequest({ onBackService }) {
     },
     { title: t("pitch_deck_request.steps.chat"), component: InlineChatbotStep },
   ];
-  const formRef = useScrollToTopOnChange([step]);
-
 
   const UI_STEPS = STEPS.length + 1;
-  const { user } = useAuth();
-  const [step, setStep] = useState(1);
+
+  const formRef = useScrollToTopOnChange([step]);
+
   const [formData, setFormData] = useState({
     project: "",
     name: user?.user_metadata?.full_name || "",
@@ -192,7 +288,12 @@ export default function PitchDeckRequest({ onBackService }) {
 
   const canProceed = () => {
     if (step === 1) return !!formData.project;
-    if (step === 2) return formData.name && formData.email && formData.phone;
+    if (step === 2) {
+      const phoneRef = document.querySelector('input[type="tel"]');
+      const isPhoneValid = phoneRef && phoneRef.value && 
+                          !phoneRef.parentElement.querySelector('.text-red-500');
+      return formData.name && formData.email && formData.phone && isPhoneValid;
+    }
     return true;
   };
 

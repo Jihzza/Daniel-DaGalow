@@ -273,7 +273,8 @@
       "email_label": "Email Address",
       "email_placeholder": "john@example.com",
       "phone_label": "Phone Number",
-      "phone_search_placeholder": "Search country..."
+      "phone_search_placeholder": "Search country...",
+      "phone_validation_error": "This phone number appears to be invalid. Please check and try again."
     },
     "payment": {
       "selected_tier": "You selected",
@@ -321,7 +322,8 @@
       "email_label": "Email Address",
       "email_placeholder": "john@example.com",
       "phone_label": "Phone Number",
-      "phone_search_placeholder": "Search country..."
+      "phone_search_placeholder": "Search country...",
+      "phone_validation_error": "This phone number appears to be invalid. Please check and try again."
     },
     "buttons": {
       "back": "Back",

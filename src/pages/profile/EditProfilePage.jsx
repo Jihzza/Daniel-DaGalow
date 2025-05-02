@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
 import OctagonalProfile from "../../components/common/Octagonal Profile";
 import { useTranslation } from 'react-i18next';
+import { validatePhoneNumber } from "../../utils/phoneValidation";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const EditProfilePage = () => {
   const { user } = useAuth();
@@ -20,7 +23,10 @@ const EditProfilePage = () => {
   const [usernameAvailable, setUsernameAvailable] = useState(true);
   const [checkingUsername, setCheckingUsername] = useState(false);
   const initial = (fullName?.[0] ?? user?.email?.[0] ?? '?').toUpperCase();
-
+  const [validatingPhone, setValidatingPhone] = useState(false);
+  const [phoneValidated, setPhoneValidated] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+  const phoneValidationTimeout = useRef(null);
   const fetchProfile = async () => {
     try {
       setLoading(true);
@@ -48,6 +54,53 @@ const EditProfilePage = () => {
     }
   };
 
+  const handlePhoneChange = (phone) => {
+    // Update state
+    setPhoneNumber(phone);
+    
+    // Reset validation states
+    setPhoneValidated(false);
+    setPhoneError("");
+    
+    // Clear existing timeout
+    if (phoneValidationTimeout.current) {
+      clearTimeout(phoneValidationTimeout.current);
+    }
+    
+    // Only validate if phone has at least 8 digits
+    if (phone.replace(/\D/g, '').length < 8) {
+      return;
+    }
+    
+    // Set a timeout to validate the phone number after typing stops
+    phoneValidationTimeout.current = setTimeout(async () => {
+      setValidatingPhone(true);
+      
+      try {
+        const result = await validatePhoneNumber(phone);
+        
+        setValidatingPhone(false);
+        setPhoneValidated(result.isValid);
+        
+        if (!result.isValid) {
+          setPhoneError(t("edit_profile.form.phone_number.validation_error"));
+        }
+      } catch (error) {
+        setValidatingPhone(false);
+        setPhoneError("Validation service unavailable");
+        console.error("Phone validation error:", error);
+      }
+    }, 800); // Validate after 800ms of inactivity
+  };
+
+  useEffect(() => {
+    return () => {
+      if (phoneValidationTimeout.current) {
+        clearTimeout(phoneValidationTimeout.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     if (user) {
       fetchProfile();
@@ -56,7 +109,10 @@ const EditProfilePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check validity conditions including phone
     if (username && (!usernameAvailable || username.length < 3)) return;
+    if (phoneNumber && !phoneValidated && phoneError) return;
     try {
       setLoading(true);
       setMessage("");
@@ -241,22 +297,59 @@ const EditProfilePage = () => {
                   </p>
                   
                   {/* Phone Number Input */}
-                  <div className="w-full mt-4">
-                    <label
-                      htmlFor="phoneNumber"
-                      className="block text-oxfordBlue font-medium mb-2"
-                    >
-                      {t('edit_profile.form.phone_number.label')}
-                    </label>
-                    <input
-                      id="phoneNumber"
-                      type="tel"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      className="w-full px-3 py-2 border border-oxfordBlue bg-gentleGray rounded-lg focus:outline-none focus:ring-2 focus:ring-oxfordBlue focus:border-transparent transition-colors"
-                      placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
+                  {/* Phone Number Input with Validation */}
+<div className="w-full mt-4">
+  <label
+    htmlFor="phoneNumber"
+    className="block text-oxfordBlue font-medium mb-2"
+  >
+    {t('edit_profile.form.phone_number.label')}
+  </label>
+  <div className="relative">
+    <PhoneInput
+      containerClass="!w-full rounded-lg overflow-hidden border border-oxfordBlue"
+      buttonClass="!bg-white/5 !border-none h-full"
+      inputClass={`!bg-gentleGray !w-full !border-none px-3 py-2 text-black ${
+        phoneError ? "!border !border-red-500" : ""
+      }`}
+      country="es"
+      enableSearch
+      value={phoneNumber}
+      onChange={handlePhoneChange}
+      dropdownClass="!bg-white text-black rounded-lg shadow-lg"
+      searchClass="!bg-white !text-black placeholder-gray-500 rounded-md p-2 my-2"
+    />
+    
+    {/* Add validation indicator */}
+    {phoneNumber && (
+      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
+        {validatingPhone && (
+          <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        )}
+        
+        {!validatingPhone && phoneValidated && (
+          <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        )}
+        
+        {!validatingPhone && !phoneValidated && phoneNumber && phoneNumber.replace(/\D/g, '').length >= 8 && (
+          <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        )}
+      </div>
+    )}
+  </div>
+  
+  {/* Phone validation error message */}
+  {phoneError && (
+    <p className="mt-1 text-sm text-red-500">{phoneError}</p>
+  )}
+</div>
                 </div>
               </div>
 

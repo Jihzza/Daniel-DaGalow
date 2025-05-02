@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -12,6 +12,8 @@ import { ServiceContext } from "../../contexts/ServiceContext";
 import axios from "axios";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 import { autoCreateAccount } from "../../utils/autoSignup";
+import { validatePhoneNumber } from "../../utils/phoneValidation"; // Add this import
+
 // Progress Indicator Component
 function StepIndicator({
   stepCount,
@@ -95,6 +97,63 @@ function FrequencyStep({ formData, onChange }) {
 function ContactStep({ formData, onChange }) {
   const { t } = useTranslation();
   const { openAuthModal } = useContext(AuthModalContext);
+  
+  // Add phone validation handling
+  const [validatingPhone, setValidatingPhone] = useState(false);
+  const [phoneValidated, setPhoneValidated] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+  
+  // Handle phone validation on change with debounce
+  const phoneValidationTimeout = useRef(null);
+  
+  const handlePhoneChange = (phone) => {
+    // Pass the phone number to the parent component
+    onChange({ target: { name: "phone", value: phone } });
+    
+    // Reset validation states
+    setPhoneValidated(false);
+    setPhoneError("");
+    
+    // Clear existing timeout
+    if (phoneValidationTimeout.current) {
+      clearTimeout(phoneValidationTimeout.current);
+    }
+    
+    // Only validate if phone has at least 8 digits
+    if (phone.replace(/\D/g, '').length < 8) {
+      return;
+    }
+    
+    // Set a timeout to validate the phone number after typing stops
+    phoneValidationTimeout.current = setTimeout(async () => {
+      setValidatingPhone(true);
+      
+      try {
+        const result = await validatePhoneNumber(phone);
+        
+        setValidatingPhone(false);
+        setPhoneValidated(result.isValid);
+        
+        if (!result.isValid) {
+          setPhoneError(t("coaching_request.form.phone_validation_error"));
+        }
+      } catch (error) {
+        setValidatingPhone(false);
+        setPhoneError("Validation service unavailable");
+        console.error("Phone validation error:", error);
+      }
+    }, 800); // Validate after 800ms of inactivity
+  };
+
+  useEffect(() => {
+    // Cleanup timeout when component unmounts
+    return () => {
+      if (phoneValidationTimeout.current) {
+        clearTimeout(phoneValidationTimeout.current);
+      }
+    };
+  }, []);
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <div className="w-full flex flex-col gap-2">
@@ -111,6 +170,7 @@ function ContactStep({ formData, onChange }) {
           required
         />
       </div>
+      
       <div className="w-full flex flex-col gap-2">
         <label className="block text-white mb-2">
           {t("coaching_request.form.email_label")}
@@ -125,28 +185,61 @@ function ContactStep({ formData, onChange }) {
           required
         />
       </div>
+      
       <div className="w-full flex flex-col gap-2">
         <label className="block text-white mb-2 font-medium">
           {t("coaching_request.form.phone_label")}
         </label>
-        <PhoneInput
-          containerClass="!w-full !h-[48px] md:!h-[52px] lg:!h-[46px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
-          buttonClass="!bg-white/5 !border-none h-full"
-          inputClass="!bg-white/5 !w-full !border-none px-2 md:px-4 !h-full text-white placeholder-white/50 text-base md:text-lg"
-          country="es"
-          enableSearch
-          searchPlaceholder={t(
-            "coaching_request.form.phone_search_placeholder"
+        <div className="relative">
+          <PhoneInput
+            containerClass="!w-full !h-[48px] md:!h-[52px] lg:!h-[46px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
+            buttonClass="!bg-white/5 !border-none h-full"
+            inputClass={`!bg-white/5 !w-full !border-none px-2 md:px-4 !h-full text-white placeholder-white/50 text-base md:text-lg ${
+              phoneError ? "!border !border-red-500" : ""
+            }`}
+            country="es"
+            enableSearch
+            searchPlaceholder={t(
+              "coaching_request.form.phone_search_placeholder"
+            )}
+            value={formData.phone}
+            onChange={handlePhoneChange}
+            dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
+            searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
+          />
+          
+          {/* Add validation indicator */}
+          {formData.phone && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
+              {validatingPhone && (
+                <svg className="animate-spin h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              )}
+              
+              {!validatingPhone && phoneValidated && (
+                <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              )}
+              
+              {!validatingPhone && !phoneValidated && formData.phone && formData.phone.replace(/\D/g, '').length >= 8 && (
+                <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              )}
+            </div>
           )}
-          value={formData.phone}
-          onChange={(phone) =>
-            onChange({ target: { name: "phone", value: phone } })
-          }
-          dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
-          searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
-        />
+        </div>
+        
+        {/* Show error message if validation fails */}
+        {phoneError && (
+          <p className="text-red-500 text-sm mt-1">{phoneError}</p>
+        )}
       </div>
-      <div className="text-white text-sm text-right sm:text-base md:text-lg">
+      
+      <div className="text-white text-sm text-right sm:text-base md:text-lg"> 
         <button
           type="button"
           onClick={openAuthModal}
@@ -361,6 +454,12 @@ export default function CoachingRequest({ onBackService }) {
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
+  
+  const [phoneValidationStatus, setPhoneValidationStatus] = useState({
+    validated: false,
+    validating: false,
+    error: null
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -391,8 +490,13 @@ export default function CoachingRequest({ onBackService }) {
   }, [tier]);
 
   const canProceed = () => {
-    if (step === 2) return formData.name && formData.email && formData.phone;
-    if (step === 3) return paymentDone; // Only proceed if payment is done
+    if (step === 2) {
+      return formData.name && 
+             formData.email && 
+             formData.phone && 
+             (phoneValidationStatus.validated || phoneValidationStatus.validating);
+    }
+    if (step === 3) return paymentDone;
     return true;
   };
 
@@ -472,7 +576,7 @@ export default function CoachingRequest({ onBackService }) {
           {step === 1 ? (
             <FrequencyStep formData={formData} onChange={handleChange} />
           ) : step === 2 ? (
-            <ContactStep formData={formData} onChange={handleChange} />
+            <ContactStep formData={formData} onChange={handleChange} phoneValidation={phoneValidationStatus} />
           ) : step === 3 ? (
             <PaymentStep
               selectedTier={formData.frequency}
