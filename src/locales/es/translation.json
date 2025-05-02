@@ -232,10 +232,9 @@
     "title": "Programa tu consulta",
     "step_datetime": "Selecciona una fecha y hora",
     "step_1": "Elige una fecha",
-    "step_2": "Selecciona una hora",
-    "step_3": "Tu información",
+    "step_2": "Contacto",
+    "step_3": "Pago",
     "step_4": "Chatea con nuestro asistente",
-    "step_5": "Paso del chatbot",
     "back": "Atrás",
     "next": "Siguiente",
     "complete_booking": "Completar reserva",
@@ -265,7 +264,8 @@
       "email_label": "Correo electrónico",
       "email_placeholder": "juan@ejemplo.com",
       "phone_label": "Número de teléfono",
-      "phone_search_placeholder": "Buscar país..."
+      "phone_search_placeholder": "Buscar país...",
+      "phone_validation_error": "El número de teléfono no es válido. Por favor, verifica que el formato sea correcto."
     },
     "payment": {
       "selected_tier": "Has seleccionado",
@@ -313,7 +313,8 @@
       "email_label": "Correo electrónico",
       "email_placeholder": "john@example.com",
       "phone_label": "Número de teléfono",
-      "phone_search_placeholder": "Buscar país..."
+      "phone_search_placeholder": "Buscar país...",
+      "phone_validation_error": "El número de teléfono no es válido. Por favor, verifica que el formato sea correcto."
     },
     "buttons": {
       "back": "Atrás",
@@ -453,7 +454,8 @@
     },
     "form": {
       "phone_number": {
-        "label": "Número de teléfono"
+        "label": "Número de teléfono",
+        "validation_error": "Este número de teléfono parece inválido. Por favor, revisa y vuelve a intentarlo."
       },
       "email": {
         "label": "Correo electrónico",
@@ -486,34 +488,6 @@
       "save_changes": "Guardar cambios",
       "saving": "Guardando..."
     }
-  },
-
-  "music": {
-    "title": "Recomendaciones musicales",
-    "description": "Una colección cuidadosamente seleccionada de música excepcional, filtrando el ruido para ofrecerte solo las mejores canciones que valen tu tiempo.",
-    "playlists": {
-      "classic_rock": {
-        "title": "Esenciales del rock clásico",
-        "description": "Una selección de éxitos atemporales del rock que definieron generaciones. De Led Zeppelin a Pink Floyd, estas pistas muestran la época dorada del rock."
-      },
-      "reggae": {
-        "title": "Raíces y cultura del reggae",
-        "description": "Sumérgete en los ritmos llenos de alma del reggae. Desde Bob Marley hasta artistas modernos, esta lista captura la esencia de la cultura musical jamaicana."
-      },
-      "jazz": {
-        "title": "Colección de estándares de jazz",
-        "description": "La mejor colección de clásicos del jazz que dieron forma al género. Con leyendas como Miles Davis, John Coltrane y Ella Fitzgerald."
-      },
-      "electronic": {
-        "title": "Evolución electrónica",
-        "description": "Un recorrido por la evolución de la música electrónica. Del ambient al techno, esta lista explora lo más vanguardista del sonido electrónico."
-      },
-      "classical": {
-        "title": "Obras maestras clásicas",
-        "description": "Composiciones atemporales de los más grandes autores clásicos. Perfectas para concentrarte o relajarte profundamente."
-      }
-    },
-    "listen_button": "Escuchar en YouTube"
   },
 
   "profile": {
@@ -835,42 +809,6 @@
           "title": "9. Contáctanos",
           "description": "Si tienes preguntas sobre estos Términos, escríbenos a terms@dagalow.com"
         }
-      }
-    }
-  },
-
-  "videos": {
-    "title": "Recursos educativos",
-    "description": "Una colección seleccionada de contenido educativo que abarca temas esenciales de la vida. Expande tu conocimiento y desarrolla nuevas habilidades a través de estas listas de reproducción de videos cuidadosamente seleccionadas.",
-    "watch_button": "Ver en YouTube",
-    "playlists": {
-      "psychology": {
-        "title": "Psicología y Salud Mental",
-        "description": "Explora el fascinante mundo de la psicología y el bienestar mental. Desde comprender el comportamiento humano hasta técnicas prácticas de salud mental, esta lista de reproducción ofrece valiosas ideas para el crecimiento personal."
-      },
-      "science": {
-        "title": "Ciencia y Tecnología",
-        "description": "Sumérgete en los últimos descubrimientos científicos y avances tecnológicos. Desde la física cuántica hasta la inteligencia artificial, mantente al día con desarrollos de vanguardia en ciencia y tecnología."
-      },
-      "math": {
-        "title": "Matemáticas y Resolución de Problemas",
-        "description": "Domina conceptos matemáticos y desarrolla habilidades de pensamiento crítico. Esta lista de reproducción cubre desde aritmética básica hasta cálculo avanzado, haciendo las matemáticas accesibles y atractivas."
-      },
-      "health": {
-        "title": "Salud y Fitness",
-        "description": "Aprende sobre nutrición, ejercicio y bienestar integral. Obtén consejos de expertos para mantener un estilo de vida saludable, rutinas de entrenamiento y entender las necesidades de tu cuerpo."
-      },
-      "finance": {
-        "title": "Finanzas Personales e Inversión",
-        "description": "Desarrolla tu alfabetización financiera y aprende estrategias de inversión inteligentes. Desde conceptos básicos de presupuesto hasta técnicas avanzadas de inversión, esta lista te ayuda a tomar decisiones financieras informadas."
-      },
-      "business": {
-        "title": "Negocios y Emprendimiento",
-        "description": "Descubre los fundamentos de los negocios y el emprendimiento. Aprende sobre estrategias de startups, marketing, liderazgo y cómo construir un negocio exitoso desde cero."
-      },
-      "philosophy": {
-        "title": "Filosofía y Pensamiento Crítico",
-        "description": "Explora conceptos filosóficos y desarrolla habilidades de pensamiento crítico. Desde la sabiduría antigua hasta la filosofía moderna, esta lista te invita a la reflexión profunda y al autoconocimiento."
       }
     }
   },

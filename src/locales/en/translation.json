@@ -240,10 +240,9 @@
     "step_datetime": "Select Date & Time",
     
     "step_1": "Choose a date",
-    "step_2": "Select a time",
-    "step_3": "Contact Info",
-    "step_4": "Chat with our assistant",
-    "step_5": "Chatbot Step",
+    "step_2": "Contact Info",
+    "step_3": "Payment",
+    "step_4": "Chat",
     "back": "Back",
     "next": "Next",
     "complete_booking": "Complete Booking",
@@ -464,7 +463,8 @@
     },
     "form": {
       "phone_number": {
-        "label": "Phone Number"
+        "label": "Phone Number",
+        "validation_error": "This phone number appears to be invalid. Please check and try again."
       },
       "email": {
         "label": "Email",

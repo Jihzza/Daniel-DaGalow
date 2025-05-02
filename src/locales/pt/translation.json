@@ -238,10 +238,9 @@
 "title": "Agende a Sua Consulta",
 "step_datetime": "Selecione a Data e o Horário",
 "step_1": "Escolha uma data",
-"step_2": "Selecione uma hora",
-"step_3": "As suas informações",
+"step_2": "Contacto",
+"step_3": "Pagamento",
 "step_4": "Converse com o nosso assistente",
-"step_5": "Paso do chatbot",
 "back": "Anterior",
 "next": "Seguinte",
 "complete_booking": "Concluir Agendamento",
@@ -271,7 +270,8 @@
   "email_label": "Endereço de Email",
   "email_placeholder": "john@example.com",
   "phone_label": "Número de Telefone",
-  "phone_search_placeholder": "Procure o país..."
+  "phone_search_placeholder": "Procure o país...",
+  "phone_validation_error": "Este número de telefone parece inválido. Por favor, revisa e tenta novamente."
 },
 "payment": {
   "selected_tier": "Selecionou",
@@ -319,7 +319,8 @@
   "email_label": "Endereço de Email",
   "email_placeholder": "john@example.com",
   "phone_label": "Número de Telefone",
-  "phone_search_placeholder": "Procure o país..."
+  "phone_search_placeholder": "Procure o país...",
+  "phone_validation_error": "Este número de telefone parece inválido. Por favor, revisa e tenta novamente."
 },
 "buttons": {
   "back": "Anterior",
@@ -459,7 +460,8 @@
 },
 "form": {
   "phone_number": {
-    "label": "Número de Telefone"
+    "label": "Número de Telefone",
+    "validation_error": "Este número de telefone parece inválido. Por favor, revisa e tenta novamente."
   },
   "email": {
     "label": "Email",

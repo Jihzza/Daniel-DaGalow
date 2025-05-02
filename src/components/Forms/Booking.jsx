@@ -73,7 +73,7 @@ function StepIndicator({
   );
 }
 
-// Combined Date, Time and Duration Selection Step with Swiper Carousels
+// Step 1: Date, Time and Duration Selection
 function DateTimeStep({
   selectedDate,
   onSelectDate,
@@ -302,7 +302,8 @@ function DateTimeStep({
                     availableDurations.length > 0 &&
                     swiper.realIndex < availableDurations.length
                   ) {
-                    const centeredDuration = availableDurations[swiper.realIndex];
+                    const centeredDuration =
+                      availableDurations[swiper.realIndex];
                     if (
                       isDurationAvailable(centeredDuration) &&
                       centeredDuration !== selectedDuration
@@ -409,28 +410,32 @@ function DateTimeStep({
           <h4 className="text-white text-base font-medium mb-3 text-center">
             Booking Summary
           </h4>
-          
+
           <div className="flex justify-between items-center border-b border-white/20 pb-2 mb-2">
             <span className="text-white/80">Date:</span>
             <span className="text-white font-medium">
-              {selectedDate ? format(selectedDate, "EEEE, MMMM d, yyyy") : "Not selected"}
+              {selectedDate
+                ? format(selectedDate, "EEEE, MMMM d, yyyy")
+                : "Not selected"}
             </span>
           </div>
-          
+
           <div className="flex justify-between items-center border-b border-white/20 pb-2 mb-2">
             <span className="text-white/80">Time:</span>
             <span className="text-white font-medium">
               {selectedTime || "Not selected"}
             </span>
           </div>
-          
+
           <div className="flex justify-between items-center border-b border-white/20 pb-2 mb-2">
             <span className="text-white/80">Duration:</span>
             <span className="text-white font-medium">
-              {selectedDuration ? formatDuration(selectedDuration) : "Not selected"}
+              {selectedDuration
+                ? formatDuration(selectedDuration)
+                : "Not selected"}
             </span>
           </div>
-          
+
           <div className="flex justify-between items-center">
             <span className="text-white/80">End Time:</span>
             <span className="text-white font-medium">
@@ -475,7 +480,7 @@ function DateTimeStep({
   );
 }
 
-// Step 3: Contact info
+// Step 2: Contact Info
 function InfoStep({ formData, onChange }) {
   const { t } = useTranslation();
 
@@ -510,6 +515,7 @@ function InfoStep({ formData, onChange }) {
   );
 }
 
+// Step 3: Payment
 function PaymentStep({
   selectedDuration,
   bookingId,
@@ -736,9 +742,9 @@ export default function Booking({ onBackService }) {
   // Booking steps - now with merged date/time step
   const STEPS = [
     { title: t("booking.step_1"), component: DateTimeStep },
-    { title: t("booking.step_3"), component: InfoStep },
-    { title: t("booking.step_4"), component: PaymentStep },
-    { title: t("booking.step_5"), component: InlineChatbotStep },
+    { title: t("booking.step_2"), component: InfoStep },
+    { title: t("booking.step_3"), component: PaymentStep },
+    { title: t("booking.step_4"), component: InlineChatbotStep },
   ];
   const Current = STEPS[step - 1].component;
   const UI_STEPS = STEPS.length + 1;
@@ -752,7 +758,10 @@ export default function Booking({ onBackService }) {
   };
 
   const handleNext = async () => {
-    if (step === 2) {
+    if (step === 1) {
+      // Simply move to step 2 when on datetime step
+      setStep(2);
+    } else if (step === 2) {
       // Build the ISO timestamp for the consultation start time
       const [hours, minutes] = selectedTime.split(":").map(Number);
       const appointment_date = new Date(
@@ -762,20 +771,23 @@ export default function Booking({ onBackService }) {
         hours,
         minutes
       ).toISOString();
-  
+
       try {
         setLoading(true);
-  
+
         // Auto-create account if user is not logged in
         if (!user && formData.name && formData.email) {
-          const accountResult = await autoCreateAccount(formData.name, formData.email);
-          
+          const accountResult = await autoCreateAccount(
+            formData.name,
+            formData.email
+          );
+
           // Optional: If you're using notifications
           if (accountResult.success && !accountResult.userExists) {
             console.log("Account created successfully");
           }
         }
-  
+
         const { data, error } = await supabase
           .from("bookings")
           .insert({
@@ -788,11 +800,11 @@ export default function Booking({ onBackService }) {
           })
           .select("id")
           .single();
-  
+
         if (error || !data) {
           throw error || new Error("Booking creation failed: No data returned");
         }
-  
+
         setBookingId(data.id);
         setStep(3); // Go to payment step
       } catch (error) {
@@ -851,7 +863,11 @@ export default function Booking({ onBackService }) {
   }, []);
 
   return (
-    <section className="py-4 sm:py-6 md:py-8 px-4 sm:px-4" id="bookingForm" ref={formRef}>
+    <section
+      className="py-4 sm:py-6 md:py-8 px-4 sm:px-4"
+      id="bookingForm"
+      ref={formRef}
+    >
       <div className="max-w-full sm:max-w-2xl md:max-w-3xl mx-auto">
         <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-4 sm:mb-6 text-black">
           {t("booking.title")}
@@ -942,8 +958,12 @@ export default function Booking({ onBackService }) {
                     </svg>
                     {t("booking.processing")}
                   </span>
+                ) : step === 1 ? (
+                  t("booking.step_2") // Contact Info
                 ) : step === 2 ? (
-                  t("booking.complete_booking")
+                  t("booking.step_3") // Keep the existing special case
+                ) : step === 3 ? (
+                  t("booking.step_4") // Chat
                 ) : (
                   t("booking.next")
                 )}

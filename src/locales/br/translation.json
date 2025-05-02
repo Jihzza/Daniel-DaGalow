@@ -232,10 +232,9 @@
       "title": "Marque sua consulta",
       "step_datetime": "Selecione a Data e o Horário",
       "step_1": "Escolha uma data",
-      "step_2": "Selecione um horário",
-      "step_3": "Suas informações",
+      "step_2": "Contacto",
+      "step_3": "Pagamento",
       "step_4": "Converse com nosso assistente",
-      "step_5": "Paso do chatbot",
       "back": "Voltar",
       "next": "Próximo",
       "complete_booking": "Concluir agendamento",
@@ -265,7 +264,8 @@
         "email_label": "Endereço de e-mail",
         "email_placeholder": "joao@exemplo.com",
         "phone_label": "Número de telefone",
-        "phone_search_placeholder": "Pesquisar país..."
+        "phone_search_placeholder": "Pesquisar país...",
+        "phone_validation_error": "Este número de telefone parece inválido. Por favor, revisa e tenta novamente."
       },
       "payment": {
         "selected_tier": "Você selecionou",
@@ -313,7 +313,8 @@
         "email_label": "E-mail",
         "email_placeholder": "john@example.com",
         "phone_label": "Número de telefone",
-        "phone_search_placeholder": "Pesquisar país..."
+        "phone_search_placeholder": "Pesquisar país...",
+        "phone_validation_error": "Este número de telefone parece inválido. Por favor, revisa e tenta novamente."
       },
       "buttons": {
         "back": "Voltar",
@@ -453,7 +454,8 @@
       },
       "form": {
         "phone_number": {
-          "label": "Número de telefone"
+          "label": "Número de telefone",
+          "validation_error": "Este número de telefone parece inválido. Por favor, revisa e tenta novamente."
         },
         "email": {
           "label": "Correio eletrónico",
@@ -486,34 +488,6 @@
         "save_changes": "Guardar alterações",
         "saving": "A guardar..."
       }
-    },
-  
-    "music": {
-      "title": "Recomendações musicais",
-      "description": "Uma coleção cuidadosamente selecionada de música excepcional, filtrando o ruído para trazer a você apenas as melhores canções que valem seu tempo.",
-      "playlists": {
-        "classic_rock": {
-          "title": "Essenciais do rock clássico",
-          "description": "Uma seleção de sucessos atemporais do rock que definiram gerações. De Led Zeppelin a Pink Floyd, estas faixas mostram a era de ouro do rock."
-        },
-        "reggae": {
-          "title": "Raízes e cultura do reggae",
-          "description": "Mergulhe nos ritmos envolventes do reggae. De Bob Marley a artistas modernos, esta playlist captura a essência da cultura musical jamaicana."
-        },
-        "jazz": {
-          "title": "Coleção de standards de jazz",
-          "description": "A melhor coleção de clássicos do jazz que moldaram o gênero. Com lendas como Miles Davis, John Coltrane e Ella Fitzgerald."
-        },
-        "electronic": {
-          "title": "Evolução eletrônica",
-          "description": "Uma jornada pela evolução da música eletrônica. Do ambient ao techno, esta playlist explora o que há de mais inovador no som eletrônico."
-        },
-        "classical": {
-          "title": "Obras-primas clássicas",
-          "description": "Composições atemporais dos maiores compositores clássicos. Perfeitas para trabalho focado ou relaxamento profundo."
-        }
-      },
-      "listen_button": "Ouvir no YouTube"
     },
   
     "profile": {
@@ -829,42 +803,6 @@
             "title": "9. Contate-nos",
             "description": "Se você tiver dúvidas sobre estes Termos, entre em contato conosco em terms@dagalow.com"
           }
-        }
-      }
-    },
-  
-    "videos": {
-      "title": "Recursos educacionais",
-      "description": "Uma coleção selecionada de conteúdo educativo que abrange temas essenciais da vida. Expanda seu conhecimento e desenvolva novas habilidades por meio dessas listas de reprodução de vídeos cuidadosamente curadas.",
-      "watch_button": "Assistir no YouTube",
-      "playlists": {
-        "psychology": {
-          "title": "Psicologia e Saúde Mental",
-          "description": "Explore o fascinante mundo da psicologia e do bem-estar mental. De entender o comportamento humano a técnicas práticas de saúde mental, esta lista de reprodução oferece insights valiosos para seu crescimento pessoal."
-        },
-        "science": {
-          "title": "Ciência e Tecnologia",
-          "description": "Mergulhe nas mais recentes descobertas científicas e avanços tecnológicos. De física quântica à inteligência artificial, mantenha-se atualizado com o que há de mais inovador em ciência e tecnologia."
-        },
-        "math": {
-          "title": "Matemática e Resolução de Problemas",
-          "description": "Domine conceitos matemáticos e desenvolva habilidades de pensamento crítico. Esta lista abrange desde aritmética básica até cálculo avançado, tornando a matemática acessível e envolvente."
-        },
-        "health": {
-          "title": "Saúde e Fitness",
-          "description": "Aprenda sobre nutrição, exercícios e bem-estar geral. Receba conselhos de especialistas sobre como manter um estilo de vida saudável, rotinas de treino e compreender as necessidades do seu corpo."
-        },
-        "finance": {
-          "title": "Finanças Pessoais e Investimento",
-          "description": "Desenvolva sua literacia financeira e aprenda estratégias inteligentes de investimento. De noções básicas de orçamento a técnicas avançadas de investimento, esta lista ajuda-lo a tomar decisões financeiras informadas."
-        },
-        "business": {
-          "title": "Negócios e Empreendedorismo",
-          "description": "Descubra os fundamentos de negócios e empreendedorismo. Aprenda sobre estratégias de startups, marketing, liderança e como construir um negócio de sucesso do zero."
-        },
-        "philosophy": {
-          "title": "Filosofia e Pensamento Crítico",
-          "description": "Explore conceitos filosóficos e desenvolva habilidades de pensamento crítico. Da sabedoria antiga à filosofia contemporânea, esta lista incentiva reflexões profundas e autoconhecimento."
         }
       }
     },
