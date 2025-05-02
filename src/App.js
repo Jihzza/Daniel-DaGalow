@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -80,6 +80,18 @@ const PublicOnlyRoute = ({ children }) => {
 function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatSessionId, setChatSessionId] = useState(null);
+  
+  // Add this new effect
+  useEffect(() => {
+    // Reset scroll position when the app loads
+    window.scrollTo(0, 0);
+    
+    // Clear any hash fragments from the URL
+    if (window.location.hash) {
+      const cleanUrl = window.location.pathname + window.location.search;
+      window.history.replaceState(null, '', cleanUrl);
+    }
+  }, []);
 
   const openChat = (sessionId = null) => {
     setChatSessionId(sessionId);
