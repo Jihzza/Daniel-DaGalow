@@ -4,7 +4,20 @@ import { format, addDays, addMonths, startOfMonth, endOfMonth, eachDayOfInterval
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
+import { useLocation } from "react-router-dom";
 
+
+function MainPage() {
+  const location = useLocation();
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  
+  useEffect(() => {
+    // Check if we navigated here with the openBooking state
+    if (location.state?.openBooking) {
+      setShowBookingForm(true);
+    }
+  }, [location]);
+}
 export default function CalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [events, setEvents] = useState([]);
@@ -98,6 +111,8 @@ export default function CalendarPage() {
       </div>
     );
   }
+
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-oxfordBlue to-gentleGray py-6 md:py-12 px-4 md:px-8 lg:px-12">
@@ -225,10 +240,11 @@ export default function CalendarPage() {
                       <div className="text-center py-8 text-gray-600 border-2 border-dashed border-gray-300 rounded-lg">
                         <p>{t('calendar.no_appointments')}</p>
                         <button 
-                          className="mt-4 bg-oxfordBlue text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors"
-                        >
-                          {t('calendar.book_appointment')}
-                        </button>
+  onClick={() => navigate('/', { state: { openBooking: true }})}
+  className="bg-darkGold text-black py-2 px-6 rounded-lg hover:bg-opacity-90 transition-colors font-medium shadow-md"
+>
+  {t('calendar.book_appointment')}
+</button>
                       </div>
                     )}
                   </div>
