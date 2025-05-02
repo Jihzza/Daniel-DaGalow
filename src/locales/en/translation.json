@@ -256,10 +256,10 @@
   "coaching_request": {
     "title": "Direct Coaching",
     "steps": {
-      "frequency": "Choose coaching frequency",
-      "contact": "Contact",
-      "payment": "Complete your payment",
-      "chat": "Chat with your coach"
+      "frequency": "Choose plan",
+      "contact": "Contact info",
+      "payment": "Payment",
+      "chat": "Chat"
     },
     "frequency_options": {
       "weekly": "Basic",
@@ -291,9 +291,9 @@
   "analysis_request": {
     "title": "Get My Analysis",
     "steps": {
-      "type": "Select analysis type",
-      "contact": "Your contact information",
-      "chat": "Chat with our analyst"
+      "type": "Analysis type",
+      "contact": "Contact info",
+      "chat": "Chat"
     },
     "form": {
       "name_label": "Your Name",
@@ -311,9 +311,9 @@
   "pitch_deck_request": {
     "title": "Request a Pitch Deck",
     "steps": {
-      "project": "Select your project",
-      "contact": "Your contact information",
-      "chat": "Chat with our assistant"
+      "project": "Select the project",
+      "contact": "Contact info",
+      "chat": "Chat"
     },
     "form": {
       "name_label": "Your Name",

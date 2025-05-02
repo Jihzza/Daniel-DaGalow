@@ -572,48 +572,91 @@ function PaymentStep({
     return () => clearInterval(interval);
   }, [paymentStarted, bookingId, onPaymentConfirmed]);
 
+  // Calculate price based on duration
+  const sessionPrice = isTestBooking ? 0 : (selectedDuration * 1.5).toFixed(2);
+
   return (
-    <div className="text-white text-center space-y-4 max-w-lg mx-auto">
-      {/* Show test toggle only in development */}
-      {process.env.NODE_ENV === "development" && (
-        <div className="mb-4 flex items-center justify-center">
-          <label className="flex items-center space-x-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isTestBooking}
-              onChange={() => setIsTestBooking(!isTestBooking)}
-              className="form-checkbox h-5 w-5 text-darkGold"
-            />
-            <span>Test Booking (0€)</span>
-          </label>
+    <div className="max-w-md mx-auto">
+      
+
+      <div className="flex flex-col gap-5">
+        {/* Booking Details Summary */}
+        <div className="rounded-lg border border-white/10 overflow-hidden">
+          <div className="bg-white/5 p-3 border-b border-white/10">
+            <h3 className="text-white font-medium">Booking Details</h3>
+          </div>
+          <div className="p-4 space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-white/60">Duration:</span>
+              <span className="text-white">{selectedDuration} minutes</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-white/60">Price:</span>
+              <span className="text-white font-medium">€{sessionPrice}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-white/60">Email:</span>
+              <span className="text-white">{formData.email}</span>
+            </div>
+          </div>
         </div>
-      )}
 
-      <p className="text-lg sm:text-xl">
-        Please click the button below to pay. Once Stripe confirms your payment,
-        the "Next" button will be unlocked.
-      </p>
+        {/* Payment Status */}
+        <div className={`p-4 rounded-lg border ${
+          paymentConfirmed 
+            ? 'border-green-500/30 bg-green-500/10' 
+            : paymentStarted 
+              ? 'border-yellow-500/30 bg-yellow-500/10' 
+              : 'border-white/10 bg-white/5'
+        }`}>
+          <div className="flex items-center">
+            {paymentConfirmed ? (
+              // Confirmed state
+              <div className="flex items-center text-green-400">
+                <div className="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
+                <span>Payment confirmed</span>
+              </div>
+            ) : paymentStarted ? (
+              // Pending state
+              <div className="flex items-center text-yellow-400">
+                <div className="w-2 h-2 rounded-full bg-yellow-400 mr-2 animate-pulse"></div>
+                <span>Awaiting payment</span>
+              </div>
+            ) : (
+              // Initial state
+              <div className="flex items-center text-white/60">
+                <div className="w-2 h-2 rounded-full bg-white/60 mr-2"></div>
+                <span>Ready for payment</span>
+              </div>
+            )}
+          </div>
+        </div>
 
-      <button
-        onClick={handleStripeRedirect}
-        className="px-4 py-2 bg-darkGold text-black rounded-xl shadow-md hover:bg-yellow-400 transition"
-      >
-        {isTestBooking
-          ? "Proceed with Test Checkout (0€)"
-          : "Open Payment Checkout"}
-      </button>
+        {/* Payment Action */}
+        {!paymentConfirmed && (
+          <button
+            onClick={handleStripeRedirect}
+            className="mt-2 py-3 px-4 bg-gradient-to-r from-darkGold to-yellow-500 text-black font-medium rounded-lg transition-transform hover:scale-[1.02] active:scale-[0.98]"
+          >
+            {isTestBooking 
+              ? "Process Test Payment (€0.00)" 
+              : `Complete Payment (€${sessionPrice})`}
+          </button>
+        )}
 
-      {paymentStarted && !paymentConfirmed && (
-        <p className="text-white/80 text-sm pt-2">
-          Waiting for Stripe confirmation...
-        </p>
-      )}
+        {/* Help Text */}
+        {paymentStarted && !paymentConfirmed && (
+          <p className="text-center text-white/70 text-sm mt-2">
+            The payment window has opened in a new tab. We're waiting for Stripe to confirm your payment.
+          </p>
+        )}
 
-      {paymentConfirmed && (
-        <p className="text-green-500 font-semibold pt-2">
-          Payment confirmed ✅ — you can now proceed.
-        </p>
-      )}
+        {paymentConfirmed && (
+          <p className="text-center text-green-400 text-sm mt-2">
+            Your payment has been successfully processed. You can now proceed to the next step.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

@@ -97,43 +97,44 @@ function FrequencyStep({ formData, onChange }) {
 function ContactStep({ formData, onChange }) {
   const { t } = useTranslation();
   const { openAuthModal } = useContext(AuthModalContext);
-  
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
+
   // Add phone validation handling
   const [validatingPhone, setValidatingPhone] = useState(false);
   const [phoneValidated, setPhoneValidated] = useState(false);
   const [phoneError, setPhoneError] = useState("");
-  
+
   // Handle phone validation on change with debounce
   const phoneValidationTimeout = useRef(null);
-  
+
   const handlePhoneChange = (phone) => {
     // Pass the phone number to the parent component
     onChange({ target: { name: "phone", value: phone } });
-    
+
     // Reset validation states
     setPhoneValidated(false);
     setPhoneError("");
-    
+
     // Clear existing timeout
     if (phoneValidationTimeout.current) {
       clearTimeout(phoneValidationTimeout.current);
     }
-    
+
     // Only validate if phone has at least 8 digits
-    if (phone.replace(/\D/g, '').length < 8) {
+    if (phone.replace(/\D/g, "").length < 8) {
       return;
     }
-    
+
     // Set a timeout to validate the phone number after typing stops
     phoneValidationTimeout.current = setTimeout(async () => {
       setValidatingPhone(true);
-      
+
       try {
         const result = await validatePhoneNumber(phone);
-        
+
         setValidatingPhone(false);
         setPhoneValidated(result.isValid);
-        
+
         if (!result.isValid) {
           setPhoneError(t("coaching_request.form.phone_validation_error"));
         }
@@ -153,7 +154,7 @@ function ContactStep({ formData, onChange }) {
       }
     };
   }, []);
-  
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <div className="w-full flex flex-col gap-2">
@@ -170,7 +171,7 @@ function ContactStep({ formData, onChange }) {
           required
         />
       </div>
-      
+
       <div className="w-full flex flex-col gap-2">
         <label className="block text-white mb-2">
           {t("coaching_request.form.email_label")}
@@ -185,7 +186,7 @@ function ContactStep({ formData, onChange }) {
           required
         />
       </div>
-      
+
       <div className="w-full flex flex-col gap-2">
         <label className="block text-white mb-2 font-medium">
           {t("coaching_request.form.phone_label")}
@@ -207,39 +208,78 @@ function ContactStep({ formData, onChange }) {
             dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
             searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
           />
-          
+
           {/* Add validation indicator */}
           {formData.phone && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
               {validatingPhone && (
-                <svg className="animate-spin h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin h-5 w-5 text-gray-300"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
               )}
-              
+
               {!validatingPhone && phoneValidated && (
-                <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                <svg
+                  className="h-5 w-5 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
                 </svg>
               )}
-              
-              {!validatingPhone && !phoneValidated && formData.phone && formData.phone.replace(/\D/g, '').length >= 8 && (
-                <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              )}
+
+              {!validatingPhone &&
+                !phoneValidated &&
+                formData.phone &&
+                formData.phone.replace(/\D/g, "").length >= 8 && (
+                  <svg
+                    className="h-5 w-5 text-red-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    ></path>
+                  </svg>
+                )}
             </div>
           )}
         </div>
-        
+
         {/* Show error message if validation fails */}
         {phoneError && (
           <p className="text-red-500 text-sm mt-1">{phoneError}</p>
         )}
       </div>
-      
-      <div className="text-white text-sm text-right sm:text-base md:text-lg"> 
+
+      <div className="text-white text-sm text-right sm:text-base md:text-lg">
         <button
           type="button"
           onClick={openAuthModal}
@@ -345,98 +385,97 @@ function PaymentStep({selectedTier, requestId, onPaymentConfirmed, formData}) {
   }, [paymentStarted, requestId, onPaymentConfirmed]);
 
   return (
-    <div className="w-full px-4 mx-auto sm:max-w-md">
-      {/* Subscription Card - Mobile First Design */}
-      <div className="bg-oxfordBlue/40 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg sm:shadow-xl border border-white/10 mb-4 sm:mb-6">
-        <h4 className="text-white text-base sm:text-lg font-medium mb-3 sm:mb-4 text-center">
-          Subscription Summary
-        </h4>
+    <div className="max-w-md mx-auto">
+      {/* Clean, elegant subscription card */}
+      <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden mb-6">
+        <div className="bg-darkGold/10 p-4 border-b border-white/10">
+          <h3 className="text-white font-semibold text-center">Subscription Details</h3>
+        </div>
         
-        <div className="space-y-3 sm:space-y-4">
-          {/* Plan name */}
-          <div className="flex justify-between items-center border-b border-white/10 pb-2 sm:pb-3">
-            <span className="text-white/80 text-sm sm:text-base">Plan:</span>
-            <span className="text-white font-medium text-sm sm:text-base">
-              {getPlanNameForTier(selectedTier)}
-            </span>
-          </div>
-          
-          {/* Coaching type */}
-          <div className="flex justify-between items-center border-b border-white/10 pb-2 sm:pb-3">
-            <span className="text-white/80 text-sm sm:text-base">Coaching Level:</span>
-            <span className="text-white font-medium text-sm sm:text-base">
-              {selectedTier}
-            </span>
-          </div>
-          
-          {/* Monthly price - Highlighted with slightly larger text */}
-          <div className="flex justify-between items-center border-b border-white/10 pb-2 sm:pb-3">
-            <span className="text-white/80 text-sm sm:text-base">Monthly Price:</span>
-            <span className="text-white font-semibold text-base sm:text-lg">
-              {getPriceForTier(selectedTier)}/month
-            </span>
-          </div>
-          
-          {/* Billing cycle */}
+        <div className="p-5 space-y-4">
+          {/* Plan type with badge */}
           <div className="flex justify-between items-center">
-            <span className="text-white/80 text-sm sm:text-base">Billing:</span>
-            <span className="text-white font-medium text-sm sm:text-base">
-              Monthly, auto-renews
-            </span>
+            <span className="text-white/70">Selected Plan:</span>
+            <div className="flex items-center gap-2">
+              <span className="text-white font-medium">{getPlanNameForTier(selectedTier)}</span>
+              <span className="bg-darkGold/20 text-white text-xs px-2 py-0.5 rounded">{selectedTier}</span>
+            </div>
           </div>
+          
+          {/* Price with emphasized styling */}
+          <div className="flex justify-between items-center">
+            <span className="text-white/70">Price:</span>
+            <div className="text-darkGold font-bold text-lg">{getPriceForTier(selectedTier)}<span className="text-white/50 text-sm font-normal">/month</span></div>
+          </div>
+          
+          {/* Billing details */}
+          <div className="flex justify-between items-center">
+            <span className="text-white/70">Billing:</span>
+            <span className="text-white">Monthly</span>
+          </div>
+          
+          {/* Auto-renewal info */}
+          <div className="flex justify-between items-center">
+            <span className="text-white/70">Renewal:</span>
+            <span className="text-white">Automatic</span>
+          </div>
+          
+          {/* Divider */}
+          <div className="border-t border-white/10 my-2"></div>
+          
+          {/* Email for receipt/billing */}
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-white/70">Email for billing:</span>
+            <span className="text-white break-all">{formData.email}</span>
+          </div>
+        </div>
+        
+        {/* Cancellation notice */}
+        <div className="bg-white/5 p-3 text-xs text-white/60 text-center border-t border-white/10">
+          You can cancel your subscription at any time from your account settings
         </div>
       </div>
       
-      {/* Subscription notice - Smaller on mobile */}
-      <div className="text-white/70 text-xs sm:text-sm text-center mb-4 sm:mb-6 italic px-2">
-        You can cancel your subscription at any time from your account settings.
-      </div>
-      
-      {/* Subscribe button area */}
-      <div className="text-center">
+      {/* Payment action and status */}
+      <div className="space-y-4">
         {!paymentStarted ? (
           <button
             onClick={handleStripeRedirect}
-            className="w-full py-2.5 sm:py-3 bg-darkGold text-black rounded-lg sm:rounded-xl shadow-md hover:bg-yellow-400 transition font-medium text-sm sm:text-base"
+            className="w-full py-3 bg-gradient-to-r from-darkGold to-amber-400 text-black font-medium rounded-lg hover:from-amber-400 hover:to-amber-300 transition-all shadow-lg"
           >
-            Subscribe Now
+            Start Subscription
           </button>
         ) : paymentConfirmed ? (
-          <div className="bg-green-500/20 border border-green-500/50 rounded-lg sm:rounded-xl p-3 sm:p-4">
-            <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500 sm:w-5 sm:h-5">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-              <span className="text-green-500 font-medium text-sm sm:text-base">
-                Subscription activated
-              </span>
-            </div>
+          <div className="flex items-center justify-center gap-2 bg-green-500/20 border border-green-400/30 rounded-lg p-3 text-green-400">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Subscription activated successfully</span>
           </div>
         ) : (
-          <div className="bg-white/5 border border-white/20 rounded-lg sm:rounded-xl p-3 sm:p-4">
-            <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-              <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              <span className="text-white/80 text-sm sm:text-base">
-                Waiting for confirmation...
-              </span>
-            </div>
+          <div className="flex items-center justify-center gap-2 bg-white/5 border border-white/20 rounded-lg p-3 text-white/80">
+            <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+            <span>Confirming your subscription...</span>
           </div>
         )}
         
+        {/* Error message */}
         {pollingError && (
-          <p className="text-red-400 text-xs sm:text-sm mt-3 sm:mt-4 px-2">
-            {pollingError}. Please try refreshing the page.
+          <div className="p-3 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-sm text-center">
+            {pollingError}. Please refresh the page or contact support.
+          </div>
+        )}
+        
+        {/* Additional info text */}
+        {paymentStarted && !paymentConfirmed && !pollingError && (
+          <p className="text-white/60 text-sm text-center">
+            A payment window has opened in a new tab. Please complete the payment there and return to this page.
           </p>
         )}
       </div>
     </div>
   );
 }
-
 // Main Coaching Request Component
 export default function CoachingRequest({ onBackService }) {
   const { t } = useTranslation();
@@ -449,22 +488,33 @@ export default function CoachingRequest({ onBackService }) {
     email: user?.email || "",
     phone: "",
   });
-  const formRef = useScrollToTopOnChange([step]);
 
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
+  const formRef = useScrollToTopOnChange([step]);
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
-  
+
   const [phoneValidationStatus, setPhoneValidationStatus] = useState({
     validated: false,
     validating: false,
-    error: null
+    error: null,
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // If phone field is changed manually, reset validation
+    if (name === "phone") {
+      setIsPhoneValid(false);
+    }
+    
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (name === "frequency" && value) setStep(2);
+  };
+
+  const handlePhoneValidation = (isValid) => {
+    setIsPhoneValid(isValid);
   };
 
   // Update steps to include the payment step
@@ -491,34 +541,45 @@ export default function CoachingRequest({ onBackService }) {
 
   const canProceed = () => {
     if (step === 2) {
-      return formData.name && 
-             formData.email && 
-             formData.phone && 
-             (phoneValidationStatus.validated || phoneValidationStatus.validating);
+      // Check that name has at least 2 characters
+      const isNameValid = formData.name && formData.name.trim().length >= 2;
+      
+      // Check for valid email format
+      const isEmailValid = formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
+      
+      // Check that phone number has at least 6 digits (most international formats)
+      const isPhoneValid = formData.phone && formData.phone.replace(/\D/g, '').length >= 6;
+      
+      return isNameValid && isEmailValid && isPhoneValid;
     }
+    
     if (step === 3) return paymentDone;
+    
     return true;
   };
 
   const handleNext = async () => {
     if (step === 2) {
       setIsSubmitting(true);
-  
+
       try {
         // Auto-create account if user is not logged in
         if (!user && formData.name && formData.email) {
-          const accountResult = await autoCreateAccount(formData.name, formData.email);
-          
+          const accountResult = await autoCreateAccount(
+            formData.name,
+            formData.email
+          );
+
           // Optional: If you're using notifications
           if (accountResult.success && !accountResult.userExists) {
             console.log("Account created successfully");
           }
         }
-  
+
         // Calculate membership dates
         const membershipStartDate = new Date();
         const membershipEndDate = addMonths(membershipStartDate, 1);
-  
+
         const payload = {
           name: formData.name,
           email: formData.email,
@@ -529,13 +590,13 @@ export default function CoachingRequest({ onBackService }) {
           payment_status: "pending",
         };
         if (user?.id) payload.user_id = user.id;
-  
+
         const { data, error } = await supabase
           .from("coaching_requests")
           .insert(payload)
           .select("id")
           .single();
-  
+
         if (error) {
           console.error(error);
           alert("Failed to create coaching request.");
@@ -576,7 +637,11 @@ export default function CoachingRequest({ onBackService }) {
           {step === 1 ? (
             <FrequencyStep formData={formData} onChange={handleChange} />
           ) : step === 2 ? (
-            <ContactStep formData={formData} onChange={handleChange} phoneValidation={phoneValidationStatus} />
+            <ContactStep 
+          formData={formData} 
+          onChange={handleChange}
+          onPhoneValidation={handlePhoneValidation} 
+        />
           ) : step === 3 ? (
             <PaymentStep
               selectedTier={formData.frequency}
@@ -590,6 +655,13 @@ export default function CoachingRequest({ onBackService }) {
               tableName="coaching_chat_messages"
             />
           )}
+          
+          <StepIndicator
+            stepCount={UI_STEPS}
+            currentStep={step + 1}
+            onStepClick={handleStepClick}
+            className="pt-6"
+          />
 
           <div className="flex justify-between mt-6">
             <button
@@ -629,6 +701,12 @@ export default function CoachingRequest({ onBackService }) {
                     </svg>
                     {t("coaching_request.buttons.processing")}
                   </span>
+                ) : step === 1 ? (
+                  t("coaching_request.steps.contact") // Contact info
+                ) : step === 2 ? (
+                  t("coaching_request.steps.payment") // Payment
+                ) : step === 3 ? (
+                  t("coaching_request.steps.chat") // Chat with your coach
                 ) : (
                   t("coaching_request.buttons.next")
                 )}
@@ -644,12 +722,7 @@ export default function CoachingRequest({ onBackService }) {
             )}
           </div>
 
-          <StepIndicator
-            stepCount={UI_STEPS}
-            currentStep={step + 1}
-            onStepClick={handleStepClick}
-            className="pt-6"
-          />
+          
         </div>
       </div>
     </section>
