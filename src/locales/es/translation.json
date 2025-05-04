@@ -554,32 +554,6 @@
           "delete_account": "Eliminar cuenta"
         }
       },
-      "notifications": {
-        "title": "Preferencias de notificación",
-        "description": "Controla cómo y cuándo recibes notificaciones",
-        "email": {
-          "title": "Notificaciones por correo",
-          "appointments": {
-            "label": "Recordatorios de citas",
-            "description": "Recibe correos sobre tus próximas citas"
-          },
-          "coaching": {
-            "label": "Actualizaciones de coaching",
-            "description": "Recibe correos sobre tus sesiones de coaching"
-          },
-          "marketing": {
-            "label": "Comunicaciones de marketing",
-            "description": "Recibe correos promocionales y ofertas especiales"
-          }
-        },
-        "other": {
-          "title": "Otras notificaciones",
-          "push": {
-            "label": "Notificaciones push",
-            "description": "Recibe notificaciones push en tu navegador"
-          }
-        }
-      },
       "privacy": {
         "title": "Configuración de privacidad",
         "description": "Administra tus datos y preferencias de privacidad",
@@ -617,83 +591,7 @@
             "clear": "Borrar historial de chat"
           }
         }
-      },
-      "appearance": {
-        "title": "Configuración de apariencia",
-        "description": "Personaliza el aspecto de tu experiencia",
-        "language": {
-          "label": "Idioma de la interfaz",
-          "description": "Selecciona tu idioma preferido para la aplicación",
-          "options": {
-            "english": "Inglés",
-            "portuguese": "Portugués",
-            "spanish": "Español",
-            "french": "Francés",
-            "german": "Alemán"
-          }
-        },
-        "text_size": {
-          "label": "Tamaño de texto",
-          "description": "Ajusta el tamaño del texto en la aplicación",
-          "options": {
-            "small": "Pequeño",
-            "medium": "Medio",
-            "large": "Grande",
-            "xlarge": "Extra grande"
-          }
-        },
-        "contrast": {
-          "label": "Modo de alto contraste",
-          "description": "Aumenta el contraste para mejorar la legibilidad"
-        },
-        "preview": {
-          "title": "Vista previa",
-          "text": "Esta es una vista previa de cómo aparecerá el texto con la configuración seleccionada."
-        }
-      },
-      "sessions": {
-        "title": "Preferencias de sesión",
-        "description": "Administra tus preferencias de sesiones de consulta y coaching",
-        "preferences": {
-          "title": "Preferencias de sesión",
-          "duration": {
-            "label": "Duración predeterminada de la sesión",
-            "description": "Elige tu duración preferida para nuevas reservas",
-            "options": {
-              "45": "45 minutos",
-              "60": "60 minutos",
-              "75": "75 minutos",
-              "90": "90 minutos"
-            }
-          },
-          "record": {
-            "label": "Grabar sesiones",
-            "description": "Grabar automáticamente todas las sesiones de consulta"
-          },
-          "auto_join": {
-            "label": "Unirse automáticamente",
-            "description": "Unirse automáticamente a las sesiones cuando comiencen"
-          }
-        },
-        "payment": {
-          "title": "Pagos y suscripciones",
-          "methods": {
-            "label": "Métodos de pago",
-            "description": "Agregar, eliminar o actualizar tus métodos de pago",
-            "manage": "Administrar"
-          },
-          "billing": {
-            "label": "Historial de facturación",
-            "description": "Ver tus facturas y detalles de pago",
-            "view": "Ver"
-          },
-          "subscriptions": {
-            "label": "Suscripciones activas",
-            "description": "Revisar y gestionar tus suscripciones actuales",
-            "manage": "Administrar"
-          }
-        }
-      },
+      }, 
       "others": {
         "title": "Otros",
         "description": "Ver documentos legales e información adicional",

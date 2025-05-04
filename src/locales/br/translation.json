@@ -554,32 +554,6 @@
             "delete_account": "Excluir conta"
           }
         },
-        "notifications": {
-          "title": "Preferências de notificação",
-          "description": "Controle como e quando você recebe notificações",
-          "email": {
-            "title": "Notificações por e-mail",
-            "appointments": {
-              "label": "Lembretes de compromisso",
-              "description": "Receba e-mails sobre seus próximos compromissos"
-            },
-            "coaching": {
-              "label": "Atualizações de coaching",
-              "description": "Receba e-mails sobre suas sessões de coaching"
-            },
-            "marketing": {
-              "label": "Comunicações de marketing",
-              "description": "Receba e-mails promocionais e ofertas especiais"
-            }
-          },
-          "other": {
-            "title": "Outras notificações",
-            "push": {
-              "label": "Notificações push",
-              "description": "Receba notificações push no navegador"
-            }
-          }
-        },
         "privacy": {
           "title": "Configurações de privacidade",
           "description": "Gerencie seus dados e preferências de privacidade",
@@ -615,82 +589,6 @@
             "actions": {
               "download": "Baixar meus dados",
               "clear": "Limpar histórico de chat"
-            }
-          }
-        },
-        "appearance": {
-          "title": "Configurações de aparência",
-          "description": "Personalize o visual da sua experiência",
-          "language": {
-            "label": "Idioma da interface",
-            "description": "Selecione seu idioma preferido para o aplicativo",
-            "options": {
-              "english": "Inglês",
-              "portuguese": "Português",
-              "spanish": "Espanhol",
-              "french": "Francês",
-              "german": "Alemão"
-            }
-          },
-          "text_size": {
-            "label": "Tamanho do texto",
-            "description": "Ajuste o tamanho do texto no aplicativo",
-            "options": {
-              "small": "Pequeno",
-              "medium": "Médio",
-              "large": "Grande",
-              "xlarge": "Extra grande"
-            }
-          },
-          "contrast": {
-            "label": "Modo de alto contraste",
-            "description": "Aumente o contraste para melhor leitura"
-          },
-          "preview": {
-            "title": "Pré-visualização",
-            "text": "Esta é uma pré-visualização de como o texto aparecerá com suas configurações selecionadas."
-          }
-        },
-        "sessions": {
-          "title": "Preferências de sessão",
-          "description": "Gerencie suas preferências de sessões de consulta e coaching",
-          "preferences": {
-            "title": "Preferências de sessão",
-            "duration": {
-              "label": "Duração padrão da sessão",
-              "description": "Escolha sua duração preferida para novas reservas",
-              "options": {
-                "45": "45 minutos",
-                "60": "60 minutos",
-                "75": "75 minutos",
-                "90": "90 minutos"
-              }
-            },
-            "record": {
-              "label": "Gravar sessões",
-              "description": "Grave automaticamente todas as sessões de consulta"
-            },
-            "auto_join": {
-              "label": "Entrar automaticamente",
-              "description": "Entrar automaticamente nas sessões quando começarem"
-            }
-          },
-          "payment": {
-            "title": "Pagamento e assinaturas",
-            "methods": {
-              "label": "Métodos de pagamento",
-              "description": "Adicionar, remover ou atualizar seus métodos de pagamento",
-              "manage": "Gerenciar"
-            },
-            "billing": {
-              "label": "Histórico de faturamento",
-              "description": "Veja suas faturas e detalhes de pagamento",
-              "view": "Visualizar"
-            },
-            "subscriptions": {
-              "label": "Assinaturas ativas",
-              "description": "Revisar e gerenciar suas assinaturas atuais",
-              "manage": "Gerenciar"
             }
           }
         },

@@ -560,32 +560,6 @@
       "delete_account": "Eliminar Conta"
     }
   },
-  "notifications": {
-    "title": "Preferências de Notificações",
-    "description": "Defina como e quando recebe notificações",
-    "email": {
-      "title": "Notificações por Email",
-      "appointments": {
-        "label": "Lembretes de Consulta",
-        "description": "Receba emails sobre as suas próximas marcações"
-      },
-      "coaching": {
-        "label": "Atualizações de Coaching",
-        "description": "Receba emails sobre as suas sessões de coaching"
-      },
-      "marketing": {
-        "label": "Comunicações de Marketing",
-        "description": "Receba emails promocionais e ofertas especiais"
-      }
-    },
-    "other": {
-      "title": "Outras Notificações",
-      "push": {
-        "label": "Notificações Push",
-        "description": "Receba notificações no seu navegador"
-      }
-    }
-  },
   "privacy": {
     "title": "Definições de Privacidade",
     "description": "Gerencie os seus dados e preferências de privacidade",
@@ -621,82 +595,6 @@
       "actions": {
         "download": "Descarregar os Meus Dados",
         "clear": "Limpar Histórico de Chat"
-      }
-    }
-  },
-  "appearance": {
-    "title": "Definições de Aparência",
-    "description": "Personalize o aspeto da aplicação",
-    "language": {
-      "label": "Idioma da Interface",
-      "description": "Selecione o idioma de exibição da aplicação",
-      "options": {
-        "english": "Inglês",
-        "portuguese": "Português",
-        "spanish": "Espanhol",
-        "french": "Francês",
-        "german": "Alemão"
-      }
-    },
-    "text_size": {
-      "label": "Tamanho do Texto",
-      "description": "Ajuste o tamanho do texto",
-      "options": {
-        "small": "Pequeno",
-        "medium": "Médio",
-        "large": "Grande",
-        "xlarge": "Extra Grande"
-      }
-    },
-    "contrast": {
-      "label": "Modo de Alto Contraste",
-      "description": "Aumente o contraste para melhor legibilidade"
-    },
-    "preview": {
-      "title": "Pré-visualização",
-      "text": "Esta é uma pré-visualização de como o texto aparecerá com as suas definições."
-    }
-  },
-  "sessions": {
-    "title": "Preferências de Sessão",
-    "description": "Defina preferências para consultas e coaching",
-    "preferences": {
-      "title": "Preferências de Sessão",
-      "duration": {
-        "label": "Duração Padrão da Sessão",
-        "description": "Escolha a duração preferida para novas marcações",
-        "options": {
-          "45": "45 minutos",
-          "60": "60 minutos",
-          "75": "75 minutos",
-          "90": "90 minutos"
-        }
-      },
-      "record": {
-        "label": "Gravar Sessões",
-        "description": "Gravar automaticamente todas as sessões de consulta"
-      },
-      "auto_join": {
-        "label": "Entrada Automática",
-        "description": "Entrar automaticamente nas sessões quando começarem"
-      }
-    },
-    "payment": {
-      "title": "Pagamento & Assinaturas",
-      "methods": {
-        "label": "Métodos de Pagamento",
-        "description": "Adicione, remova ou atualize métodos de pagamento",
-        "manage": "Gerir"
-      },
-      "billing": {
-        "label": "Histórico de Faturação",
-        "description": "Veja as suas faturas e detalhes de pagamento",
-        "view": "Ver"
-      },
-      "subscriptions": {
-        "label": "Assinaturas Ativas",
-        "description": "Revise e gerencie as suas assinaturas atuais",
-        "manage": "Gerir"
       }
     }
   },

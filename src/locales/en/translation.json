@@ -563,32 +563,6 @@
           "delete_account": "Delete Account"
         }
       },
-      "notifications": {
-        "title": "Notification Preferences",
-        "description": "Control how and when you receive notifications",
-        "email": {
-          "title": "Email Notifications",
-          "appointments": {
-            "label": "Appointment Reminders",
-            "description": "Receive emails about your upcoming appointments"
-          },
-          "coaching": {
-            "label": "Coaching Updates",
-            "description": "Receive emails about your coaching sessions"
-          },
-          "marketing": {
-            "label": "Marketing Communications",
-            "description": "Receive promotional emails and special offers"
-          }
-        },
-        "other": {
-          "title": "Other Notifications",
-          "push": {
-            "label": "Push Notifications",
-            "description": "Receive push notifications in your browser"
-          }
-        }
-      },
       "privacy": {
         "title": "Privacy Settings",
         "description": "Manage your data and privacy preferences",
@@ -624,82 +598,6 @@
           "actions": {
             "download": "Download My Data",
             "clear": "Clear Chat History"
-          }
-        }
-      },
-      "appearance": {
-        "title": "Appearance Settings",
-        "description": "Customize the look and feel of your experience",
-        "language": {
-          "label": "Interface Language",
-          "description": "Select your preferred language for the application",
-          "options": {
-            "english": "English",
-            "portuguese": "Portuguese",
-            "spanish": "Spanish",
-            "french": "French",
-            "german": "German"
-          }
-        },
-        "text_size": {
-          "label": "Text Size",
-          "description": "Adjust the size of text throughout the application",
-          "options": {
-            "small": "Small",
-            "medium": "Medium",
-            "large": "Large",
-            "xlarge": "Extra Large"
-          }
-        },
-        "contrast": {
-          "label": "High Contrast Mode",
-          "description": "Increase contrast for better readability"
-        },
-        "preview": {
-          "title": "Preview",
-          "text": "This is a preview of how text will appear with your selected settings."
-        }
-      },
-      "sessions": {
-        "title": "Session Preferences",
-        "description": "Manage your consultation and coaching session preferences",
-        "preferences": {
-          "title": "Session Preferences",
-          "duration": {
-            "label": "Default Session Duration",
-            "description": "Choose your preferred session length for new bookings",
-            "options": {
-              "45": "45 minutes",
-              "60": "60 minutes",
-              "75": "75 minutes",
-              "90": "90 minutes"
-            }
-          },
-          "record": {
-            "label": "Record Sessions",
-            "description": "Automatically record all consultation sessions"
-          },
-          "auto_join": {
-            "label": "Auto-Join Sessions",
-            "description": "Automatically join consultation sessions when they begin"
-          }
-        },
-        "payment": {
-          "title": "Payment & Subscriptions",
-          "methods": {
-            "label": "Payment Methods",
-            "description": "Add, remove, or update your payment methods",
-            "manage": "Manage"
-          },
-          "billing": {
-            "label": "Billing History",
-            "description": "See your past invoices and payment details",
-            "view": "View"
-          },
-          "subscriptions": {
-            "label": "Active Subscriptions",
-            "description": "Review and manage your current subscriptions",
-            "manage": "Manage"
           }
         }
       },
