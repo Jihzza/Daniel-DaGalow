@@ -1,15 +1,20 @@
-// src/components/Header.jsx (modified)
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { useTranslation } from "react-i18next"; // Import useTranslation hook
+import { useTranslation } from "react-i18next";
 import DaGalowLogo from "../../assets/logos/DaGalow Logo.svg";
 import Hamburger from "../../assets/icons/Hamburger.svg";
-import userImage from "../../assets/img/Pessoas/Default.svg";
 import { supabase } from "../../utils/supabaseClient";
 import AuthModal from "../Auth/AuthModal";
 import OctagonalProfile from "../common/Octagonal Profile";
-import { ReactComponent as GlobeIcon } from "../../assets/icons/Globe Branco.svg";
+
+// Define language mapping with language codes and country codes for flags
+const languageConfig = {
+  en: { code: "US", name: "en" },
+  pt: { code: "PT", name: "pt-pt" },
+  "pt-BR": { code: "BR", name: "pt-br" },
+  es: { code: "ES", name: "es" }
+};
 
 function useBreakpoint() {
   const getBreakpoint = () => {
@@ -37,19 +42,18 @@ function Header() {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { t } = useTranslation(); // Use translation hook
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef(null);
   const [avatarUrl, setAvatarUrl] = useState(null);
 
   const breakpoint = useBreakpoint();
-  let profileSize;
-  if (breakpoint === "lg") profileSize = 50; // or your desired lg size
-  else if (breakpoint === "md") profileSize = 56; // md size
-  else profileSize = 40; // mobile size
+  let profileSize = breakpoint === "lg" ? 50 : breakpoint === "md" ? 56 : 40;
+
+  const currentLanguage = i18n.language || "en";
   const allLangs = (i18n.options.supportedLngs || [])
-  .filter(l => l !== "cimode" && l !== "*");
+    .filter(l => l !== "cimode" && l !== "*");
+
   useEffect(() => {
     if (!user?.id) return;
     (async () => {
@@ -78,10 +82,8 @@ function Header() {
 
   const handleProfileClick = () => {
     if (user) {
-      // If user is logged in, navigate to profile
       window.location.href = "/profile";
     } else {
-      // If user is not logged in, open auth modal
       setAuthModalOpen(true);
     }
   };
@@ -94,160 +96,109 @@ function Header() {
     }
   };
 
+  // Function to get flag image for a language
+  const getFlagImage = (langCode) => {
+    const normalized = langCode.toLowerCase();
+    // Handle Brazilian Portuguese explicitly
+    if (normalized === "pt-br" || normalized === "br") {
+      return (
+        <img
+          src="https://flagcdn.com/w40/br.png"
+          alt="Brazilian flag"
+          className="w-6 h-4 object-cover rounded-sm"
+          onError={(e) => {
+            console.error("Failed to load Brazilian flag");
+            e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'%3E%3C/svg%3E";
+          }}
+        />
+      );
+    }
+    // Fallback to configured mapping
+    const language = languageConfig[langCode] || languageConfig[normalized] || languageConfig.en;
+    const countryCode = language.code.toLowerCase();
+    return (
+      <img
+        src={`https://flagcdn.com/w40/${countryCode}.png`}
+        alt={`${language.name} flag`}
+        className="w-6 h-4 object-cover rounded-sm"
+        onError={(e) => {
+          console.error(`Failed to load flag for ${langCode}`);
+          e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'%3E%3C/svg%3E";
+        }}
+      />
+    );
+  };
+
+  // Function to get language name
+  const getLanguageName = (langCode) => {
+    const normalized = langCode.toLowerCase();
+    if (normalized === "pt-br" || normalized === "br") return "pt-br";
+    return languageConfig[langCode]?.name || languageConfig[normalized]?.name || langCode.toUpperCase();
+  };
+
   return (
     <>
       <header
-        className={`
-          fixed flex items-center justify-between top-0 p-4 md:p-8 lg:p-10 left-0 right-0 z-30 h-14 md:h-24 lg:h-20 bg-black text-white shadow-lg
-          transform transition-transform duration-300
-          ${show ? "translate-y-0" : "-translate-y-full"}
-        `}
+        className={`fixed flex items-center justify-between top-0 p-4 md:p-8 lg:p-10 left-0 right-0 z-30 h-14 md:h-24 lg:h-20 bg-black text-white shadow-lg transform transition-transform duration-300 ${show ? "translate-y-0" : "-translate-y-full"}`}
       >
-         <div
-        onClick={handleProfileClick}
-        className="absolute left-4 md:left-8 lg:left-10 top-1/2 transform -translate-y-1/2 cursor-pointer"
-      >
-        <OctagonalProfile
-          size={profileSize}
-          borderColor="#002147"
-          innerBorderColor="#000"
-          imageSrc={avatarUrl}
-          fallbackText={user?.email?.[0]?.toUpperCase() || "?"}
-        />
-      </div>
-
-      {/* 2) Logo absolutely centered */}
-      <div
-        onClick={handleLogoClick}
-        className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-      >
-        <img
-          src={DaGalowLogo}
-          alt="DaGalow Logo"
-          className="w-[150px] md:w-[275px] h-auto object-cover"
-        />
-      </div>
-
-      {/* 3) Globe + Hamburger on the right */}
-      <div className="absolute right-4 md:right-8 lg:right-10 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
-        <div ref={langRef} className="relative">
-          <button
-            onClick={() => setLangOpen(o => !o)}
-            className="focus:outline-none p-1"
-            aria-label="Switch language"
-          >
-            <GlobeIcon className="w-6 h-6 md:w-8 md:h-8" />
-          </button>
-          {langOpen && (
-            <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-lg z-50">
-              {allLangs.map(lng => (
-                <button
-                  key={lng}
-                  onClick={() => {
-                    i18n.changeLanguage(lng);
-                    setLangOpen(false);
-                  }}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                >
-                  {lng.toUpperCase()}
-                </button>
-              ))}
-            </div>
-          )}
+        <div
+          onClick={handleProfileClick}
+          className="absolute left-4 md:left-8 lg:left-10 top-1/2 transform -translate-y-1/2 cursor-pointer"
+        >
+          <OctagonalProfile
+            size={profileSize}
+            borderColor="#002147"
+            innerBorderColor="#000"
+            imageSrc={avatarUrl}
+            fallbackText={user?.email?.[0]?.toUpperCase() || "?"}
+          />
         </div>
-        <button
-          onClick={() => setMenuOpen(o => !o)}
-          className="focus:outline-none"
+
+        <div
+          onClick={handleLogoClick}
+          className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
         >
           <img
-            src={Hamburger}
-            alt="Menu"
-            className="w-6 h-6 md:w-8 md:h-8"
+            src={DaGalowLogo}
+            alt="DaGalow Logo"
+            className="w-[150px] md:w-[275px] h-auto object-cover"
           />
-        </button>
-      </div>
-      </header>
+        </div>
 
-      {/* Dropdown Menu */}
-      <div
-        className={`fixed top-0 right-0 h-full w-[70%] md:w-[50%] lg:w-[30%] bg-black transform transition-transform duration-300 ease-in-out z-50
-          ${menuOpen ? "translate-x-0" : "translate-x-full"}`}
-      >
-        <div className="p-6 flex flex-col h-full">
-          <div className="flex justify-end mb-8">
+        <div className="absolute right-4 md:right-8 lg:right-10 top-1/2 transform -translate-y-1/2 flex items-center gap-4">
+          <div ref={langRef} className="relative">
             <button
-              onClick={() => setMenuOpen(false)}
-              className="text-white font-bold text-2xl md:text-4xl"
+              onClick={() => setLangOpen(o => !o)}
+              className="focus:outline-none p-1 flex items-center justify-center"
+              aria-label="Switch language"
             >
-              &times;
+              {getFlagImage(currentLanguage)}
             </button>
-          </div>
-
-          {/* Menu links - now translated */}
-          <div className="flex flex-col space-y-4 md:space-y-8">
-            <Link
-              to="/"
-              className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
-              onClick={() => setMenuOpen(false)}
-            >
-              {t("navigation.home")}
-            </Link>
-
-            {/* Calendar link */}
-            <Link
-              to="/components/Subpages/Calendar"
-              className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
-              onClick={() => setMenuOpen(false)}
-            >
-              {t("navigation.calendar")}
-            </Link>
-
-            {/* Auth links in mobile menu */}
-            {user ? (
-              <>
-                <Link
-                  to="/profile"
-                  className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {t("navigation.profile")}
-                </Link>
-                <Link
-                  to="/components/Subpages/Settings"
-                  className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {t("navigation.settings")}
-                </Link>
-              </>
-            ) : (
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  setAuthModalOpen(true);
-                }}
-                className="text-white text-xl md:text-4xl hover:text-gray-300 transition-colors text-left"
-              >
-                {t("navigation.login_signup")}
-              </button>
+            {langOpen && (
+              <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-lg z-50 min-w-[160px] overflow-hidden">
+                {allLangs.map(lng => (
+                  <button
+                    key={lng}
+                    onClick={() => { i18n.changeLanguage(lng); setLangOpen(false); }}
+                    className="flex items-center w-full px-4 py-2 hover:bg-gray-100"
+                  >
+                    <span className="mr-3 flex-shrink-0">{getFlagImage(lng)}</span>
+                    <span className="text-sm md:text-base">{getLanguageName(lng)}</span>
+                  </button>
+                ))}
+              </div>
             )}
           </div>
+          <button onClick={() => setMenuOpen(o => !o)} className="focus:outline-none">
+            <img src={Hamburger} alt="Menu" className="w-6 h-6 md:w-8 md:h-8" />
+          </button>
         </div>
+      </header>
+      {/* Dropdown Menu */}
+      <div className={`fixed top-0 right-0 h-full w-[70%] md:w-[50%] lg:w-[30%] bg-black transform transition-transform duration-300 ease-in-out z-50 ${menuOpen ? "translate-x-0" : "translate-x-full"}`}> ...
       </div>
-
-      {/* Overlay */}
-      {menuOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setMenuOpen(false)}
-        />
-      )}
-
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-      />
+      {menuOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setMenuOpen(false)} />}
+      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
     </>
   );
 }
