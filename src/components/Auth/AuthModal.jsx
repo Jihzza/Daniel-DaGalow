@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Login from "./Login";
 import Signup from "./Signup";
+import ForgotPassword from "./ForgotPassword"; // Add this import
 
 const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
   const [view, setView] = useState(initialView);
@@ -40,39 +41,51 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
             </svg>
           </button>
 
-          {/* Tab navigation */}
-          <div className="flex border-b">
-            <button
-              className={`flex-1 py-4 text-center font-medium ${
-                view === "login"
-                  ? "text-oxfordBlue border-b-2 border-oxfordBlue"
-                  : "text-gray-500"
-              }`}
-              onClick={() => setView("login")}
-            >
-              Log In
-            </button>
-            <button
-              className={`flex-1 py-4 text-center font-medium ${
-                view === "signup"
-                  ? "text-oxfordBlue border-b-2 border-oxfordBlue"
-                  : "text-gray-500"
-              }`}
-              onClick={() => setView("signup")}
-            >
-              Sign Up
-            </button>
-          </div>
+          {/* Tab navigation - Only show for login/signup */}
+          {view !== "forgot-password" && (
+            <div className="flex border-b">
+              <button
+                className={`flex-1 py-4 text-center font-medium ${
+                  view === "login"
+                    ? "text-oxfordBlue border-b-2 border-oxfordBlue"
+                    : "text-gray-500"
+                }`}
+                onClick={() => setView("login")}
+              >
+                Log In
+              </button>
+              <button
+                className={`flex-1 py-4 text-center font-medium ${
+                  view === "signup"
+                    ? "text-oxfordBlue border-b-2 border-oxfordBlue"
+                    : "text-gray-500"
+                }`}
+                onClick={() => setView("signup")}
+              >
+                Sign Up
+              </button>
+            </div>
+          )}
 
           {/* Auth form content */}
           <div className="p-6">
             {view === "login" ? (
-              <Login isModal={true} onSuccess={onClose} />
-            ) : (
+              <Login 
+                isModal={true} 
+                onSuccess={onClose} 
+                onForgotPassword={() => setView("forgot-password")}
+              />
+            ) : view === "signup" ? (
               <Signup
                 isModal={true}
                 onSuccess={onClose}
                 onSwitchToLogin={() => setView("login")}
+              />
+            ) : (
+              <ForgotPassword 
+                isModal={true} 
+                onSuccess={onClose} 
+                onBackToLogin={() => setView("login")} 
               />
             )}
           </div>

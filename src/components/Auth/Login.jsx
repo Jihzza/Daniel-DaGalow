@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
-const Login = ({ isModal = false, onSuccess = () => {} }) => {
+const Login = ({ isModal = false, onSuccess = () => {}, onForgotPassword = () => {} }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -90,9 +90,19 @@ const Login = ({ isModal = false, onSuccess = () => {} }) => {
         </div>
         
         <div className="text-right">
-          <Link to="/forgot-password" className="text-oxfordBlue hover:underline text-sm">
-            {t('auth.login.forgot_password')}
-          </Link>
+        {isModal ? (
+            <button 
+              type="button"
+              onClick={onForgotPassword} 
+              className="text-oxfordBlue hover:underline text-sm"
+            >
+              {t('auth.login.forgot_password')}
+            </button>
+          ) : (
+            <Link to="/forgot-password" className="text-oxfordBlue hover:underline text-sm">
+              {t('auth.login.forgot_password')}
+            </Link>
+          )}
         </div>
         
         <button

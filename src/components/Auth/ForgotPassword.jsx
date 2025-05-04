@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
-const ForgotPassword = () => {
+const ForgotPassword = ({ isModal = false, onSuccess = () => {}, onBackToLogin = () => {} }) => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -24,6 +24,13 @@ const ForgotPassword = () => {
       if (error) throw error;
       
       setMessage(t('auth.forgot_password.success.message'));
+      
+      // If in modal, we can auto-return to login after a delay
+      if (isModal) {
+        setTimeout(() => {
+          onBackToLogin();
+        }, 3000);
+      }
     } catch (error) {
       setError(error.message || t('auth.forgot_password.errors.default'));
     } finally {
@@ -32,7 +39,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto my-16 p-6 bg-gentleGray rounded-lg shadow-md">
+    <div className={isModal ? "" : "max-w-md mx-auto my-16 p-6 bg-gentleGray rounded-lg shadow-md"}>
       <h2 className="text-2xl font-bold text-oxfordBlue mb-6 text-center">{t('auth.forgot_password.title')}</h2>
       
       {error && (
@@ -74,9 +81,19 @@ const ForgotPassword = () => {
       
       <div className="mt-6 text-center">
         <p className="text-gray-600">
-          <Link to="/login" className="text-oxfordBlue hover:underline">
-            {t('auth.forgot_password.back_to_login')}
-          </Link>
+          {isModal ? (
+            <button 
+              type="button"
+              onClick={onBackToLogin}
+              className="text-oxfordBlue hover:underline"
+            >
+              {t('auth.forgot_password.back_to_login')}
+            </button>
+          ) : (
+            <Link to="/login" className="text-oxfordBlue hover:underline">
+              {t('auth.forgot_password.back_to_login')}
+            </Link>
+          )}
         </p>
       </div>
     </div>
