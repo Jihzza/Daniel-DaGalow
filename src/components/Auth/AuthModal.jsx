@@ -51,7 +51,7 @@ const AuthModal = ({ isOpen, onClose, initialView = 'login' }) => {
             {view === 'login' ? (
               <Login isModal={true} onSuccess={onClose} />
             ) : (
-              <Signup isModal={true} onSuccess={onClose} />
+              <Signup isModal={true} onSuccess={onClose} onSwitchView={() => setView('login')} />
             )}
           </div>
         </div>

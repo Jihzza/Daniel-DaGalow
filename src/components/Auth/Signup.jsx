@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
-const Signup = ({ isModal = false, onSuccess = () => {}}) => {
+const Signup = ({ isModal = false, onSuccess = () => {}, onSwitchView = () => {} }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -54,7 +54,7 @@ const Signup = ({ isModal = false, onSuccess = () => {}}) => {
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="max-w-md mx-auto">   
       {error && (
@@ -142,9 +142,11 @@ const Signup = ({ isModal = false, onSuccess = () => {}}) => {
       <div className="mt-4 text-center">
         <p className="text-black/50">
           {t('auth.signup.login_prompt')}{' '}
-          <Link to="" className="text-oxfordBlue hover:underline">
+          <button 
+            onClick={onSwitchView}
+            className="text-oxfordBlue hover:underline bg-transparent border-none p-0 cursor-pointer">
             {t('auth.signup.login_link')}
-          </Link>
+          </button>
         </p>
       </div>
     </div>
