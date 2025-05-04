@@ -106,9 +106,11 @@ export default function CalendarPage() {
 
   if (!user) {
     return (
+      <main className="mt-14 md:mt-24 lg:mt-20">
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-oxfordBlue"></div>
       </div>
+      </main>
     );
   }
 

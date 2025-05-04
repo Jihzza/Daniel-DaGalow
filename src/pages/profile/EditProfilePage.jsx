@@ -181,18 +181,13 @@ const EditProfilePage = () => {
   }
 
   return (
-    <div className="py-6 md:py-8 lg:py-12 px-4 md:px-6 lg:px-8 min-h-screen">
+    <main className="mt-14 md:mt-24 lg:mt-20">
+    <div className="py-6 md:py-8 lg:py-12 px-4 md:px-6 lg:px-8 min-h-screen bg-gradient-to-b from-oxfordBlue to-gentleGray">
       <div className="max-w-xs sm:max-w-md md:max-w-3xl lg:max-w-4xl mx-auto">
-        {/* Header with Title and Back Button */}
-        <div className="flex flex-col sm:flex-row justify-between items-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-white">
-            {t('edit_profile.title')}
-          </h2>
-        </div>
 
         {/* Notification Messages */}
         {message && (
-          <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg shadow-sm">
+          <div className="bg-green-100 border-l-4 border-green-500 text-green-700 mb-6 rounded-lg shadow-sm">
             <div className="flex items-center">
               <svg 
                 className="w-5 h-5 mr-2" 
@@ -230,7 +225,7 @@ const EditProfilePage = () => {
         )}
 
         {/* Main Form Container */}
-        <div className="rounded-xl p-4 sm:p-6 md:p-8">
+        <div className="rounded-xl sm:p-6 md:p-8">
           <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {/* Left Column - Avatar & Phone */}
@@ -506,6 +501,7 @@ const EditProfilePage = () => {
         </div>
       </div>
     </div>
+    </main>
   );
 };
 

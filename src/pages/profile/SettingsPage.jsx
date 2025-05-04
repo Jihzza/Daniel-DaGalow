@@ -865,6 +865,7 @@ const SettingsPage = () => {
   };
 
   return (
+    <main className="mt-14 md:mt-24 lg:mt-20">
     <div className="min-h-screen bg-gradient-to-b from-oxfordBlue to-gentleGray py-6 md:py-12 px-4 md:px-8 lg:px-12">
     <div className="max-w-4xl mx-auto">
 
@@ -1139,6 +1140,7 @@ const SettingsPage = () => {
         />
       </div>
     </div>
+    </main>
   );
 };
 

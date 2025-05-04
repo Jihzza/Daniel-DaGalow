@@ -268,7 +268,7 @@ function Testimonials({ onAuthModalOpen }) {
             centeredSlides={true}
             initialSlide={0}
             loop={true}
-            loopedSlides={testimonials.length} // Use loopedSlides instead
+            loopedslides={testimonials.length} // Use loopedSlides instead
             autoplay={{
               delay: 3000,
               disableOnInteraction: false,

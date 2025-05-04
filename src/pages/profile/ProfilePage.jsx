@@ -268,6 +268,7 @@ export default function ProfilePage({ onChatOpen }) {
   );
 
   return (
+    <main className="mt-14 md:mt-24 lg:mt-20">
     <div className="py-6 md:py-8 lg:py-12 px-4 md:px-6 lg:px-8 min-h-screen bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray">
       <div className="max-w-xs sm:max-w-md md:max-w-3xl lg:max-w-6xl mx-auto">
         {/* Profile Header - Enhanced for tablet/desktop */}
@@ -525,5 +526,6 @@ export default function ProfilePage({ onChatOpen }) {
         )}
       </div>
     </div>
+    </main>
   );
 }
