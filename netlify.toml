@@ -20,3 +20,9 @@
 [functions."handle-verification"]
   node_bundler = "esbuild"
   external_node_modules = ["resend", "@supabase/supabase-js"]
+
+  [[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+  force  = true

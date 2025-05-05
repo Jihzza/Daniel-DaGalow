@@ -1,4 +1,3 @@
-// components/Auth/ResetPassword.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../utils/supabaseClient';
@@ -13,31 +12,42 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Get hash fragment from URL (Supabase appends this when redirecting from password reset email)
   useEffect(() => {
-    // Check if we have a hash parameter which indicates we came from a password reset email
-    const hash = window.location.hash;
-    const params = new URLSearchParams(hash.substring(1));
-    const access_token = params.get('access_token');
-    const refresh_token = params.get('refresh_token');
-  
+    // Debug: show raw URL parts
+    console.log('🔍 window.location.search:', window.location.search);
+    console.log('🔍 window.location.hash:', window.location.hash);
+
+    // Parse token from query string or hash fragment
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const access_token = searchParams.get('access_token') || hashParams.get('access_token');
+    const refresh_token = hashParams.get('refresh_token') || searchParams.get('refresh_token');
+
+    console.log('✅ parsed access_token:', access_token);
+    console.log('✅ parsed refresh_token:', refresh_token);
     if (!access_token) {
+      console.error('❌ No access_token found!');
       setError(t('auth.reset_password.errors.invalid_link'));
       return;
     }
-    
+
+    // Set full Supabase session
     supabase.auth
       .setSession({ access_token, refresh_token })
-      .catch(err => setError(err.message));
+      .then(res => console.log('supabase.setSession OK →', res))
+      .catch(err => {
+        console.error('⚠️ supabase.setSession error:', err);
+        setError(err.message || t('auth.reset_password.errors.default'));
+      });
   }, [t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('👉 handleSubmit, new password:', password);
     setError('');
     setMessage('');
     setLoading(true);
 
-    // Basic validation
     if (password !== confirmPassword) {
       setError(t('auth.reset_password.errors.password_mismatch'));
       setLoading(false);
@@ -51,17 +61,14 @@ const ResetPassword = () => {
     }
 
     try {
-      // Supabase handles most of the hash parsing internally
-      const { error } = await supabase.auth.updateUser({
-        password: password
-      });
-
+      const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
 
       setMessage(t('auth.reset_password.success.message'));
       setTimeout(() => navigate('/login'), 3000);
-    } catch (error) {
-      setError(error.message || t('auth.reset_password.errors.default'));
+    } catch (err) {
+      console.error('⚠️ updateUser error:', err);
+      setError(err.message || t('auth.reset_password.errors.default'));
     } finally {
       setLoading(false);
     }
@@ -69,7 +76,9 @@ const ResetPassword = () => {
 
   return (
     <div className="max-w-md mx-auto my-16 p-6 bg-gentleGray rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-oxfordBlue mb-6 text-center">{t('auth.reset_password.title')}</h2>
+      <h2 className="text-2xl font-bold text-oxfordBlue mb-6 text-center">
+        {t('auth.reset_password.title')}
+      </h2>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -95,7 +104,7 @@ const ResetPassword = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
             placeholder={t('auth.reset_password.password.placeholder')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
+            className="w-full px-3 py-2 border border-oxfordBlue rounded-md bg-gentleGray focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
           />
         </div>
 
@@ -110,14 +119,14 @@ const ResetPassword = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             placeholder={t('auth.reset_password.confirm_password.placeholder')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
+            className="w-full px-3 py-2 border border-oxfordBlue rounded-md bg-gentleGray focus:outline-none focus:ring-2 focus:ring-oxfordBlue"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-darkGold text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors disabled:opacity-50"
+          className="w-full bg-oxfordBlue text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors disabled:opacity-50"
         >
           {loading ? t('auth.reset_password.submit.loading') : t('auth.reset_password.submit.default')}
         </button>

@@ -1,13 +1,13 @@
-// src/App.js
 import React, { useState, createContext, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
+  Navigate
 } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 
+import { supabase } from "./utils/supabaseClient";
 import { AuthProvider } from "./contexts/AuthContext";
 import AuthModal from "./components/Auth/AuthModal";
 import Header from "./components/layout/Header";
@@ -43,7 +43,7 @@ import { useAuth } from "./contexts/AuthContext";
 
 // Context to expose the AuthModal opener
 export const AuthModalContext = createContext({
-  openAuthModal: () => {},
+  openAuthModal: () => {}
 });
 
 const PrivateRoute = ({ children }) => {
@@ -79,17 +79,24 @@ const PublicOnlyRoute = ({ children }) => {
 function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatSessionId, setChatSessionId] = useState(null);
-  
-  // Add this new effect
+
+  // Reset scroll position and clear hash fragments on load
   useEffect(() => {
-    // Reset scroll position when the app loads
     window.scrollTo(0, 0);
-    
-    // Clear any hash fragments from the URL
     if (window.location.hash) {
       const cleanUrl = window.location.pathname + window.location.search;
       window.history.replaceState(null, '', cleanUrl);
     }
+  }, []);
+
+  // Subscribe to Supabase auth state changes
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('AUTH EVENT →', event, session);
+      // Optionally handle PASSWORD_RECOVERY event
+      // e.g., if (event === 'PASSWORD_RECOVERY') { /* navigate or set state */ }
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const openChat = (sessionId = null) => {
