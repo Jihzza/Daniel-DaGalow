@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-
+import i18n from '../../i18n';
 // Helper function to parse formatted content
 const formatContent = (content) => {
   if (!content) return null;
+  
   
   // Split content by newlines
   const lines = content.split('\n');
@@ -103,6 +104,8 @@ const renderFormattedContent = (content) => {
   return result;
 };
 
+
+
 function FAQs() {
   const { t } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -110,6 +113,14 @@ function FAQs() {
     question: t('faqs.questions.coaching.tiers.question'),
     answer: t('faqs.questions.coaching.tiers.answer'),
   });
+// In FAQs.jsx
+useEffect(() => {
+  // Update the current question when language changes
+  setCurrentQuestion({
+    question: t('faqs.questions.coaching.tiers.question'),
+    answer: t('faqs.questions.coaching.tiers.answer'),
+  });
+}, [t, i18n.language]); // Add i18n.language as a dependency
 
   const questions = [
     // Coaching Services
