@@ -20,11 +20,12 @@ const ResetPassword = () => {
     const params = new URLSearchParams(hash.substring(1));
     const access_token = params.get('access_token');
     const refresh_token = params.get('refresh_token');
-
+  
     if (!access_token) {
       setError(t('auth.reset_password.errors.invalid_link'));
       return;
     }
+    
     supabase.auth
       .setSession({ access_token, refresh_token })
       .catch(err => setError(err.message));
