@@ -1,87 +1,89 @@
-# Daniel Project
+<p align="center">
+  <img src="src/assets/logos/DaGalow Logo.svg" alt="DaGalow Logo" width="200"/>
+</p>
 
-A modern React application built with the latest technologies and best practices.
+<h1 align="center">Daniel DaGalow Project</h1>
 
-## 🚀 Technologies
+<p align="center">
+  <a href="#"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+  <a href="#"><img src="https://img.shields.io/badge/build-passing-brightgreen.svg" alt="Build Status"></a>
+  <a href="#"><img src="https://img.shields.io/badge/react-19-blue.svg" alt="React"></a>
+  <a href="#"><img src="https://img.shields.io/badge/tailwindcss-3.0-38bdf8.svg" alt="TailwindCSS"></a>
+</p>
 
-- React 19
-- TailwindCSS
-- Swiper
-- Testing Library
+---
 
-## 📋 Prerequisites
+> A modern, beautiful React application built with the latest technologies and best practices.
 
-Before you begin, ensure you have the following installed:
-- Node.js (Latest LTS version recommended)
-- npm (comes with Node.js)
+---
 
-## 🛠️ Installation
+## ✨ Features
 
-1. Clone the repository:
+- ⚡ **Fast & Modern**: Built with React 19 and TailwindCSS for rapid development and beautiful UI.
+- 🎨 **Responsive Design**: Looks great on any device.
+- 🧩 **Component-Based**: Clean, modular code structure.
+- 🏄 **Smooth Interactions**: Swiper integration for slick carousels.
+- 🧪 **Testing Ready**: Integrated with Testing Library for robust tests.
+
+---
+
+## 🚀 Quick Start
+
 ```bash
 git clone [your-repository-url]
-```
-
-2. Navigate to the project directory:
-```bash
-cd daniel
-```
-
-3. Install dependencies:
-```bash
+cd Daniel-DaGalow
 npm install
-```
-
-## 🖥️ Development
-
-To start the development server:
-
-```bash
 npm start
 ```
 
-This will run the app in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Visit [http://localhost:3000](http://localhost:3000) to view the app.
 
-## 🧪 Testing
+---
 
-Run the test suite:
+## 🖼️ Demo
 
-```bash
-npm test
+<p align="center">
+  <img src="src/assets/img/Noticias/News 2.png" alt="App Screenshot" width="600"/>
+</p>
+
+---
+
+## 🛠️ Tech Stack
+
+- **React 19**
+- **TailwindCSS**
+- **Swiper**
+- **Testing Library**
+
+---
+
+## 📁 Project Structure
+
+```text
+Daniel-DaGalow/
+├── public/              # Static files
+├── src/                 # Source files
+│   ├── assets/          # Images, logos, etc.
+│   ├── components/      # React components
+│   ├── pages/           # Page components
+│   ├── services/        # API and services
+│   └── ...
+├── package.json         # Project dependencies and scripts
+└── tailwind.config.js   # TailwindCSS configuration
 ```
 
-## 📦 Building for Production
-
-To create a production build:
-
-```bash
-npm run build
-```
-
-This will create an optimized build in the `build` folder.
-
-## 🎨 Styling
-
-This project uses TailwindCSS for styling. The configuration can be found in `tailwind.config.js`.
-
-## 📚 Project Structure
-
-```
-daniel/
-├── public/          # Static files
-├── src/            # Source files
-├── package.json    # Project dependencies and scripts
-└── tailwind.config.js # TailwindCSS configuration
-```
+---
 
 ## 🤝 Contributing
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+---
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

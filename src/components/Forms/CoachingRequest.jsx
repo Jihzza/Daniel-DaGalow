@@ -635,26 +635,27 @@ export default function CoachingRequest({ onBackService }) {
           <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
 
           {step === 1 ? (
-            <FrequencyStep formData={formData} onChange={handleChange} />
-          ) : step === 2 ? (
-            <ContactStep 
-          formData={formData} 
-          onChange={handleChange}
-          onPhoneValidation={handlePhoneValidation} 
-        />
-          ) : step === 3 ? (
-            <PaymentStep
-              selectedTier={formData.frequency}
-              requestId={requestId}
-              formData={formData}
-              onPaymentConfirmed={handlePaymentConfirmed}
-            />
-          ) : (
-            <InlineChatbotStep
-              requestId={requestId}
-              tableName="coaching_chat_messages"
-            />
-          )}
+  <FrequencyStep formData={formData} onChange={handleChange} />
+) : step === 2 ? (
+  <ContactStep 
+    formData={formData} 
+    onChange={handleChange}
+    onPhoneValidation={handlePhoneValidation} 
+  />
+) : step === 3 ? (
+  <PaymentStep
+    selectedTier={formData.frequency}
+    requestId={requestId}
+    formData={formData}
+    onPaymentConfirmed={handlePaymentConfirmed}
+  />
+) : (
+  <InlineChatbotStep
+    requestId={requestId}
+    tableName="coaching_chat_messages"
+    workflowKey="coaching"
+  />
+)}
           
           <StepIndicator
             stepCount={UI_STEPS}

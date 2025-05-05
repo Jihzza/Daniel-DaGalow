@@ -118,9 +118,9 @@ function ContactInfoStep({ formData, onChange }) {
           required
         />
       </div>
-      <div className="text-white text-sm text-right sm:text-base md:text-lg"> 
+      <div className="text-white text-sm text-right sm:text-base md:text-lg">
         <button
-        type="button"
+          type="button"
           onClick={openAuthModal}
           className="text-xs text-white underline"
         >
@@ -170,12 +170,15 @@ export default function AnalysisRequest({ onBackService }) {
   const handleNext = async () => {
     if (step === 2) {
       setIsSubmitting(true);
-  
+
       try {
         // Auto-create account if user is not logged in
         if (!user && formData.name && formData.email) {
-          const accountResult = await autoCreateAccount(formData.name, formData.email);
-          
+          const accountResult = await autoCreateAccount(
+            formData.name,
+            formData.email
+          );
+
           // Optional: If you're using a notification library like react-toastify
           if (accountResult.success && !accountResult.userExists) {
             // If using react-toastify:
@@ -183,24 +186,24 @@ export default function AnalysisRequest({ onBackService }) {
             console.log("Account created successfully");
           }
         }
-  
+
         // Continue with your existing form submission code
         const payload = {
           name: formData.name,
           email: formData.email,
           service_type: formData.type,
         };
-        
+
         if (user?.id) payload.user_id = user.id;
-  
+
         const { data, error } = await supabase
           .from("analysis_requests")
           .insert(payload)
           .select("id")
           .maybeSingle();
-          
+
         if (error) throw error;
-        
+
         setRequestId(data.id);
         setIsSubmitting(false);
         setStep(3);
@@ -237,6 +240,7 @@ export default function AnalysisRequest({ onBackService }) {
           )}
 
           {/* Inline Chat Step */}
+          {/* Inline Chat Step */}
           {step === 3 && requestId && (
             <>
               <h3 className="text-xl text-white mb-4">
@@ -245,6 +249,7 @@ export default function AnalysisRequest({ onBackService }) {
               <InlineChatbotStep
                 requestId={requestId}
                 tableName="analysis_chat_messages"
+                workflowKey="analysis"
               />
             </>
           )}
@@ -258,43 +263,47 @@ export default function AnalysisRequest({ onBackService }) {
               {t("analysis_request.buttons.back")}
             </button>
             {step <= 2 && (
-  <button
-    onClick={handleNext}
-    disabled={!canProceed() || isSubmitting}
-    className={`px-4 py-2 md:px-5 md:py-3 bg-darkGold text-black rounded-xl ${!canProceed() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-yellow-500 transition-colors'}`}
-  >
-    {isSubmitting ? (
-      <span className="flex items-center">
-        <svg
-          className="animate-spin -ml-1 mr-2 h-4 w-4"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
-        {t("hero.buttons.processing", "Processing...")}
-      </span>
-    ) : (
-      // Show the title of the next step instead of generic "Next"
-      step < STEPS.length ? 
-        STEPS[step].title : 
-        t("analysis_request.steps.chat")
-    )}
-  </button>
-)}
+              <button
+                onClick={handleNext}
+                disabled={!canProceed() || isSubmitting}
+                className={`px-4 py-2 md:px-5 md:py-3 bg-darkGold text-black rounded-xl ${
+                  !canProceed()
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-yellow-500 transition-colors"
+                }`}
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    {t("hero.buttons.processing", "Processing...")}
+                  </span>
+                ) : // Show the title of the next step instead of generic "Next"
+                step < STEPS.length ? (
+                  STEPS[step].title
+                ) : (
+                  t("analysis_request.steps.chat")
+                )}
+              </button>
+            )}
             {step >= 3 && (
               <button
                 onClick={onBackService}

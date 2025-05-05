@@ -11,7 +11,6 @@ import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 import { autoCreateAccount } from "../../utils/autoSignup";
 import { validatePhoneNumber } from "../../utils/phoneValidation";
 
-
 // Progress Indicator Component
 function StepIndicator({
   stepCount,
@@ -92,43 +91,43 @@ function ProjectSelectionStep({ formData, onChange }) {
 function ContactInfoStep({ formData, onChange }) {
   const { t } = useTranslation();
   const { openAuthModal } = useContext(AuthModalContext);
-  
+
   // Phone validation state
   const [validatingPhone, setValidatingPhone] = useState(false);
   const [phoneValidated, setPhoneValidated] = useState(false);
   const [phoneError, setPhoneError] = useState("");
-  
+
   // Debounce phone validation
   const phoneValidationTimeout = useRef(null);
-  
+
   const handlePhoneChange = (phone) => {
     // Update parent form state
     onChange({ target: { name: "phone", value: phone } });
-    
+
     // Reset validation states
     setPhoneValidated(false);
     setPhoneError("");
-    
+
     // Clear any existing timeout
     if (phoneValidationTimeout.current) {
       clearTimeout(phoneValidationTimeout.current);
     }
-    
+
     // Only validate if sufficient digits are entered
-    if (phone.replace(/\D/g, '').length < 8) {
+    if (phone.replace(/\D/g, "").length < 8) {
       return;
     }
-    
+
     // Debounce the validation call
     phoneValidationTimeout.current = setTimeout(async () => {
       setValidatingPhone(true);
-      
+
       try {
         const result = await validatePhoneNumber(phone);
-        
+
         setValidatingPhone(false);
         setPhoneValidated(result.isValid);
-        
+
         if (!result.isValid) {
           setPhoneError(t("pitch_deck_request.form.phone_validation_error"));
         }
@@ -148,7 +147,7 @@ function ContactInfoStep({ formData, onChange }) {
       }
     };
   }, []);
-  
+
   return (
     <div className="grid grid-cols-1 gap-6 mb-6">
       <div className="w-full flex flex-col gap-2">
@@ -165,7 +164,7 @@ function ContactInfoStep({ formData, onChange }) {
           required
         />
       </div>
-      
+
       <div className="w-full flex flex-col gap-2">
         <label className="block text-white mb-2">
           {t("pitch_deck_request.form.email_label")}
@@ -180,7 +179,7 @@ function ContactInfoStep({ formData, onChange }) {
           required
         />
       </div>
-      
+
       <div className="w-full flex flex-col gap-2">
         <label className="block text-white mb-2 font-medium">
           {t("coaching_request.form.phone_label")}
@@ -202,39 +201,78 @@ function ContactInfoStep({ formData, onChange }) {
             dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
             searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
           />
-          
+
           {/* Validation indicator */}
           {formData.phone && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
               {validatingPhone && (
-                <svg className="animate-spin h-5 w-5 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin h-5 w-5 text-gray-300"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
               )}
-              
+
               {!validatingPhone && phoneValidated && (
-                <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                <svg
+                  className="h-5 w-5 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
                 </svg>
               )}
-              
-              {!validatingPhone && !phoneValidated && formData.phone && formData.phone.replace(/\D/g, '').length >= 8 && (
-                <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              )}
+
+              {!validatingPhone &&
+                !phoneValidated &&
+                formData.phone &&
+                formData.phone.replace(/\D/g, "").length >= 8 && (
+                  <svg
+                    className="h-5 w-5 text-red-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    ></path>
+                  </svg>
+                )}
             </div>
           )}
         </div>
-        
+
         {/* Phone validation error message */}
         {phoneError && (
           <p className="text-red-500 text-sm mt-1">{phoneError}</p>
         )}
       </div>
-      
-      <div className="text-white text-sm text-right sm:text-base md:text-lg"> 
+
+      <div className="text-white text-sm text-right sm:text-base md:text-lg">
         <button
           type="button"
           onClick={openAuthModal}
@@ -290,8 +328,10 @@ export default function PitchDeckRequest({ onBackService }) {
     if (step === 1) return !!formData.project;
     if (step === 2) {
       const phoneRef = document.querySelector('input[type="tel"]');
-      const isPhoneValid = phoneRef && phoneRef.value && 
-                          !phoneRef.parentElement.querySelector('.text-red-500');
+      const isPhoneValid =
+        phoneRef &&
+        phoneRef.value &&
+        !phoneRef.parentElement.querySelector(".text-red-500");
       return formData.name && formData.email && formData.phone && isPhoneValid;
     }
     return true;
@@ -324,14 +364,17 @@ export default function PitchDeckRequest({ onBackService }) {
       try {
         // Auto-create account if user is not logged in
         if (!user && formData.name && formData.email) {
-          const accountResult = await autoCreateAccount(formData.name, formData.email);
-          
+          const accountResult = await autoCreateAccount(
+            formData.name,
+            formData.email
+          );
+
           // Optional: If you're using notifications
           if (accountResult.success && !accountResult.userExists) {
             console.log("Account created successfully");
           }
         }
-  
+
         const { data, error } = await supabase
           .from("pitch_requests")
           .insert({
@@ -339,13 +382,13 @@ export default function PitchDeckRequest({ onBackService }) {
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
-            user_id: user?.id // Add user ID if available
+            user_id: user?.id, // Add user ID if available
           })
           .select("id")
           .single();
-  
+
         if (error) throw error;
-  
+
         setRequestId(data.id);
         setStep(3);
       } catch (error) {
@@ -383,6 +426,7 @@ export default function PitchDeckRequest({ onBackService }) {
             <InlineChatbotStep
               requestId={requestId}
               tableName="pitchdeck_chat_messages"
+              workflowKey="pitchdeck"
             />
           )}
 
@@ -395,41 +439,45 @@ export default function PitchDeckRequest({ onBackService }) {
               {t("pitch_deck_request.buttons.back")}
             </button>
             {step < STEPS.length && (
-  <button
-    onClick={handleNext}
-    disabled={!canProceed() || isSubmitting}
-    className={`px-3 py-1 bg-darkGold text-black rounded-xl ${!canProceed() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-yellow-500 transition-colors'}`}
-  >
-    {isSubmitting ? (
-      <span className="flex items-center">
-        <svg
-          className="animate-spin -ml-1 mr-2 h-4 w-4"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
-        {t("hero.buttons.processing", "Processing...")}
-      </span>
-    ) : (
-      // Show the title of the next step instead of generic "Next"
-      STEPS[step].title
-    )}
-  </button>
-)}
+              <button
+                onClick={handleNext}
+                disabled={!canProceed() || isSubmitting}
+                className={`px-3 py-1 bg-darkGold text-black rounded-xl ${
+                  !canProceed()
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-yellow-500 transition-colors"
+                }`}
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    {t("hero.buttons.processing", "Processing...")}
+                  </span>
+                ) : (
+                  // Show the title of the next step instead of generic "Next"
+                  STEPS[step].title
+                )}
+              </button>
+            )}
             {step === STEPS.length && (
               <button
                 onClick={onBackService}

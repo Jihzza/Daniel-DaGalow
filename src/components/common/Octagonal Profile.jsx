@@ -34,7 +34,7 @@ function OctagonalProfile({ size = 50, borderColor, innerBorderColor = "", onCli
           left: `${borderThickness - 0.25}px`,
           right: `${borderThickness - 0.25}px`,
           bottom: `${borderThickness - 0.25}px`,
-          backgroundColor: innerBorderColor || "#234243",
+          backgroundColor: innerBorderColor || "#BFA200",
           clipPath: octagonClipPath,
         }}
       />
@@ -48,7 +48,7 @@ function OctagonalProfile({ size = 50, borderColor, innerBorderColor = "", onCli
           right: `${borderThickness + whiteSpaceThickness}px`,
           bottom: `${borderThickness + whiteSpaceThickness}px`,
           clipPath: octagonClipPath,
-          backgroundColor: "#eedebe",
+          backgroundColor: "#002147",
         }}
       >
         {imageSrc ? (
@@ -58,7 +58,7 @@ function OctagonalProfile({ size = 50, borderColor, innerBorderColor = "", onCli
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="text-[#234243] text-4xl font-bold">
+          <div className="text-[#BFA200] text-4xl font-bold">
             {fallbackText || "?"}
           </div>
         )}

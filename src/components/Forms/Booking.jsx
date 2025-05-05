@@ -948,6 +948,7 @@ export default function Booking({ onBackService }) {
                 <InlineChatbotStep
                   requestId={bookingId}
                   tableName="booking_chat_messages"
+                  workflowKey="booking"
                 />
               )}
             </>
