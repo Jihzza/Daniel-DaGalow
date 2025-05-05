@@ -345,47 +345,73 @@
   },
 
   "faqs": {
-    "title": "Consejos rápidos de mentalidad",
+    "title": "Preguntas frecuentes del servicio",
     "questions": {
-      "mindset": {
-        "question": "¿Cómo puedo empezar a mejorar mi mentalidad?",
-        "answer": "Comienza con una práctica diaria de gratitud, afirmaciones positivas y estableciendo metas pequeñas y alcanzables. La constancia es la clave para construir una base sólida de mentalidad."
+      "coaching": {
+        "tiers": {
+          "question": "¿Qué niveles de coaching ofrecéis y qué incluye cada uno?",
+          "answer": "Ofrezco tres niveles de coaching distintos para satisfacer vuestras necesidades específicas:\n\n1. Plan Semanal (40 €/mes): Responderé a vuestras preguntas una vez por semana. Podéis enviar tantas preguntas como necesitéis, y las abordaré todas en una respuesta semanal completa.\n\n2. Plan Diario (90 €/mes): Proporciono respuestas diarias a vuestras preguntas para una orientación más continua y un progreso más rápido hacia vuestros objetivos.\n\n3. Plan Prioritario (230 €/mes): Recibiréis respuestas lo antes posible con un trato de máxima prioridad. Este nivel Premium asegura que nunca tengáis que esperar por consejos críticos."
+        },
+        "right_package": {
+          "question": "¿Cómo sé qué paquete de coaching es el adecuado para mí?",
+          "answer": "El paquete adecuado depende de tus objetivos, tu calendario y el nivel de apoyo que necesites:\n\n- Elige **Semanal** si buscas orientación en un proyecto u objetivo a largo plazo con un calendario flexible.\n- Elige **Diario** si necesitas rendición de cuentas y feedback regular para mantener el impulso.\n- Elige **Prioritario** si estás tomando decisiones sensibles al tiempo o atravesando una fase crítica que requiere asesoramiento experto inmediato.\n\nTu elección debe reflejar el área de coaching en la que buscas ayuda, ya sea orientación financiera, entrenamiento personal, consejos de pareja u otra área especializada."
+        },
+        "change_subscription": {
+          "question": "¿Puedo mejorar o degradar mi paquete de coaching?",
+          "answer": "Sí, puedes cambiar tu nivel de suscripción cuando quieras. Si tus necesidades cambian o descubres que necesitas más o menos apoyo, simplemente actualiza tu suscripción en los ajustes de tu cuenta. Los cambios se harán efectivos en el siguiente ciclo de facturación."
+        },
+        "communication": {
+          "question": "¿Qué canales de comunicación utilizas para el coaching?",
+          "answer": "Toda la comunicación de coaching se realiza vía WhatsApp para una interacción ágil y conveniente. Esto permite compartir fácilmente texto, imágenes, mensajes de voz y documentos, manteniendo un único hilo organizado de nuestras conversaciones."
+        }
       },
-      "motivation": {
-        "question": "¿Cuál es la mejor manera de mantenerme motivado?",
-        "answer": "Crea una visión clara, divide los objetivos en pasos pequeños, lleva un seguimiento de tu progreso y celebra los pequeños logros. Rodéate de influencias positivas y mantén una mentalidad de crecimiento."
+      "consultation": {
+        "booking": {
+          "question": "¿Cómo reservo una consulta?",
+          "answer": "Reservar una consulta es sencillo:\n1. Selecciona la fecha que prefieras en mi calendario\n2. Elige la duración que mejor se adapte a tus necesidades (45–120 minutos)\n3. Selecciona un hueco horario de los disponibles\n4. Completa tus datos de contacto\n5. Procesa el pago de forma segura a través de Stripe\n6. Recibe la confirmación y los detalles de la reunión"
+        },
+        "preparation": {
+          "question": "¿Qué debo preparar antes de nuestra consulta?",
+          "answer": "Para aprovechar al máximo nuestro tiempo juntos, te recomiendo usar el paso del chatbot en el proceso de reserva para proporcionar información clave sobre tu situación. Esto me ayuda a organizar tu sesión de manera eficiente y a maximizar tu tiempo e inversión."
+        },
+        "reschedule": {
+          "question": "¿Puedo reprogramar mi cita?",
+          "answer": "Sí, puedes cancelar o reprogramar tu cita si cambian tus planes. Simplemente inicia sesión en tu cuenta y ajusta tu reserva, o contáctame directamente."
+        },
+        "advance_booking": {
+          "question": "¿Con cuánta antelación debo reservar una consulta?",
+          "answer": "Recomiendo reservar al menos con 48 horas de antelación para asegurar tu franja horaria preferida. Para asuntos urgentes, puedes contactarme directamente y consultar disponibilidad de última hora."
+        },
+        "followup": {
+          "question": "¿Qué sucede después de nuestra consulta?",
+          "answer": "Mis consultas están diseñadas como sesiones independientes sin seguimiento automático. Recibirás toda la orientación y los pasos de acción necesarios durante nuestro tiempo juntos. Si necesitas apoyo adicional tras implementar el asesoramiento inicial, puedes reservar otra sesión o plantearte uno de mis paquetes de coaching continuos."
+        }
       },
-      "setbacks": {
-        "question": "¿Cómo manejo los contratiempos?",
-        "answer": "Ve los contratiempos como oportunidades de aprendizaje. Analiza qué salió mal, ajusta tu enfoque y continúa adelante. Recuerda que el fracaso es parte del camino hacia el éxito."
+      "analysis": {
+        "types": {
+          "question": "¿Qué tipos de análisis ofreces?",
+          "answer": "Ofrezco tres servicios de análisis especializados:\n\n- **Análisis de acciones**: Evaluación exhaustiva de inversiones, incluyendo indicadores técnicos, análisis fundamental y posibles trayectorias de crecimiento.\n- **Análisis de empresas**: Estudio en profundidad de modelos de negocio, posicionamiento competitivo, salud financiera y oportunidades de expansión.\n- **Análisis de redes sociales**: Revisión detallada de cuentas en redes sociales, métricas de engagement, demografía de la audiencia y estrategias de optimización.\n\nCada análisis se adapta a tus preguntas y objetivos específicos."
+        },
+        "information": {
+          "question": "¿Qué información necesito proporcionar para un análisis?",
+          "answer": "Para garantizar un análisis completo y relevante, por favor proporciona:\n- El símbolo bursátil específico, nombre de la empresa o cuenta de redes sociales que quieras analizar\n- Tus preguntas o inquietudes clave sobre el tema\n- Cualquier métrica o aspecto particular que te interese entender\n\nCuanto más específico seas sobre lo que deseas saber, más valioso será tu análisis."
+        },
+        "delivery": {
+          "question": "¿Cómo se entregarán los resultados del análisis?",
+          "answer": "Recibirás un informe completo en PDF por correo electrónico con todos los hallazgos, insights y recomendaciones. Este documento incluye elementos visuales como gráficos, tablas comparativas y diagramas cuando proceda."
+        }
       },
-      "confidence": {
-        "question": "¿Cuál es la clave para desarrollar confianza?",
-        "answer": "Enfócate en tus fortalezas, practica la autocompasión, sal de tu zona de confort regularmente y celebra tus logros, por pequeños que sean."
+      "pitch_deck": {
+        "offering": {
+          "question": "¿Qué pitch decks ofreces?",
+          "answer": "Pongo a tu disposición mis pitch decks personales de las empresas que estoy construyendo actualmente. Son ejemplos reales de presentaciones que han captado el interés de inversores. Entre los pitch decks disponibles se incluyen:\n- Perspectiv\n- Galow.Club\n- Pizzaria\n\nEstos recursos son herramientas de aprendizaje muy valiosas e inspiración para tus propios esfuerzos de captación de fondos."
+        }
       },
-      "productivity": {
-        "question": "¿Cómo puedo mejorar mi productividad?",
-        "answer": "Prioriza tareas, elimina distracciones, toma descansos regulares y enfócate en una sola tarea a la vez. Utiliza técnicas de gestión del tiempo como el método Pomodoro."
-      },
-      "stress": {
-        "question": "¿Cuál es la mejor manera de manejar el estrés?",
-        "answer": "Practica la atención plena, haz ejercicio regularmente, mantén un horario de sueño saludable y aprende a decir no cuando sea necesario. El cuidado personal periódico es esencial."
-      },
-      "habits": {
-        "question": "¿Cómo construyo mejores hábitos?",
-        "answer": "Empieza pequeño, sé constante, lleva un registro de tu progreso y crea un entorno de apoyo. Utiliza la técnica de apilar hábitos para construir nuevas rutinas sobre las existentes."
-      },
-      "decision_making": {
-        "question": "¿Cuál es el secreto para tomar mejores decisiones?",
-        "answer": "Recopila información relevante, considera diferentes perspectivas, confía en tu intuición y estate dispuesto a cometer errores. Aprende de cada decisión que tomes."
-      },
-      "communication": {
-        "question": "¿Cómo puedo mejorar mis habilidades de comunicación?",
-        "answer": "Practica la escucha activa, sé claro y conciso, muestra empatía y pide retroalimentación. La práctica regular y la autoconciencia son cruciales."
-      },
-      "goals": {
-        "question": "¿Cuál es la mejor manera de establecer objetivos?",
-        "answer": "Haz que sean SMART (Específicos, Medibles, Alcanzables, Relevantes, con Plazo), escríbelos, crea un plan de acción y revísalos regularmente."
+      "general": {
+        "payments": {
+          "question": "¿Cómo funcionan los pagos?",
+          "answer": "Todos los pagos se procesan de forma segura a través de Stripe. Acepto todas las principales tarjetas de crédito y débito. Las suscripciones de coaching se facturan mensualmente y se renuevan automáticamente hasta que sean canceladas. Los servicios puntuales, como consultas y análisis, se pagan en el momento de la reserva."
+        }
       }
     }
   },
@@ -591,7 +617,7 @@
             "clear": "Borrar historial de chat"
           }
         }
-      }, 
+      },
       "others": {
         "title": "Otros",
         "description": "Ver documentos legales e información adicional",
