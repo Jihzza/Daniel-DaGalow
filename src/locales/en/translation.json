@@ -82,7 +82,7 @@
     "buttons": {
       "processing": "Processing..."
     }
-    },
+  },
 
   "about": {
     "about_title": "Meet Daniel DaGalow",
@@ -115,7 +115,6 @@
     "services_price_minimum_time": "Minimum 45 minutes",
     "services_book_consultation": "Book a Consultation",
     "common_login_signup": "Login / Sign Up"
-
   },
 
   "coaching": {
@@ -238,7 +237,7 @@
   "booking": {
     "title": "Schedule Your Consultation",
     "step_datetime": "Select Date & Time",
-    
+
     "step_1": "Choose a date",
     "step_2": "Contact Info",
     "step_3": "Payment",
@@ -336,8 +335,7 @@
     "input_placeholder_waiting": "Wait for message...",
     "bot_typing": "bot is typing…",
     "error_message": "Oops, something went wrong.",
-    "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?"
-    ,
+    "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?",
     "booking_welcome": "Your consultation has been scheduled! I'll be your pre-consultation assistant. Would you like to share what specific topics you'd like to discuss during your session?",
     "booking_welcome_with_date": "Your consultation for {{date}} ({{duration}} minutes) is confirmed! I'll be your pre-consultation assistant. Would you like to share what specific topics you'd like to discuss during your session?",
     "coaching_welcome": "Welcome to your {{tier}} coaching program! I'm your assistant and will connect you with Daniel. To make the most of your coaching experience, could you share what specific goals you're hoping to achieve?",
@@ -354,51 +352,76 @@
   },
 
   "faqs": {
-    "title": "Quick Mindset Tips",
+    "title": "Service FAQs",
     "questions": {
-      "mindset": {
-        "question": "How can I start improving my mindset?",
-        "answer": "Begin with daily gratitude practice, positive affirmations, and setting small, achievable goals. Consistency is key to building a strong mindset foundation."
+      "coaching": {
+        "tiers": {
+          "question": "What coaching tiers do you offer and what's included with each?",
+          "answer": "I offer three distinct coaching tiers to meet your specific needs:\n\n1. Weekly Plan (€40/month): I'll answer your questions once a week. You can submit as many questions as you need, and I'll address them all in a comprehensive weekly response.\n\n2. Daily Plan (€90/month): I provide daily responses to your questions for more continuous guidance and faster progress toward your goals.\n\n3. Priority Plan (€230/month): You'll receive answers as soon as possible with top priority handling. This premium tier ensures you're never waiting for critical advice."
+        },
+        "right_package": {
+          "question": "How do I know which coaching package is right for me?",
+          "answer": "The right coaching package depends on your goals, timeline, and the level of support you need:\n\n- Choose Weekly if you're looking for guidance on a longer-term project or goal with a flexible timeline.\n- Choose Daily if you need regular accountability and feedback to maintain momentum.\n- Choose Priority if you're making time-sensitive decisions or navigating a critical phase that requires immediate expert input.\n\nYour choice should reflect what coaching area you're seeking help with, whether it's financial guidance, personal training, relationship advice, or any other specialized area."
+        },
+        "change_subscription": {
+          "question": "Can I upgrade or downgrade my coaching package?",
+          "answer": "Yes, you can change your subscription tier whenever you want. If your needs change or you discover you need more or less support, simply update your subscription in your account settings. Changes will take effect at your next billing cycle."
+        },
+        "communication": {
+          "question": "What communication channels do you use for coaching?",
+          "answer": "All coaching communication takes place via WhatsApp for seamless, convenient interaction. This allows for easy sharing of text, images, voice messages, and documents while maintaining a single, organized thread of our conversations."
+        }
       },
-      "motivation": {
-        "question": "What's the best way to stay motivated?",
-        "answer": "Create a clear vision, break goals into small steps, track progress, and celebrate small wins. Surround yourself with positive influences and maintain a growth mindset."
+      "consultation": {
+        "booking": {
+          "question": "How do I book a consultation?",
+          "answer": "Booking a consultation is straightforward:\n1. Select your preferred date on my calendar\n2. Choose a duration that fits your needs (45–120 minutes)\n3. Select a time slot from available hours\n4. Complete your contact information\n5. Process your payment securely through Stripe\n6. Receive confirmation and meeting details"
+        },
+        "preparation": {
+          "question": "What should I prepare before our consultation?",
+          "answer": "To make the most of our time together, I recommend using the chatbot step in the booking process to provide key information about your situation. This helps me organize your session efficiently, ensuring we maximize your time and investment."
+        },
+        "reschedule": {
+          "question": "Can I reschedule my appointment?",
+          "answer": "Yes, you can cancel or reschedule your appointment if your plans change. Simply log into your account and adjust your booking, or contact me directly."
+        },
+        "advance_booking": {
+          "question": "How far in advance should I book a consultation?",
+          "answer": "I recommend booking at least 48 hours in advance to secure your preferred time slot. For urgent matters, you may contact me directly to check for last-minute availability."
+        },
+        "followup": {
+          "question": "What happens after our consultation?",
+          "answer": "My consultations are designed as standalone sessions without automatic follow-up. You’ll receive the guidance and action steps you need during our time together. If you find you need additional support after implementing the initial advice, you’re welcome to schedule another session or consider one of my ongoing coaching packages."
+        }
       },
-      "setbacks": {
-        "question": "How do I handle setbacks?",
-        "answer": "View setbacks as learning opportunities. Analyze what went wrong, adjust your approach, and keep moving forward. Remember that failure is part of the success journey."
+      "analysis": {
+        "types": {
+          "question": "What types of analysis do you offer?",
+          "answer": "I offer three specialized analysis services:\n\n- Stock Analysis: Comprehensive evaluation of investments including technical indicators, fundamental analysis, and potential growth trajectories.\n- Company Analysis: In-depth assessment of business models, competitive positioning, financial health, and growth opportunities.\n- Social Media Analysis: Detailed review of social media accounts, engagement metrics, audience demographics, and optimization strategies.\n\nEach analysis is custom-tailored to your specific questions and objectives."
+        },
+        "information": {
+          "question": "What information do I need to provide for an analysis?",
+          "answer": "To ensure a thorough and relevant analysis, please provide:\n- The specific stock symbol, company name, or social media account you want analyzed\n- Your key questions or concerns about the subject\n- Any particular metrics or aspects you’re most interested in understanding\n\nThe more specific you are about what you want to know, the more valuable your analysis will be."
+        },
+        "delivery": {
+          "question": "How will analysis results be delivered?",
+          "answer": "You’ll receive a comprehensive PDF report via email containing all findings, insights, and recommendations. This document includes visual elements such as graphs, charts, and comparative tables where applicable."
+        }
       },
-      "confidence": {
-        "question": "What's the key to building confidence?",
-        "answer": "Focus on your strengths, practice self-compassion, step out of your comfort zone regularly, and celebrate your achievements, no matter how small."
+      "pitch_deck": {
+        "offering": {
+          "question": "What are the pitch decks you offer?",
+          "answer": "I provide access to my personal pitch decks for companies I’m currently building. These are real-world examples of successful pitches that have attracted investor interest. Available pitch decks include:\n- Perspectiv\n- Galow.Club\n- Pizzaria\n\nThese resources serve as valuable learning tools and inspiration for your own fundraising efforts."
+        }
       },
-      "productivity": {
-        "question": "How can I improve my productivity?",
-        "answer": "Prioritize tasks, eliminate distractions, take regular breaks, and focus on one task at a time. Use time management techniques like the Pomodoro method."
-      },
-      "stress": {
-        "question": "What's the best way to handle stress?",
-        "answer": "Practice mindfulness, exercise regularly, maintain a healthy sleep schedule, and learn to say no when necessary. Regular self-care is essential."
-      },
-      "habits": {
-        "question": "How do I build better habits?",
-        "answer": "Start small, be consistent, track your progress, and create a supportive environment. Use habit stacking to build new routines on existing ones."
-      },
-      "decision_making": {
-        "question": "What's the secret to better decision-making?",
-        "answer": "Gather relevant information, consider different perspectives, trust your intuition, and be willing to make mistakes. Learn from each decision you make."
-      },
-      "communication": {
-        "question": "How can I improve my communication skills?",
-        "answer": "Practice active listening, be clear and concise, show empathy, and ask for feedback. Regular practice and self-awareness are crucial."
-      },
-      "goals": {
-        "question": "What's the best way to set goals?",
-        "answer": "Make them SMART (Specific, Measurable, Achievable, Relevant, Time-bound), write them down, create an action plan, and review them regularly."
+      "general": {
+        "payments": {
+          "question": "How do payments work?",
+          "answer": "All payments are processed securely through Stripe. I accept all major credit and debit cards. Coaching subscriptions are billed monthly and automatically renew until canceled. One-time services like consultations and analyses are paid at the time of booking."
+        }
       }
     }
   },
-
   "bug_report": {
     "title": "Help Me Improve",
     "description": "As the website is in beta, your feedback is crucial. Please provide detailed information about any issues you've encountered to help us enhance the user experience.",
