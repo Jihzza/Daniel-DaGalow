@@ -31,13 +31,12 @@ import CalendarPage from "./pages/profile/CalendarPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import EditProfilePage from "./pages/profile/EditProfilePage";
 import SettingsPage from "./pages/profile/SettingsPage";
-import HomePage from "./pages/HomePage";
 import Footer from "./components/layout/Footer";
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
-
+import ScrollToTop from "./components/common/ScrollToTop";
 import TestimonialReview from "./pages/admin/TestimonialReview";
 import BookingSuccess from "./pages/BookingSuccess";
 import { useAuth } from "./contexts/AuthContext";
@@ -118,6 +117,7 @@ function App() {
     <AuthModalContext.Provider value={{ openAuthModal }}>
       <AuthProvider>
         <Router>
+          <ScrollToTop />
           <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray overflow-hidden">
             <Header onAuthModalOpen={openAuthModal} />
 
