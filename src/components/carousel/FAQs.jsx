@@ -183,6 +183,11 @@ useEffect(() => {
       answer: t('faqs.questions.pitch_deck.offering.answer'),
     },
 
+    {
+      question: t('faqs.questions.chatbot.purpose.question'),
+      answer: t('faqs.questions.chatbot.purpose.answer')
+    },
+
     // Payment Information
     {
       question: t('faqs.questions.general.payments.question'),

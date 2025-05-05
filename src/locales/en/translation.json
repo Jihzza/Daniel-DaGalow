@@ -370,6 +370,10 @@
         "communication": {
           "question": "What communication channels do you use for coaching?",
           "answer": "All coaching communication takes place via WhatsApp for seamless, convenient interaction. This allows for easy sharing of text, images, voice messages, and documents while maintaining a single, organized thread of our conversations."
+        },
+        "chatbot": {
+          "question": "Why should I use the chatbot before my service?",
+          "answer": "The chatbot is an essential final step in our service process that helps you maximize the value of your investment. By sharing specific information about yourself, your situation, and your goals through the chatbot, you allow me to prepare thoroughly before our interaction begins. This preparation means we can use 100% of our paid time together focusing on solutions rather than gathering basic information. Clients who use the chatbot report significantly more productive sessions and better outcomes, as we can dive straight into the"
         }
       },
       "consultation": {

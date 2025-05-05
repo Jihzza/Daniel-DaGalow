@@ -363,6 +363,10 @@
         "communication": {
           "question": "¿Qué canales de comunicación utilizas para el coaching?",
           "answer": "Toda la comunicación de coaching se realiza vía WhatsApp para una interacción ágil y conveniente. Esto permite compartir fácilmente texto, imágenes, mensajes de voz y documentos, manteniendo un único hilo organizado de nuestras conversaciones."
+        },
+        "chatbot": {
+          "question": "¿Por qué debería usar el chatbot antes de mi servicio?",
+          "answer": "El chatbot es un paso final esencial en nuestro proceso de servicio que te ayuda a maximizar el valor de tu inversión. Al compartir información específica sobre ti, tu situación y tus objetivos a través del chatbot, te permito prepararte completamente antes de que comencemos nuestra interacción. Esto significa que podemos usar el 100% de nuestro tiempo juntos enfocándonos en soluciones, en lugar de recopilar información básica."
         }
       },
       "consultation": {

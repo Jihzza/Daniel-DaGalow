@@ -407,6 +407,12 @@
           "answer": "Coloco à disposição meus pitch decks pessoais das empresas que estou desenvolvendo. São exemplos reais que já atraíram investidores. Entre os pitch decks disponíveis estão:\n- Perspectiv\n- Galow.Club\n- Pizzaria\n\nEsses materiais são ótimas referências e inspiração para suas próprias captações de recursos."
         }
       },
+      "chatbot": {
+        "purpose": {
+          "question": "Por que devo usar o chatbot antes do meu serviço?",
+          "answer": "O chatbot é um passo final essencial no nosso processo de serviço que ajuda a maximizar o valor da sua investimento. Ao partilhar informações específicas sobre si, a sua situação e os seus objetivos através do chatbot, permite-me preparar-me completamente antes de começarmos a interagir. Isto significa que podemos usar o 100% do nosso tempo juntos focando em soluções, em vez de recolher informação básica."
+        }
+      },
       "general": {
         "payments": {
           "question": "Como funcionam os pagamentos?",
@@ -858,7 +864,7 @@
       "button": "Crie sua conta gratuita"
     }
   },
-  
+
   "window_chatbot": {
     "welcome_message": "Bem-vindo ao assistente pessoal do DaGalow! Posso ajudar com informações sobre serviços, agendamentos ou responder suas dúvidas sobre a expertise do Daniel. Como posso ajudar hoje?"
   }
