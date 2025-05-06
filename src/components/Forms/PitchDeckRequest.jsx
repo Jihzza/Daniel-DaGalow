@@ -375,6 +375,15 @@ export default function PitchDeckRequest({ onBackService }) {
           }
         }
 
+        // Add a console.log to see the data being sent to Supabase
+        console.log("Sending data to pitch_requests:", {
+          project: formData.project,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          user_id: user?.id,
+        });
+
         const { data, error } = await supabase
           .from("pitch_requests")
           .insert({
@@ -387,8 +396,13 @@ export default function PitchDeckRequest({ onBackService }) {
           .select("id")
           .single();
 
-        if (error) throw error;
+        // Log any errors from Supabase
+        if (error) {
+          console.error("Detailed Supabase error:", error);
+          throw error;
+        }
 
+        console.log("Successfully created pitch request with ID:", data.id);
         setRequestId(data.id);
         setStep(3);
       } catch (error) {

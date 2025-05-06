@@ -5,12 +5,30 @@ import AttachIcon from "../../assets/icons/Anexar.svg";
 import { supabase } from "../../utils/supabaseClient";
 import { format } from "date-fns";
 import TypingMessage from "../common/TypingMessage";
+import { useAuth } from "../../contexts/AuthContext";
 
-// Set a single fixed webhook URL as specified
-const WEBHOOK_URL = "https://rafaello.app.n8n.cloud/webhook/chat";
+// Function to get the appropriate webhook URL based on the table name
+const getWebhookUrl = (tableName) => {
+  // Different webhook URLs for different chat types
+  if (tableName === 'analysis_chat_messages') {
+    return "https://rafaello.app.n8n.cloud/webhook/analysis-chat";
+  }
+  else if (tableName === 'pitchdeck_chat_messages') {
+    return "https://rafaello.app.n8n.cloud/webhook/pitchdeck-chat";
+  }
+  else if (tableName === 'coaching_chat_messages') {
+    return "https://rafaello.app.n8n.cloud/webhook/coaching-chat";
+  }
+  else if (tableName === 'booking_chat_messages') {
+    return "https://rafaello.app.n8n.cloud/webhook/booking-chat";
+  }
+  // Default webhook for all other chat types
+  return "https://rafaello.app.n8n.cloud/webhook/chat";
+};
 
 export default function InlineChatbotStep({ requestId, tableName }) {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -69,9 +87,9 @@ export default function InlineChatbotStep({ requestId, tableName }) {
         if (!error && data) {
           const tier =
             {
-              weekly: "Basic",
-              daily: "Standard",
-              priority: "Premium",
+              Weekly: "Basic",
+              Daily: "Standard",
+              Priority: "Premium",
             }[data.service_type] || "coaching";
 
           welcomeMessage = t("inline_chatbot.coaching_welcome", { tier });
@@ -128,19 +146,45 @@ export default function InlineChatbotStep({ requestId, tableName }) {
   useEffect(() => {
     if (!requestId) return;
     (async () => {
-      const { data, error } = await supabase
-        .from(tableName)
-        .select("sender, message, created_at")
-        .eq("request_id", requestId)
-        .order("created_at", { ascending: true });
+      let query;
+      
+      // Handle tables with the new structure (role, content)
+      if (tableName === 'analysis_chat_messages' || 
+        tableName === 'pitchdeck_chat_messages' || 
+        tableName === 'coaching_chat_messages' ||
+        tableName === 'booking_chat_messages') {
+        
+        const fieldName = 'session_id';
+        
+        query = supabase
+          .from(tableName)
+          .select('role, content, created_at')
+          .eq(fieldName, requestId)
+          .order('created_at', { ascending: true });
+      } 
+      // Handle other tables with the old structure (sender, message)
+      else {
+        query = supabase
+          .from(tableName)
+          .select('sender, message, created_at')
+          .eq('request_id', requestId)
+          .order('created_at', { ascending: true });
+      }
+      
+      const { data, error } = await query;
+      
       if (error) {
         console.error("Fetch messages error", error);
         return;
       }
 
       const messagesList = data.map((d) => ({
-        from: d.sender === "user" ? "user" : "bot",
-        text: d.message,
+        // Map role/sender field to 'from' for UI display
+        from: d.role ? 
+          (d.role === 'user' ? 'user' : 'bot') : 
+          (d.sender === 'user' ? 'user' : 'bot'),
+        // Use the correct message content field
+        text: d.content || d.message,
         isTyping: false, // Mark existing messages as already typed
       }));
 
@@ -166,13 +210,25 @@ export default function InlineChatbotStep({ requestId, tableName }) {
         setMsgs([welcomeMessage]);
         setIsTypingAnimationActive(true);
 
-        // Store welcome message in database
+        // Store welcome message in database - adapt to table structure
         if (requestId) {
-          await supabase.from(tableName).insert({
-            request_id: requestId,
-            sender: "bot",
-            message: welcomeText,
-          });
+          if (tableName === 'analysis_chat_messages' || 
+            tableName === 'pitchdeck_chat_messages' || 
+            tableName === 'coaching_chat_messages' ||
+            tableName === 'booking_chat_messages') {
+            await supabase.from(tableName).insert({
+              session_id: requestId,
+              role: "assistant",
+              content: welcomeText,
+              user_id: user?.id
+            });
+          } else {
+            await supabase.from(tableName).insert({
+              request_id: requestId,
+              sender: "bot",
+              message: welcomeText
+            });
+          }
         }
 
         setIsNewChat(false);
@@ -180,7 +236,7 @@ export default function InlineChatbotStep({ requestId, tableName }) {
 
       initializeChat();
     }
-  }, [isNewChat, msgs, requestId, tableName]);
+  }, [isNewChat, msgs, requestId, tableName, user]);
 
   // Auto-scroll whenever messages or busy change
   useEffect(() => {
@@ -200,20 +256,40 @@ export default function InlineChatbotStep({ requestId, tableName }) {
     // 1) Add user message to UI (no animation for user messages)
     setMsgs((m) => [...m, { from: "user", text: t }]);
 
-    // 2) Save user message to database
-    await supabase
-      .from(tableName)
-      .insert({ request_id: requestId, sender: "user", message: t });
+    // 2) Save user message to database - adapt to table structure
+    if (tableName === 'analysis_chat_messages' || 
+        tableName === 'pitchdeck_chat_messages' || 
+        tableName === 'coaching_chat_messages' ||
+        tableName === 'booking_chat_messages') {
+      await supabase.from(tableName).insert({
+        session_id: requestId,
+        role: "user",
+        content: t,
+        user_id: user?.id
+      });
+    } else {
+      await supabase.from(tableName).insert({
+        request_id: requestId,
+        sender: "user",
+        message: t
+      });
+    }
 
     try {
-      // 3) Always use the single webhook URL
-      const workflowUrl = WEBHOOK_URL;
+      // 3) Use the appropriate webhook URL based on the table name
+      const workflowUrl = getWebhookUrl(tableName);
         
       // 4) Send to the webhook to get response
       const res = await fetch(workflowUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: requestId, chatInput: t }),
+        body: JSON.stringify({ 
+          session_id: requestId, 
+          chatInput: t,
+          // Add service type to help the workflow identify the context
+          service_type: tableName.replace('_chat_messages', ''),
+          user_id: user?.id
+        }),
       });
 
       // Check if response status is OK (200-299)
@@ -241,10 +317,24 @@ export default function InlineChatbotStep({ requestId, tableName }) {
 
       const output = data.output || "No output field in response.";
 
-      // 6) Save bot response to database
-      await supabase
-        .from(tableName)
-        .insert({ request_id: requestId, sender: "bot", message: output });
+      // 6) Save bot response to database - adapt to table structure
+      if (tableName === 'analysis_chat_messages' || 
+          tableName === 'pitchdeck_chat_messages' || 
+          tableName === 'coaching_chat_messages' ||
+          tableName === 'booking_chat_messages') {
+        await supabase.from(tableName).insert({
+          session_id: requestId,
+          role: "assistant",
+          content: output,
+          user_id: user?.id
+        });
+      } else {
+        await supabase.from(tableName).insert({
+          request_id: requestId,
+          sender: "bot",
+          message: output
+        });
+      }
 
       // 7) Add bot response to UI with typing animation
       setMsgs((m) => [
@@ -262,11 +352,25 @@ export default function InlineChatbotStep({ requestId, tableName }) {
       // Create user-friendly error message
       const errorMessage = "There was a problem connecting to our AI assistant. Please try again later.";
       
-      // Save error message to database
+      // Save error message to database - adapt to table structure
       try {
-        await supabase
-          .from(tableName)
-          .insert({ request_id: requestId, sender: "bot", message: errorMessage });
+        if (tableName === 'analysis_chat_messages' || 
+            tableName === 'pitchdeck_chat_messages' || 
+            tableName === 'coaching_chat_messages' ||
+            tableName === 'booking_chat_messages') {
+          await supabase.from(tableName).insert({
+            session_id: requestId,
+            role: "assistant",
+            content: errorMessage,
+            user_id: user?.id
+          });
+        } else {
+          await supabase.from(tableName).insert({
+            request_id: requestId,
+            sender: "bot",
+            message: errorMessage
+          });
+        }
       } catch (dbError) {
         console.error("Error saving error message to database:", dbError);
       }

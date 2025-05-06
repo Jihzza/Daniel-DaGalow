@@ -139,9 +139,6 @@ function ChatbotStep({ requestId }) {
   
   return (
     <div className="space-y-4">
-      <p className="text-white mb-4">
-        {t("analysis_request.chatbot.description", "Ask our AI assistant any questions about your analysis request:")}
-      </p>
       
       {/* Using the InlineChatbotStep with only tableName and requestId */}
       <InlineChatbotStep 
