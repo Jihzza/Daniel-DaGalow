@@ -14,8 +14,6 @@ const ResetPassword = () => {
 
   useEffect(() => {
     // Debug: show raw URL parts
-    console.log('🔍 window.location.search:', window.location.search);
-    console.log('🔍 window.location.hash:', window.location.hash);
 
     // Parse token from query string or hash fragment
     const searchParams = new URLSearchParams(window.location.search);
@@ -23,8 +21,6 @@ const ResetPassword = () => {
     const access_token = searchParams.get('access_token') || hashParams.get('access_token');
     const refresh_token = hashParams.get('refresh_token') || searchParams.get('refresh_token');
 
-    console.log('✅ parsed access_token:', access_token);
-    console.log('✅ parsed refresh_token:', refresh_token);
     if (!access_token) {
       console.error('❌ No access_token found!');
       setError(t('auth.reset_password.errors.invalid_link'));
@@ -43,7 +39,6 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('👉 handleSubmit, new password:', password);
     setError('');
     setMessage('');
     setLoading(true);

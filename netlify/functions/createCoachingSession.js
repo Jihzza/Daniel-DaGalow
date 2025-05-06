@@ -9,8 +9,8 @@ const supabase = createClient(
 
 // Pricing map for coaching tiers (in cents)
 const TIER_PRICES = {
-  Weekly: 4000,  // €40.00
-  Daily: 9000,  // €90.00
+  Weekly: 4000, // €40.00
+  Daily: 9000, // €90.00
   Priority: 23000, // €230.00
 };
 
@@ -27,7 +27,7 @@ exports.handler = async (event) => {
   }
 
   const { requestId, tier, email, isTestBooking } = body;
-  
+
   if (!requestId || !tier || !email) {
     console.error("Missing required parameters:", { requestId, tier, email });
     return { statusCode: 400, body: "Missing parameters" };
@@ -35,7 +35,7 @@ exports.handler = async (event) => {
 
   // Parse ID as integer since coaching_requests uses int8
   const parsedRequestId = parseInt(requestId, 10);
-  
+
   if (isNaN(parsedRequestId)) {
     console.error("Invalid request ID (not an integer):", requestId);
     return { statusCode: 400, body: "Invalid request ID format" };
@@ -43,8 +43,6 @@ exports.handler = async (event) => {
 
   // Calculate price - free for test bookings
   const unitAmount = isTestBooking === true ? 0 : TIER_PRICES[tier] || 0;
-
-  console.log(`Creating Stripe session for coaching ID ${parsedRequestId}, tier: ${tier}, amount: ${unitAmount}`);
 
   // Create the session
   try {
@@ -56,7 +54,9 @@ exports.handler = async (event) => {
             currency: "eur",
             unit_amount: unitAmount,
             product_data: {
-              name: isTestBooking ? `Test Coaching (${tier})` : `Coaching Package: ${tier}`,
+              name: isTestBooking
+                ? `Test Coaching (${tier})`
+                : `Coaching Package: ${tier}`,
             },
           },
           quantity: 1,
@@ -64,26 +64,22 @@ exports.handler = async (event) => {
       ],
       client_reference_id: parsedRequestId.toString(), // Convert back to string for Stripe
       customer_email: email,
-      success_url: `${process.env.URL || 'http://localhost:8888'}/payment-complete.html`,
-      cancel_url: `${process.env.URL || 'http://localhost:8888'}/payment-cancelled.html`,
+      success_url: `${process.env.URL || "https://www.danieldagalow.com"}/payment-complete.html`,
+      cancel_url: `${process.env.URL || "https://www.danieldagalow.com"}/payment-cancelled.html`,
     });
-
-    console.log(`Stripe session created: ${session.id}`);
 
     // FIXED: Use stripe_session_id instead of stripe_session
     const { data, error } = await supabase
       .from("coaching_requests")
-      .update({ 
-        stripe_session_id: session.id,  // CHANGED: stripe_session -> stripe_session_id
-        is_test_booking: isTestBooking === true
+      .update({
+        stripe_session_id: session.id, // CHANGED: stripe_session -> stripe_session_id
+        is_test_booking: isTestBooking === true,
       })
       .eq("id", parsedRequestId)
       .select();
 
     if (error) {
       console.error("Error updating coaching request with session ID:", error);
-    } else {
-      console.log("Coaching request updated with session ID:", data);
     }
 
     return {

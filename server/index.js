@@ -30,5 +30,4 @@ app.get("/api/ping", (_req, res) => res.send("pong"));
 // 6) Start listening
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server listening on http://localhost:${PORT}`);
 });

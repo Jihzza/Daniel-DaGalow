@@ -653,7 +653,6 @@ export default function CoachingRequest({ onBackService }) {
   <InlineChatbotStep
     requestId={requestId}
     tableName="coaching_chat_messages"
-    workflowKey="coaching"
   />
 )}
           

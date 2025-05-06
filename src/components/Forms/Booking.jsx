@@ -948,7 +948,9 @@ export default function Booking({ onBackService }) {
                 <InlineChatbotStep
                   requestId={bookingId}
                   tableName="booking_chat_messages"
-                  workflowKey="booking"
+                  workflowKey="booking_confirmation"
+                  initialMessage={`Welcome, ${formData.name}! Your booking has been confirmed. I'm here to answer any questions about your upcoming session.`}
+                  placeholderText="Ask any questions about your booking..."
                 />
               )}
             </>

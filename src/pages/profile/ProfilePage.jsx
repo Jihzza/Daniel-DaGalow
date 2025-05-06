@@ -169,7 +169,6 @@ export default function ProfilePage({ onChatOpen }) {
 
       if (error) throw error;
 
-      console.log("Pending testimonials fetched:", data?.length || 0);
       setPendingTestimonials(data || []);
     } catch (err) {
       console.error("Error fetching pending testimonials:", err);

@@ -8,7 +8,6 @@ const supabase = createClient(
 );
 
 exports.handler = async (event, context) => {
-  console.log("🔄 Booking webhook received");
   
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
@@ -19,16 +18,13 @@ exports.handler = async (event, context) => {
     // Parse the event
     if (process.env.NODE_ENV === 'development') {
       stripeEvent = JSON.parse(event.body);
-      console.log("💻 Development mode: Using raw event data");
     } else {
       const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
       const sig = event.headers["stripe-signature"];
       const buf = Buffer.from(event.body, "utf8");
       stripeEvent = stripe.webhooks.constructEvent(buf, sig, endpointSecret);
-      console.log("✅ Production mode: Verified Stripe signature");
     }
     
-    console.log(`📣 Received Stripe event type: ${stripeEvent.type}`);
   } catch (err) {
     console.error(`❌ Error parsing webhook: ${err.message}`);
     return { statusCode: 400, body: `Webhook Error: ${err.message}` };
@@ -50,7 +46,6 @@ exports.handler = async (event, context) => {
             .update({ payment_status: "paid" })
             .eq("id", clientRef);
             
-          console.log(`Updated booking payment status for ID: ${clientRef}`);
         } catch (error) {
           console.error(`Error updating booking: ${error.message}`);
         }

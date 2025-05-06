@@ -92,9 +92,6 @@ function App() {
   // Subscribe to Supabase auth state changes
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('AUTH EVENT →', event, session);
-      // Optionally handle PASSWORD_RECOVERY event
-      // e.g., if (event === 'PASSWORD_RECOVERY') { /* navigate or set state */ }
     });
     return () => subscription.unsubscribe();
   }, []);

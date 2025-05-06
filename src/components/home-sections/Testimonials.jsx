@@ -113,10 +113,8 @@ function Testimonials({ onAuthModalOpen }) {
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "testimonials" },
         (payload) => {
-          console.log("Testimonial updated:", payload);
           // If a testimonial was updated to 'approved' status, refresh the list
           if (payload.new.status === "approved") {
-            console.log("Approved testimonial detected, refreshing list");
             fetchApprovedTestimonials();
           }
         }

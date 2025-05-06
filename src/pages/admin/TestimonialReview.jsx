@@ -20,7 +20,6 @@ function TestimonialReview() {
   }, [user, refreshTrigger]);
 
   const checkTestimonialStatus = async (id) => {
-    console.log("Checking database status for testimonial:", id);
     
     try {
       const { data, error } = await supabase
@@ -34,7 +33,6 @@ function TestimonialReview() {
         return null;
       }
       
-      console.log("Database status for testimonial:", data);
       return data;
     } catch (err) {
       console.error("Exception during database check:", err);
@@ -50,7 +48,6 @@ function TestimonialReview() {
     }
     
     try {
-      console.log("Checking admin status for user:", user.id);
       
       const { data, error } = await supabase
         .from("profiles")
@@ -63,15 +60,12 @@ function TestimonialReview() {
         throw error;
       }
       
-      console.log("User role data:", data);
       
       if (!data || data.role !== "admin") {
-        console.log("User is not an admin, redirecting to home page");
         navigate("/");
         return;
       }
       
-      console.log("Admin status confirmed");
     } catch (error) {
       console.error("Admin check failed:", error);
       navigate("/");
@@ -82,7 +76,6 @@ function TestimonialReview() {
   const fetchPendingTestimonials = async () => {
     try {
       setLoading(true);
-      console.log("Fetching pending testimonials...");
       
       const { data, error } = await supabase
         .from("testimonials")
@@ -95,8 +88,6 @@ function TestimonialReview() {
         throw error;
       }
       
-      console.log("Pending testimonials fetched:", data?.length || 0);
-      console.log("Testimonial data:", data);
       
       setPendingTestimonials(data || []);
     } catch (error) {
@@ -109,19 +100,15 @@ function TestimonialReview() {
   
   // Force refresh the testimonials list
   const refreshTestimonials = () => {
-    console.log("Manually refreshing testimonials");
     setRefreshTrigger(prev => prev + 1);
   };
   
   // Handle approving a testimonial
   const handleApprove = async (id) => {
-    console.log("=== APPROVAL PROCESS START ===");
-    console.log("Approving testimonial ID:", id);
     
     try {
       // Step 1: Check current status before update
       const beforeStatus = await checkTestimonialStatus(id);
-      console.log("Before update, testimonial status:", beforeStatus);
       
       if (!beforeStatus || beforeStatus.status !== "pending") {
         console.warn("Cannot approve: Testimonial not found or not pending");
@@ -130,7 +117,6 @@ function TestimonialReview() {
       }
       
       // Step 2: Perform the update
-      console.log("Attempting to update status to 'approved'");
       const { data, error } = await supabase
         .from("testimonials")
         .update({ status: "approved" })
@@ -143,11 +129,9 @@ function TestimonialReview() {
         return;
       }
       
-      console.log("Update response:", data);
       
       // Step 3: Verify the update worked
       const afterStatus = await checkTestimonialStatus(id);
-      console.log("After update, testimonial status:", afterStatus);
       
       if (!afterStatus || afterStatus.status !== "approved") {
         console.error("UPDATE VERIFICATION FAILED: Status not changed to approved");
@@ -156,14 +140,11 @@ function TestimonialReview() {
       }
       
       // Step 4: Update UI state
-      console.log("Updating UI state");
       setPendingTestimonials(prev => {
         const newList = prev.filter(t => t.id !== id);
-        console.log("Items removed from list:", prev.length - newList.length);
         return newList;
       });
       
-      console.log("=== APPROVAL PROCESS COMPLETE ===");
       alert("Testimonial approved successfully!");
       
     } catch (err) {
@@ -175,7 +156,6 @@ function TestimonialReview() {
   // Handle rejecting a testimonial
   const handleReject = async (id) => {
     try {
-      console.log("Rejecting testimonial:", id);
       
       // Check if the testimonial still exists and is pending
       const { data: checkData, error: checkError } = await supabase
@@ -213,9 +193,7 @@ function TestimonialReview() {
         console.error("Error updating testimonial status:", error);
         throw error;
       }
-      
-      console.log("Testimonial rejected successfully:", id);
-      
+            
       // Remove from list after rejection
       setPendingTestimonials(prev => prev.filter(t => t.id !== id));
       

@@ -202,7 +202,6 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
         }),
       });
       const data = await res.json();
-      console.log("Webhook returned:", data);
 
       const { output } = data;
 

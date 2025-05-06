@@ -6,17 +6,10 @@ import { supabase } from "../../utils/supabaseClient";
 import { format } from "date-fns";
 import TypingMessage from "../common/TypingMessage";
 
-const WORKFLOWS = {
-  analysis: process.env.REACT_APP_N8N_ANALYSIS_WEBHOOK,
-  coaching: process.env.REACT_APP_N8N_COACHING_WEBHOOK,
-  pitchdeck: process.env.REACT_APP_N8N_PITCH_WEBHOOK,
-  booking: process.env.REACT_APP_N8N_BOOKING_WEBHOOK,
-};
+// Set a single fixed webhook URL as specified
+const WEBHOOK_URL = "https://rafaello.app.n8n.cloud/webhook/chat";
 
-// Default webhook URL as a fallback
-const DEFAULT_WEBHOOK = process.env.REACT_APP_N8N_WEBHOOK_URL || "https://rafaello.app.n8n.cloud/webhook/chat";
-
-export default function InlineChatbotStep({ requestId, tableName, workflowKey }) {
+export default function InlineChatbotStep({ requestId, tableName }) {
   const { t } = useTranslation();
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState("");
@@ -24,7 +17,6 @@ export default function InlineChatbotStep({ requestId, tableName, workflowKey })
   const [isTypingAnimationActive, setIsTypingAnimationActive] = useState(false);
   const listRef = useRef(null);
   const [isNewChat, setIsNewChat] = useState(true);
-  const [messages, setMessages] = useState([]);
 
   // Function to check if any messages still have active typing animations
   const checkTypingAnimations = () => {
@@ -214,21 +206,40 @@ export default function InlineChatbotStep({ requestId, tableName, workflowKey })
       .insert({ request_id: requestId, sender: "user", message: t });
 
     try {
-      // 3) Get the appropriate workflow URL based on the workflowKey
-      const workflowUrl = workflowKey && WORKFLOWS[workflowKey]
-        ? WORKFLOWS[workflowKey]
-        : DEFAULT_WEBHOOK;
+      // 3) Always use the single webhook URL
+      const workflowUrl = WEBHOOK_URL;
         
-      // 4) Send to the appropriate n8n webhook to get response
+      // 4) Send to the webhook to get response
       const res = await fetch(workflowUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: requestId, chatInput: t }),
       });
 
-      // 5) Parse the response
-      const data = await res.json();
-      const { output } = data;
+      // Check if response status is OK (200-299)
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+
+      // Get response text first
+      const responseText = await res.text();
+      
+      // Check if response is empty
+      if (!responseText || responseText.trim() === '') {
+        throw new Error('Empty response from webhook');
+      }
+
+      // Try to parse as JSON
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (jsonError) {
+        console.error("JSON parsing error:", jsonError);
+        // Use the raw text as the response if it's not valid JSON
+        data = { output: responseText || "Received response but couldn't parse it." };
+      }
+
+      const output = data.output || "No output field in response.";
 
       // 6) Save bot response to database
       await supabase
@@ -248,12 +259,24 @@ export default function InlineChatbotStep({ requestId, tableName, workflowKey })
     } catch (err) {
       console.error("Webhook error", err);
 
+      // Create user-friendly error message
+      const errorMessage = "There was a problem connecting to our AI assistant. Please try again later.";
+      
+      // Save error message to database
+      try {
+        await supabase
+          .from(tableName)
+          .insert({ request_id: requestId, sender: "bot", message: errorMessage });
+      } catch (dbError) {
+        console.error("Error saving error message to database:", dbError);
+      }
+
       // Even error messages should animate
       setMsgs((m) => [
         ...m,
         {
           from: "bot",
-          text: "Oops, something went wrong.",
+          text: errorMessage,
           isTyping: true, // Animation for error messages too
         },
       ]);

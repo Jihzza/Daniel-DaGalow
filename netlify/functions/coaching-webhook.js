@@ -7,7 +7,6 @@ exports.handler = async (event) => {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
   
-  console.log("Coaching webhook received");
 
   try {
     // Parse the event data
@@ -16,9 +15,7 @@ exports.handler = async (event) => {
     if (stripeEvent.type === "checkout.session.completed") {
       const session = stripeEvent.data.object;
       const clientRef = session.client_reference_id;
-      
-      console.log("Coaching payment completed for reference:", clientRef);
-      
+            
       if (clientRef) {
         // Create a fresh connection
         const supabase = createClient(
@@ -34,7 +31,6 @@ exports.handler = async (event) => {
             .update({ payment_status: "paid" })
             .eq("id", parsedId);
             
-          console.log(`Updated coaching payment status for ID: ${parsedId}`);
         }
       }
     }

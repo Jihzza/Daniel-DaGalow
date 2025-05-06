@@ -1,9 +1,12 @@
-// utils/supabaseClient.js or wherever your file is located
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js'
 
-// Make sure these environment variables are correctly set in your project
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-
-// Create and export the Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY,
+  {
+    auth: { 
+      autoRefreshToken: true, 
+      persistSession: true 
+    }
+  }
+)

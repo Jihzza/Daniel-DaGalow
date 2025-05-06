@@ -2,12 +2,14 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
-import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useAuth } from "../../contexts/AuthContext";
 import { AuthModalContext } from "../../App";
 import { useContext } from "react";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 import { autoCreateAccount } from "../../utils/autoSignup";
+// Import the InlineChatbotStep component
+import InlineChatbotStep from "../chat/InlineChatbotStep";
+
 // Progress Indicator
 function StepIndicator({
   stepCount,
@@ -131,6 +133,25 @@ function ContactInfoStep({ formData, onChange }) {
   );
 }
 
+// Step 3: Chatbot (New Step)
+function ChatbotStep({ requestId }) {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-4">
+      <p className="text-white mb-4">
+        {t("analysis_request.chatbot.description", "Ask our AI assistant any questions about your analysis request:")}
+      </p>
+      
+      {/* Using the InlineChatbotStep with only tableName and requestId */}
+      <InlineChatbotStep 
+        requestId={requestId} 
+        tableName="analysis_chat_messages" 
+      />
+    </div>
+  );
+}
+
 export default function AnalysisRequest({ onBackService }) {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
@@ -140,8 +161,9 @@ export default function AnalysisRequest({ onBackService }) {
     name: user?.user_metadata?.full_name || "",
     email: "",
   });
-  const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
+  const [requestId, setRequestId] = useState(null); // Store the created request ID
   const formRef = useScrollToTopOnChange([step]);
 
   const handleChange = (e) => {
@@ -153,9 +175,11 @@ export default function AnalysisRequest({ onBackService }) {
   const STEPS = [
     { title: t("analysis_request.steps.type"), component: TypeSelectionStep },
     { title: t("analysis_request.steps.contact"), component: ContactInfoStep },
+    { title: t("analysis_request.steps.chatbot", "Ask Questions"), component: ChatbotStep },
   ];
 
-  const UI_STEPS = STEPS.length + 2;
+  // Now using the actual STEPS length
+  const UI_STEPS = STEPS.length + 1;
 
   const handleStepClick = (dot) => {
     if (dot === 1) onBackService();
@@ -163,6 +187,7 @@ export default function AnalysisRequest({ onBackService }) {
   };
 
   const canProceed = () => {
+    if (step === 1) return formData.type;
     if (step === 2) return formData.name && formData.email;
     return true;
   };
@@ -204,13 +229,20 @@ export default function AnalysisRequest({ onBackService }) {
 
         if (error) throw error;
 
+        // Save the created request ID and proceed to chatbot step
         setRequestId(data.id);
+        setStep(3); // Move to chatbot step
         setIsSubmitting(false);
-        setStep(3);
       } catch (error) {
         console.error("Error submitting request:", error);
         setIsSubmitting(false);
       }
+    } else if (step === 3) {
+      // When finished with chatbot, mark as complete
+      setIsComplete(true);
+    } else {
+      // For other steps, just move to the next step
+      setStep(step + 1);
     }
   };
 
@@ -227,7 +259,7 @@ export default function AnalysisRequest({ onBackService }) {
         </h2>
         <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
           {/* Step Content */}
-          {step <= 2 && (
+          {!isComplete && step <= STEPS.length && (
             <>
               <h3 className="text-xl text-white mb-4">
                 {STEPS[step - 1].title}
@@ -235,23 +267,24 @@ export default function AnalysisRequest({ onBackService }) {
               {React.createElement(STEPS[step - 1].component, {
                 formData,
                 onChange: handleChange,
+                requestId, // Pass requestId to the ChatbotStep
               })}
             </>
           )}
 
-          {/* Inline Chat Step */}
-          {/* Inline Chat Step */}
-          {step === 3 && requestId && (
-            <>
+          {/* Success Message (shown after chatbot step is completed) */}
+          {isComplete && (
+            <div className="text-center py-8">
               <h3 className="text-xl text-white mb-4">
-                {t("analysis_request.steps.chat")}
+                {t("analysis_request.success_title", "Request Submitted")}
               </h3>
-              <InlineChatbotStep
-                requestId={requestId}
-                tableName="analysis_chat_messages"
-                workflowKey="analysis"
-              />
-            </>
+              <p className="text-white mb-6">
+                {t(
+                  "analysis_request.success_message",
+                  "Thank you for your request. Our team will review it and get back to you soon."
+                )}
+              </p>
+            </div>
           )}
 
           {/* Navigation Controls */}
@@ -262,7 +295,7 @@ export default function AnalysisRequest({ onBackService }) {
             >
               {t("analysis_request.buttons.back")}
             </button>
-            {step <= 2 && (
+            {!isComplete && step <= STEPS.length && (
               <button
                 onClick={handleNext}
                 disabled={!canProceed() || isSubmitting}
@@ -296,20 +329,19 @@ export default function AnalysisRequest({ onBackService }) {
                     </svg>
                     {t("hero.buttons.processing", "Processing...")}
                   </span>
-                ) : // Show the title of the next step instead of generic "Next"
-                step < STEPS.length ? (
-                  STEPS[step].title
                 ) : (
-                  t("analysis_request.steps.chat")
+                  step === STEPS.length
+                    ? t("analysis_request.buttons.finish", "Finish")
+                    : t("analysis_request.buttons.next", "Next")
                 )}
               </button>
             )}
-            {step >= 3 && (
+            {isComplete && (
               <button
                 onClick={onBackService}
                 className="px-4 py-2 md:px-5 md:py-3 bg-darkGold text-black rounded-xl"
               >
-                {t("analysis_request.buttons.done")}
+                {t("analysis_request.buttons.done", "Done")}
               </button>
             )}
           </div>
@@ -317,7 +349,7 @@ export default function AnalysisRequest({ onBackService }) {
           {/* Progress Dots */}
           <StepIndicator
             stepCount={UI_STEPS}
-            currentStep={step + 1}
+            currentStep={isComplete ? UI_STEPS : step + 1}
             onStepClick={handleStepClick}
             className="mt-6"
           />

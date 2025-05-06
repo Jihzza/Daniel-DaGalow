@@ -426,7 +426,6 @@ export default function PitchDeckRequest({ onBackService }) {
             <InlineChatbotStep
               requestId={requestId}
               tableName="pitchdeck_chat_messages"
-              workflowKey="pitchdeck"
             />
           )}
 

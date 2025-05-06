@@ -206,7 +206,7 @@ useEffect(() => {
   };
 
   return (
-    <section id="faqs2" className="w-full h-[60vh]">
+    <section id="faqs2" className="w-full h-auto">
       <div className="max-w-4xl md:max-w-6xl mx-auto h-full flex flex-col">
         <h2 className="text-2xl md:text-4xl py-4 font-bold text-center text-black">
           {t('faqs.title')}

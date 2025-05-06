@@ -16,8 +16,6 @@ exports.handler = async (event) => {
     };
   }
 
-  // Add logging to debug
-  console.log("Checking payment status for coaching request ID:", id);
 
   // IMPORTANT: Parse as integer since your ID column is int8
   const requestId = parseInt(id, 10);
@@ -48,8 +46,6 @@ exports.handler = async (event) => {
         }),
       };
     }
-
-    console.log("Payment status data:", data);
     
     // Return the current status from the database
     return {
