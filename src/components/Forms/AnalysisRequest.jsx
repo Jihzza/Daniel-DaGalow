@@ -9,6 +9,7 @@ import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 import { autoCreateAccount } from "../../utils/autoSignup";
 // Import the InlineChatbotStep component
 import InlineChatbotStep from "../chat/InlineChatbotStep";
+import { v4 as uuidv4 } from 'uuid';
 
 // Progress Indicator
 function StepIndicator({
@@ -192,7 +193,7 @@ export default function AnalysisRequest({ onBackService }) {
   const handleNext = async () => {
     if (step === 2) {
       setIsSubmitting(true);
-
+  
       try {
         // Auto-create account if user is not logged in
         if (!user && formData.name && formData.email) {
@@ -200,34 +201,42 @@ export default function AnalysisRequest({ onBackService }) {
             formData.name,
             formData.email
           );
-
+  
           // Optional: If you're using a notification library like react-toastify
           if (accountResult.success && !accountResult.userExists) {
-            // If using react-toastify:
-            // toast.success("Account created! Check your email for login details.");
             console.log("Account created successfully");
           }
         }
-
+  
+        // Generate a session ID
+        const sessionId = uuidv4();
+  
         // Continue with your existing form submission code
         const payload = {
           name: formData.name,
           email: formData.email,
           service_type: formData.type,
+          session_id: sessionId, // Add the session ID to the payload
         };
-
+  
+        // Make sure to include the user_id if available
         if (user?.id) payload.user_id = user.id;
-
+  
         const { data, error } = await supabase
           .from("analysis_requests")
           .insert(payload)
-          .select("id")
+          .select("id, session_id")
           .maybeSingle();
-
+  
         if (error) throw error;
-
+  
         // Save the created request ID and proceed to chatbot step
         setRequestId(data.id);
+        
+        // When passing to InlineChatbotStep, pass the session_id instead of the request ID
+        // Store it for later use in the ChatbotStep
+        localStorage.setItem('current_analysis_session_id', data.session_id);
+        
         setStep(3); // Move to chatbot step
         setIsSubmitting(false);
       } catch (error) {

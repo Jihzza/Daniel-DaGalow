@@ -106,32 +106,54 @@ const EditProfilePage = () => {
       fetchProfile();
     }
   }, [user]);
+  
+  useEffect(() => {
+    if (username) {
+      const timer = setTimeout(() => {
+        checkUsernameAvailability(username);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [username]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Check validity conditions including phone
-    if (username && (!usernameAvailable || username.length < 3)) return;
-    if (phoneNumber && !phoneValidated && phoneError) return;
     try {
       setLoading(true);
       setMessage("");
       setError("");
-      const updates = {
-        full_name: fullName,
+      
+      // Add debug output to help troubleshoot
+      console.log("Submitting profile update:", {
+        id: user.id,
+        fullName, 
         username,
-        avatar_url: avatarUrl,
-        phone_number: phoneNumber,
-        updated_at: new Date(),
-      };
-      const { error } = await supabase
+        phoneNumber
+      });
+      
+      // Use upsert instead of update to ensure record is created if needed
+      const { data, error } = await supabase
         .from("profiles")
-        .update(updates)
-        .eq("id", user.id);
+        .upsert({
+          id: user.id,
+          full_name: fullName,
+          username,
+          avatar_url: avatarUrl,
+          phone_number: phoneNumber,
+          updated_at: new Date()
+        })
+        .select();
+        
       if (error) throw error;
+      
+      console.log("Profile update result:", data);
       setMessage(t('edit_profile.profile_updated'));
-      setTimeout(() => navigate("/profile"), 1500);
+      
+      // Increase the timeout to ensure the operation completes
+      setTimeout(() => navigate("/profile"), 2000);
     } catch (err) {
+      console.error("Profile update error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -169,6 +191,29 @@ const EditProfilePage = () => {
       console.error(err.message);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const checkUsernameAvailability = async (username) => {
+    if (!username || username.length < 3) {
+      setUsernameAvailable(false);
+      return;
+    }
+    
+    try {
+      setCheckingUsername(true);
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("username", username)
+        .neq("id", user.id) // Exclude current user
+        .single();
+        
+      setUsernameAvailable(!data); // Available if no results found
+    } catch (error) {
+      console.error("Error checking username:", error);
+    } finally {
+      setCheckingUsername(false);
     }
   };
 

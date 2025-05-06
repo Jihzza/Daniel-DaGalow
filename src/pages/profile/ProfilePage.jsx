@@ -268,43 +268,42 @@ export default function ProfilePage({ onChatOpen }) {
 
   return (
     <main className="mt-14 md:mt-24 lg:mt-20">
-    <div className="py-6 md:py-8 lg:py-12 px-4 md:px-6 lg:px-8 min-h-screen bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray">
-      <div className="max-w-xs sm:max-w-md md:max-w-3xl lg:max-w-6xl mx-auto">
-        {/* Profile Header - Enhanced for tablet/desktop */}
-        <div className="bg-gentleGray rounded-xl shadow-lg p-4 sm:p-6 md:p-8 flex flex-col sm:flex-row items-center gap-4 mb-6 md:mb-8">
-          <div className="">
-            <OctagonalProfile
-              size={56}
-              borderColor="#002147"
-              innerBorderColor="#ECEBE5"
-              imageSrc={
-                profile?.avatar_url
-                  ? `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/avatars/${profile.avatar_url}`
-                  : null
-              }
-              fallbackText={
-                profile?.full_name?.[0]?.toUpperCase() ||
-                user.email[0].toUpperCase()
-              }
-            />
+      <div className="py-6 md:py-8 lg:py-12 px-4 md:px-6 lg:px-8 min-h-screen bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray">
+        <div className="max-w-xs sm:max-w-md md:max-w-3xl lg:max-w-6xl mx-auto">
+          {/* Profile Header - Enhanced for tablet/desktop */}
+          <div className="bg-gentleGray rounded-xl shadow-lg p-4 sm:p-6 md:p-8 flex flex-col sm:flex-row items-center gap-4 mb-6 md:mb-8">
+            <div className="">
+              <OctagonalProfile
+                size={56}
+                borderColor="#002147"
+                innerBorderColor="#ECEBE5"
+                imageSrc={
+                  profile?.avatar_url
+                    ? `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/avatars/${profile.avatar_url}`
+                    : null
+                }
+                fallbackText={
+                  (profile?.full_name?.[0] || user?.email?.[0] || "?").toUpperCase()
+                }
+              />
+            </div>
+            <div className="text-center sm:text-left flex-1">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800">
+                {profile?.full_name || t("profile.unnamed")}
+              </h2>
+              <p className="text-sm md:text-base text-gray-500">
+                {profile?.username
+                  ? `@${profile.username}`
+                  : t("profile.no_username")}
+              </p>
+              <Link
+                to="/edit-profile"
+                className="mt-3 inline-block px-3 py-1 border border-oxfordBlue text-oxfordBlue hover:bg-oxfordBlue hover:text-white rounded-lg transition-colors duration-200 text-sm md:text-base"
+              >
+                {t("profile.edit_profile")}
+              </Link>
+            </div>
           </div>
-          <div className="text-center sm:text-left flex-1">
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800">
-              {profile.full_name || t("profile.unnamed")}
-            </h2>
-            <p className="text-sm md:text-base text-gray-500">
-              {profile.username
-                ? `@${profile.username}`
-                : t("profile.no_username")}
-            </p>
-            <Link
-              to="/edit-profile"
-              className="mt-3 inline-block px-3 py-1 border border-oxfordBlue text-oxfordBlue hover:bg-oxfordBlue hover:text-white rounded-lg transition-colors duration-200 text-sm md:text-base"
-            >
-              {t("profile.edit_profile")}
-            </Link>
-          </div>
-        </div>
 
         {/* Main Content - Responsive Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
