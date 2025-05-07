@@ -9,7 +9,7 @@ const supabase = createClient(
 
 // Pricing map for booking durations (in cents)
 const DURATION_PRICES = {
-  45: 6750,   // €67.50
+  45: 0,   // €67.50
   60: 9000,   // €90.00
   75: 11250,  // €112.50
   90: 13500,  // €135.00

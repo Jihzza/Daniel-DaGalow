@@ -421,54 +421,6 @@ function DateTimeStep({
           </div>
         </div>
       </div>
-
-      {/* CSS to ensure both carousels have identical styling */}
-      <style jsx>{`
-        .carousel-container {
-          height: 40px;
-          overflow: hidden;
-          background-color: rgba(255, 255, 255, 0.05);
-          border-radius: 8px;
-        }
-
-        .empty-carousel-container {
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background-color: rgba(255, 255, 255, 0.05);
-          border-radius: 8px;
-        }
-
-        .carousel-swiper {
-          height: 100%;
-        }
-
-        .carousel-item {
-          width: 100%;
-          height: 32px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 6px;
-          font-size: 14px;
-          padding: 0 6px;
-          margin: 4px 0;
-          transition: all 0.15s ease;
-        }
-
-        :global(.swiper-slide) {
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        :global(.swiper-slide-active .carousel-item) {
-          transform: scale(1.05);
-          box-shadow: 0 0 8px rgba(255, 215, 0, 0.25);
-        }
-      `}</style>
     </div>
   );
 }
@@ -951,6 +903,14 @@ export default function Booking({ onBackService }) {
                   workflowKey="booking_confirmation"
                   initialMessage={`Welcome, ${formData.name}! Your booking has been confirmed. I'm here to answer any questions about your upcoming session.`}
                   placeholderText="Ask any questions about your booking..."
+                  onFinish={() => {
+                    axios.post(
+                      `${process.env.REACT_APP_N8N_BOOKING_COMPLETE_WEBHOOK}`,
+                      { session_id: bookingId }
+                    )
+                    
+                      .catch(err => console.error("Webhook error:", err));
+                  }}
                 />
               )}
             </>

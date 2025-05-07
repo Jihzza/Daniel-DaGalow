@@ -26,7 +26,7 @@ const getWebhookUrl = (tableName) => {
   return "https://rafaello.app.n8n.cloud/webhook/chat";
 };
 
-export default function InlineChatbotStep({ requestId, tableName }) {
+export default function InlineChatbotStep({ requestId, tableName, onFinish }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [msgs, setMsgs] = useState([]);
@@ -35,7 +35,7 @@ export default function InlineChatbotStep({ requestId, tableName }) {
   const [isTypingAnimationActive, setIsTypingAnimationActive] = useState(false);
   const listRef = useRef(null);
   const [isNewChat, setIsNewChat] = useState(true);
-
+  const didInit = useRef(false);
   // Function to check if any messages still have active typing animations
   const checkTypingAnimations = () => {
     const anyStillTyping = msgs.some(
@@ -144,99 +144,74 @@ export default function InlineChatbotStep({ requestId, tableName }) {
 
   // Load existing messages
   useEffect(() => {
-    if (!requestId) return;
-    (async () => {
-      let query;
-      
-      // Handle tables with the new structure (role, content)
-      if (tableName === 'analysis_chat_messages' || 
-        tableName === 'pitchdeck_chat_messages' || 
-        tableName === 'coaching_chat_messages' ||
-        tableName === 'booking_chat_messages') {
-        
-        const fieldName = 'session_id';
-        
-        query = supabase
-          .from(tableName)
-          .select('role, content, created_at')
-          .eq(fieldName, requestId)
-          .order('created_at', { ascending: true });
-      } 
-      // Handle other tables with the old structure (sender, message)
-      else {
-        query = supabase
-          .from(tableName)
-          .select('sender, message, created_at')
-          .eq('request_id', requestId)
-          .order('created_at', { ascending: true });
-      }
-      
-      const { data, error } = await query;
-      
-      if (error) {
-        console.error("Fetch messages error", error);
-        return;
-      }
-
-      const messagesList = data.map((d) => ({
-        // Map role/sender field to 'from' for UI display
-        from: d.role ? 
-          (d.role === 'user' ? 'user' : 'bot') : 
-          (d.sender === 'user' ? 'user' : 'bot'),
-        // Use the correct message content field
-        text: d.content || d.message,
-        isTyping: false, // Mark existing messages as already typed
-      }));
-
-      setMsgs(messagesList);
-
-      // If no messages exist, this is a new chat
-      setIsNewChat(data.length === 0);
-    })();
-  }, [requestId, tableName]);
+       if (!requestId) return;
+       (async () => {
+         let query;
+         if (
+           tableName === "analysis_chat_messages" ||
+           tableName === "pitchdeck_chat_messages" ||
+           tableName === "coaching_chat_messages" ||
+           tableName === "booking_chat_messages"
+         ) {
+           query = supabase
+             .from(tableName)
+             .select("*")
+             .eq("session_id", requestId)
+             .order("created_at", { ascending: true });
+         } else {
+           query = supabase
+             .from(tableName)
+             .select("*")
+             .eq("request_id", requestId)
+             .order("created_at", { ascending: true });
+         }
+         const { data, error } = await query;
+         if (error) {
+           console.error("Fetch messages error", error);
+           return;
+         }
+    
+         // Map the rows you actually have
+         const messagesList = data.map(d => ({
+           from: d.role ? (d.role === 'user' ? 'user' : 'bot') : (d.sender === 'user' ? 'user' : 'bot'),
+           text: d.content || d.message,
+           isTyping: false,
+         }));
+    
+         if (data.length > 0) {
+           // There *are* old messages → just display them
+           setMsgs(messagesList);
+         } else {
+           // Brand-new chat → show client-side welcome
+           const welcomeText = await getWelcomeMessage();
+           setMsgs([{ from: 'bot', text: welcomeText, isTyping: true }]);
+          setIsTypingAnimationActive(true);
+        }
+   
+        // Either way, we've now initialized
+        setIsNewChat(false);
+      })();
+    }, [requestId, tableName]);
 
   // Display welcome message if this is a new chat
   useEffect(() => {
-    if (isNewChat && msgs.length === 0) {
-      const initializeChat = async () => {
-        const welcomeText = await getWelcomeMessage();
-        const welcomeMessage = {
-          from: "bot",
-          text: welcomeText,
-          isTyping: true,
-        };
-
-        // Add welcome message to UI
-        setMsgs([welcomeMessage]);
-        setIsTypingAnimationActive(true);
-
-        // Store welcome message in database - adapt to table structure
-        if (requestId) {
-          if (tableName === 'analysis_chat_messages' || 
-            tableName === 'pitchdeck_chat_messages' || 
-            tableName === 'coaching_chat_messages' ||
-            tableName === 'booking_chat_messages') {
-            await supabase.from(tableName).insert({
-              session_id: requestId,
-              role: "assistant",
-              content: welcomeText,
-              user_id: user?.id
-            });
-          } else {
-            await supabase.from(tableName).insert({
-              request_id: requestId,
-              sender: "bot",
-              message: welcomeText
-            });
-          }
-        }
-
-        setIsNewChat(false);
+    const initializeChat = async () => {
+      const welcomeText = await getWelcomeMessage();
+      const welcomeMessage = {
+        from: "bot",
+        text: welcomeText,
+        isTyping: true,
       };
+      setMsgs([welcomeMessage]);
+      setIsTypingAnimationActive(true);
+      setIsNewChat(false);
+    };
 
+    if (!didInit.current && isNewChat && msgs.length === 0) {
+      didInit.current = true;
       initializeChat();
     }
-  }, [isNewChat, msgs, requestId, tableName, user]);
+    }, [isNewChat, msgs.length]);
 
   // Auto-scroll whenever messages or busy change
   useEffect(() => {
@@ -247,33 +222,13 @@ export default function InlineChatbotStep({ requestId, tableName }) {
 
   async function send() {
     // Don't allow sending if text is empty or a typing animation is in progress
-    if (!text.trim() || isTypingAnimationActive) return;
-
+    if (!text.trim() || isTypingAnimationActive || busy) return;
     setBusy(true);
     const t = text.trim();
     setText("");
 
     // 1) Add user message to UI (no animation for user messages)
     setMsgs((m) => [...m, { from: "user", text: t }]);
-
-    // 2) Save user message to database - adapt to table structure
-    if (tableName === 'analysis_chat_messages' || 
-        tableName === 'pitchdeck_chat_messages' || 
-        tableName === 'coaching_chat_messages' ||
-        tableName === 'booking_chat_messages') {
-      await supabase.from(tableName).insert({
-        session_id: requestId,
-        role: "user",
-        content: t,
-        user_id: user?.id
-      });
-    } else {
-      await supabase.from(tableName).insert({
-        request_id: requestId,
-        sender: "user",
-        message: t
-      });
-    }
 
     try {
       // 3) Use the appropriate webhook URL based on the table name
@@ -316,25 +271,6 @@ export default function InlineChatbotStep({ requestId, tableName }) {
       }
 
       const output = data.output || "No output field in response.";
-
-      // 6) Save bot response to database - adapt to table structure
-      if (tableName === 'analysis_chat_messages' || 
-          tableName === 'pitchdeck_chat_messages' || 
-          tableName === 'coaching_chat_messages' ||
-          tableName === 'booking_chat_messages') {
-        await supabase.from(tableName).insert({
-          session_id: requestId,
-          role: "assistant",
-          content: output,
-          user_id: user?.id
-        });
-      } else {
-        await supabase.from(tableName).insert({
-          request_id: requestId,
-          sender: "bot",
-          message: output
-        });
-      }
 
       // 7) Add bot response to UI with typing animation
       setMsgs((m) => [
@@ -441,9 +377,6 @@ export default function InlineChatbotStep({ requestId, tableName }) {
           }
           value={text}
           onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) =>
-            !isTypingAnimationActive && e.key === "Enter" && send()
-          }
           disabled={busy || isTypingAnimationActive}
         />
         <button
@@ -458,6 +391,17 @@ export default function InlineChatbotStep({ requestId, tableName }) {
               busy || isTypingAnimationActive ? "opacity-50" : ""
             }`}
           />
+        </button>
+      </div>
+
+      <div className="flex justify-center">
+        <button 
+          type="button"
+          className="bg-darkGold text-black px-4 py-2 rounded-full"
+          onClick={onFinish}
+          disabled={busy || isTypingAnimationActive}
+        >
+          {t("inline_chatbot.finish_button") || "Finish"}
         </button>
       </div>
     </div>

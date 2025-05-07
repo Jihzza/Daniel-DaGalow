@@ -26,8 +26,8 @@
     "carousel_social_media": "Social Media",
     "carousel_business": "Business",
     "individual_consultation": "Individual Consultation",
-    "hero_title": "Outsmart your limits—crush mindset, money, and life with crystal‑clear strategies that just work.",
-    "hero_description": "I went from bankruptcy to $150 K/year through battle‑tested, no‑fluff tactics—now I share them so you can learn from my mistakes and skip the guesswork",
+    "hero_title": "Unlock Your Best Self—Master Your Mindset, Wealth & Relationships Today",
+    "hero_description": "From bankruptcy to six-figure success, I mastered the three pillars—health, power, and relationships. Now I’m here to help you turn setbacks into a springboard for extraordinary growth.",
     "achievement_1_title": "$140K+ / year",
     "achievement_1_description": "revenue for my company",
     "achievement_2_title": "Top 1% Earner",
@@ -395,7 +395,7 @@
         },
         "followup": {
           "question": "What happens after our consultation?",
-          "answer": "My consultations are designed as standalone sessions without automatic follow-up. You’ll receive the guidance and action steps you need during our time together. If you find you need additional support after implementing the initial advice, you’re welcome to schedule another session or consider one of my ongoing coaching packages."
+          "answer": "My consultations are designed as standalone sessions without automatic follow-up. You'll receive the guidance and action steps you need during our time together. If you find you need additional support after implementing the initial advice, you're welcome to schedule another session or consider one of my ongoing coaching packages."
         }
       },
       "analysis": {
@@ -405,17 +405,17 @@
         },
         "information": {
           "question": "What information do I need to provide for an analysis?",
-          "answer": "To ensure a thorough and relevant analysis, please provide:\n- The specific stock symbol, company name, or social media account you want analyzed\n- Your key questions or concerns about the subject\n- Any particular metrics or aspects you’re most interested in understanding\n\nThe more specific you are about what you want to know, the more valuable your analysis will be."
+          "answer": "To ensure a thorough and relevant analysis, please provide:\n- The specific stock symbol, company name, or social media account you want analyzed\n- Your key questions or concerns about the subject\n- Any particular metrics or aspects you're most interested in understanding\n\nThe more specific you are about what you want to know, the more valuable your analysis will be."
         },
         "delivery": {
           "question": "How will analysis results be delivered?",
-          "answer": "You’ll receive a comprehensive PDF report via email containing all findings, insights, and recommendations. This document includes visual elements such as graphs, charts, and comparative tables where applicable."
+          "answer": "You'll receive a comprehensive PDF report via email containing all findings, insights, and recommendations. This document includes visual elements such as graphs, charts, and comparative tables where applicable."
         }
       },
       "pitch_deck": {
         "offering": {
           "question": "What are the pitch decks you offer?",
-          "answer": "I provide access to my personal pitch decks for companies I’m currently building. These are real-world examples of successful pitches that have attracted investor interest. Available pitch decks include:\n- Perspectiv\n- Galow.Club\n- Pizzaria\n\nThese resources serve as valuable learning tools and inspiration for your own fundraising efforts."
+          "answer": "I provide access to my personal pitch decks for companies I'm currently building. These are real-world examples of successful pitches that have attracted investor interest. Available pitch decks include:\n- Perspectiv\n- Galow.Club\n- Pizzaria\n\nThese resources serve as valuable learning tools and inspiration for your own fundraising efforts."
         }
       },
       "general": {
