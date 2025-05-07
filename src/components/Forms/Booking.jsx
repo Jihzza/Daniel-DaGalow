@@ -27,6 +27,8 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 import { autoCreateAccount } from "../../utils/autoSignup";
+import ssl from "../../assets/icons/ssl-lock.svg";
+import stripe from "../../assets/icons/stripe.svg";
 // Shared StepIndicator
 function StepIndicator({
   stepCount,
@@ -588,6 +590,21 @@ function PaymentStep({
               : `Complete Payment (€${sessionPrice})`}
           </button>
         )}
+
+<div className="mt-4 flex justify-center items-center gap-4">
+       {/* Stripe badge */}
+       <img
+         src={stripe}
+         alt="Secure payments powered by Stripe"
+         className="h-8 opacity-90"
+       />
+       {/* SSL lock icon */}
+       <img
+         src={ssl}
+         alt="SSL Secured"
+         className="h-8 opacity-90"
+       />
+     </div>
 
         {/* Help Text */}
         {paymentStarted && !paymentConfirmed && (

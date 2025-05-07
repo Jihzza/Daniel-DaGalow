@@ -8,12 +8,12 @@ import calendar from '../../assets/icons/Calendar Branco.svg';
 import chatbot from '../../assets/icons/Dagalow Branco.svg';
 import settings from '../../assets/icons/Settings Branco.svg';
 import account from '../../assets/icons/Profile Branco.svg';
-
+import { useTranslation } from 'react-i18next';
 const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-
+  const { t } = useTranslation();
   const handleDagalowIconClick = () => {
     if (location.pathname === "/") {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -33,11 +33,11 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   };
 
   const icons = [
-    {src: home, alt: "Home", action: handleDagalowIconClick},
-    {src: calendar, alt: "Calendar", to: user ? "/components/Subpages/Calendar" : null, action: user ? null : onAuthModalOpen},
-    {src: chatbot, alt: "Chatbot", action: onChatbotClick},
-    {src: settings, alt: "Settings", to: "/components/Subpages/Settings", action: null},
-    {src: account, alt: "Account", action: handleAccountClick},
+    {src: home, alt: t("navigation.home"), action: handleDagalowIconClick},
+    {src: calendar, alt: t("navigation.calendar"), to: user ? "/components/Subpages/Calendar" : null, action: user ? null : onAuthModalOpen},
+    {src: chatbot, alt: t("navigation.chatbot"), action: onChatbotClick},
+    {src: settings, alt: t("navigation.settings"), to: "/components/Subpages/Settings", action: null},
+    {src: account, alt: t("navigation.account"), action: handleAccountClick},
   ];
   
   return (
@@ -47,6 +47,8 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
           key={i}
           src={icon.src}
           alt={icon.alt}
+          aria-label={icon.alt}
+          role="button"
           className="w-8 h-8 md:w-12 md:h-12 lg:w-8 lg:h-8 cursor-pointer drop-shadow-lg transition-all duration-300"
           onClick={() => {
             if (icon.action) {

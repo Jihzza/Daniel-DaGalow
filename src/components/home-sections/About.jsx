@@ -10,14 +10,8 @@ function About() {
           {t("about.about_title")}
         </h2>
         <div className="space-y-8">
-          <p className="mb-6 md:text-xl">
-            {t("about.about_description")}
-          </p>
-          <p className="mb-6 md:text-xl">
-            {t("about.about_description_2")}
-          </p>
           <p className="md:text-xl">
-            {t("about.about_mission")}
+            {t("about.about_description")}
           </p>
         </div>  
       </div>

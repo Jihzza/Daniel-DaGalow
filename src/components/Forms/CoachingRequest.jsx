@@ -13,7 +13,8 @@ import axios from "axios";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 import { autoCreateAccount } from "../../utils/autoSignup";
 import { validatePhoneNumber } from "../../utils/phoneValidation"; // Add this import
-
+import stripe from "../../assets/icons/stripe.svg";
+import ssl from "../../assets/icons/ssl-lock.svg";
 // Progress Indicator Component
 function StepIndicator({
   stepCount,
@@ -473,6 +474,20 @@ function PaymentStep({selectedTier, requestId, onPaymentConfirmed, formData}) {
           </p>
         )}
       </div>
+      <div className="mt-4 flex justify-center items-center gap-4">
+       {/* Stripe badge */}
+       <img
+         src={stripe}
+         alt="Secure payments powered by Stripe"
+         className="h-8 opacity-90"
+       />
+       {/* SSL lock icon */}
+       <img
+         src={ssl}
+         alt="SSL Secured"
+         className="h-8 opacity-90"
+       />
+     </div>
     </div>
   );
 }

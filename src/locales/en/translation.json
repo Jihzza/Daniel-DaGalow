@@ -14,7 +14,9 @@
     "settings": "Settings",
     "login": "Login",
     "logout": "Logout",
-    "login_signup": "Login / Sign Up"
+    "login_signup": "Login / Sign Up",
+    "chatbot": "Chatbot",
+    "account": "Account"
   },
 
   "hero": {
@@ -86,9 +88,7 @@
 
   "about": {
     "about_title": "Meet Daniel DaGalow",
-    "about_description": "I went from overcoming a 10‑year challenge and battling daily habits to building successful businesses, transforming my body in 3 months, and coaching high‑profile figures like Miss Portugal 2019/2020.",
-    "about_description_2": "My journey wasn't easy, but it taught me that success is not only about hard work—it's about mindset, strategy, and having a little fun along the way.",
-    "about_mission": "My mission? To help you break through barriers and rewrite your own success story."
+    "about_description": "From hitting rock bottom multiple times to building six-figure success, I’ve mastered the art of turning setbacks into stepping stones. My mission? To help you harness your health, power, and relationships to become the best version of yourself. Let’s rewrite your success story together."
   },
 
   "services": {

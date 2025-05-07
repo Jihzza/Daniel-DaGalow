@@ -36,20 +36,20 @@ const Interviews = () => {
                 <img 
                   src={interview.image} 
                   alt={interview.title}
-                  className="w-full h-full md:w-[50vw] lg:w-[20vw] justify-center items-center object-cover shadow-lg"
+                  className="w-full h-full md:w-[50vw] lg:w-[20vw] justify-center items-center object-cover"
                 />
               </div>
             </div>
           ))}
         </div>
         <div className='flex flex-row justify-center items-center gap-12'>
-          <a href="https://www.cmjornal.pt/cmtv/programas/especiais/investigacao-cm/detalhe/conteudos-sexuais-na-internet-rendem-milhares-de-euros-e-dao-vida-de-luxo-a-utilizadores-veja-agora-na-cmtv-cmtv">
+          <a href="https://www.cmjornal.pt/cmtv/programas/especiais/investigacao-cm/detalhe/conteudos-sexuais-na-internet-rendem-milhares-de-euros-e-dao-vida-de-luxo-a-utilizadores-veja-agora-na-cmtv-cmtv" aria-label={t("interviews.media_cm")}>
             <img src={CMLogo} alt={t("interviews.media_cm")} className='h-12 md:h-16 object-cover rounded opacity-85 shadow-lg'/>
           </a>
-          <a href="https://x.com/JornalNoticias/status/1642802512435777536">
+          <a href="https://x.com/JornalNoticias/status/1642802512435777536" aria-label={t("interviews.media_jn")}>
             <img src={JNLogo} alt={t("interviews.media_jn")} className='h-12 md:h-16 object-cover rounded opacity-85 shadow-lg'/>
           </a>
-          <a href="https://www.youtube.com/watch?v=yr68LJvYDWc">
+          <a href="https://www.youtube.com/watch?v=yr68LJvYDWc" aria-label={t("interviews.media_coutinho")}>
             <img src={Coutinho} alt={t("interviews.media_coutinho")} className='h-12 md:h-16 object-cover rounded opacity-85 shadow-lg'/>
           </a>
         </div>
