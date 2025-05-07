@@ -322,16 +322,17 @@
   },
 
   "inline_chatbot": {
-    "input_placeholder": "Type a message…",
-    "input_placeholder_waiting": "Wait for message...",
-    "bot_typing": "bot is typing…",
-    "error_message": "Oops, something went wrong.",
-    "welcome_message": "Welcome! How can I help you today?",
-    "booking_welcome": "Your consultation has been scheduled! I'll be your pre-consultation assistant. Would you like to share what specific topics you'd like to discuss during your session?",
-    "booking_welcome_with_date": "Your consultation for {{date}} ({{duration}} minutes) is confirmed! I'll be your pre-consultation assistant. Would you like to share what specific topics you'd like to discuss during your session?",
-    "coaching_welcome": "Welcome to your {{tier}} coaching program! I'm your assistant and will connect you with Daniel. To make the most of your coaching experience, could you share what specific goals you're hoping to achieve?",
-    "analysis_welcome": "Thank you for requesting our {{type}} analysis service! I'll be gathering some initial information to help us provide you with the most comprehensive analysis. Could you provide some specific details about what you'd like us to analyze?",
-    "pitch_deck_welcome": "Thanks for your interest in the {{project}} project! I'll be gathering some information to help prepare your pitch deck. Could you tell me a bit about what attracted you to this venture and what kind of investment you're considering?"
+    "input_placeholder": "Escribe un mensaje…",
+    "input_placeholder_waiting": "Espera el mensaje...",
+    "bot_typing": "el bot está escribiendo…",
+    "error_message": "Ups, algo salió mal.",
+    "welcome_message": "¡Bienvenido! ¿En qué puedo ayudarte hoy?",
+    "booking_welcome": "¡Tu consulta ha sido programada! Seré tu asistente previo a la consulta. ¿Te gustaría compartir los temas específicos que te gustaría tratar durante tu sesión?",
+    "booking_welcome_with_date": "¡Tu consulta para {{date}} ({{duration}} minutos) está confirmada! Seré tu asistente previo a la consulta. ¿Te gustaría compartir los temas específicos que te gustaría tratar durante tu sesión?",
+    "coaching_welcome": "¡Bienvenido a tu programa de coaching {{tier}}! Soy tu asistente y te conectaré con Daniel. Para aprovechar al máximo tu experiencia de coaching, ¿podrías compartir los objetivos específicos que esperas lograr?",
+    "analysis_welcome": "¡Gracias por solicitar nuestro servicio de análisis de {{type}}! Estaré recopilando información inicial para poder ofrecerte el análisis más completo posible. ¿Podrías proporcionar detalles específicos sobre lo que te gustaría que analizáramos?",
+    "pitch_deck_welcome": "¡Gracias por tu interés en el proyecto {{project}}! Estaré recopilando información para preparar tu presentación. ¿Podrías contarme qué te atrajo de este proyecto y qué tipo de inversión estás considerando?",
+    "finish_button": "Finalizar conversación"
   },
 
   "bottom_carousel": {
@@ -691,7 +692,7 @@
     "terms_of_service": {
       "title": "Términos de servicio",
       "last_updated": "Última actualización: 26 de abril de 2025",
-      "intro": "Por favor lee estos Términos de Servicio (‘Términos’) cuidadosamente antes de usar el sitio web y servicios de DaGalow.",
+      "intro": "Por favor lee estos Términos de Servicio ('Términos') cuidadosamente antes de usar el sitio web y servicios de DaGalow.",
       "sections": {
         "acceptance": {
           "title": "1. Aceptación de los términos",

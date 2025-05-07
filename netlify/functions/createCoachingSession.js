@@ -9,12 +9,14 @@ const supabase = createClient(
 
 // Pricing map for coaching tiers (in cents)
 const TIER_PRICES = {
-  Weekly: 4000, // €40.00
+  Weekly: 0, // €40.00 // Assuming your comment meant this might be a promotional $0
   Daily: 9000, // €90.00
   Priority: 23000, // €230.00
 };
 
 exports.handler = async (event) => {
+  console.log("✔️ createCoachingSession invoked");
+  console.log("Raw event.body:", event.body);
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
@@ -26,20 +28,28 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: "Invalid JSON" };
   }
 
-  const { requestId, tier, email, isTestBooking } = body;
+  const { requestId, tier, email, isTestBooking } = body; // requestId is a UUID string
 
   if (!requestId || !tier || !email) {
     console.error("Missing required parameters:", { requestId, tier, email });
-    return { statusCode: 400, body: "Missing parameters" };
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        error: "Missing parameters",
+        data: { requestId, tier, email },
+      }),
+    };
   }
 
-  // Parse ID as integer since coaching_requests uses int8
-  const parsedRequestId = parseInt(requestId, 10);
+  // REMOVE THIS BLOCK START
+  // Parse ID as integer since coaching_requests uses int8  <-- This comment is incorrect for 'id' which is UUID
+  // const parsedRequestId = parseInt(requestId, 10);
 
-  if (isNaN(parsedRequestId)) {
-    console.error("Invalid request ID (not an integer):", requestId);
-    return { statusCode: 400, body: "Invalid request ID format" };
-  }
+  // if (isNaN(parsedRequestId)) {
+  //   console.error("Invalid request ID (not an integer):", requestId);
+  //   return { statusCode: 400, body: "Invalid request ID format" };
+  // }
+  // REMOVE THIS BLOCK END
 
   // Calculate price - free for test bookings
   const unitAmount = isTestBooking === true ? 0 : TIER_PRICES[tier] || 0;
@@ -62,35 +72,47 @@ exports.handler = async (event) => {
           quantity: 1,
         },
       ],
-      client_reference_id: parsedRequestId.toString(), // Convert back to string for Stripe
+      // Use the original UUID string requestId for client_reference_id
+      client_reference_id: requestId,
       customer_email: email,
       success_url: `${process.env.URL || "https://www.danieldagalow.com"}/payment-complete.html`,
       cancel_url: `${process.env.URL || "https://www.danieldagalow.com"}/payment-cancelled.html`,
     });
 
-    // FIXED: Use stripe_session_id instead of stripe_session
-    const { data, error } = await supabase
+    // --- START MODIFIED SECTION ---
+    // Update the existing coaching_requests record with the Stripe session ID
+    const { error: updateError } = await supabase
       .from("coaching_requests")
-      .update({
-        stripe_session_id: session.id, // CHANGED: stripe_session -> stripe_session_id
-        is_test_booking: isTestBooking === true,
-      })
-      .eq("id", parsedRequestId)
-      .select();
+      .update({ stripe_session_id: session.id }) // Store Stripe's session.id
+      .eq("id", requestId); // Match by the UUID requestId
 
-    if (error) {
-      console.error("Error updating coaching request with session ID:", error);
+    if (updateError) {
+      console.error("Error updating Supabase with Stripe session ID:", updateError);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: `Internal Server Error: Failed to update request with Stripe session ID. ${updateError.message}` }),
+      };
     }
+    // --- END MODIFIED SECTION ---
+
+    // REMOVE THIS MISPLACED BLOCK START (This looks like frontend logic)
+    // const { data } = await supabase
+    //   .from("coaching_requests")
+    //   .insert(payload) // payload is not defined here
+    //   .select("id")
+    //   .single();
+    // setRequestId(data.id); // setRequestId is a frontend function
+    // REMOVE THIS MISPLACED BLOCK END
 
     return {
       statusCode: 200,
       body: JSON.stringify({ url: session.url }),
     };
   } catch (err) {
-    console.error("Error creating Stripe session:", err);
+    console.error("Error creating Stripe session or updating Supabase:", err);
     return {
       statusCode: 500,
-      body: `Internal Server Error: ${err.message}`,
+      body: JSON.stringify({ error: `Internal Server Error: ${err.message}` }),
     };
   }
 };

@@ -250,6 +250,7 @@
     "name_placeholder": "Your Name",
     "email_label": "Your Email",
     "email_placeholder": "Your Email"
+    
   },
 
   "coaching_request": {
@@ -340,7 +341,8 @@
     "booking_welcome_with_date": "Your consultation for {{date}} ({{duration}} minutes) is confirmed! I'll be your pre-consultation assistant. Would you like to share what specific topics you'd like to discuss during your session?",
     "coaching_welcome": "Welcome to your {{tier}} coaching program! I'm your assistant and will connect you with Daniel. To make the most of your coaching experience, could you share what specific goals you're hoping to achieve?",
     "analysis_welcome": "Thank you for requesting our {{type}} analysis service! I'll be gathering some initial information to help us provide you with the most comprehensive analysis. Could you provide some specific details about what you'd like us to analyze?",
-    "pitch_deck_welcome": "Thanks for your interest in the {{project}} project! I'll be gathering some information to help prepare your pitch deck. Could you tell me a bit about what attracted you to this venture and what kind of investment you're considering?"
+    "pitch_deck_welcome": "Thanks for your interest in the {{project}} project! I'll be gathering some information to help prepare your pitch deck. Could you tell me a bit about what attracted you to this venture and what kind of investment you're considering?",
+    "finish_button": "Finish Conversation"
   },
 
   "bottom_carousel": {

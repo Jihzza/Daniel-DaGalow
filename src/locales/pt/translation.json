@@ -337,7 +337,8 @@
     "booking_welcome_with_date": "A sua consulta para {{date}} ({{duration}} minutos) está confirmada! Serei o seu assistente pré-consulta. Gostaria de partilhar os tópicos específicos que pretende discutir durante a sua sessão?",
     "coaching_welcome": "Bem-vindo ao seu programa de coaching {{tier}}! Sou o seu assistente e irei ligá-lo ao Daniel. Para tirar o máximo partido do coaching, pode partilhar quais os objetivos específicos que pretende alcançar?",
     "analysis_welcome": "Obrigado por solicitar o nosso serviço de análise {{type}}! Vou recolher alguma informação inicial para nos ajudar a fornecer a análise mais completa. Pode indicar-me detalhes específicos sobre o que gostaria que analisássemos?",
-    "pitch_deck_welcome": "Obrigado pelo seu interesse no projeto {{project}}! Vou recolher informações para preparar o seu pitch deck. Pode contar-me um pouco sobre o que o atraiu neste empreendimento e que tipo de investimento está a considerar?"
+    "pitch_deck_welcome": "Obrigado pelo seu interesse no projeto {{project}}! Vou recolher informações para preparar o seu pitch deck. Pode contar-me um pouco sobre o que o atraiu neste empreendimento e que tipo de investimento está a considerar?",
+    "finish_button": "Concluir conversa"
   },
 
   "bottom_carousel": {
