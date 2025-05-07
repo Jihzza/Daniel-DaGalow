@@ -668,6 +668,31 @@ export default function CoachingRequest({ onBackService }) {
   <InlineChatbotStep
     requestId={requestId}
     tableName="coaching_chat_messages"
+    onFinish={async () => {
+      if (!requestId) {
+        console.error("No request ID available to complete coaching chat.");
+        // Optionally, alert the user or handle this error appropriately
+        return;
+      }
+      try {
+        // Make sure to use your actual n8n webhook URL for coaching completion
+        const webhookUrl = "https://rafaello.app.n8n.cloud/webhook/coaching-complete";
+        console.log(`Coaching chat finished for session_id: ${requestId}. Triggering webhook: ${webhookUrl}`);
+
+        await axios.post(webhookUrl, {
+          session_id: requestId, // The n8n workflow expects 'session_id' in the body
+        });
+
+        console.log(`Webhook for coaching session ${requestId} triggered successfully.`);
+        // You might want to provide some feedback to the user here,
+        // like a success message or disabling the button further.
+        // The InlineChatbotStep already handles disabling its own button while busy.
+        // This onFinish doesn't navigate away by default; the main form's "Done" button handles that.
+      } catch (error) {
+        console.error("Error triggering coaching completion webhook:", error);
+        // Optionally, alert the user that something went wrong
+      }
+    }}
   />
 )}
           
