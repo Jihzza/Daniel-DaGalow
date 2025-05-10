@@ -26,6 +26,7 @@
     "i18next-http-backend": "^3.0.2",
     "lucide-react": "^0.501.0",
     "react": "^19.1.0",
+    "react-cookie-consent": "^9.0.0",
     "react-dom": "^19.1.0",
     "react-fast-marquee": "^1.6.5",
     "react-i18next": "^15.5.1",

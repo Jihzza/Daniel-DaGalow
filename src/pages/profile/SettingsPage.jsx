@@ -4,6 +4,7 @@ import { supabase } from "../../utils/supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AuthModal from "../../components/Auth/AuthModal"; // Import the AuthModal component
+import { getCookie, setCookie, deleteCookie } from "../../utils/cookieUtils";
 
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
@@ -70,7 +71,7 @@ const SettingsPage = () => {
       setShowAuthModal(true);
       return;
     }
-    
+
     // In a real app, you would save these settings to your database
     alert(`${section} settings saved!`);
     setActiveSection(null); // Close the section after saving
@@ -329,7 +330,7 @@ const SettingsPage = () => {
                   </button>
                 </div>
               </div>
-              
+
               <div className="py-4 border-b border-gray-200">
                 <h3 className="font-semibold text-black text-lg md:text-xl">Password</h3>
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-2 space-y-4 md:space-y-0">
@@ -394,7 +395,7 @@ const SettingsPage = () => {
       case "privacy":
         return user ? (
           <div>
-            <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8"> 
+            <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
 
               <div className="border-b border-gray-200">
                 <ToggleSwitch

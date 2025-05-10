@@ -1,74 +1,103 @@
-// components/ExpertAnalysis.jsx
+// components/home-sections/Analysis.jsx
+// (Assuming this is the correct path based on App.js)
 import React from "react";
 import { useNavigate } from "react-router-dom";
-// You'll need to create or import these SVG icons
-// For now I'll use placeholder references
 import SocialIcon from "../../assets/icons/Phone Branco.svg";
 import StocksIcon from "../../assets/icons/MoneyBag Branco.svg";
-import PortfolioIcon from "../../assets/icons/Target Branco.svg";
 import BusinessIcon from "../../assets/icons/Bag Branco.svg";
+// Removed PortfolioIcon import as it's not used in the services grid
 import { ServiceContext } from "../../contexts/ServiceContext";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 
-function ExpertAnalysis() {
+function Analysis() { // Renamed from ExpertAnalysis to Analysis to match App.js import
   const navigate = useNavigate();
-  const { service, setService } = useContext(ServiceContext);
+  // Removed unused 'service' variable from context destructuring if not used directly in this component's logic beyond setService
+  const { setService } = useContext(ServiceContext);
   const { t } = useTranslation();
 
-  const openForm = (service) => {
-    setService(service); // ① tell the form which one
-    document // ② smooth scroll
+  const openForm = (serviceType) => {
+    setService(serviceType);
+    document
       .getElementById("service-selection")
-      ?.scrollIntoView({ behavior: "smooth" }); // MDN example :contentReference[oaicite:2]{index=2}
+      ?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleServiceClick = (service) => {
+  // This function seems designed for navigation, if these grid items should navigate,
+  // you can add an onClick handler to them.
+  const handleServiceClick = (serviceType) => {
     const mapping = {
-      analysis: "#analysis-request",
+      // Example: if clicking an item should scroll to a specific part of a form
+      // "socialMediaAnalysis": "#analysis-request-social",
+      analysis: "#analysis-request", // Generic fallback or if all analysis items go to the same spot
     };
-    navigate(`/?service=${service}${mapping[service]}`);
-    setTimeout(() => {
-      const id = mapping[service].slice(1);
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
+    // This navigation logic might need adjustment based on how you want interaction
+    if (mapping[serviceType]) {
+      navigate(`/?service=${serviceType}${mapping[serviceType]}`);
+      setTimeout(() => {
+        const id = mapping[serviceType].slice(1);
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    } else {
+      // Fallback if no specific mapping, e.g., open a generic form
+      openForm(serviceType);
+    }
   };
+
+  const analysisServices = [
+    {
+      id: "social", // Unique id for key and potentially for handleServiceClick
+      title: t("analysis.analysis_service_1"), // "Social Media Analysis"
+      icon: (
+        <img
+          src={SocialIcon}
+          alt={t("analysis.analysis_service_1")}
+          className="w-8 h-8 md:w-12 md:h-12 object-contain"
+        />
+      ),
+      // action: () => handleServiceClick("socialMediaAnalysis") // Example action
+    },
+    {
+      id: "stocks",
+      title: t("analysis.analysis_service_2"), // "Stocks/Crypto Analysis"
+      icon: (
+        <img
+          src={StocksIcon}
+          alt={t("analysis.analysis_service_2")}
+          className="w-8 h-8 md:w-12 md:h-12 object-contain"
+        />
+      ),
+      // action: () => handleServiceClick("stocksAnalysis")
+    },
+    {
+      id: "business",
+      title: t("analysis.analysis_service_4"), // "Business/Company Analysis" (using key from original code)
+      icon: (
+        <img
+          src={BusinessIcon}
+          alt={t("analysis.analysis_service_4")}
+          className="w-8 h-8 md:w-12 md:h-12 object-contain"
+        />
+      ),
+      // action: () => handleServiceClick("businessAnalysis")
+    },
+  ];
 
   return (
     <section id="expert-analysis" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
         <h2 className="text-2xl md:text-4xl font-bold">{t("analysis.analysis_title")}</h2>
         <p className="md:text-xl">{t("analysis.analysis_description")}</p>
-        
+
+        {/* UNIFIED GRID FOR ANALYSIS SERVICES */}
         <div className="flex flex-col gap-6 text-white">
-          {/* First row with 2 items */}
           <div className="grid grid-cols-2 gap-6">
-            {[
-              {
-                title: t("analysis.analysis_service_1"),
-                icon: (
-                  <img
-                    src={SocialIcon}
-                    alt="Social Media"
-                    className="w-8 h-8 md:w-12 md:h-12 object-contain"
-                  />
-                ),
-              },
-              {
-                title: t("analysis.analysis_service_2"),
-                icon: (
-                  <img
-                    src={StocksIcon}
-                    alt="Stocks"
-                    className="w-8 h-8 md:w-12 md:h-12 object-contain"
-                  />
-                ),
-              },
-            ].map((item, index) => (
+            {analysisServices.slice(0, 2).map((item) => (
               <div
-                key={index}
-                className="flex flex-col items-center justify-center h-full p-6 border-2 border-darkGold rounded-lg text-center shadow-lg"
+                key={item.id}
+                className="flex flex-col items-center justify-center h-full p-6 border-2 border-darkGold rounded-lg text-center shadow-lg cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={item.action || (() => openForm("analysis"))}
               >
                 <div className="flex items-center justify-center mb-3">
                   {item.icon}
@@ -77,25 +106,22 @@ function ExpertAnalysis() {
               </div>
             ))}
           </div>
-          
-          {/* Second row with centered item */}
           <div className="flex justify-center">
             <div
-              className="flex flex-col items-center justify-center h-full p-6 border-2 border-darkGold rounded-lg text-center shadow-lg w-[50%] md:w-1/2"
+              key={analysisServices[2].id}
+              className="flex flex-col items-center justify-center h-full p-6 border-2 border-darkGold rounded-lg text-center shadow-lg cursor-pointer hover:opacity-80 transition-opacity w-[50%] md:w-1/2"
+              onClick={analysisServices[2].action || (() => openForm("analysis"))}
             >
               <div className="flex items-center justify-center mb-3">
-                <img
-                  src={BusinessIcon}
-                  alt="Business"
-                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
-                />
+                {analysisServices[2].icon}
               </div>
-              <div className="font-semibold text-[13px] md:text-lg">{t("analysis.analysis_service_4")}</div>
+              <div className="font-semibold text-[13px] md:text-lg">{analysisServices[2].title}</div>
             </div>
           </div>
         </div>
-        
-        <div className="w-full mx-auto px-4 mt-8">
+
+        {/* FEATURES SECTION - This was already structured correctly with md:grid-cols-3 */}
+        <div className="w-full mx-auto px-4 mt-8"> {/* This inner px-4 makes this section slightly narrower than if items were direct children of max-w-3xl. This is consistent with Coaching.jsx and Services.jsx features sections */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Quick Consultations Feature */}
             <div className="flex flex-col items-center text-center">
@@ -122,7 +148,7 @@ function ExpertAnalysis() {
                 {t("analysis.analysis_feature_1_description")}
               </p>
             </div>
-  
+
             {/* Detailed Analysis */}
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
@@ -148,7 +174,7 @@ function ExpertAnalysis() {
                 {t("analysis.analysis_feature_2_description")}
               </p>
             </div>
-  
+
             {/* Actionable Suggestions */}
             <div className="flex flex-col items-center text-center">
               <div className="w-16 h-16 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
@@ -175,7 +201,7 @@ function ExpertAnalysis() {
               </p>
             </div>
           </div>
-  
+
           <div className="mt-10 text-center">
             <p className="text-lg md:text-xl text-white max-w-3xl mx-auto">
               {t("analysis.analysis_summary")}
@@ -199,4 +225,4 @@ function ExpertAnalysis() {
   );
 }
 
-export default ExpertAnalysis;
+export default Analysis; // Changed from ExpertAnalysis to Analysis
