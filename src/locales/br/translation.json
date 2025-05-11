@@ -865,6 +865,52 @@
   },
 
   "window_chatbot": {
-    "welcome_message": "Bem-vindo ao assistente pessoal do DaGalow! Posso ajudar com informações sobre serviços, agendamentos ou responder suas dúvidas sobre a expertise do Daniel. Como posso ajudar hoje?"
+    "welcome_message": "Bem-vindo ao assistente pessoal do DaGalow! Posso ajudar com informações sobre serviços, agendamentos ou responder suas dúvidas sobre a expertise do Daniel. Como posso ajudar hoje?",
+    "wait_for_message": "Aguarde a resposta do bot...",
+    "type_message": "Digite uma mensagem…"
+  },
+  "chatbot": {
+    "error_message": "Desculpe, não consegui entender ou algo deu errado.",
+    "scheduling": {
+      "fetching_availability_dots": "Deixe-me verificar minha agenda...",
+      "error_fetching_availability": "Desculpe, não consegui verificar minha disponibilidade no momento. Por favor, tente novamente em instantes.",
+      "ask_date": "Claro, posso ajudar com o agendamento! Para qual data você gostaria de marcar?",
+      "ask_date_manual": "Ok, por favor digite a data que você gostaria (ex: 2025-12-31).",
+      "invalid_date": "Essa data não parece correta ou está no passado. Por favor, escolha uma data futura (ex: 2025-12-31).",
+      "ask_duration": "Entendido! E qual a duração da consulta?",
+      "ask_duration_again": "Ok, para {{date}}, qual deve ser a duração da consulta?",
+      "checking_times_for_duration": "Verificando horários disponíveis para uma sessão de {{duration}} min em {{date}}...",
+      "ask_time": "Ótimo! Aqui estão os horários disponíveis para essa seleção:",
+      "no_times_available": "Hmm, parece não haver vagas de {{duration}}min disponíveis em {{date}}. O que você gostaria de fazer?",
+      "try_again_or_cancel": "O que você gostaria de fazer a seguir?",
+      "change_date": "Tentar Outra Data",
+      "change_duration": "Tentar Outra Duração",
+      "ask_name": "Perfeito. Qual o nome completo para a reserva?",
+      "ask_email": "E o endereço de e-mail para confirmação?",
+      "ask_email_again": "Você poderia fornecer novamente o endereço de e-mail, por favor?",
+      "invalid_email": "Esse endereço de e-mail não parece válido. Por favor, tente novamente.",
+      "confirm_details": "Por favor, confirme os detalhes da sua marcação:\n\n📅 Data: {{date}}\n⏱️ Hora: {{time}}\n⏳ Duração: {{duration}} minutos\n👤 Nome: {{name}}\n📧 Email: {{email}}\n\nEstá correto?",
+      "processing_booking": "Excelente! Finalizando sua marcação agora... ⏳",
+      "processing_step": "Processando...",
+      "processing_step_dots": "Processando...",
+      "booking_successful_pending_payment": "Sua consulta (ID: {{bookingId}}) foi reservada! Por favor, verifique seu e-mail ou perfil para detalhes de pagamento para confirmar.",
+      "payment_instructions_placeholder": "Você receberá instruções de pagamento em breve. Por enquanto, seu horário está reservado.",
+      "booking_failed": "Sinto muito, ocorreu um erro ao criar sua marcação: {{error}}. Por favor, tente novamente ou contate o suporte.",
+      "booking_cancelled": "Tudo bem, o processo de marcação foi cancelado. Posso ajudar em algo mais?",
+      "error_generic": "Peço desculpas, ocorreu um imprevisto. Poderíamos tentar esse passo novamente?",
+      "use_buttons_prompt": "Por favor, use um dos botões acima para fazer sua seleção.",
+      "placeholder_awaitingdate": "Insira data (AAAA-MM-DD) ou escolha",
+      "placeholder_awaitingname": "Seu nome completo",
+      "placeholder_awaitingemail": "Seu endereço de e-mail",
+      "placeholder_confirmingbooking": "Confirme com 'Sim' ou 'Não'"
+    }
+  },
+  "common": {
+    "yes": "Sim, Confirmar!",
+    "no": "Não, Voltar",
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "pick_custom_date": "Digitar Data Específica",
+    "cancel": "Cancelar Marcação"
   }
 }

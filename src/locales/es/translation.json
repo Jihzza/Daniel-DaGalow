@@ -869,6 +869,52 @@
   },
 
   "window_chatbot": {
-    "welcome_message": "¡Bienvenido al asistente personal de DaGalow! Puedo ayudarte con información sobre servicios, reservas o responder preguntas sobre la experiencia de Daniel. ¿En qué puedo ayudarte hoy?"
+    "welcome_message": "¡Bienvenido al asistente personal de DaGalow! Puedo ayudarte con información sobre servicios, reservas o responder preguntas sobre la experiencia de Daniel. ¿En qué puedo ayudarte hoy?",
+    "wait_for_message": "Espera la respuesta del bot...",
+    "type_message": "Escribe un mensaje…"
+  },
+  "chatbot": {
+    "error_message": "Lo siento, no pude entender eso o algo salió mal.",
+    "scheduling": {
+      "fetching_availability_dots": "Déjame revisar mi calendario...",
+      "error_fetching_availability": "Lo siento, no pude verificar mi disponibilidad en este momento. Por favor, inténtalo de nuevo en un momento.",
+      "ask_date": "¡Claro, puedo ayudar con la programación! ¿Para qué fecha te gustaría reservar?",
+      "ask_date_manual": "Vale, por favor escribe la fecha que te gustaría (ej: 2025-12-31).",
+      "invalid_date": "Esa fecha no parece correcta o está en el pasado. Por favor, elige una fecha futura (ej: 2025-12-31).",
+      "ask_duration": "¡Entendido! ¿Y de qué duración sería la consulta?",
+      "ask_duration_again": "Vale, para el {{date}}, ¿cuánto debería durar la consulta?",
+      "checking_times_for_duration": "Comprobando horas disponibles para una sesión de {{duration}} min el {{date}}...",
+      "ask_time": "¡Genial! Aquí están las horas disponibles para esa selección:",
+      "no_times_available": "Hmm, parece que no hay huecos de {{duration}}min disponibles el {{date}}. ¿Qué te gustaría hacer?",
+      "try_again_or_cancel": "¿Qué te gustaría hacer a continuación?",
+      "change_date": "Probar Otra Fecha",
+      "change_duration": "Probar Otra Duración",
+      "ask_name": "Perfecto. ¿Cuál es el nombre completo para la reserva?",
+      "ask_email": "¿Y la dirección de correo electrónico para la confirmación?",
+      "ask_email_again": "¿Podrías facilitar de nuevo la dirección de correo electrónico, por favor?",
+      "invalid_email": "Esa dirección de correo electrónico no parece válida. Por favor, inténtalo de nuevo.",
+      "confirm_details": "Por favor, confirma los detalles de tu reserva:\n\n📅 Fecha: {{date}}\n⏱️ Hora: {{time}}\n⏳ Duración: {{duration}} minutos\n👤 Nombre: {{name}}\n📧 Email: {{email}}\n\n¿Es correcto?",
+      "processing_booking": "¡Excelente! Finalizando tu reserva ahora... ⏳",
+      "processing_step": "Procesando...",
+      "processing_step_dots": "Procesando...",
+      "booking_successful_pending_payment": "¡Tu consulta (ID: {{bookingId}}) ha sido reservada! Por favor, revisa tu correo electrónico o perfil para los detalles de pago y confirmar.",
+      "payment_instructions_placeholder": "Recibirás instrucciones de pago en breve. Por ahora, tu horario está reservado.",
+      "booking_failed": "Lo siento mucho, hubo un error al crear tu reserva: {{error}}. Por favor, inténtalo de nuevo o contacta con soporte.",
+      "booking_cancelled": "Muy bien, el proceso de reserva ha sido cancelado. ¿Hay algo más en lo que pueda ayudar?",
+      "error_generic": "Disculpa, he tenido un problema. ¿Podríamos intentar ese paso de nuevo?",
+      "use_buttons_prompt": "Por favor, utiliza uno de los botones de arriba para hacer tu selección.",
+      "placeholder_awaitingdate": "Introduce fecha (AAAA-MM-DD) o elige",
+      "placeholder_awaitingname": "Tu nombre completo",
+      "placeholder_awaitingemail": "Tu dirección de email",
+      "placeholder_confirmingbooking": "Confirma con 'Sí' o 'No'"
+    }
+  },
+  "common": {
+    "yes": "¡Sí, Confirmar!",
+    "no": "No, Volver",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "pick_custom_date": "Introducir Fecha Específica",
+    "cancel": "Cancelar Reserva"
   }
 }

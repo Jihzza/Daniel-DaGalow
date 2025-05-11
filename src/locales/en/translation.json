@@ -250,7 +250,6 @@
     "name_placeholder": "Your Name",
     "email_label": "Your Email",
     "email_placeholder": "Your Email"
-    
   },
 
   "coaching_request": {
@@ -878,6 +877,52 @@
   },
 
   "window_chatbot": {
-    "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?"
+    "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?",
+    "wait_for_message": "Wait for bot response...",
+    "type_message": "Type a message…"
+  },
+  "chatbot": {
+    "error_message": "Sorry, I couldn't understand that or something went wrong.",
+    "scheduling": {
+      "fetching_availability_dots": "Let me check my calendar...",
+      "error_fetching_availability": "Sorry, I couldn't check my availability right now. Please try again in a bit.",
+      "ask_date": "Sure, I can help with scheduling! Which date would you like to book for?",
+      "ask_date_manual": "Okay, please type the date you'd like (e.g., 2025-12-31).",
+      "invalid_date": "That date doesn't seem right or it's in the past. Please choose a future date (e.g., 2025-12-31).",
+      "ask_duration": "Got it! And for how long should the consultation be?",
+      "ask_duration_again": "Okay, for {{date}}, how long should the consultation be?",
+      "checking_times_for_duration": "Checking available times for a {{duration}} min session on {{date}}...",
+      "ask_time": "Great! Here are the available times for that selection:",
+      "no_times_available": "Hmm, no {{duration}}min slots seem to be open on {{date}}. What would you like to do?",
+      "try_again_or_cancel": "What would you like to do next?",
+      "change_date": "Try Different Date",
+      "change_duration": "Try Different Duration",
+      "ask_name": "Perfect. What's the full name for the booking?",
+      "ask_email": "And the email address for confirmation?",
+      "ask_email_again": "Could you provide the email address again, please?",
+      "invalid_email": "That email address doesn't look valid. Please try again.",
+      "confirm_details": "Please confirm your booking details:\n\n📅 Date: {{date}}\n⏱️ Time: {{time}}\n⏳ Duration: {{duration}} minutes\n👤 Name: {{name}}\n📧 Email: {{email}}\n\nIs this correct?",
+      "processing_booking": "Excellent! Finalizing your booking now... ⏳",
+      "processing_step": "Processing...",
+      "processing_step_dots": "Processing...",
+      "booking_successful_pending_payment": "Your consultation (ID: {{bookingId}}) has been reserved! Please check your email or profile for payment details to confirm.",
+      "payment_instructions_placeholder": "You will receive payment instructions shortly. For now, your slot is held.",
+      "booking_failed": "So sorry, there was an error creating your booking: {{error}}. Please try again or contact support.",
+      "booking_cancelled": "Alright, the booking process has been cancelled. Is there anything else I can help with?",
+      "error_generic": "Apologies, I hit a snag. Could we try that step again?",
+      "use_buttons_prompt": "Please use one of the buttons above to make your selection.",
+      "placeholder_awaitingdate": "Enter date (YYYY-MM-DD) or choose",
+      "placeholder_awaitingname": "Your full name",
+      "placeholder_awaitingemail": "Your email address",
+      "placeholder_confirmingbooking": "Confirm with 'Yes' or 'No'"
+    }
+  },
+  "common": {
+    "yes": "Yes, Confirm!",
+    "no": "No, Go Back",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "pick_custom_date": "Enter Specific Date",
+    "cancel": "Cancel Booking"
   }
 }
