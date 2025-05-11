@@ -18,7 +18,7 @@ function IncentivePage() {
   };
 
   // Common styling for the benefit boxes
-  const boxStyle = "bg-oxfordBlue text-white p-6 rounded-xl border-2 border-darkGold";
+  const boxStyle = " text-black p-6 rounded-xl border-2 border-darkGold";
   const benefitItemStyle = "flex items-start text-sm md:text-lg"; // Adjusted for brevity
   const checkIcon = <span className="text-darkGold mr-2 text-lg">✓</span>; // Larger check
 

@@ -9,28 +9,29 @@ import { useTranslation } from "react-i18next";
 
 const NAVIGATION_BAR_HEIGHT = 60; // px
 const BUTTON_PADDING_ABOVE_NAV = 10; // px
-const SMOOTH_TRANSITION = 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out, visibility 0.2s ease-in-out'; // Added visibility
+const SMOOTH_TRANSITION = 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out'; // Match Coaching/Services
 
 function Analysis() {
   const navigate = useNavigate();
   const { setService } = useContext(ServiceContext);
   const { t } = useTranslation();
 
+  // --- Button Animation State (copied from Coaching/Services) ---
   const [isButtonVisibleBasedOnSection, setIsButtonVisibleBasedOnSection] = useState(false);
-  // Initial style: button is part of the normal flow, but might be invisible
-  const [buttonStyle, setButtonStyle] = useState({
+  const [buttonPositionStyle, setButtonPositionStyle] = useState({
+    position: 'absolute',
     opacity: 0,
-    visibility: 'hidden', // Start hidden
+    bottom: '0px',
+    left: '50%',
+    transform: 'translateX(-50%)',
     transition: SMOOTH_TRANSITION,
-    // No position, bottom, left, transform here for the default (docked) state
-    // width will be handled by its class or set dynamically when fixed
+    zIndex: 1,
   });
 
   const sectionRef = useRef(null);
   const buttonRef = useRef(null);
-  // This ref is primarily to get the "docking point"
-  const buttonOriginalPositionMarkerRef = useRef(null);
-  const isButtonFixed = useRef(false); // To track if the button is currently in fixed state
+  const buttonStopContainerRef = useRef(null); // replaces marker ref
+  const hasButtonReachedFinalPosition = useRef(false);
 
   const openForm = (serviceType) => {
     setService(serviceType);
@@ -39,22 +40,15 @@ function Analysis() {
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Intersection Observer for section visibility (copied from Coaching/Services)
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsButtonVisibleBasedOnSection(entry.isIntersecting);
-        if (!entry.isIntersecting && !isButtonFixed.current) {
-          // If section is not visible AND button is not fixed, ensure it's hidden
-          setButtonStyle(prev => ({
-            ...prev,
-            opacity: 0,
-            visibility: 'hidden',
-          }));
-        }
       },
       {
         root: null,
-        threshold: 0.1, // Section visibility threshold
+        threshold: 0.1,
       }
     );
 
@@ -68,76 +62,74 @@ function Analysis() {
     };
   }, []);
 
+  // Scroll handler for button positioning (copied and adapted)
   const handleScroll = useCallback(() => {
-    if (!buttonRef.current || !buttonOriginalPositionMarkerRef.current || !sectionRef.current) {
+    if (!buttonRef.current || !buttonStopContainerRef.current) {
       return;
     }
 
-    const markerRect = buttonOriginalPositionMarkerRef.current.getBoundingClientRect();
+    const stopContainerRect = buttonStopContainerRef.current.getBoundingClientRect();
     const buttonHeight = buttonRef.current.offsetHeight;
     const effectiveSpaceFromBottomForFixed = NAVIGATION_BAR_HEIGHT + BUTTON_PADDING_ABOVE_NAV;
+    const dockTriggerY = window.innerHeight - buttonHeight - effectiveSpaceFromBottomForFixed;
 
-    // Condition to make the button fixed:
-    // The original position of the button (top of markerRect) is scrolled off-screen
-    // OR it's getting too close to the bottom of the viewport.
-    const shouldBeFixed = markerRect.top + buttonHeight > window.innerHeight - effectiveSpaceFromBottomForFixed;
-
-
-    if (isButtonVisibleBasedOnSection && shouldBeFixed) {
-        // --- BECOME FIXED ---
-        isButtonFixed.current = true;
-        setButtonStyle({
-            position: 'fixed',
-            bottom: `${effectiveSpaceFromBottomForFixed}px`,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            opacity: 1,
-            visibility: 'visible',
-            zIndex: 1000,
-            transition: SMOOTH_TRANSITION,
-            width: buttonRef.current.offsetWidth ? `${buttonRef.current.offsetWidth}px` : 'auto', // Maintain original width
-        });
+    if (stopContainerRect.top <= dockTriggerY) {
+      setButtonPositionStyle({
+        position: 'absolute',
+        bottom: '0px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        opacity: 1,
+        transition: SMOOTH_TRANSITION,
+        zIndex: 1,
+      });
+      hasButtonReachedFinalPosition.current = true;
     } else {
-        // --- RETURN TO ORIGINAL FLOW (DOCK) or HIDE ---
-        isButtonFixed.current = false;
-        if (isButtonVisibleBasedOnSection) {
-            // Still in section, become part of flow (visible)
-            setButtonStyle({
-                opacity: 1,
-                visibility: 'visible',
-                transform: 'translateY(0px)', // Reset any potential transform
-                transition: SMOOTH_TRANSITION,
-                // No position, bottom, left, zIndex - let CSS classes handle it
-                // width is handled by Tailwind classes
-            });
-        } else {
-            // Outside section and not fixed, hide it
-            setButtonStyle({
-                opacity: 0,
-                visibility: 'hidden',
-                transform: 'translateY(10px)', // Optional: slight move down on hide
-                transition: SMOOTH_TRANSITION,
-            });
-        }
+      setButtonPositionStyle({
+        position: 'fixed',
+        bottom: `${effectiveSpaceFromBottomForFixed}px`,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        opacity: 1,
+        transition: SMOOTH_TRANSITION,
+        zIndex: 10, // Higher zIndex when fixed
+      });
+      hasButtonReachedFinalPosition.current = false;
     }
-  }, [isButtonVisibleBasedOnSection]); // Added isButtonVisibleBasedOnSection dependency
+  }, []);
 
+  // Effect to manage button visibility and scroll listener (copied and adapted)
   useEffect(() => {
-    // Initial call to handleScroll to set button state based on current scroll position
-    // Especially important if the page loads scrolled into the section
     if (isButtonVisibleBasedOnSection) {
-        handleScroll();
+      handleScroll();
+      window.addEventListener('scroll', handleScroll);
+      window.addEventListener('resize', handleScroll);
+    } else {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+      if (hasButtonReachedFinalPosition.current) {
+        setButtonPositionStyle({
+          position: 'absolute',
+          bottom: '0px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          opacity: 1,
+          transition: SMOOTH_TRANSITION,
+          zIndex: 1,
+        });
+      } else {
+        setButtonPositionStyle(prev => ({
+          ...prev,
+          opacity: 0,
+          transition: SMOOTH_TRANSITION,
+        }));
+      }
     }
-
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', handleScroll);
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
     };
-  }, [isButtonVisibleBasedOnSection, handleScroll]); // handleScroll is a dependency
-
+  }, [isButtonVisibleBasedOnSection, handleScroll]);
 
   const analysisServices = [
     // ... (analysisServices array remains the same)
@@ -309,17 +301,21 @@ function Analysis() {
               <p className="text-white text-sm md:text-lg pb-6">
                 {t("analysis.analysis_quote_subtitle")} {/* "Depends on the Project" */}
               </p>
-              {/* This empty div will serve as the marker for the button's original top position */}
-              <div ref={buttonOriginalPositionMarkerRef} style={{ height: '0px', width: '0px' }}></div>
-              <button
-                ref={buttonRef}
-                onClick={() => openForm("analysis")}
-                style={buttonStyle} // Apply the dynamic style
-                // Original classes are kept, z-10 is removed as zIndex is in buttonStyle
-                className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+              {/* This div is now the stop container for the button's docking logic */}
+              <div
+                ref={buttonStopContainerRef}
+                className="relative flex justify-center pt-2"
+                style={{ minHeight: '80px' }}
               >
-                {t("analysis.analysis_get_analysis")}
-              </button>
+                <button
+                  ref={buttonRef}
+                  onClick={() => openForm("analysis")}
+                  style={buttonPositionStyle}
+                  className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+                >
+                  {t("analysis.analysis_get_analysis")}
+                </button>
+              </div>
             </div>
           </div>
         </div>
