@@ -1,20 +1,36 @@
 // components/home-sections/Analysis.jsx
-// (Assuming this is the correct path based on App.js)
-import React from "react";
+import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import SocialIcon from "../../assets/icons/Phone Branco.svg";
 import StocksIcon from "../../assets/icons/MoneyBag Branco.svg";
 import BusinessIcon from "../../assets/icons/Bag Branco.svg";
-// Removed PortfolioIcon import as it's not used in the services grid
 import { ServiceContext } from "../../contexts/ServiceContext";
-import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 
-function Analysis() { // Renamed from ExpertAnalysis to Analysis to match App.js import
+const NAVIGATION_BAR_HEIGHT = 60; // px
+const BUTTON_PADDING_ABOVE_NAV = 10; // px
+const SMOOTH_TRANSITION = 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out, visibility 0.2s ease-in-out'; // Added visibility
+
+function Analysis() {
   const navigate = useNavigate();
-  // Removed unused 'service' variable from context destructuring if not used directly in this component's logic beyond setService
   const { setService } = useContext(ServiceContext);
   const { t } = useTranslation();
+
+  const [isButtonVisibleBasedOnSection, setIsButtonVisibleBasedOnSection] = useState(false);
+  // Initial style: button is part of the normal flow, but might be invisible
+  const [buttonStyle, setButtonStyle] = useState({
+    opacity: 0,
+    visibility: 'hidden', // Start hidden
+    transition: SMOOTH_TRANSITION,
+    // No position, bottom, left, transform here for the default (docked) state
+    // width will be handled by its class or set dynamically when fixed
+  });
+
+  const sectionRef = useRef(null);
+  const buttonRef = useRef(null);
+  // This ref is primarily to get the "docking point"
+  const buttonOriginalPositionMarkerRef = useRef(null);
+  const isButtonFixed = useRef(false); // To track if the button is currently in fixed state
 
   const openForm = (serviceType) => {
     setService(serviceType);
@@ -23,30 +39,109 @@ function Analysis() { // Renamed from ExpertAnalysis to Analysis to match App.js
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // This function seems designed for navigation, if these grid items should navigate,
-  // you can add an onClick handler to them.
-  const handleServiceClick = (serviceType) => {
-    const mapping = {
-      // Example: if clicking an item should scroll to a specific part of a form
-      // "socialMediaAnalysis": "#analysis-request-social",
-      analysis: "#analysis-request", // Generic fallback or if all analysis items go to the same spot
-    };
-    // This navigation logic might need adjustment based on how you want interaction
-    if (mapping[serviceType]) {
-      navigate(`/?service=${serviceType}${mapping[serviceType]}`);
-      setTimeout(() => {
-        const id = mapping[serviceType].slice(1);
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    } else {
-      // Fallback if no specific mapping, e.g., open a generic form
-      openForm(serviceType);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsButtonVisibleBasedOnSection(entry.isIntersecting);
+        if (!entry.isIntersecting && !isButtonFixed.current) {
+          // If section is not visible AND button is not fixed, ensure it's hidden
+          setButtonStyle(prev => ({
+            ...prev,
+            opacity: 0,
+            visibility: 'hidden',
+          }));
+        }
+      },
+      {
+        root: null,
+        threshold: 0.1, // Section visibility threshold
+      }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
     }
-  };
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    if (!buttonRef.current || !buttonOriginalPositionMarkerRef.current || !sectionRef.current) {
+      return;
+    }
+
+    const markerRect = buttonOriginalPositionMarkerRef.current.getBoundingClientRect();
+    const buttonHeight = buttonRef.current.offsetHeight;
+    const effectiveSpaceFromBottomForFixed = NAVIGATION_BAR_HEIGHT + BUTTON_PADDING_ABOVE_NAV;
+
+    // Condition to make the button fixed:
+    // The original position of the button (top of markerRect) is scrolled off-screen
+    // OR it's getting too close to the bottom of the viewport.
+    const shouldBeFixed = markerRect.top + buttonHeight > window.innerHeight - effectiveSpaceFromBottomForFixed;
+
+
+    if (isButtonVisibleBasedOnSection && shouldBeFixed) {
+        // --- BECOME FIXED ---
+        isButtonFixed.current = true;
+        setButtonStyle({
+            position: 'fixed',
+            bottom: `${effectiveSpaceFromBottomForFixed}px`,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            opacity: 1,
+            visibility: 'visible',
+            zIndex: 1000,
+            transition: SMOOTH_TRANSITION,
+            width: buttonRef.current.offsetWidth ? `${buttonRef.current.offsetWidth}px` : 'auto', // Maintain original width
+        });
+    } else {
+        // --- RETURN TO ORIGINAL FLOW (DOCK) or HIDE ---
+        isButtonFixed.current = false;
+        if (isButtonVisibleBasedOnSection) {
+            // Still in section, become part of flow (visible)
+            setButtonStyle({
+                opacity: 1,
+                visibility: 'visible',
+                transform: 'translateY(0px)', // Reset any potential transform
+                transition: SMOOTH_TRANSITION,
+                // No position, bottom, left, zIndex - let CSS classes handle it
+                // width is handled by Tailwind classes
+            });
+        } else {
+            // Outside section and not fixed, hide it
+            setButtonStyle({
+                opacity: 0,
+                visibility: 'hidden',
+                transform: 'translateY(10px)', // Optional: slight move down on hide
+                transition: SMOOTH_TRANSITION,
+            });
+        }
+    }
+  }, [isButtonVisibleBasedOnSection]); // Added isButtonVisibleBasedOnSection dependency
+
+  useEffect(() => {
+    // Initial call to handleScroll to set button state based on current scroll position
+    // Especially important if the page loads scrolled into the section
+    if (isButtonVisibleBasedOnSection) {
+        handleScroll();
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [isButtonVisibleBasedOnSection, handleScroll]); // handleScroll is a dependency
+
 
   const analysisServices = [
-    {
+    // ... (analysisServices array remains the same)
+        {
       id: "social", // Unique id for key and potentially for handleServiceClick
       title: t("analysis.analysis_service_1"), // "Social Media Analysis"
       icon: (
@@ -85,13 +180,13 @@ function Analysis() { // Renamed from ExpertAnalysis to Analysis to match App.js
   ];
 
   return (
-    <section id="expert-analysis" className="py-8 px-4 text-white">
+    <section ref={sectionRef} id="expert-analysis" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
         <h2 className="text-2xl md:text-4xl font-bold">{t("analysis.analysis_title")}</h2>
         <p className="md:text-xl">{t("analysis.analysis_description")}</p>
 
-        {/* UNIFIED GRID FOR ANALYSIS SERVICES */}
         <div className="flex flex-col gap-6 text-white">
+          {/* ... (analysis services grid remains the same) ... */}
           <div className="grid grid-cols-2 gap-6">
             {analysisServices.slice(0, 2).map((item) => (
               <div
@@ -120,8 +215,8 @@ function Analysis() { // Renamed from ExpertAnalysis to Analysis to match App.js
           </div>
         </div>
 
-        {/* FEATURES SECTION - This was already structured correctly with md:grid-cols-3 */}
-        <div className="w-full mx-auto px-4 mt-8"> {/* This inner px-4 makes this section slightly narrower than if items were direct children of max-w-3xl. This is consistent with Coaching.jsx and Services.jsx features sections */}
+        <div className="w-full mx-auto px-4 mt-8">
+          {/* ... (features grid remains the same) ... */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Quick Consultations Feature */}
             <div className="flex flex-col items-center text-center">
@@ -206,14 +301,22 @@ function Analysis() { // Renamed from ExpertAnalysis to Analysis to match App.js
             <p className="text-lg md:text-xl text-white max-w-3xl mx-auto">
               {t("analysis.analysis_summary")}
             </p>
+            {/* This div contains the text and the button in their natural order */}
             <div className="mt-8 w-full">
               <h1 className="text-white text-2xl md:text-3xl py-2 font-bold">
-                {t("analysis.analysis_quote_title")}
+                {t("analysis.analysis_quote_title")} {/* "Ask For Quote" */}
               </h1>
-              <p className="text-white text-sm md:text-lg pb-6">{t("analysis.analysis_quote_subtitle")}</p>
+              <p className="text-white text-sm md:text-lg pb-6">
+                {t("analysis.analysis_quote_subtitle")} {/* "Depends on the Project" */}
+              </p>
+              {/* This empty div will serve as the marker for the button's original top position */}
+              <div ref={buttonOriginalPositionMarkerRef} style={{ height: '0px', width: '0px' }}></div>
               <button
+                ref={buttonRef}
                 onClick={() => openForm("analysis")}
-                className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+                style={buttonStyle} // Apply the dynamic style
+                // Original classes are kept, z-10 is removed as zIndex is in buttonStyle
+                className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
               >
                 {t("analysis.analysis_get_analysis")}
               </button>
@@ -225,4 +328,4 @@ function Analysis() { // Renamed from ExpertAnalysis to Analysis to match App.js
   );
 }
 
-export default Analysis; // Changed from ExpertAnalysis to Analysis
+export default Analysis;

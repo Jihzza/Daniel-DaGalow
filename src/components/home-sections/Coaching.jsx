@@ -1,5 +1,5 @@
 // components/DirectCoaching.jsx
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext, useCallback } from "react"; // Added useState, useEffect, useRef, useCallback
 import InvestIcon from "../../assets/icons/Stocks Branco.svg";
 import TrainerIcon from "../../assets/icons/PersonalTrainer Branco.svg";
 import DatingIcon from "../../assets/icons/Dating Branco.svg";
@@ -7,14 +7,38 @@ import OnlyFansIcon from "../../assets/icons/Onlyfans Branco.svg";
 import BusinessIcon from "../../assets/icons/Business Branco.svg";
 import HabitsIcon from "../../assets/icons/Habits Branco.svg";
 import { ServiceContext } from "../../contexts/ServiceContext";
+// import { useContext } from "react"; // Already imported above
 import { useTranslation } from "react-i18next";
+
+// Constants for button behavior (copied from Services.jsx)
+const NAVIGATION_BAR_HEIGHT = 60; // px
+const BUTTON_PADDING_ABOVE_NAV = 10; // px
+const SMOOTH_TRANSITION = 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out';
+
 
 function DirectCoaching() {
   const { setService, setServiceWithTier } = useContext(ServiceContext);
-  const [tier, setTier] = useState("null");
+  const [tier, setTier] = useState("null"); // Assuming "null" is a string, adjust if it's meant to be null type
   const { t } = useTranslation();
 
-  const openStandardForm = (service) => {
+  // State and Refs for floating button (copied and adapted from Services.jsx)
+  const [isButtonVisibleBasedOnSection, setIsButtonVisibleBasedOnSection] = useState(false);
+  const [buttonPositionStyle, setButtonPositionStyle] = useState({
+    position: 'absolute',
+    opacity: 0,
+    bottom: '0px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    transition: SMOOTH_TRANSITION,
+    zIndex: 1,
+  });
+
+  const sectionRef = useRef(null);
+  const buttonRef = useRef(null);
+  const buttonStopContainerRef = useRef(null);
+  const hasButtonReachedFinalPosition = useRef(false);
+
+  const openStandardForm = (service) => { // This function seems unused in the context of the floating button, but kept for completeness if used elsewhere.
     setService(service);
     document
       .getElementById("service-selection")
@@ -23,7 +47,6 @@ function DirectCoaching() {
 
   // New handler to open coaching form with the selected tier
   const openCoachingForm = () => {
-    // Use setServiceWithTier to pass both service and chosen tier
     setServiceWithTier("coaching", tier);
     document
       .getElementById("service-selection")
@@ -51,8 +74,100 @@ function DirectCoaching() {
     },
   ];
 
+  // Intersection Observer for section visibility (copied from Services.jsx)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsButtonVisibleBasedOnSection(entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 0.1,
+      }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
+
+  // Scroll handler for button positioning (copied and adapted from Services.jsx)
+  const handleScroll = useCallback(() => {
+    if (!buttonRef.current || !buttonStopContainerRef.current || !sectionRef.current) {
+      return;
+    }
+
+    const stopContainerRect = buttonStopContainerRef.current.getBoundingClientRect();
+    const buttonHeight = buttonRef.current.offsetHeight;
+    const effectiveSpaceFromBottomForFixed = NAVIGATION_BAR_HEIGHT + BUTTON_PADDING_ABOVE_NAV;
+    const dockTriggerY = window.innerHeight - buttonHeight - effectiveSpaceFromBottomForFixed;
+
+    if (stopContainerRect.top <= dockTriggerY) {
+      setButtonPositionStyle({
+        position: 'absolute',
+        bottom: '0px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        opacity: 1,
+        transition: SMOOTH_TRANSITION,
+        zIndex: 1,
+      });
+      hasButtonReachedFinalPosition.current = true;
+    } else {
+      setButtonPositionStyle({
+        position: 'fixed',
+        bottom: `${effectiveSpaceFromBottomForFixed}px`,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        opacity: 1,
+        transition: SMOOTH_TRANSITION,
+        zIndex: 10, // Higher zIndex when fixed
+      });
+      hasButtonReachedFinalPosition.current = false;
+    }
+  }, []);
+
+  // Effect to manage button visibility and scroll listener (copied and adapted from Services.jsx)
+  useEffect(() => {
+    if (isButtonVisibleBasedOnSection) {
+      handleScroll();
+      window.addEventListener('scroll', handleScroll);
+      window.addEventListener('resize', handleScroll);
+    } else {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+      if (hasButtonReachedFinalPosition.current) {
+        setButtonPositionStyle({
+          position: 'absolute',
+          bottom: '0px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          opacity: 1,
+          transition: SMOOTH_TRANSITION,
+          zIndex: 1,
+        });
+      } else {
+        setButtonPositionStyle(prev => ({
+          ...prev,
+          opacity: 0,
+          transition: SMOOTH_TRANSITION,
+        }));
+      }
+    }
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, [isButtonVisibleBasedOnSection, handleScroll]);
+
+
   return (
-    <section id="coaching" className="py-8 px-4 text-white">
+    <section ref={sectionRef} id="coaching" className="py-8 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-6">
         <h2 className="text-2xl md:text-4xl font-bold">{t("coaching.coaching_title")}</h2>
         <p className="md:text-xl">{t("coaching.coaching_description")}</p>
@@ -230,38 +345,46 @@ function DirectCoaching() {
           <p className="text-lg md:text-xl text-white max-w-3xl mx-auto">
             {t("coaching.coaching_summary")}
           </p>
-          
+
           {/* Tier Selector */}
           <div className="grid grid-cols-3 gap-3 pt-2 mt-6">
-            {tiers.map(t => (
+            {tiers.map(t_item => ( // Changed t to t_item to avoid conflict with useTranslation's t
               <label
-                key={t.id}
-                className={`cursor-pointer border-2 rounded-lg py-4 px-2 flex flex-col items-center justify-center transition-all duration-200 ${tier === t.id ? 'border-darkGold transform scale-110 z-10' : 'border-darkGold'}`}
+                key={t_item.id}
+                className={`cursor-pointer border-2 rounded-lg py-4 px-2 flex flex-col items-center justify-center transition-all duration-200 ${tier === t_item.id ? 'border-darkGold transform scale-110 z-10' : 'border-darkGold'}`}
               >
                 <input
                   type="radio"
                   name="tier"
-                  value={t.id}
+                  value={t_item.id}
                   className="hidden"
-                  checked={tier === t.id}
-                  onChange={() => setTier(t.id)}
+                  checked={tier === t_item.id}
+                  onChange={() => setTier(t_item.id)}
                 />
-                <span className="text-xl md:text-3xl font-extrabold mb-1">{t.price}</span>
-                <span className="text-sm md:text-lg mb-2">{t.label}</span>
-                <span className="text-xs text-gray-300 md:text-base">{t.desc}</span>
+                <span className="text-xl md:text-3xl font-extrabold mb-1">{t_item.price}</span>
+                <span className="text-sm md:text-lg mb-2">{t_item.label}</span>
+                <span className="text-xs text-gray-300 md:text-base">{t_item.desc}</span>
               </label>
             ))}
           </div>
 
           <p className="text-sm md:text-lg font-normal">{t("coaching.coaching_limited_spots")}</p>
 
-          <div className="flex justify-center pt-2">
-          <button
-              onClick={openCoachingForm}
-              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
-            >
-              {t("coaching.coaching_get_number")}
-            </button>
+          {/* Button Container and Button */}
+          <div
+            ref={buttonStopContainerRef} // Add ref here
+            className="relative flex justify-center pt-2" // Ensure it's relative
+            style={{ minHeight: '80px' }} // Give it some height
+          >
+            <button
+                ref={buttonRef} // Add ref to the button
+                onClick={openCoachingForm}
+                style={buttonPositionStyle} // Apply dynamic style
+                className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+                // Removed z-10 as it's in buttonPositionStyle
+              >
+                {t("coaching.coaching_get_number")}
+              </button>
           </div>
         </div>
       </div>

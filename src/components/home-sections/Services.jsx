@@ -1,5 +1,6 @@
 // components/Services.js
-import React from "react";
+import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
+// ... (all other imports remain the same) ...
 import Brain from "../../assets/icons/Brain Branco.svg";
 import Phone from "../../assets/icons/Phone Branco.svg";
 import MoneyBag from "../../assets/icons/MoneyBag Branco.svg";
@@ -12,42 +13,144 @@ import More from "../../assets/icons/More Branco.svg";
 import Robot from "../../assets/icons/Robot Branco.svg";
 import { useNavigate } from "react-router-dom";
 import { ServiceContext } from "../../contexts/ServiceContext";
-import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+
+
+const NAVIGATION_BAR_HEIGHT = 60; // px
+const BUTTON_PADDING_ABOVE_NAV = 10; // px
+const SMOOTH_TRANSITION = 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out';
 
 function Services() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { service, setService } = useContext(ServiceContext);
 
-  const openForm = (service) => {
-    setService(service);                          // ① tell the form which one
-    document                                     // ② smooth scroll
+  const [isButtonVisibleBasedOnSection, setIsButtonVisibleBasedOnSection] = useState(false);
+  const [buttonPositionStyle, setButtonPositionStyle] = useState({
+    position: 'absolute',
+    opacity: 0,
+    bottom: '0px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    transition: SMOOTH_TRANSITION,
+    zIndex: 1,
+  });
+
+  const sectionRef = useRef(null);
+  const buttonRef = useRef(null);
+  const buttonStopContainerRef = useRef(null);
+  const hasButtonReachedFinalPosition = useRef(false);
+
+  const openForm = (serviceName) => {
+    setService(serviceName);
+    document
       .getElementById("service-selection")
-      ?.scrollIntoView({ behavior: "smooth" });   // MDN example :contentReference[oaicite:2]{index=2}
+      ?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleServiceClick = (service) => {
-    const mapping = {
-      booking: "#booking",
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsButtonVisibleBasedOnSection(entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 0.1,
+      }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
     };
-    navigate(`/?service=${service}${mapping[service]}`);
-    setTimeout(() => {
-      const id = mapping[service].slice(1);
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
-  };
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    if (!buttonRef.current || !buttonStopContainerRef.current) {
+      return;
+    }
+
+    const stopContainerRect = buttonStopContainerRef.current.getBoundingClientRect();
+    const buttonHeight = buttonRef.current.offsetHeight;
+    const effectiveSpaceFromBottomForFixed = NAVIGATION_BAR_HEIGHT + BUTTON_PADDING_ABOVE_NAV;
+    const dockTriggerY = window.innerHeight - buttonHeight - effectiveSpaceFromBottomForFixed;
+
+    if (stopContainerRect.top <= dockTriggerY) {
+      setButtonPositionStyle({
+        position: 'absolute',
+        bottom: '0px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        opacity: 1,
+        transition: SMOOTH_TRANSITION,
+        zIndex: 1,
+      });
+      hasButtonReachedFinalPosition.current = true;
+    } else {
+      setButtonPositionStyle({
+        position: 'fixed',
+        bottom: `${effectiveSpaceFromBottomForFixed}px`,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        opacity: 1,
+        transition: SMOOTH_TRANSITION,
+        zIndex: 1,
+      });
+      hasButtonReachedFinalPosition.current = false;
+    }
+  }, []); // Empty dependency array as constants are outside and refs are stable
+
+  // Main effect to manage button visibility and scroll listener
+  useEffect(() => {
+    if (isButtonVisibleBasedOnSection) {
+      handleScroll();
+      window.addEventListener('scroll', handleScroll);
+    } else {
+      // Section is NOT visible.
+      window.removeEventListener('scroll', handleScroll);
+
+      // If the button had reached its final docked state, it MUST stay visible
+      // and in its absolute position, as it's now part of the general page layout below this section.
+      if (hasButtonReachedFinalPosition.current) {
+        setButtonPositionStyle({ // Ensure it's the absolute docked style
+          position: 'absolute',
+          bottom: '0px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          opacity: 1, // Crucially, opacity remains 1
+          transition: SMOOTH_TRANSITION, // Apply transition for smoothness if style properties change
+          zIndex: 1,
+        });
+      } else {
+        // Button was not in its final docked position when section became invisible
+        // (e.g., scrolling up out of section, or section was too short for button to dock).
+        // In this case, it should fade out.
+        setButtonPositionStyle(prev => ({
+          ...prev,
+          opacity: 0,
+          transition: SMOOTH_TRANSITION,
+        }));
+        // hasButtonReachedFinalPosition is already false or was never true.
+      }
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isButtonVisibleBasedOnSection, handleScroll]);
 
   return (
-    <section id="services" className="py-8 px-4 text-white">
+    <section ref={sectionRef} id="services" className="py-8 px-4 text-white">
+      {/* ... rest of your JSX ... */}
       <div className="max-w-3xl mx-auto text-center space-y-6">
         <h2 className="text-2xl md:text-4xl font-bold">
           {t("services.services_title")}
         </h2>
-        <p className="md:text-xl">
-          {t("services.services_description")}
-        </p>
+        <p className="md:text-xl">{t("services.services_description")}</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-white">
           {[
             {
@@ -93,7 +196,11 @@ function Services() {
             {
               title: t("services.service_5"),
               icon: (
-                <img src={Bag} alt="Bag" className="w-8 h-8 md:w-12 md:h-12 object-contain" />
+                <img
+                  src={Bag}
+                  alt="Bag"
+                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
+                />
               ),
             },
             {
@@ -154,13 +261,15 @@ function Services() {
               <div className="flex items-center justify-center mb-3">
                 {item.icon}
               </div>
-              <div className="font-semibold text-[13px] md:text-lg">{item.title}</div>
+              <div className="font-semibold text-[13px] md:text-lg">
+                {item.title}
+              </div>
             </div>
           ))}
         </div>
       </div>
-      <div className="w-full mx-auto px-4 mt-8 md:mt-16">
 
+      <div className="w-full mx-auto px-4 mt-8 md:mt-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Video Call Feature */}
           <div className="flex flex-col items-center text-center">
@@ -252,13 +361,19 @@ function Services() {
             <p className="text-white text-sm md:text-lg pb-6">
               {t("services.services_price_minimum_time")}
             </p>
-            <div className="flex justify-center pt-2">
-            <button
-              onClick={() => openForm("booking")}
-              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+            <div
+              ref={buttonStopContainerRef}
+              className="relative flex justify-center pt-2"
+              style={{ minHeight: '80px' }}
             >
-              {t("services.services_book_consultation")}
-            </button>
+              <button
+                ref={buttonRef}
+                onClick={() => openForm("booking")}
+                style={buttonPositionStyle}
+                className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90"
+              >
+                {t("services.services_book_consultation")}
+              </button>
             </div>
           </div>
         </div>
