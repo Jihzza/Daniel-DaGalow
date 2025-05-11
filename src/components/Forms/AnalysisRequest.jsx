@@ -1,5 +1,5 @@
 // src/components/AnalysisRequest.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect /* Add useEffect */ } from "react"; // Ensure useEffect is imported
 import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../../contexts/AuthContext";
@@ -157,12 +157,23 @@ export default function AnalysisRequest({ onBackService }) {
   const [formData, setFormData] = useState({
     type: "",
     name: user?.user_metadata?.full_name || "",
-    email: "",
+    email: user?.email || "", // Autofill email from user object
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [requestId, setRequestId] = useState(null); // Store the created request ID
   const formRef = useScrollToTopOnChange([step]);
+
+  // Effect to update form data when user object changes (e.g., after login)
+  useEffect(() => {
+    if (user) {
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        name: user.user_metadata?.full_name || prevFormData.name || "",
+        email: user.email || prevFormData.email || "",
+      }));
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
