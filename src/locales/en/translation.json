@@ -811,32 +811,49 @@
     }
   },
 
-  "incentive": {
-    "title": "Create Your Account Today",
-    "description": "Join our community and unlock exclusive benefits to accelerate your personal growth journey.",
-    "benefits": {
-      "title": "Account Benefits",
-      "items": {
-        "consultation": "Easy consultation scheduling with priority access",
-        "history": "Save and access your consultation history",
-        "content": "Exclusive content and service updates",
-        "dashboard": "Personalized dashboard to track your progress"
-      }
-    },
-    "chatbot": {
-      "title": "Get Help From Our Chatbot",
-      "description": "Our intelligent assistant is available 24/7 to answer your questions about our services.",
-      "capabilities": {
-        "title": "With our chatbot, you can:",
-        "info": "Get instant information about services and pricing",
-        "recommendations": "Receive recommendations based on your goals",
-        "preparation": "Prepare for your consultations with guidance"
-      }
-    },
-    "cta": {
-      "button": "Create Your Account"
+  "incentive": { 
+  "title": "Create Your Account Today",
+  "description": "Join our community and unlock exclusive benefits to accelerate your personal growth journey.",
+  "benefits": {
+    "title": "Account Benefits",
+    "items": {
+      "consultation": "Easy consultation scheduling with priority access",
+      "history": "Save and access your consultation history",
+      "content": "Exclusive content and service updates",
+      "dashboard": "Personalized dashboard to track your progress"
     }
   },
+  "chatbot": {
+    "title": "Get Help From Our Chatbot",
+    "description": "Our intelligent assistant is available 24/7 to answer your questions about our services.",
+    "capabilities": {
+      "title": "With our chatbot, you can:",
+      "info": "Get instant information about services and pricing",
+      "recommendations": "Receive recommendations based on your goals",
+      "preparation": "Prepare for your consultations with guidance"
+    }
+  },
+  "cta": {
+    "button": "Create Your Account"
+  }
+},
+"incentivePage": {
+  "account": {
+    "title": "Create Your Account",
+    "description": "Create an account in moments to schedule services and keep track of your journey with me. It's essential for all bookings and automatically created if you schedule a service.",
+    "benefit1": "Schedule all services like consultations & coaching.",
+    "benefit2": "Access your appointment history and saved chatbot conversations.",
+    "benefit3": "Stay informed with service updates",
+    "cta": "Create Your Free Account"
+  },
+  "chatbot": {
+    "title": "Smart Assistance: Our AI Chatbot",
+    "description": "Our AI assistant helps you find the right services and prepares us for your consultations, saving you time and money.",
+    "benefit1": "Guides you to the best service for your needs.",
+    "benefit2": "Gathers key info before sessions for a focused consultation.",
+    "benefit3": "Provides instant answers about our services."
+  }
+},
 
   "window_chatbot": {
     "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?",

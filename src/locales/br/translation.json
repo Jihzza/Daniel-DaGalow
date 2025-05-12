@@ -791,30 +791,21 @@
     }
   },
 
-  "incentive": {
-    "title": "Crie sua conta hoje mesmo",
-    "description": "Junte-se à nossa comunidade e desbloqueie benefícios exclusivos para acelerar sua jornada de crescimento pessoal.",
-    "benefits": {
-      "title": "Benefícios da conta",
-      "items": {
-        "consultation": "Agendamento fácil de consultas com acesso prioritário",
-        "history": "Salvar e acessar seu histórico de consultas",
-        "content": "Conteúdo exclusivo e atualizações de serviços",
-        "dashboard": "Painel personalizado para acompanhar seu progresso"
-      }
+  "incentivePage": {
+    "account": {
+      "title": "Crie sua Conta",
+      "description": "Crie uma conta em instantes para agendar serviços e acompanhar sua jornada comigo. É essencial para todos os agendamentos e criada automaticamente se você agendar um serviço.",
+      "benefit1": "Agende todos os serviços como consultorias e coaching.",
+      "benefit2": "Acesse seu histórico de agendamentos e conversas salvas do chatbot.",
+      "benefit3": "Mantenha-se informado com atualizações dos serviços.",
+      "cta": "Crie Conta Gratuita"
     },
     "chatbot": {
-      "title": "Peça ajuda ao nosso chatbot",
-      "description": "Nosso assistente inteligente está disponível 24/7 para responder às suas dúvidas sobre nossos serviços.",
-      "capabilities": {
-        "title": "Com nosso chatbot você pode:",
-        "info": "Obter informações instantâneas sobre serviços e preços",
-        "recommendations": "Receber recomendações com base em seus objetivos",
-        "preparation": "Preparar-se para suas consultas com orientações"
-      }
-    },
-    "cta": {
-      "button": "Crie sua conta gratuita"
+      "title": "Assistência Inteligente: Nosso Chatbot de IA",
+      "description": "Nosso assistente de IA ajuda você a encontrar os serviços certos e nos prepara para suas consultorias, economizando seu tempo e dinheiro.",
+      "benefit1": "Guia você para o melhor serviço para suas necessidades.",
+      "benefit2": "Coleta informações importantes antes das sessões para uma consultoria focada.",
+      "benefit3": "Fornece respostas instantâneas sobre nossos serviços."
     }
   },
 

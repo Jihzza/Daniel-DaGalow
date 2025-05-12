@@ -809,30 +809,21 @@
     }
   },
 
-  "incentive": {
-    "title": "Crea tu cuenta hoy mismo",
-    "description": "Únete a nuestra comunidad y desbloquea beneficios exclusivos para acelerar tu viaje de crecimiento personal.",
-    "benefits": {
-      "title": "Beneficios de la cuenta",
-      "items": {
-        "consultation": "Programación sencilla de consultas con acceso prioritario",
-        "history": "Guarda y accede a tu historial de consultas",
-        "content": "Contenido exclusivo y novedades de servicios",
-        "dashboard": "Panel personalizado para seguir tu progreso"
-      }
+  "incentivePage": {
+    "account": {
+      "title": "Crea tu cuenta",
+      "description": "Crea una cuenta en segundos para programar servicios y seguir tu progreso conmigo. Es esencial para todas las reservas y se crea automáticamente si programas un servicio.",
+      "benefit1": "Programa todos los servicios como consultas y coaching.",
+      "benefit2": "Accede a tu historial de citas y conversaciones guardadas del chatbot.",
+      "benefit3": "Mantente informado con actualizaciones de servicios.",
+      "cta": "Crea tu cuenta gratuita"
     },
     "chatbot": {
-      "title": "Obtén ayuda de nuestro chatbot",
-      "description": "Nuestro asistente inteligente está disponible 24/7 para responder tus preguntas sobre nuestros servicios.",
-      "capabilities": {
-        "title": "Con nuestro chatbot puedes:",
-        "info": "Obtener información instantánea sobre servicios y precios",
-        "recommendations": "Recibir recomendaciones según tus objetivos",
-        "preparation": "Prepararte para tus consultas con orientación"
-      }
-    },
-    "cta": {
-      "button": "Crea tu cuenta gratis"
+      "title": "Asistencia Inteligente: Nuestro Chatbot de IA",
+      "description": "Nuestro asistente de IA te ayuda a encontrar los servicios adecuados y nos prepara para tus consultas, ahorrándote tiempo y dinero.",
+      "benefit1": "Te guía hacia el mejor servicio para tus necesidades.",
+      "benefit2": "Recopila información clave antes de las sesiones para una consulta enfocada.",
+      "benefit3": "Proporciona respuestas instantáneas sobre nuestros servicios."
     }
   },
 

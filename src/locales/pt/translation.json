@@ -804,30 +804,21 @@
     }
   },
 
-  "incentive": {
-    "title": "Crie a Sua Conta Hoje",
-    "description": "Junte-se à nossa comunidade e desbloqueie benefícios exclusivos para acelerar a sua jornada de crescimento pessoal.",
-    "benefits": {
-      "title": "Benefícios da Conta",
-      "items": {
-        "consultation": "Agendamento facilitado de consultas com acesso prioritário",
-        "history": "Guardar e aceder ao histórico das suas consultas",
-        "content": "Conteúdo exclusivo e novidades de serviços",
-        "dashboard": "Painel personalizado para acompanhar o seu progresso"
-      }
+  "incentivePage": {
+    "account": {
+      "title": "Crie a Sua Conta",
+      "description": "Crie uma conta em instantes para agendar serviços e acompanhar a sua jornada comigo. É essencial para todas as marcações e criada automaticamente se agendar um serviço.",
+      "benefit1": "Agende todos os serviços como consultas e coaching.",
+      "benefit2": "Aceda ao seu histórico de marcações e conversas guardadas do chatbot.",
+      "benefit3": "Mantenha-se informado com atualizações de serviços.",
+      "cta": "Crie Conta Gratuita"
     },
     "chatbot": {
-      "title": "Obtenha Ajuda com o Nosso Chatbot",
-      "description": "O nosso assistente inteligente está disponível 24/7 para responder a perguntas sobre os nossos serviços.",
-      "capabilities": {
-        "title": "Com o nosso chatbot, pode:",
-        "info": "Obter informação instantânea sobre serviços e preços",
-        "recommendations": "Receber recomendações com base nos seus objetivos",
-        "preparation": "Preparar-se para as suas consultas com orientações"
-      }
-    },
-    "cta": {
-      "button": "Criar a Sua Conta"
+      "title": "Assistência Inteligente: O Nosso Chatbot de IA",
+      "description": "O nosso assistente de IA ajuda-o a encontrar os serviços certos e prepara-nos para as suas consultas, poupando-lhe tempo e dinheiro.",
+      "benefit1": "Guia-o para o melhor serviço para as suas necessidades.",
+      "benefit2": "Recolhe informações chave antes das sessões para uma consulta focada.",
+      "benefit3": "Fornece respostas instantâneas sobre os nossos serviços."
     }
   },
 
