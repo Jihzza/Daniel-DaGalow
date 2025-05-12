@@ -17,7 +17,6 @@ import Hero from "./components/home-sections/Hero";
 import About from "./components/home-sections/About";
 import Services from "./components/home-sections/Services";
 import Coaching from "./components/home-sections/Coaching";
-import Analysis from "./components/home-sections/Analysis";
 import Projects from "./components/home-sections/Projects";
 import VentureInvestment from "./components/home-sections/VentureInvestment";
 import Testimonials from "./components/home-sections/Testimonials";
@@ -152,7 +151,6 @@ function App() {
                     <About />
                     <Services />
                     <Coaching />
-                    <Analysis />
                     <Projects />
                     <VentureInvestment />
                     <Interviews />

@@ -4,7 +4,6 @@
     "about": "Sobre",
     "services": "Serviços",
     "coaching": "Coaching",
-    "analysis": "Análise",
     "projects": "Projetos",
     "testimonials": "Depoimentos",
     "calendar": "Calendário",
@@ -72,9 +71,6 @@
     "hero_coaching_premium": "Premium",
     "hero_coaching_limited_spots": "Vagas limitadas",
     "hero_get_my_number": "Obter meu número",
-    "hero_get_analysis_title": "Obter minha análise",
-    "hero_get_analysis_description": "Obtenha uma análise profissional e aprofundada dos seus investimentos, negócios ou presença nas redes sociais com insights acionáveis para ajudá-lo a tomar melhores decisões e alcançar seus objetivos.",
-    "hero_get_my_analysis": "Obter minha análise",
     "common_learn_more": "Saiba mais"
   },
 
@@ -105,8 +101,18 @@
     "services_structure_description": "Esses recursos foram pensados para maximizar o valor do nosso tempo juntos e oferecer suporte contínuo mesmo após a consulta. Seu conforto e progresso são minhas prioridades.",
     "services_price": "90€ / hora",
     "services_price_minimum_time": "Mínimo 45 minutos",
-    "services_book_consultation": "Agendar consulta",
-    "common_login_signup": "Entrar / Cadastrar"
+    "button_book_consultation_default": "Agendar consulta",
+    "common_login_signup": "Entrar / Cadastrar",
+    "button_action_mindset": "Transforme sua mentalidade",
+    "button_action_social_media": "Impulsione suas redes sociais",
+    "button_action_finance": "Domine suas finanças",
+    "button_action_marketing": "Eleve seu marketing",
+    "button_action_business_building": "Construa seu negócio",
+    "button_action_relationships": "Melhore seus relacionamentos",
+    "button_action_health_fitness": "Alcance suas metas de fitness",
+    "button_action_onlyfans": "Cresça no OnlyFans",
+    "button_action_ai_tech": "Aproveite a IA e a tecnologia",
+    "button_action_more_services": "Explore mais opções"
   },
 
   "coaching": {
@@ -129,32 +135,15 @@
     "coaching_tier_premium_label": "Premium",
     "coaching_tier_premium_description": "Resposta a todas as perguntas o mais rápido possível",
     "coaching_limited_spots": "Vagas limitadas",
-    "coaching_get_number": "Obter meu número",
+    "button_get_number_default": "Obter meu número",
     "coaching_service_1": "Aprender a investir",
     "coaching_service_2": "Personal trainer",
     "coaching_service_3": "Coach de relacionamentos",
     "coaching_service_4": "Coaching de OnlyFans",
     "coaching_service_5": "Consultor de negócios",
-    "coaching_service_6": "Hábitos e desenvolvimento pessoal"
-  },
-
-  "analysis": {
-    "analysis_title": "Análise especializada",
-    "analysis_description": "Receba uma análise profissional e aprofundada dos seus investimentos, negócio ou presença nas redes sociais, com insights acionáveis para ajudá-lo a tomar melhores decisões e atingir seus objetivos.",
-    "analysis_feature_1_title": "Três consultas rápidas",
-    "analysis_feature_1_description": "Inclui três sessões breves para coletar informações básicas, fazer perguntas de acompanhamento e fornecer todo o contexto necessário para uma análise abrangente da sua situação.",
-    "analysis_feature_2_title": "Relatório de análise detalhada",
-    "analysis_feature_2_description": "Você receberá um exame minucioso da situação atual, das condições de mercado, do panorama competitivo e do desempenho histórico, contextualizando a análise e as recomendações da forma mais relevante.",
-    "analysis_feature_3_title": "Recomendações estratégicas",
-    "analysis_feature_3_description": "Obtenha sugestões claras e práticas baseadas nos resultados da análise. Cada recomendação é priorizada e explicada com passos específicos para que você implemente mudanças e melhore seus resultados.",
-    "analysis_summary": "Meus serviços de análise especializada oferecem insights profissionais respaldados por anos de experiência. Seja para otimizar sua presença nas redes sociais, avaliar oportunidades de investimento ou aprimorar sua estratégia de negócios, entrego análises completas com recomendações práticas que você pode aplicar imediatamente.",
-    "analysis_quote_title": "Solicitar orçamento",
-    "analysis_quote_subtitle": "Depende do projeto",
-    "analysis_get_analysis": "Obter minha análise",
-    "analysis_service_1": "Análise de redes sociais",
-    "analysis_service_2": "Análise de ações individuais",
-    "analysis_service_3": "Avaliação de portfólio",
-    "analysis_service_4": "Análise de negócios/empresas"
+    "coaching_service_6": "Hábitos e desenvolvimento pessoal",
+    "coaching_service_7": "Redes sociais",
+    "coaching_service_8": "Mercado de ações"
   },
 
   "projects": {
@@ -221,7 +210,6 @@
     "services": {
       "consultation": "Consulta",
       "coaching": "Coaching",
-      "analysis": "Análise",
       "pitch_deck": "Apresentação de projeto"
     }
   },
@@ -270,26 +258,6 @@
       "complete_payment": "Por favor, complete o pagamento de",
       "to_continue": "para continuar",
       "pay_with_stripe": "Pagar com Stripe"
-    },
-    "buttons": {
-      "back": "Voltar",
-      "next": "Próximo",
-      "done": "Concluído"
-    }
-  },
-
-  "analysis_request": {
-    "title": "Obter minha análise",
-    "steps": {
-      "type": "Selecione o tipo de análise",
-      "contact": "Suas informações de contato",
-      "chat": "Converse com nosso analista"
-    },
-    "form": {
-      "name_label": "Seu nome",
-      "name_placeholder": "John Doe",
-      "email_label": "E-mail",
-      "email_placeholder": "john@example.com"
     },
     "buttons": {
       "back": "Voltar",
@@ -384,20 +352,6 @@
         "followup": {
           "question": "O que acontece após a nossa consultoria?",
           "answer": "Minhas consultorias são sessões únicas, sem acompanhamento automático. Você receberá toda a orientação e os próximos passos durante a sessão. Se precisar de suporte adicional após colocar em prática as recomendações iniciais, pode agendar outra sessão ou optar por um dos meus planos de coaching contínuo."
-        }
-      },
-      "analysis": {
-        "types": {
-          "question": "Quais tipos de análise vocês oferecem?",
-          "answer": "Ofereço três serviços de análise especializados:\n\n- **Análise de Ações**: Avaliação completa de investimentos, incluindo indicadores técnicos, análise fundamental e possíveis trajetórias de crescimento.\n- **Análise de Empresas**: Avaliação detalhada de modelos de negócio, posicionamento competitivo, saúde financeira e oportunidades de expansão.\n- **Análise de Mídias Sociais**: Revisão aprofundada de contas em redes sociais, métricas de engajamento, perfil de público e estratégias de otimização.\n\nCada análise é personalizada de acordo com suas perguntas e objetivos."
-        },
-        "information": {
-          "question": "Quais informações preciso fornecer para uma análise?",
-          "answer": "Para garantir uma análise completa e relevante, por favor informe:\n- O ticker da ação, nome da empresa ou perfil de mídia social que deseja analisar\n- Suas principais dúvidas ou preocupações\n- Quaisquer métricas ou aspectos específicos de interesse\n\nQuanto mais específico você for, mais valiosa será a análise."
-        },
-        "delivery": {
-          "question": "Como receberei os resultados da análise?",
-          "answer": "Você receberá um relatório em PDF por e-mail com todos os achados, insights e recomendações. O documento inclui gráficos, tabelas comparativas e diagramas, quando aplicável."
         }
       },
       "pitch_deck": {
@@ -865,6 +819,52 @@
   },
 
   "window_chatbot": {
-    "welcome_message": "Bem-vindo ao assistente pessoal do DaGalow! Posso ajudar com informações sobre serviços, agendamentos ou responder suas dúvidas sobre a expertise do Daniel. Como posso ajudar hoje?"
+    "welcome_message": "Bem-vindo ao assistente pessoal do DaGalow! Posso ajudar com informações sobre serviços, agendamentos ou responder suas dúvidas sobre a expertise do Daniel. Como posso ajudar hoje?",
+    "wait_for_message": "Aguarde a resposta do bot...",
+    "type_message": "Digite uma mensagem…"
+  },
+  "chatbot": {
+    "error_message": "Desculpe, não consegui entender ou algo deu errado.",
+    "scheduling": {
+      "fetching_availability_dots": "Deixe-me verificar minha agenda...",
+      "error_fetching_availability": "Desculpe, não consegui verificar minha disponibilidade no momento. Por favor, tente novamente em instantes.",
+      "ask_date": "Claro, posso ajudar com o agendamento! Para qual data você gostaria de marcar?",
+      "ask_date_manual": "Ok, por favor digite a data que você gostaria (ex: 2025-12-31).",
+      "invalid_date": "Essa data não parece correta ou está no passado. Por favor, escolha uma data futura (ex: 2025-12-31).",
+      "ask_duration": "Entendido! E qual a duração da consulta?",
+      "ask_duration_again": "Ok, para {{date}}, qual deve ser a duração da consulta?",
+      "checking_times_for_duration": "Verificando horários disponíveis para uma sessão de {{duration}} min em {{date}}...",
+      "ask_time": "Ótimo! Aqui estão os horários disponíveis para essa seleção:",
+      "no_times_available": "Hmm, parece não haver vagas de {{duration}}min disponíveis em {{date}}. O que você gostaria de fazer?",
+      "try_again_or_cancel": "O que você gostaria de fazer a seguir?",
+      "change_date": "Tentar Outra Data",
+      "change_duration": "Tentar Outra Duração",
+      "ask_name": "Perfeito. Qual o nome completo para a reserva?",
+      "ask_email": "E o endereço de e-mail para confirmação?",
+      "ask_email_again": "Você poderia fornecer novamente o endereço de e-mail, por favor?",
+      "invalid_email": "Esse endereço de e-mail não parece válido. Por favor, tente novamente.",
+      "confirm_details": "Por favor, confirme os detalhes da sua marcação:\n\n📅 Data: {{date}}\n⏱️ Hora: {{time}}\n⏳ Duração: {{duration}} minutos\n👤 Nome: {{name}}\n📧 Email: {{email}}\n\nEstá correto?",
+      "processing_booking": "Excelente! Finalizando sua marcação agora... ⏳",
+      "processing_step": "Processando...",
+      "processing_step_dots": "Processando...",
+      "booking_successful_pending_payment": "Sua consulta (ID: {{bookingId}}) foi reservada! Por favor, verifique seu e-mail ou perfil para detalhes de pagamento para confirmar.",
+      "payment_instructions_placeholder": "Você receberá instruções de pagamento em breve. Por enquanto, seu horário está reservado.",
+      "booking_failed": "Sinto muito, ocorreu um erro ao criar sua marcação: {{error}}. Por favor, tente novamente ou contate o suporte.",
+      "booking_cancelled": "Tudo bem, o processo de marcação foi cancelado. Posso ajudar em algo mais?",
+      "error_generic": "Peço desculpas, ocorreu um imprevisto. Poderíamos tentar esse passo novamente?",
+      "use_buttons_prompt": "Por favor, use um dos botões acima para fazer sua seleção.",
+      "placeholder_awaitingdate": "Insira data (AAAA-MM-DD) ou escolha",
+      "placeholder_awaitingname": "Seu nome completo",
+      "placeholder_awaitingemail": "Seu endereço de e-mail",
+      "placeholder_confirmingbooking": "Confirme com 'Sim' ou 'Não'"
+    }
+  },
+  "common": {
+    "yes": "Sim, Confirmar!",
+    "no": "Não, Voltar",
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "pick_custom_date": "Digitar Data Específica",
+    "cancel": "Cancelar Marcação"
   }
 }

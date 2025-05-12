@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useTranslation } from "react-i18next";
-import AnalysisRequest from "./AnalysisRequest";
 import Booking from "./Booking";
 import CoachingRequest from "./CoachingRequest";
 import PitchDeckRequest from "./PitchDeckRequest";
@@ -22,19 +21,16 @@ export default function MergedServiceForm() {
   const services = [
     { label: t("service_form.services.consultation"), value: "booking" },
     { label: t("service_form.services.coaching"), value: "coaching" },
-    { label: t("service_form.services.analysis"), value: "analysis" },
     { label: t("service_form.services.pitch_deck"), value: "pitchdeck" },
   ];
 
   const SERVICE_COMPONENT = {
-    analysis: AnalysisRequest,
     booking: Booking,
     coaching: CoachingRequest,
     pitchdeck: PitchDeckRequest,
   };
 
   const SERVICE_STEPS = {
-    analysis: 3,
     booking: 5,
     coaching: 4,
     pitchdeck: 4,

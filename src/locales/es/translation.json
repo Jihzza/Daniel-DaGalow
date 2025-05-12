@@ -4,7 +4,6 @@
     "about": "Sobre mí",
     "services": "Servicios",
     "coaching": "Coaching",
-    "analysis": "Análisis",
     "projects": "Proyectos",
     "testimonials": "Testimonios",
     "calendar": "Calendario",
@@ -72,9 +71,6 @@
     "hero_coaching_premium": "Premium",
     "hero_coaching_limited_spots": "Plazas limitadas",
     "hero_get_my_number": "Obtener mi número",
-    "hero_get_analysis_title": "Obtener mi análisis",
-    "hero_get_analysis_description": "Obtén un análisis profesional y profundo de tus inversiones, negocio o presencia en redes sociales con ideas accionables que te ayudarán a tomar mejores decisiones y alcanzar tus objetivos.",
-    "hero_get_my_analysis": "Obtener mi análisis",
     "common_learn_more": "Saber más"
   },
 
@@ -105,8 +101,18 @@
     "services_structure_description": "Estas características están diseñadas para maximizar el valor de nuestro tiempo juntos y ofrecerte apoyo continuo incluso después de la consulta. Tu comodidad y progreso son mi máxima prioridad.",
     "services_price": "90€ / hora",
     "services_price_minimum_time": "Mínimo 45 minutos",
-    "services_book_consultation": "Reservar consulta",
-    "common_login_signup": "Iniciar sesión / Registrarse"
+    "button_book_consultation_default": "Reservar consulta",
+    "common_login_signup": "Iniciar sesión / Registrarse",
+    "button_action_mindset": "Transforma tu mentalidad",
+    "button_action_social_media": "Impulsa tus redes sociales",
+    "button_action_finance": "Domina tus finanzas",
+    "button_action_marketing": "Eleva tu marketing",
+    "button_action_business_building": "Construye tu negocio",
+    "button_action_relationships": "Mejora tus relaciones",
+    "button_action_health_fitness": "Alcanza tus metas de fitness",
+    "button_action_onlyfans": "Crece en OnlyFans",
+    "button_action_ai_tech": "Aprovecha la IA y la tecnología",
+    "button_action_more_services": "Explora más opciones"
   },
 
   "coaching": {
@@ -129,32 +135,15 @@
     "coaching_tier_premium_label": "Premium",
     "coaching_tier_premium_description": "Respuesta a todas las preguntas lo antes posible",
     "coaching_limited_spots": "Plazas limitadas",
-    "coaching_get_number": "Obtener mi número",
+    "button_get_number_default": "Obtener mi número",
     "coaching_service_1": "Aprender a invertir",
     "coaching_service_2": "Entrenador personal",
     "coaching_service_3": "Coach de citas",
     "coaching_service_4": "Coaching de OnlyFans",
     "coaching_service_5": "Asesor empresarial",
-    "coaching_service_6": "Hábitos y crecimiento personal"
-  },
-
-  "analysis": {
-    "analysis_title": "Análisis experto",
-    "analysis_description": "Obtén un análisis profesional y en profundidad de tus inversiones, negocio o presencia en redes sociales con ideas accionables que te ayuden a tomar mejores decisiones y alcanzar tus objetivos.",
-    "analysis_feature_1_title": "Tres consultas rápidas",
-    "analysis_feature_1_description": "Incluye tres sesiones breves para recopilar información básica, hacer preguntas de seguimiento y aportar el contexto adicional necesario para un análisis completo de tu situación.",
-    "analysis_feature_2_title": "Informe de análisis detallado",
-    "analysis_feature_2_description": "Recibirás un examen exhaustivo de tu situación actual, las condiciones de mercado, el panorama competitivo y el desempeño histórico, para enmarcar el análisis y las recomendaciones de la forma más relevante.",
-    "analysis_feature_3_title": "Recomendaciones estratégicas",
-    "analysis_feature_3_description": "Obtén sugerencias claras y accionables basadas en los hallazgos del análisis. Cada recomendación se prioriza y explica con pasos concretos que puedes aplicar para mejorar tus resultados.",
-    "analysis_summary": "Mis servicios de análisis experto te proporcionan información profesional respaldada por años de experiencia. Ya sea para optimizar tu presencia en redes sociales, evaluar oportunidades de inversión o mejorar tu estrategia empresarial, entrego análisis exhaustivos con recomendaciones prácticas que puedes implementar de inmediato.",
-    "analysis_quote_title": "Solicitar presupuesto",
-    "analysis_quote_subtitle": "Depende del proyecto",
-    "analysis_get_analysis": "Obtener mi análisis",
-    "analysis_service_1": "Análisis de redes sociales",
-    "analysis_service_2": "Análisis de acciones individuales",
-    "analysis_service_3": "Evaluación de carteras",
-    "analysis_service_4": "Análisis de negocio/empresa"
+    "coaching_service_6": "Hábitos y crecimiento personal",
+    "coaching_service_7": "Redes sociales",
+    "coaching_service_8": "Mercado de acciones"
   },
 
   "projects": {
@@ -221,7 +210,6 @@
     "services": {
       "consultation": "Consulta",
       "coaching": "Coaching",
-      "analysis": "Análisis",
       "pitch_deck": "Presentación de proyecto"
     }
   },
@@ -270,26 +258,6 @@
       "complete_payment": "Por favor, completa el pago de",
       "to_continue": "para continuar",
       "pay_with_stripe": "Pagar con Stripe"
-    },
-    "buttons": {
-      "back": "Atrás",
-      "next": "Siguiente",
-      "done": "Hecho"
-    }
-  },
-
-  "analysis_request": {
-    "title": "Obtener mi análisis",
-    "steps": {
-      "type": "Selecciona el tipo de análisis",
-      "contact": "Tu información de contacto",
-      "chat": "Chatea con nuestro analista"
-    },
-    "form": {
-      "name_label": "Tu nombre",
-      "name_placeholder": "John Doe",
-      "email_label": "Correo electrónico",
-      "email_placeholder": "john@example.com"
     },
     "buttons": {
       "back": "Atrás",
@@ -869,6 +837,52 @@
   },
 
   "window_chatbot": {
-    "welcome_message": "¡Bienvenido al asistente personal de DaGalow! Puedo ayudarte con información sobre servicios, reservas o responder preguntas sobre la experiencia de Daniel. ¿En qué puedo ayudarte hoy?"
+    "welcome_message": "¡Bienvenido al asistente personal de DaGalow! Puedo ayudarte con información sobre servicios, reservas o responder preguntas sobre la experiencia de Daniel. ¿En qué puedo ayudarte hoy?",
+    "wait_for_message": "Espera la respuesta del bot...",
+    "type_message": "Escribe un mensaje…"
+  },
+  "chatbot": {
+    "error_message": "Lo siento, no pude entender eso o algo salió mal.",
+    "scheduling": {
+      "fetching_availability_dots": "Déjame revisar mi calendario...",
+      "error_fetching_availability": "Lo siento, no pude verificar mi disponibilidad en este momento. Por favor, inténtalo de nuevo en un momento.",
+      "ask_date": "¡Claro, puedo ayudar con la programación! ¿Para qué fecha te gustaría reservar?",
+      "ask_date_manual": "Vale, por favor escribe la fecha que te gustaría (ej: 2025-12-31).",
+      "invalid_date": "Esa fecha no parece correcta o está en el pasado. Por favor, elige una fecha futura (ej: 2025-12-31).",
+      "ask_duration": "¡Entendido! ¿Y de qué duración sería la consulta?",
+      "ask_duration_again": "Vale, para el {{date}}, ¿cuánto debería durar la consulta?",
+      "checking_times_for_duration": "Comprobando horas disponibles para una sesión de {{duration}} min el {{date}}...",
+      "ask_time": "¡Genial! Aquí están las horas disponibles para esa selección:",
+      "no_times_available": "Hmm, parece que no hay huecos de {{duration}}min disponibles el {{date}}. ¿Qué te gustaría hacer?",
+      "try_again_or_cancel": "¿Qué te gustaría hacer a continuación?",
+      "change_date": "Probar Otra Fecha",
+      "change_duration": "Probar Otra Duración",
+      "ask_name": "Perfecto. ¿Cuál es el nombre completo para la reserva?",
+      "ask_email": "¿Y la dirección de correo electrónico para la confirmación?",
+      "ask_email_again": "¿Podrías facilitar de nuevo la dirección de correo electrónico, por favor?",
+      "invalid_email": "Esa dirección de correo electrónico no parece válida. Por favor, inténtalo de nuevo.",
+      "confirm_details": "Por favor, confirma los detalles de tu reserva:\n\n📅 Fecha: {{date}}\n⏱️ Hora: {{time}}\n⏳ Duración: {{duration}} minutos\n👤 Nombre: {{name}}\n📧 Email: {{email}}\n\n¿Es correcto?",
+      "processing_booking": "¡Excelente! Finalizando tu reserva ahora... ⏳",
+      "processing_step": "Procesando...",
+      "processing_step_dots": "Procesando...",
+      "booking_successful_pending_payment": "¡Tu consulta (ID: {{bookingId}}) ha sido reservada! Por favor, revisa tu correo electrónico o perfil para los detalles de pago y confirmar.",
+      "payment_instructions_placeholder": "Recibirás instrucciones de pago en breve. Por ahora, tu horario está reservado.",
+      "booking_failed": "Lo siento mucho, hubo un error al crear tu reserva: {{error}}. Por favor, inténtalo de nuevo o contacta con soporte.",
+      "booking_cancelled": "Muy bien, el proceso de reserva ha sido cancelado. ¿Hay algo más en lo que pueda ayudar?",
+      "error_generic": "Disculpa, he tenido un problema. ¿Podríamos intentar ese paso de nuevo?",
+      "use_buttons_prompt": "Por favor, utiliza uno de los botones de arriba para hacer tu selección.",
+      "placeholder_awaitingdate": "Introduce fecha (AAAA-MM-DD) o elige",
+      "placeholder_awaitingname": "Tu nombre completo",
+      "placeholder_awaitingemail": "Tu dirección de email",
+      "placeholder_confirmingbooking": "Confirma con 'Sí' o 'No'"
+    }
+  },
+  "common": {
+    "yes": "¡Sí, Confirmar!",
+    "no": "No, Volver",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "pick_custom_date": "Introducir Fecha Específica",
+    "cancel": "Cancelar Reserva"
   }
 }

@@ -62,13 +62,6 @@ function Hero() {
     setSelectedTier(tier);
   };
 
-  const handleAnalysisCard = () => scrollTo("expert-analysis");
-
-  const openAnalysisForm = (e) => {
-    e.stopPropagation();
-    openForm("analysis");
-  };
-
   return (
     <section
       id="hero"
@@ -435,30 +428,6 @@ function Hero() {
           </p>
         </div>
       </div>
-
-        {/* Expert Analysis */}
-        <div
-          onClick={handleAnalysisCard}
-          className="flex flex-col items-center justify-center space-y-6 mt-8 border-2 border-darkGold rounded-xl p-4"
-        >
-          <div className="flex flex-col items-center justify-center my-8">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {t("hero.hero_get_analysis_title")}
-            </h2>
-            <p className="text-lg md:text-xl md:max-w-xl font-normal mb-8">
-              {t("hero.hero_get_analysis_description")}
-            </p>
-            <button
-              onClick={openAnalysisForm}
-              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
-            >
-              {t("hero.hero_get_analysis")}
-            </button>
-            <p role="button" className="text-sm md:text-md font-normal">
-              {t("hero.common_learn_more")}
-            </p>
-          </div>
-        </div>
       </div>
     </section>
   );

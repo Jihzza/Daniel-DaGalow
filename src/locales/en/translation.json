@@ -4,7 +4,6 @@
     "about": "About",
     "services": "Services",
     "coaching": "Coaching",
-    "analysis": "Analysis",
     "projects": "Projects",
     "testimonials": "Testimonials",
     "calendar": "Calendar",
@@ -74,9 +73,6 @@
     "hero_coaching_premium": "Premium",
     "hero_coaching_limited_spots": "Limited Spots",
     "hero_get_my_number": "Get My Number",
-    "hero_get_analysis_title": "Get My Analysis",
-    "hero_get_analysis_description": "Get professional, in-depth analysis of your investments, business, or social media presence with actionable insights to help you make better decisions and achieve your goals.",
-    "hero_get_analysis": "Get My Analysis",
     "common_learn_more": "Learn More",
     "steps": {
       "payment": "Payment Information"
@@ -113,8 +109,18 @@
     "services_structure_description": "These features are designed to maximize the value of our time together and provide you with ongoing support even after our session ends. Your comfort and progress are my top priorities.",
     "services_price": "90€ / hour",
     "services_price_minimum_time": "Minimum 45 minutes",
-    "services_book_consultation": "Book a Consultation",
-    "common_login_signup": "Login / Sign Up"
+    "common_login_signup": "Login / Sign Up",
+    "button_book_consultation_default": "Book a Consultation",
+    "button_action_mindset": "Transform Your Mindset",
+    "button_action_social_media": "Boost Your Social Media",
+    "button_action_finance": "Master Your Finances",
+    "button_action_marketing": "Elevate Your Marketing",
+    "button_action_business_building": "Build Your Business",
+    "button_action_relationships": "Improve Relationships",
+    "button_action_health_fitness": "Achieve Fitness Goals",
+    "button_action_onlyfans": "Grow on OnlyFans",
+    "button_action_ai_tech": "Leverage AI & Tech",
+    "button_action_more_services": "Explore More Options"
   },
 
   "coaching": {
@@ -137,32 +143,23 @@
     "coaching_tier_premium_label": "Premium",
     "coaching_tier_premium_description": "Answer to all questions ASAP",
     "coaching_limited_spots": "Limited Spots",
-    "coaching_get_number": "Get My Number",
     "coaching_service_1": "Learn How to Invest",
     "coaching_service_2": "Personal Trainer",
     "coaching_service_3": "Dating Coach",
     "coaching_service_4": "OnlyFans Coaching",
     "coaching_service_5": "Business Advisor",
-    "coaching_service_6": "Habits & Personal Growth"
-  },
-
-  "analysis": {
-    "analysis_title": "Expert Analysis",
-    "analysis_description": "Get professional, in-depth analysis of your investments, business, or social media presence with actionable insights to help you make better decisions and achieve your goals.",
-    "analysis_feature_1_title": "Three Quick Consultations",
-    "analysis_feature_1_description": "Includes three brief sessions to gather basic information, ask follow-up questions, and provide any additional context needed for a comprehensive analysis of your situation.",
-    "analysis_feature_2_title": "Detailed Analysis Report",
-    "analysis_feature_2_description": "Receive a thorough examination of your current situation, market conditions, competitive landscape, and historical performance. This context helps frame the analysis and recommendations in the most relevant way.",
-    "analysis_feature_3_title": "Strategic Recommendations",
-    "analysis_feature_3_description": "Get clear, actionable suggestions based on the analysis findings. Each recommendation is prioritized and explained, with specific steps you can take to implement changes and improve your outcomes.",
-    "analysis_summary": "My expert analysis services provide you with professional insights backed by years of experience. Whether you're looking to optimize your social media presence, evaluate investment opportunities, or improve your business strategy, I deliver thorough analysis with practical recommendations you can implement immediately.",
-    "analysis_quote_title": "Ask For Quote",
-    "analysis_quote_subtitle": "Depends on the Project",
-    "analysis_get_analysis": "Get My Analysis",
-    "analysis_service_1": "Social Media Analysis",
-    "analysis_service_2": "Individual Stock Analysis",
-    "analysis_service_3": "Portfolio Evaluation",
-    "analysis_service_4": "Business/Company Analysis"
+    "coaching_service_6": "Habits & Personal Growth",
+    "coaching_service_7": "Social Media",
+    "coaching_service_8": "Stock Market",
+    "button_get_number_default": "Get My Number",
+    "button_action_invest_coaching": "Start Investing Smarter",
+    "button_action_trainer_coaching": "Get Your Fitness Plan",
+    "button_action_dating_coaching": "Enhance Your Dating Life",
+    "button_action_onlyfans_coaching": "Boost OnlyFans Coaching",
+    "button_action_business_coaching": "Advise Your Business",
+    "button_action_habits_coaching": "Build Better Habits",
+    "button_action_social_coaching": "Excel on Social Media",
+    "button_action_stocks_coaching": "Navigate the Stock Market"
   },
 
   "projects": {
@@ -229,7 +226,6 @@
     "services": {
       "consultation": "Consultation",
       "coaching": "Coaching",
-      "analysis": "Analysis",
       "pitch_deck": "Pitch Deck"
     }
   },
@@ -250,7 +246,6 @@
     "name_placeholder": "Your Name",
     "email_label": "Your Email",
     "email_placeholder": "Your Email"
-    
   },
 
   "coaching_request": {
@@ -280,26 +275,6 @@
       "complete_payment": "Please complete the payment of",
       "to_continue": "to continue",
       "pay_with_stripe": "Pay with Stripe"
-    },
-    "buttons": {
-      "back": "Back",
-      "next": "Next",
-      "done": "Done"
-    }
-  },
-
-  "analysis_request": {
-    "title": "Get My Analysis",
-    "steps": {
-      "type": "Analysis type",
-      "contact": "Contact info",
-      "chat": "Chat"
-    },
-    "form": {
-      "name_label": "Your Name",
-      "name_placeholder": "John Doe",
-      "email_label": "Email Address",
-      "email_placeholder": "john@example.com"
     },
     "buttons": {
       "back": "Back",
@@ -398,20 +373,6 @@
         "followup": {
           "question": "What happens after our consultation?",
           "answer": "My consultations are designed as standalone sessions without automatic follow-up. You'll receive the guidance and action steps you need during our time together. If you find you need additional support after implementing the initial advice, you're welcome to schedule another session or consider one of my ongoing coaching packages."
-        }
-      },
-      "analysis": {
-        "types": {
-          "question": "What types of analysis do you offer?",
-          "answer": "I offer three specialized analysis services:\n\n- Stock Analysis: Comprehensive evaluation of investments including technical indicators, fundamental analysis, and potential growth trajectories.\n- Company Analysis: In-depth assessment of business models, competitive positioning, financial health, and growth opportunities.\n- Social Media Analysis: Detailed review of social media accounts, engagement metrics, audience demographics, and optimization strategies.\n\nEach analysis is custom-tailored to your specific questions and objectives."
-        },
-        "information": {
-          "question": "What information do I need to provide for an analysis?",
-          "answer": "To ensure a thorough and relevant analysis, please provide:\n- The specific stock symbol, company name, or social media account you want analyzed\n- Your key questions or concerns about the subject\n- Any particular metrics or aspects you're most interested in understanding\n\nThe more specific you are about what you want to know, the more valuable your analysis will be."
-        },
-        "delivery": {
-          "question": "How will analysis results be delivered?",
-          "answer": "You'll receive a comprehensive PDF report via email containing all findings, insights, and recommendations. This document includes visual elements such as graphs, charts, and comparative tables where applicable."
         }
       },
       "pitch_deck": {
@@ -878,6 +839,52 @@
   },
 
   "window_chatbot": {
-    "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?"
+    "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?",
+    "wait_for_message": "Wait for bot response...",
+    "type_message": "Type a message…"
+  },
+  "chatbot": {
+    "error_message": "Sorry, I couldn't understand that or something went wrong.",
+    "scheduling": {
+      "fetching_availability_dots": "Let me check my calendar...",
+      "error_fetching_availability": "Sorry, I couldn't check my availability right now. Please try again in a bit.",
+      "ask_date": "Sure, I can help with scheduling! Which date would you like to book for?",
+      "ask_date_manual": "Okay, please type the date you'd like (e.g., 2025-12-31).",
+      "invalid_date": "That date doesn't seem right or it's in the past. Please choose a future date (e.g., 2025-12-31).",
+      "ask_duration": "Got it! And for how long should the consultation be?",
+      "ask_duration_again": "Okay, for {{date}}, how long should the consultation be?",
+      "checking_times_for_duration": "Checking available times for a {{duration}} min session on {{date}}...",
+      "ask_time": "Great! Here are the available times for that selection:",
+      "no_times_available": "Hmm, no {{duration}}min slots seem to be open on {{date}}. What would you like to do?",
+      "try_again_or_cancel": "What would you like to do next?",
+      "change_date": "Try Different Date",
+      "change_duration": "Try Different Duration",
+      "ask_name": "Perfect. What's the full name for the booking?",
+      "ask_email": "And the email address for confirmation?",
+      "ask_email_again": "Could you provide the email address again, please?",
+      "invalid_email": "That email address doesn't look valid. Please try again.",
+      "confirm_details": "Please confirm your booking details:\n\n📅 Date: {{date}}\n⏱️ Time: {{time}}\n⏳ Duration: {{duration}} minutes\n👤 Name: {{name}}\n📧 Email: {{email}}\n\nIs this correct?",
+      "processing_booking": "Excellent! Finalizing your booking now... ⏳",
+      "processing_step": "Processing...",
+      "processing_step_dots": "Processing...",
+      "booking_successful_pending_payment": "Your consultation (ID: {{bookingId}}) has been reserved! Please check your email or profile for payment details to confirm.",
+      "payment_instructions_placeholder": "You will receive payment instructions shortly. For now, your slot is held.",
+      "booking_failed": "So sorry, there was an error creating your booking: {{error}}. Please try again or contact support.",
+      "booking_cancelled": "Alright, the booking process has been cancelled. Is there anything else I can help with?",
+      "error_generic": "Apologies, I hit a snag. Could we try that step again?",
+      "use_buttons_prompt": "Please use one of the buttons above to make your selection.",
+      "placeholder_awaitingdate": "Enter date (YYYY-MM-DD) or choose",
+      "placeholder_awaitingname": "Your full name",
+      "placeholder_awaitingemail": "Your email address",
+      "placeholder_confirmingbooking": "Confirm with 'Yes' or 'No'"
+    }
+  },
+  "common": {
+    "yes": "Yes, Confirm!",
+    "no": "No, Go Back",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "pick_custom_date": "Enter Specific Date",
+    "cancel": "Cancel Booking"
   }
 }

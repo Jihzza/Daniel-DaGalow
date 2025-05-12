@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Send from "../../assets/icons/Send.svg";
+import Anexar from "../../assets/icons/Anexar.svg";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
 import TypingMessage from "../common/TypingMessage";

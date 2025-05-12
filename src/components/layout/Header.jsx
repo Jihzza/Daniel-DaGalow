@@ -325,21 +325,7 @@ function Header() {
                   >
                     {t("navigation.coaching")}
                   </button>
-                  <button
-                    onClick={() => {
-                      document
-                        .getElementById("expert-analysis")
-                        ?.scrollIntoView({
-                          behavior: "smooth",
-                          block: "start",
-                        });
-                      setMenuOpen(false);
-                    }}
-                    className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
-                  >
-                    {t("navigation.analysis")}
-                  </button>
-                </div>
+                 </div>
 
                 <div className="pt-1 sm:pt-2">
                   <p className="text-xs sm:text-sm text-darkGold px-3 mb-1 opacity-70">
