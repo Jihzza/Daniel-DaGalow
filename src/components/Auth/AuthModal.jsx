@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Login from "./Login";
 import Signup from "./Signup";
 import ForgotPassword from "./ForgotPassword"; // Add this import
+import { supabase } from "../../utils/supabaseClient"; // adjust path as needed
 
 const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
   const [view, setView] = useState(initialView);
@@ -70,11 +71,28 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
           {/* Auth form content */}
           <div className="p-6">
             {view === "login" ? (
-              <Login 
-                isModal={true} 
-                onSuccess={onClose} 
-                onForgotPassword={() => setView("forgot-password")}
-              />
+              <>
+                <button
+                  className="w-full flex items-center justify-center py-2 mb-4 border border-gray-300 rounded hover:bg-gray-100 transition"
+                  onClick={async () => {
+                    const { error } = await supabase.auth.signInWithOAuth({
+                      provider: "google",
+                    });
+                    if (error) {
+                      alert("Google sign-in failed: " + error.message);
+                    }
+                  }}
+                  type="button"
+                >
+                  <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" className="w-5 h-5 mr-2" />
+                  Continue with Google
+                </button>
+                <Login 
+                  isModal={true} 
+                  onSuccess={onClose} 
+                  onForgotPassword={() => setView("forgot-password")}
+                />
+              </>
             ) : view === "signup" ? (
               <Signup
                 isModal={true}
