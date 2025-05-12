@@ -241,12 +241,6 @@ export default function CalendarPage() {
                     ) : (
                       <div className="text-center py-8 text-gray-600 border-2 border-dashed border-gray-300 rounded-lg">
                         <p>{t('calendar.no_appointments')}</p>
-                        <button 
-  onClick={() => navigate('/', { state: { openBooking: true }})}
-  className="bg-darkGold text-black py-2 px-6 rounded-lg hover:bg-opacity-90 transition-colors font-medium shadow-md"
->
-  {t('calendar.book_appointment')}
-</button>
                       </div>
                     )}
                   </div>
@@ -267,14 +261,6 @@ export default function CalendarPage() {
             </div>
           )}
           
-          {/* Action button area */}
-          <div className="mt-6 flex justify-center md:justify-end">
-            <button 
-              className="bg-darkGold text-black py-2 px-6 rounded-lg hover:bg-opacity-90 transition-colors font-medium shadow-md"
-            >
-              {t('calendar.book_appointment')}
-            </button>
-          </div>
         </div>
       </div>
     </div>

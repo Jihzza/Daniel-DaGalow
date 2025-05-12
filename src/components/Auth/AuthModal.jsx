@@ -73,7 +73,7 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
             {view === "login" ? (
               <>
                 <button
-                  className="w-full flex items-center justify-center py-2 mb-4 border border-gray-300 rounded hover:bg-gray-100 transition"
+                  className="w-full flex items-center justify-center py-2 mb-4 border border-oxfordBlue rounded-lg"
                   onClick={async () => {
                     const { error } = await supabase.auth.signInWithOAuth({
                       provider: "google",
