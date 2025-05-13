@@ -29,7 +29,7 @@
     "carousel_business": "Business",
     "individual_consultation": "Individual Consultation",
     "hero_title": "Unlock Your Best Self—Master Your Mindset, Wealth & Relationships Today",
-    "hero_description": "From bankruptcy to six-figure success, I mastered the three pillars—health, power, and relationships. Now I’m here to help you turn setbacks into a springboard for extraordinary growth.",
+    "hero_description": "From bankruptcy to six-figure success, I mastered the three pillars—health, power, and relationships. Now I'm here to help you turn setbacks into a springboard for extraordinary growth.",
     "achievement_1_title": "$140K+ / year",
     "achievement_1_description": "revenue for my company",
     "achievement_2_title": "Top 1% Earner",
@@ -85,7 +85,7 @@
 
   "about": {
     "about_title": "Meet Daniel DaGalow",
-    "about_description": "From hitting rock bottom multiple times to building six-figure success, I’ve mastered the art of turning setbacks into stepping stones. My mission? To help you harness your health, power, and relationships to become the best version of yourself. Let’s rewrite your success story together."
+    "about_description": "From hitting rock bottom multiple times to building six-figure success, I've mastered the art of turning setbacks into stepping stones. My mission? To help you harness your health, power, and relationships to become the best version of yourself. Let's rewrite your success story together."
   },
 
   "services": {
@@ -107,6 +107,10 @@
     "services_structure_2_description": "Each consultation lasts a minimum of 45 minutes, ensuring we have adequate time to explore your concerns in depth and develop meaningful insights and action plans.",
     "services_structure_3_title": "Session Recordings",
     "services_structure_3_description": "All consultations are recorded and securely stored, giving both of us access to review the session afterward. This allows you to revisit insights and recommendations without having to take notes during our time together.",
+    "services_structure_4_title": "Follow-up Email",
+    "services_structure_4_description": "After your session, you'll receive a personalized follow-up email summarizing key points and next steps, ensuring you stay on track.",
+    "services_structure_5_title": "Follow-up Consultation",
+    "services_structure_5_description": "Book a follow-up consultation to review your progress, address new challenges, and receive continued support on your journey.",
     "services_structure_description": "These features are designed to maximize the value of our time together and provide you with ongoing support even after our session ends. Your comfort and progress are my top priorities.",
     "services_price": "90€ / hour",
     "services_price_minimum_time": "Minimum 45 minutes",
@@ -861,7 +865,7 @@
     "benefit1": "Schedule all services like consultations & coaching.",
     "benefit2": "Access your appointment history and saved chatbot conversations.",
     "benefit3": "Stay informed with service updates",
-    "cta": "Create Your Free Account"
+    "cta": "Create Your Account"
   },
   "chatbot": {
     "title": "Smart Assistance: Our AI Chatbot",

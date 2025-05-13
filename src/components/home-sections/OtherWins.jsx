@@ -127,58 +127,54 @@ const socialMediaImages = [
 function OtherWins() {
   const { t } = useTranslation();
 
-  const handleDoubleClick = (event) => {
-    // Original double-click handler remains the same
+  // Changed function name and event type
+  const handleClickToFullScreen = (event) => {
     const video = event.target;
     if (video.requestFullscreen) {
       video.requestFullscreen();
-    } else if (video.webkitRequestFullscreen) {
-      // Safari
+    } else if (video.webkitRequestFullscreen) { // Safari
       video.webkitRequestFullscreen();
-    } else if (video.msRequestFullscreen) {
-      // IE11
+    } else if (video.msRequestFullscreen) { // IE11
       video.msRequestFullscreen();
     }
   };
 
   return (
-      <section id="other-wins" className="py-8 px-4 text-white overflow-hidden">
-      <div className="max-w-3xl mx-auto text-center space-y-8 px-4 overflow-visible">      
+    <section id="other-wins" className="py-8 px-4 text-black overflow-hidden">
+      <div className="max-w-3xl mx-auto text-center space-y-8 px-4 overflow-visible">
         <div className="flex flex-col justify-center space-y-6 items-center">
-          <h1 className="text-2xl md:text-4xl text-white font-bold">{t("other_wins.other_wins_title")}</h1>
-          <p className="text-lg md:text-2xl text-white">{t("other_wins.body_transformation_title")}</p>
-          {/*Double click to go back to normal size*/}
+          <h1 className="text-2xl md:text-4xl text-black font-bold">{t("other_wins.other_wins_title")}</h1>
+          <p className="text-lg md:text-2xl text-black">{t("other_wins.body_transformation_title")}</p>
           <video
             src={bodyTransformation}
             autoPlay
             muted
             loop
-            onDoubleClick={handleDoubleClick}
+            onClick={handleClickToFullScreen} // Changed from onDoubleClick to onClick
             className="w-[50%] object-cover rounded-xl shadow-lg justify-center items-center self-center cursor-pointer"
           />
-          <p className="text-lg md:text-2xl text-white">{t("other_wins.high_reach_content_title")}</p>
-          
-          {/* Updated Swiper with functional fixes but preserving styling */}
+          <p className="text-lg md:text-2xl text-black">{t("other_wins.high_reach_content_title")}</p>
+
           <Swiper
-            modules={[Autoplay]} // Added Pagination module
+            modules={[Autoplay]}
             spaceBetween={20}
             slidesPerView={1}
             centeredSlides={true}
             pagination={{ clickable: true }}
             autoplay={{ delay: 2000, disableOnInteraction: false }}
             loop={true}
-            loopAdditionalSlides={5} // Added to improve loop functionality
-            watchSlidesProgress={true} // Added to track slide visibility
-            className="w-[40%] testimonial-swiper overflow-visible mx-auto" // Keeping original classes
+            loopAdditionalSlides={5}
+            watchSlidesProgress={true}
+            className="w-[40%] testimonial-swiper overflow-visible mx-auto"
             breakpoints={{
               768: {
                 slidesPerView: 1.3,
                 spaceBetween: 50,
               },
             }}
-            observer={true} // Added to detect DOM changes
-            observeParents={true} // Added to detect parent container changes
-            updateOnWindowResize={true} // Added to handle window resizing properly
+            observer={true}
+            observeParents={true}
+            updateOnWindowResize={true}
           >
             {socialMediaImages.map((item, index) => (
               <SwiperSlide key={index} className="flex justify-center">

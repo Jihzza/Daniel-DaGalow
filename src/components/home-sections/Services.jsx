@@ -11,6 +11,7 @@ import OnlyFans from "../../assets/icons/Onlyfans Branco.svg";
 import Fitness from "../../assets/icons/Fitness Branco.svg";
 import More from "../../assets/icons/More Branco.svg";
 import Robot from "../../assets/icons/Robot Branco.svg";
+import Consultation from "../../assets/icons/Consultation Preto.svg";
 import { useNavigate } from "react-router-dom";
 import { ServiceContext } from "../../contexts/ServiceContext";
 import { useTranslation } from "react-i18next";
@@ -218,6 +219,34 @@ function Services() {
             </h4>
             <p className="text-white md:text-xl">
               {t("services.services_structure_3_description")}
+            </p>
+          </div>
+
+          {/* Follow-up Email Feature */}
+          <div className="flex flex-col items-center text-center">
+            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8V8a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
+              {t("services.services_structure_4_title")}
+            </h4>
+            <p className="text-white md:text-xl">
+              {t("services.services_structure_4_description")}
+            </p>
+          </div>
+
+          {/* Follow-up Consultation Feature */}
+          <div className="flex flex-col items-center text-center">
+            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+              <img src={Consultation} alt="Consultation" className="w-7 h-7 md:w-12 md:h-12 object-contain" />
+            </div>
+            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
+              {t("services.services_structure_5_title")}
+            </h4>
+            <p className="text-white md:text-xl">
+              {t("services.services_structure_5_description")}
             </p>
           </div>
         </div>
