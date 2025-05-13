@@ -212,28 +212,6 @@ function DirectCoaching() {
         </div>
       {/* Tier selection grid and button */}
       <div className="max-w-3xl mt-8 mx-auto text-center space-y-6">
-          {/* Clear Tier Selection */}
-          {selectedTierObject && (
-            <div className="my-2 text-center">
-              <button
-                onClick={(e) => { e.stopPropagation(); setSelectedTierObject(null);}}
-                className="text-darkGold hover:text-yellow-300 underline text-sm px-2 py-1"
-              >
-                {t("coaching.clear_tier_selection", "Clear Tier Selection")}
-              </button>
-            </div>
-          )}
-            {(selectedCoachingCategory || selectedTierObject) && ( // Show general clear if any selection
-            <div className="my-4 text-center">
-                <button
-                onClick={handleClearCoachingSelections}
-                className="text-darkGold hover:text-yellow-300 underline text-sm"
-                >
-                {t("coaching.clear_selections")}
-                </button>
-            </div>
-            )}
-
 
           <div className="grid grid-cols-3 gap-3 md:gap-4 pt-2 mt-2">
             {renderedTiers.map(tierItem => (
@@ -264,9 +242,6 @@ function DirectCoaching() {
                 ref={buttonRef}
                 onClick={openCoachingForm}
                 style={buttonPositionStyle}
-                // Button is active if a category is selected OR a tier is selected.
-                // Or, make it active only if a category AND a tier are selected:
-                // disabled={!selectedCoachingCategory || !selectedTierObject}
                 disabled={!selectedCoachingCategory && !selectedTierObject}
                 className={`
                   bg-darkGold w-auto min-w-[15rem] md:min-w-[20rem] max-w-[90vw] sm:max-w-xs md:max-w-sm text-black md:text-xl font-bold

@@ -35,22 +35,6 @@ function IncentivePage() {
           <p className="md:text-lg text-black">
             {t('incentivePage.account.description')}
           </p>
-          <div className={boxStyle}>
-            <ul className="space-y-3 text-left">
-              <li className={benefitItemStyle}>
-                {checkIcon}
-                {t('incentivePage.account.benefit1')}
-              </li>
-              <li className={benefitItemStyle}>
-                {checkIcon}
-                {t('incentivePage.account.benefit2')}
-              </li>
-              <li className={benefitItemStyle}>
-                {checkIcon}
-                {t('incentivePage.account.benefit3')}
-              </li>
-            </ul>
-          </div>
           <button
             onClick={handleSignUp}
             className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
@@ -75,22 +59,6 @@ function IncentivePage() {
           <p className="md:text-lg text-black">
             {t('incentivePage.chatbot.description')}
           </p>
-          <div className={boxStyle}>
-            <ul className="space-y-3 text-left">
-              <li className={benefitItemStyle}>
-                {bulletIcon}
-                {t('incentivePage.chatbot.benefit1')}
-              </li>
-              <li className={benefitItemStyle}>
-                {bulletIcon}
-                {t('incentivePage.chatbot.benefit2')}
-              </li>
-              <li className={benefitItemStyle}>
-                {bulletIcon}
-                {t('incentivePage.chatbot.benefit3')}
-              </li>
-            </ul>
-          </div>
           {/* No separate CTA for chatbot as it's integrated into the service flow */}
         </div>
 
