@@ -212,10 +212,6 @@ function DirectCoaching() {
         </div>
       {/* Tier selection grid and button */}
       <div className="max-w-3xl mt-8 mx-auto text-center space-y-6">
-          <p className="text-lg md:text-xl text-white max-w-3xl mx-auto">
-            {t("coaching.coaching_summary")}
-          </p>
-
           {/* Clear Tier Selection */}
           {selectedTierObject && (
             <div className="my-2 text-center">
