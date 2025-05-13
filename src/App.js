@@ -153,10 +153,10 @@ function App() {
                     <Coaching />
                     <Projects />
                     <VentureInvestment />
-                    <Interviews />
-                    <IncentivePage />
                     <Testimonials onAuthModalOpen={openAuthModal} />
                     <OtherWins />
+                    <Interviews />
+                    <IncentivePage />
                     <MergedServiceForm />
                     <BottomCarouselPages />
                   </main>

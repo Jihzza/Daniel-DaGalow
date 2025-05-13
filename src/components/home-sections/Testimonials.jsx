@@ -250,10 +250,10 @@ function Testimonials({ onAuthModalOpen }) {
   return (
     <section id="testimonials" className="py-8 px-4 text-black">
       <div className="max-w-3xl mx-auto text-center space-y-6 px-4 overflow-visible">
-        <h2 className="text-2xl md:text-4xl font-bold">
+        <h2 className="text-2xl md:text-4xl font-bold text-white">
           {t("testimonials.testimonials_title")}
         </h2>
-        <p className="md:text-xl">{t("testimonials.testimonials_description")}</p>
+        <p className="md:text-xl text-white">{t("testimonials.testimonials_description")}</p>
 
         {loading ? (
           <p>Loading…</p>

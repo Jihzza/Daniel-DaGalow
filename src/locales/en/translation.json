@@ -15,7 +15,8 @@
     "logout": "Logout",
     "login_signup": "Login / Sign Up",
     "chatbot": "Chatbot",
-    "account": "Account"
+    "account": "Account",
+    "learnMore": "Learn More"
   },
 
   "hero": {
@@ -347,10 +348,6 @@
         "communication": {
           "question": "What communication channels do you use for coaching?",
           "answer": "All coaching communication takes place via WhatsApp for seamless, convenient interaction. This allows for easy sharing of text, images, voice messages, and documents while maintaining a single, organized thread of our conversations."
-        },
-        "chatbot": {
-          "question": "Why should I use the chatbot before my service?",
-          "answer": "The chatbot is an essential final step in our service process that helps you maximize the value of your investment. By sharing specific information about yourself, your situation, and your goals through the chatbot, you allow me to prepare thoroughly before our interaction begins. This preparation means we can use 100% of our paid time together focusing on solutions rather than gathering basic information. Clients who use the chatbot report significantly more productive sessions and better outcomes, as we can dive straight into the"
         }
       },
       "consultation": {
@@ -375,10 +372,30 @@
           "answer": "My consultations are designed as standalone sessions without automatic follow-up. You'll receive the guidance and action steps you need during our time together. If you find you need additional support after implementing the initial advice, you're welcome to schedule another session or consider one of my ongoing coaching packages."
         }
       },
+      "analysis": {
+        "types": {
+          "question": "What types of analysis do you offer?",
+          "answer": "I offer three specialized analysis services:\n\n- Stock Analysis: Comprehensive evaluation of investments including technical indicators, fundamental analysis, and potential growth trajectories.\n- Company Analysis: In-depth assessment of business models, competitive positioning, financial health, and growth opportunities.\n- Social Media Analysis: Detailed review of social media accounts, engagement metrics, audience demographics, and optimization strategies.\n\nEach analysis is custom-tailored to your specific questions and objectives."
+        },
+        "information": {
+          "question": "What information do I need to provide for an analysis?",
+          "answer": "To ensure a thorough and relevant analysis, please provide:\n- The specific stock symbol, company name, or social media account you want analyzed\n- Your key questions or concerns about the subject\n- Any particular metrics or aspects you're most interested in understanding\n\nThe more specific you are about what you want to know, the more valuable your analysis will be."
+        },
+        "delivery": {
+          "question": "How will analysis results be delivered?",
+          "answer": "You'll receive a comprehensive PDF report via email containing all findings, insights, and recommendations. This document includes visual elements such as graphs, charts, and comparative tables where applicable."
+        }
+      },
       "pitch_deck": {
         "offering": {
           "question": "What are the pitch decks you offer?",
-          "answer": "I provide access to my personal pitch decks for companies I'm currently building. These are real-world examples of successful pitches that have attracted investor interest. Available pitch decks include:\n- Perspectiv\n- Galow.Club\n- Pizzaria\n\nThese resources serve as valuable learning tools and inspiration for your own fundraising efforts."
+          "answer": "I provide access to my personal pitch decks for companies I'm currently building. These are real-world examples of successful pitches that have attracted investor interest. Available pitch decks include: Perspectiv, Galow.Club, Pizzaria."
+        }
+      },
+      "chatbot": {
+        "purpose": {
+          "question": "Why should I use the chatbot before my service?",
+          "answer": "The chatbot is an essential final step in our service process that helps you maximize the value of your investment. By sharing specific information about yourself, your situation, and your goals through the chatbot, you allow me to prepare thoroughly before our interaction begins. This preparation means we can use 100% of our paid time together focusing on solutions rather than gathering basic information. Clients who use the chatbot report significantly more productive sessions and better outcomes, as we can dive straight into the core discussion."
         }
       },
       "general": {
@@ -389,6 +406,7 @@
       }
     }
   },
+
   "bug_report": {
     "title": "Help Me Improve",
     "description": "As the website is in beta, your feedback is crucial. Please provide detailed information about any issues you've encountered to help us enhance the user experience.",

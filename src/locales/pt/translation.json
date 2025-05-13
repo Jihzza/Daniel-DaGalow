@@ -13,7 +13,8 @@
     "settings": "Definições",
     "login": "Iniciar sessão",
     "logout": "Terminar sessão",
-    "login_signup": "Iniciar sessão / Registar"
+    "login_signup": "Iniciar sessão / Registar",
+    "learnMore": "Saber Mais"
   },
 
   "hero": {
@@ -163,7 +164,7 @@
   "venture_investment": {
     "venture_title": "Invista Comigo",
     "venture_description": "Estou continuamente a desenvolver novos projetos e empreendimentos. Se estiver interessado em conhecer as oportunidades atuais e futuras, solicite um pitch deck abaixo.",
-    "venture_request_pitch": "Solicitar Pitch Deck"
+    "venture_request_pitch": "Solicitar Apresentação"
   },
 
   "interviews": {
@@ -274,7 +275,7 @@
   },
 
   "pitch_deck_request": {
-    "title": "Solicitar Pitch Deck",
+    "title": "Solicitar Apresentação",
     "steps": {
       "project": "Selecione o seu projeto",
       "contact": "As suas informações de contacto",
@@ -359,6 +360,20 @@
         "followup": {
           "question": "O que acontece depois da nossa consulta?",
           "answer": "As consultas são sessões independentes sem seguimento automático. Receberão toda a orientação e os passos de ação necessários durante a sessão. Se precisarem de apoio adicional após implementar as recomendações iniciais, podem agendar outra sessão ou optar por um dos meus pacotes de coaching contínuos."
+        }
+      },
+      "analysis": {
+        "types": {
+          "question": "Que tipos de análise oferecem?",
+          "answer": "Ofereço três serviços de análise especializados:\n\n- **Análise de Ações**: Avaliação exaustiva de investimentos, incluindo indicadores técnicos, análise fundamental e potenciais trajetórias de crescimento.\n- **Análise de Empresas**: Avaliação aprofundada de modelos de negócio, posicionamento competitivo, saúde financeira e oportunidades de expansão.\n- **Análise de Redes Sociais**: Revisão detalhada de contas de redes sociais, métricas de envolvimento, demografia da audiência e estratégias de otimização.\n\nCada análise é personalizada de acordo com as suas questões e objetivos específicos."
+        },
+        "information": {
+          "question": "Que informação preciso de fornecer para uma análise?",
+          "answer": "Para garantir uma análise completa e relevante, por favor forneça:\n- O símbolo da ação específico, nome da empresa ou conta de rede social que pretende analisar\n- As suas principais questões ou preocupações sobre o assunto\n- Quaisquer métricas ou aspetos particulares que mais lhe interessam compreender\n\nQuanto mais específico for sobre o que pretende saber, mais valiosa será a sua análise."
+        },
+        "delivery": {
+          "question": "Como serão entregues os resultados da análise?",
+          "answer": "Receberá um relatório PDF completo por email com todas as descobertas, insights e recomendações. Este documento inclui elementos visuais como gráficos, tabelas e diagramas comparativos, quando aplicável."
         }
       },
       "pitch_deck": {

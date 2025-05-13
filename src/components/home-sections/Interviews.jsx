@@ -23,10 +23,10 @@ const Interviews = () => {
     <section id="interviews" className="py-8 px-4">
       <div className="max-w-3xl mx-auto text-center space-y-6">
         <div className="text-center space-y-6">
-          <h2 className="text-2xl md:text-4xl font-bold text-white">
+          <h2 className="text-2xl md:text-4xl font-bold text-black">
             {t("interviews.interviews_title")}
           </h2>
-          <p className='text-white md:text-lg mx-auto'>{t("interviews.interviews_description")}</p>
+          <p className='text-black md:text-lg mx-auto'>{t("interviews.interviews_description")}</p>
         </div>
         
         <div className=" gap-4 justify-center items-center">

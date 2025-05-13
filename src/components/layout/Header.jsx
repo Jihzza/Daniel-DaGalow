@@ -1,3 +1,4 @@
+// src/components/layout/Header.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -97,10 +98,8 @@ function Header() {
     }
   };
 
-  // Function to get flag image for a language
   const getFlagImage = (langCode) => {
     const normalized = langCode.toLowerCase();
-    // Handle Brazilian Portuguese explicitly
     if (normalized === "pt-br" || normalized === "br") {
       return (
         <img
@@ -115,7 +114,6 @@ function Header() {
         />
       );
     }
-    // Fallback to configured mapping
     const language =
       languageConfig[langCode] ||
       languageConfig[normalized] ||
@@ -135,7 +133,6 @@ function Header() {
     );
   };
 
-  // Function to get language name
   const getLanguageName = (langCode) => {
     const normalized = langCode.toLowerCase();
     if (normalized === "pt-br" || normalized === "br") return "pt-br";
@@ -329,9 +326,8 @@ function Header() {
 
                 <div className="pt-1 sm:pt-2">
                   <p className="text-xs sm:text-sm text-darkGold px-3 mb-1 opacity-70">
-                    {t("Learn More")}
-                  </p>{" "}
-                  {/* Make sure "Learn More" is in your translation files */}
+                    {t("navigation.learnMore")} {/* MODIFIED HERE */}
+                  </p>
                   <button
                     onClick={() => {
                       document

@@ -13,7 +13,8 @@
     "settings": "Configurações",
     "login": "Entrar",
     "logout": "Sair",
-    "login_signup": "Entrar / Cadastrar"
+    "login_signup": "Entrar / Cadastrar",
+    "learnMore": "Saiba Mais"
   },
 
   "hero": {
@@ -157,7 +158,7 @@
   "venture_investment": {
     "venture_title": "Invista comigo",
     "venture_description": "Estou sempre desenvolvendo novos projetos e empreendimentos. Se você quer saber mais sobre as oportunidades atuais e futuras, solicite a apresentação de projeto abaixo.",
-    "venture_request_pitch": "Solicitar apresentação de projeto"
+    "venture_request_pitch": "Solicitar apresentação"
   },
 
   "interviews": {
@@ -317,7 +318,7 @@
       "coaching": {
         "tiers": {
           "question": "Quais planos de coaching vocês oferecem e o que inclui cada um?",
-          "answer": "Ofereço três planos de coaching diferentes para atender às suas necessidades específicas:\n\n1. Plano Semanal (40 €/mês): Responderei às suas perguntas uma vez por semana. Você pode enviar quantas perguntas quiser e receberá uma resposta semanal completa.\n\n2. Plano Diário (90 €/mês): Forneço respostas diárias às suas perguntas para um acompanhamento mais próximo e um progresso mais rápido.\n\n3. Plano Prioritário (230 €/mês): Você receberá as respostas o mais rápido possível, com tratamento de máxima prioridade. Este plano Premium garante que você nunca fique esperando por conselhos críticos."
+          "answer": "Ofereço três planos de coaching diferentes para atender às suas necessidades específicas:\n\n1. Plano Semanal (R$220/mês): Responderei às suas perguntas uma vez por semana. Você pode enviar quantas perguntas quiser e receberá uma resposta semanal completa.\n\n2. Plano Diário (R$500/mês): Forneço respostas diárias às suas perguntas para um acompanhamento mais próximo e um progresso mais rápido.\n\n3. Plano Prioritário (R$1250/mês): Você receberá as respostas o mais rápido possível, com tratamento de máxima prioridade. Este plano Premium garante que você nunca fique esperando por conselhos críticos."
         },
         "right_package": {
           "question": "Como sei qual pacote de coaching é o ideal para mim?",
@@ -352,6 +353,20 @@
         "followup": {
           "question": "O que acontece após a nossa consultoria?",
           "answer": "Minhas consultorias são sessões únicas, sem acompanhamento automático. Você receberá toda a orientação e os próximos passos durante a sessão. Se precisar de suporte adicional após colocar em prática as recomendações iniciais, pode agendar outra sessão ou optar por um dos meus planos de coaching contínuo."
+        }
+      },
+      "analysis": {
+        "types": {
+          "question": "Quais tipos de análise vocês oferecem?",
+          "answer": "Ofereço três serviços de análise especializados:\n\n- **Análise de Ações**: Avaliação completa de investimentos, incluindo indicadores técnicos, análise fundamental e possíveis trajetórias de crescimento.\n- **Análise de Empresas**: Estudo aprofundado de modelos de negócio, posicionamento competitivo, saúde financeira e oportunidades de expansão.\n- **Análise de Mídias Sociais**: Revisão detalhada de contas de mídias sociais, métricas de engajamento, demografia do público e estratégias de otimização.\n\nCada análise é adaptada às suas perguntas e objetivos específicos."
+        },
+        "information": {
+          "question": "Que informações preciso fornecer para uma análise?",
+          "answer": "Para garantir uma análise completa e relevante, por favor, forneça:\n- O código da ação específico, nome da empresa ou conta de mídia social que você quer analisar\n- Suas principais perguntas ou preocupações sobre o assunto\n- Quaisquer métricas ou aspectos particulares que você mais se interessa em entender\n\nQuanto mais específico você for sobre o que deseja saber, mais valiosa será sua análise."
+        },
+        "delivery": {
+          "question": "Como os resultados da análise serão entregues?",
+          "answer": "Você receberá um relatório completo em PDF por e-mail com todos os achados, insights e recomendações. Este documento inclui elementos visuals como gráficos, tabelas comparativas e diagramas, quando aplicável."
         }
       },
       "pitch_deck": {
