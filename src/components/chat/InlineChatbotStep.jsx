@@ -397,7 +397,7 @@ export default function InlineChatbotStep({ requestId, tableName, onFinish }) {
       <div className="flex justify-center">
         <button 
           type="button"
-          className="bg-darkGold text-black px-4 py-2 rounded-full"
+          className="bg-darkGold text-black px-4 py-2 mb-2 rounded-full"
           onClick={onFinish}
           disabled={busy || isTypingAnimationActive}
         >

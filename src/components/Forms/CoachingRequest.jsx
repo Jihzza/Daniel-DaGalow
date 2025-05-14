@@ -23,7 +23,7 @@ function StepIndicator({
   className = "",
 }) {
   return (
-    <div className="flex items-center justify-center gap-1 md:gap-2 mt-6 md:mt-8">
+    <div className="flex items-center justify-center py-2 gap-1 md:gap-2">
       {Array.from({ length: stepCount }).map((_, idx) => {
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
@@ -73,7 +73,7 @@ function FrequencyStep({ formData, onChange }) {
     },
   ];
   return (
-    <div className="grid grid-cols-1 gap-4 mb-6">
+    <div className="grid grid-cols-1 gap-3 mb-2">
       {options.map((opt) => (
         <button
           key={opt.value}
@@ -157,7 +157,7 @@ function ContactStep({ formData, onChange }) {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
       <div className="w-full flex flex-col gap-2">
         <label className="block text-white mb-2">
           {t("coaching_request.form.name_label")}
@@ -294,54 +294,62 @@ function ContactStep({ formData, onChange }) {
 }
 
 // Step 3: Payment Step - Responsive, Mobile-First Design
-function PaymentStep({selectedTier, requestId, onPaymentConfirmed, formData}) {
+function PaymentStep({
+  selectedTier,
+  requestId,
+  onPaymentConfirmed,
+  formData,
+}) {
   const [paymentStarted, setPaymentStarted] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [pollingError, setPollingError] = useState(null);
-  
+
   // Map the coaching tiers to the correct monthly subscription prices
   const getPriceForTier = (tier) => {
     const prices = {
       Weekly: "€40", // Basic plan
-      Daily: "€90",  // Standard plan
-      Priority: "€230" // Premium plan
+      Daily: "€90", // Standard plan
+      Priority: "€230", // Premium plan
     };
     return prices[tier] || "€40"; // Default to Basic if tier not found
   };
-  
+
   // Map your tier names to plan names for clearer communication
   const getPlanNameForTier = (tier) => {
     const planNames = {
       Weekly: "Basic",
       Daily: "Standard",
-      Priority: "Premium"
+      Priority: "Premium",
     };
     return planNames[tier] || "Basic";
   };
 
   // Check for pending payments when component mounts
   useEffect(() => {
-    const pendingId = localStorage.getItem('pendingCoachingId');
-    
+    const pendingId = localStorage.getItem("pendingCoachingId");
+
     if (pendingId && pendingId === requestId.toString()) {
       setPaymentStarted(true);
-      localStorage.removeItem('pendingCoachingId');
+      localStorage.removeItem("pendingCoachingId");
     }
   }, [requestId]);
-  
+
   const handleStripeRedirect = async () => {
     try {
-      localStorage.setItem('pendingCoachingId', requestId.toString());
-      
-      const { data } = await axios.post("/.netlify/functions/createCoachingSession", {
-        requestId,
-        tier: selectedTier,
-        email: formData.email,
-        productId: "prod_SBC2yFeKHqFXZr",
-        isTestBooking: false
-      });
-      
-      window.open(data.url, '_blank');
+      localStorage.setItem("pendingCoachingId", requestId.toString());
+
+      const { data } = await axios.post(
+        "/.netlify/functions/createCoachingSession",
+        {
+          requestId,
+          tier: selectedTier,
+          email: formData.email,
+          productId: "prod_SBC2yFeKHqFXZr",
+          isTestBooking: false,
+        }
+      );
+
+      window.open(data.url, "_blank");
       setPaymentStarted(true);
     } catch (error) {
       console.error("Error creating Stripe subscription:", error);
@@ -352,20 +360,29 @@ function PaymentStep({selectedTier, requestId, onPaymentConfirmed, formData}) {
   // Payment status polling effect remains the same
   useEffect(() => {
     if (!paymentStarted || !requestId) return;
-    
+
     const interval = setInterval(async () => {
       try {
-        const response = await axios.get(`/.netlify/functions/getCoachingStatus?id=${requestId}`);
-        
+        const response = await axios.get(
+          `/.netlify/functions/getCoachingStatus?id=${requestId}`
+        );
+
         if (response.data.paymentStatus === "paid") {
           setPaymentConfirmed(true);
           onPaymentConfirmed(true);
           clearInterval(interval);
-        } else if (response.data.paymentStatus === "pending" && Math.random() < 0.2) {
+        } else if (
+          response.data.paymentStatus === "pending" &&
+          Math.random() < 0.2
+        ) {
           try {
-            await axios.get(`/.netlify/functions/forceUpdateCoaching?id=${requestId}`);
-            const verifyResponse = await axios.get(`/.netlify/functions/getCoachingStatus?id=${requestId}`);
-            
+            await axios.get(
+              `/.netlify/functions/forceUpdateCoaching?id=${requestId}`
+            );
+            const verifyResponse = await axios.get(
+              `/.netlify/functions/getCoachingStatus?id=${requestId}`
+            );
+
             if (verifyResponse.data.paymentStatus === "paid") {
               setPaymentConfirmed(true);
               onPaymentConfirmed(true);
@@ -390,53 +407,63 @@ function PaymentStep({selectedTier, requestId, onPaymentConfirmed, formData}) {
       {/* Clean, elegant subscription card */}
       <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden mb-6">
         <div className="bg-darkGold/10 p-4 border-b border-white/10">
-          <h3 className="text-white font-semibold text-center">Subscription Details</h3>
+          <h3 className="text-white font-semibold text-center">
+            Subscription Details
+          </h3>
         </div>
-        
+
         <div className="p-5 space-y-4">
           {/* Plan type with badge */}
           <div className="flex justify-between items-center">
             <span className="text-white/70">Selected Plan:</span>
             <div className="flex items-center gap-2">
-              <span className="text-white font-medium">{getPlanNameForTier(selectedTier)}</span>
-              <span className="bg-darkGold/20 text-white text-xs px-2 py-0.5 rounded">{selectedTier}</span>
+              <span className="text-white font-medium">
+                {getPlanNameForTier(selectedTier)}
+              </span>
+              <span className="bg-darkGold/20 text-white text-xs px-2 py-0.5 rounded">
+                {selectedTier}
+              </span>
             </div>
           </div>
-          
+
           {/* Price with emphasized styling */}
           <div className="flex justify-between items-center">
             <span className="text-white/70">Price:</span>
-            <div className="text-darkGold font-bold text-lg">{getPriceForTier(selectedTier)}<span className="text-white/50 text-sm font-normal">/month</span></div>
+            <div className="text-darkGold font-bold text-lg">
+              {getPriceForTier(selectedTier)}
+              <span className="text-white/50 text-sm font-normal">/month</span>
+            </div>
           </div>
-          
+
           {/* Billing details */}
           <div className="flex justify-between items-center">
             <span className="text-white/70">Billing:</span>
             <span className="text-white">Monthly</span>
           </div>
-          
+
           {/* Auto-renewal info */}
           <div className="flex justify-between items-center">
             <span className="text-white/70">Renewal:</span>
             <span className="text-white">Automatic</span>
           </div>
-          
+
           {/* Divider */}
           <div className="border-t border-white/10 my-2"></div>
-          
+
           {/* Email for receipt/billing */}
           <div className="flex justify-between items-center text-sm">
             <span className="text-white/70">Email for billing:</span>
             <span className="text-white break-all">{formData.email}</span>
           </div>
         </div>
-        
+
         {/* Cancellation notice */}
         <div className="bg-white/5 p-3 text-xs text-white/60 text-center border-t border-white/10">
-          You can cancel your subscription at any time from your account settings
+          You can cancel your subscription at any time from your account
+          settings
         </div>
       </div>
-      
+
       {/* Payment action and status */}
       <div className="space-y-4">
         {!paymentStarted ? (
@@ -448,8 +475,19 @@ function PaymentStep({selectedTier, requestId, onPaymentConfirmed, formData}) {
           </button>
         ) : paymentConfirmed ? (
           <div className="flex items-center justify-center gap-2 bg-green-500/20 border border-green-400/30 rounded-lg p-3 text-green-400">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span>Subscription activated successfully</span>
           </div>
@@ -459,35 +497,32 @@ function PaymentStep({selectedTier, requestId, onPaymentConfirmed, formData}) {
             <span>Confirming your subscription...</span>
           </div>
         )}
-        
+
         {/* Error message */}
         {pollingError && (
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-sm text-center">
             {pollingError}. Please refresh the page or contact support.
           </div>
         )}
-        
+
         {/* Additional info text */}
         {paymentStarted && !paymentConfirmed && !pollingError && (
           <p className="text-white/60 text-sm text-center">
-            A payment window has opened in a new tab. Please complete the payment there and return to this page.
+            A payment window has opened in a new tab. Please complete the
+            payment there and return to this page.
           </p>
         )}
       </div>
-      <div className="mt-4 flex justify-center items-center gap-4">
-       {/* Stripe badge */}
-       <img
-         src={stripe}
-         alt="Secure payments powered by Stripe"
-         className="h-8 opacity-90"
-       />
-       {/* SSL lock icon */}
-       <img
-         src={ssl}
-         alt="SSL Secured"
-         className="h-8 opacity-90"
-       />
-     </div>
+      <div className="mb-2 mt-4 flex justify-center items-center gap-4">
+        {/* Stripe badge */}
+        <img
+          src={stripe}
+          alt="Secure payments powered by Stripe"
+          className="h-8 opacity-90"
+        />
+        {/* SSL lock icon */}
+        <img src={ssl} alt="SSL Secured" className="h-8 opacity-90" />
+      </div>
     </div>
   );
 }
@@ -518,12 +553,12 @@ export default function CoachingRequest({ onBackService }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     // If phone field is changed manually, reset validation
     if (name === "phone") {
       setIsPhoneValid(false);
     }
-    
+
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (name === "frequency" && value) setStep(2);
   };
@@ -558,18 +593,20 @@ export default function CoachingRequest({ onBackService }) {
     if (step === 2) {
       // Check that name has at least 2 characters
       const isNameValid = formData.name && formData.name.trim().length >= 2;
-      
+
       // Check for valid email format
-      const isEmailValid = formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
-      
+      const isEmailValid =
+        formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
+
       // Check that phone number has at least 6 digits (most international formats)
-      const isPhoneValid = formData.phone && formData.phone.replace(/\D/g, '').length >= 6;
-      
+      const isPhoneValid =
+        formData.phone && formData.phone.replace(/\D/g, "").length >= 6;
+
       return isNameValid && isEmailValid && isPhoneValid;
     }
-    
+
     if (step === 3) return paymentDone;
-    
+
     return true;
   };
 
@@ -650,52 +687,62 @@ export default function CoachingRequest({ onBackService }) {
           <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
 
           {step === 1 ? (
-  <FrequencyStep formData={formData} onChange={handleChange} />
-) : step === 2 ? (
-  <ContactStep 
-    formData={formData} 
-    onChange={handleChange}
-    onPhoneValidation={handlePhoneValidation} 
-  />
-) : step === 3 ? (
-  <PaymentStep
-    selectedTier={formData.frequency}
-    requestId={requestId}
-    formData={formData}
-    onPaymentConfirmed={handlePaymentConfirmed}
-  />
-) : (
-  <InlineChatbotStep
-    requestId={requestId}
-    tableName="coaching_chat_messages"
-    onFinish={async () => {
-      if (!requestId) {
-        console.error("No request ID available to complete coaching chat.");
-        // Optionally, alert the user or handle this error appropriately
-        return;
-      }
-      try {
-        // Make sure to use your actual n8n webhook URL for coaching completion
-        const webhookUrl = "https://rafaello.app.n8n.cloud/webhook/coaching-complete";
-        console.log(`Coaching chat finished for session_id: ${requestId}. Triggering webhook: ${webhookUrl}`);
+            <FrequencyStep formData={formData} onChange={handleChange} />
+          ) : step === 2 ? (
+            <ContactStep
+              formData={formData}
+              onChange={handleChange}
+              onPhoneValidation={handlePhoneValidation}
+            />
+          ) : step === 3 ? (
+            <PaymentStep
+              selectedTier={formData.frequency}
+              requestId={requestId}
+              formData={formData}
+              onPaymentConfirmed={handlePaymentConfirmed}
+            />
+          ) : (
+            <InlineChatbotStep
+              requestId={requestId}
+              tableName="coaching_chat_messages"
+              onFinish={async () => {
+                if (!requestId) {
+                  console.error(
+                    "No request ID available to complete coaching chat."
+                  );
+                  // Optionally, alert the user or handle this error appropriately
+                  return;
+                }
+                try {
+                  // Make sure to use your actual n8n webhook URL for coaching completion
+                  const webhookUrl =
+                    "https://rafaello.app.n8n.cloud/webhook/coaching-complete";
+                  console.log(
+                    `Coaching chat finished for session_id: ${requestId}. Triggering webhook: ${webhookUrl}`
+                  );
 
-        await axios.post(webhookUrl, {
-          session_id: requestId, // The n8n workflow expects 'session_id' in the body
-        });
+                  await axios.post(webhookUrl, {
+                    session_id: requestId, // The n8n workflow expects 'session_id' in the body
+                  });
 
-        console.log(`Webhook for coaching session ${requestId} triggered successfully.`);
-        // You might want to provide some feedback to the user here,
-        // like a success message or disabling the button further.
-        // The InlineChatbotStep already handles disabling its own button while busy.
-        // This onFinish doesn't navigate away by default; the main form's "Done" button handles that.
-      } catch (error) {
-        console.error("Error triggering coaching completion webhook:", error);
-        // Optionally, alert the user that something went wrong
-      }
-    }}
-  />
-)}
-          
+                  console.log(
+                    `Webhook for coaching session ${requestId} triggered successfully.`
+                  );
+                  // You might want to provide some feedback to the user here,
+                  // like a success message or disabling the button further.
+                  // The InlineChatbotStep already handles disabling its own button while busy.
+                  // This onFinish doesn't navigate away by default; the main form's "Done" button handles that.
+                } catch (error) {
+                  console.error(
+                    "Error triggering coaching completion webhook:",
+                    error
+                  );
+                  // Optionally, alert the user that something went wrong
+                }
+              }}
+            />
+          )}
+
           <StepIndicator
             stepCount={UI_STEPS}
             currentStep={step + 1}
@@ -703,7 +750,7 @@ export default function CoachingRequest({ onBackService }) {
             className="pt-6"
           />
 
-          <div className="flex justify-between mt-6">
+          <div className="flex justify-between mt-2">
             <button
               onClick={handleBack}
               disabled={isSubmitting}
@@ -761,8 +808,6 @@ export default function CoachingRequest({ onBackService }) {
               </button>
             )}
           </div>
-
-          
         </div>
       </div>
     </section>

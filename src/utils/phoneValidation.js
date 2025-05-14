@@ -11,7 +11,8 @@ export const validatePhoneNumber = async (phoneNumber) => {
       const cleanNumber = phoneNumber.replace(/\D/g, '');
       
       // The API endpoint
-      const apiUrl = `https://apilayer.net/api/validate?access_key=7f5595d7792e63d5558c8fa08ef46e55&number=${cleanNumber}&format=1`;
+      const apiUrl = `https://apilayer.net/api/validate?access_key=898224bc1adb493a8d4470a0b3cff193
+&number=${cleanNumber}&format=1`;
       
       const response = await fetch(apiUrl);
       const data = await response.json();
