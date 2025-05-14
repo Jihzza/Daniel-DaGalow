@@ -492,7 +492,7 @@ function InfoStep({ formData, onChange }) {
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-4 max-w-md mx-auto w-full">
+    <div className="space-y-4 mb-2 max-w-md mx-auto w-full">
       <div className="w-full flex flex-col gap-2">
         <label className="block text-white text-sm sm:text-base md:text-lg">
           {t("booking.name_label")}
