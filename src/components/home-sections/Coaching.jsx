@@ -25,7 +25,10 @@ function DirectCoaching() {
   const [selectedTierObject, setSelectedTierObject] = useState(null); // Keep this for tier selection
 
   const [isButtonVisibleBasedOnSection, setIsButtonVisibleBasedOnSection] = useState(false);
-  const [buttonPositionStyle, setButtonPositionStyle] = useState({/* ... */});
+  const [buttonPositionStyle, setButtonPositionStyle] = useState({
+    position: 'absolute', opacity: 0, bottom: '0px', left: '50%',
+    transform: 'translateX(-50%)', transition: SMOOTH_TRANSITION, zIndex: 1,
+  });
   const sectionRef = useRef(null);
   const buttonRef = useRef(null);
   const buttonStopContainerRef = useRef(null);
@@ -113,7 +116,7 @@ function DirectCoaching() {
       if (hasButtonReachedFinalPosition.current) {
         setButtonPositionStyle({
           position: 'absolute', bottom: '0px', left: '50%',
-          transform: 'translateX(-50%)', opacity: 1, transition: SMOOTH_TRANSITION, zIndex: 1,
+          transform: 'translateX(-50%)', opacity: 0, transition: SMOOTH_TRANSITION, zIndex: 1,
         });
       } else {
         setButtonPositionStyle(prev => ({ ...prev, opacity: 0, transition: SMOOTH_TRANSITION }));
@@ -211,7 +214,7 @@ function DirectCoaching() {
           </div>
         </div>
       {/* Tier selection grid and button */}
-      <div className="max-w-3xl mt-8 mx-auto text-center space-y-6">
+      <div className="max-w-3xl mx-auto text-center space-y-6">
 
           <div className="grid grid-cols-3 gap-3 md:gap-4 pt-2 mt-2">
             {renderedTiers.map(tierItem => (
@@ -235,7 +238,7 @@ function DirectCoaching() {
           <p className="text-sm md:text-lg font-normal">{t("coaching.coaching_limited_spots")}</p>
           <div
             ref={buttonStopContainerRef}
-            className="relative flex justify-center pt-2"
+            className="relative flex justify-center"
             style={{ minHeight: '80px' }}
           >
             <button

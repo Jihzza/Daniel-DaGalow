@@ -21,7 +21,7 @@ import axios from "axios";
 
 // Import Swiper React components and styles
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Virtual } from "swiper/modules";
+import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -37,7 +37,7 @@ function StepIndicator({
   className = "",
 }) {
   return (
-    <div className="flex items-center justify-center py-4 gap-1 md:gap-2">
+    <div className="flex items-center justify-center py-2 gap-1 md:gap-2">
       {Array.from({ length: stepCount }).map((_, idx) => {
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
@@ -82,8 +82,8 @@ function DateTimeStep({
   onChangeMonth,
   selectedTime,
   selectedDuration,
-  onSelectTime,
-  availability,
+  onSelectTime, // This callback should update both selectedTime and selectedDuration in parent
+  availability, // Expects an array of { slot: "HH:mm", allowed: [durations] }
   minDate,
 }) {
   // Calendar setup
@@ -93,106 +93,194 @@ function DateTimeStep({
   });
   const prevMonthDays = [];
   const nextMonthDays = [];
-  const firstDayOfWeek = days[0].getDay();
-  const daysFromPrev = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+  const firstDayOfWeek = days[0].getDay(); // Sunday is 0, Monday is 1
+  const daysFromPrev = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; // Adjust for Monday start
   for (let i = daysFromPrev; i > 0; i--)
     prevMonthDays.push(addDays(days[0], -i));
-  const totalCells = 42;
+  const totalCells = 42; // 6 weeks * 7 days
   const daysFromNext = totalCells - (days.length + prevMonthDays.length);
   for (let i = 1; i <= daysFromNext; i++)
     nextMonthDays.push(addDays(days[days.length - 1], i));
   const calendar = [...prevMonthDays, ...days, ...nextMonthDays];
 
-  // Time slots and available times
   const timeSlots = availability.filter((slot) => slot.allowed.length > 0);
-
-  // All available times for the selected date (to show in carousel)
   const availableTimes = timeSlots.map((slot) => slot.slot).sort();
-
-  // All durations (these are fixed)
   const availableDurations = [45, 60, 75, 90, 105, 120];
 
-  // References for Swipers
   const durationSwiperRef = useRef(null);
   const timeSwiperRef = useRef(null);
 
-  // Convert duration minutes to readable format
+  const firstDurationDisplayHandled = useRef(false);
+  const firstTimeDisplayHandled = useRef(false);
+
   const formatDuration = (minutes) => {
     if (minutes < 60) return `${minutes}min`;
     if (minutes % 60 === 0) return `${Math.floor(minutes / 60)}h`;
     return `${Math.floor(minutes / 60)}h${minutes % 60}min`;
   };
 
-  // Calculate end time for a given start time and duration
   const calculateEndTime = (startTime, durationMinutes) => {
-    if (!startTime) return "";
+    if (!startTime || !durationMinutes) return "";
     const [h, m] = startTime.split(":").map(Number);
-    const endMinutes = m + durationMinutes;
-    const endHours = h + Math.floor(endMinutes / 60);
-    const endMinutesRemainder = endMinutes % 60;
-    return `${endHours}:${endMinutesRemainder.toString().padStart(2, "0")}`;
+    const date = new Date();
+    date.setHours(h, m, 0, 0);
+    const endDate = addMinutes(date, durationMinutes);
+    return format(endDate, "HH:mm");
   };
 
-  // Handle duration selection
-  const handleDurationSelect = (duration) => {
-    if (selectedTime) {
-      onSelectTime({ slot: selectedTime, dur: duration });
-    } else if (availableTimes.length > 0) {
-      // If time not selected but times are available, select the first available time
-      onSelectTime({ slot: availableTimes[0], dur: duration });
+  // Helper to get initial index for Swiper
+  const getInitialIndex = (items, targetValue, fallbackIndex = 0) => {
+    const index = items.indexOf(targetValue);
+    return index > -1 ? index : fallbackIndex;
+  };
+
+  // Effect to set initial DURATION and select it
+  useEffect(() => {
+    if (durationSwiperRef.current && availableDurations.length > 0 && !selectedDuration && !firstDurationDisplayHandled.current) {
+      const initialTargetDuration = 45; // "1h"
+      const targetIndex = getInitialIndex(availableDurations, initialTargetDuration, 1); // Default to index 1 (60min)
+
+      // Set "1h" (60 min) as selected by default
+      if (availableDurations.includes(initialTargetDuration)) {
+        onSelectTime({ slot: selectedTime, dur: initialTargetDuration });
+      } else if (availableDurations.length > targetIndex) {
+        // Fallback if 60 is not in the list (should not happen with fixed array)
+        onSelectTime({ slot: selectedTime, dur: availableDurations[targetIndex] });
+      }
+      
+      durationSwiperRef.current.slideTo(targetIndex, 0);
+      firstDurationDisplayHandled.current = true;
     }
-  };
+  }, [durationSwiperRef.current, availableDurations, selectedDuration, onSelectTime, selectedTime]);
 
-  // Handle time selection
-  const handleTimeSelect = (time) => {
-    if (selectedDuration) {
-      onSelectTime({ slot: time, dur: selectedDuration });
-    } else if (availableDurations.length > 0) {
-      // If duration not selected, select the first available duration
-      const firstAvailableDuration =
-        timeSlots.find((slot) => slot.slot === time)?.allowed[0] ||
-        availableDurations[0];
-      onSelectTime({ slot: time, dur: firstAvailableDuration });
+  // Reset firstTimeDisplayHandled when selectedDate changes
+  useEffect(() => {
+    firstTimeDisplayHandled.current = false;
+  }, [selectedDate]);
+
+  // Effect to set initial TIME and select it
+  useEffect(() => {
+    if (timeSwiperRef.current && selectedDate && availableTimes.length > 0 && !selectedTime && !firstTimeDisplayHandled.current) {
+      const initialTargetTime = "10:0";
+      let targetIndex = availableTimes.indexOf(initialTargetTime);
+      let timeToSelect = initialTargetTime;
+
+      if (targetIndex === -1) { // "10:15" not found
+        if (availableTimes.includes("10:00")) { // Check if "10:00" is available as a close alternative
+            targetIndex = availableTimes.indexOf("10:00");
+            timeToSelect = "10:15";
+        } else if (availableTimes.length > 0) { // Fallback to the first available time
+            targetIndex = 0;
+            timeToSelect = availableTimes[0];
+        } else { // No times available
+            targetIndex = -1; // Indicate no valid selection
+        }
+      }
+      
+      if (targetIndex > -1 && timeToSelect) {
+        const durationToEnsure = selectedDuration || 60; // Use current duration or default to 1h
+        const timeSlotData = timeSlots.find(slot => slot.slot === timeToSelect);
+
+        if (timeSlotData && timeSlotData.allowed.includes(durationToEnsure)) {
+          onSelectTime({ slot: timeToSelect, dur: durationToEnsure });
+        } else if (timeSlotData && timeSlotData.allowed.length > 0) {
+          onSelectTime({ slot: timeToSelect, dur: timeSlotData.allowed[0] }); // Pick first allowed duration
+        }
+        // If no valid duration, onSelectTime might not be called, or you might clear duration
+        timeSwiperRef.current.slideTo(targetIndex, 0);
+      }
+      firstTimeDisplayHandled.current = true;
     }
-  };
+  }, [timeSwiperRef.current, selectedDate, availableTimes, selectedTime, onSelectTime, selectedDuration, timeSlots]);
 
-  // Check if a specific duration is available for the selected time
   const isDurationAvailable = (duration) => {
-    if (!selectedTime) return true; // If no time selected, all durations are visually available
+    if (!selectedTime) return true;
     const timeSlot = timeSlots.find((slot) => slot.slot === selectedTime);
     return timeSlot && timeSlot.allowed.includes(duration);
   };
 
-  // Check if a specific time has any available durations
   const isTimeAvailable = (time) => {
     const timeSlot = timeSlots.find((slot) => slot.slot === time);
     return timeSlot && timeSlot.allowed.length > 0;
   };
 
+  const handleDurationButtonClick = (duration) => {
+    // 1. Update application state immediately to reflect the selection
+    const currentTime = selectedTime || (availableTimes.indexOf("10:15") > -1 ? "10:15" : (availableTimes.length > 0 ? availableTimes[0] : null));
+    onSelectTime({ slot: currentTime, dur: duration });
+  
+    // 2. Animate Swiper to center the clicked item
+    const clickedItemIndex = availableDurations.indexOf(duration);
+    if (durationSwiperRef.current && clickedItemIndex > -1) {
+      const swiper = durationSwiperRef.current;
+      const slidesPerView = 3; // Your current configuration
+      const middleOffset = Math.floor(slidesPerView / 2); // This will be 1
+  
+      // Calculate the target index for the leftmost slide to center the clickedItemIndex
+      let targetLeftmostIndex = clickedItemIndex - middleOffset;
+  
+      // Clamp the targetLeftmostIndex to ensure it's within valid Swiper bounds
+      // The maximum index the leftmost slide can be is (total items - slidesPerView)
+      const maxPossibleLeftmostIndex = Math.max(0, availableDurations.length - slidesPerView);
+      targetLeftmostIndex = Math.max(0, Math.min(targetLeftmostIndex, maxPossibleLeftmostIndex));
+  
+      // Only slide if the swiper is not already at the target position
+      if (swiper.realIndex !== targetLeftmostIndex) {
+        swiper.slideTo(targetLeftmostIndex);
+      }
+    }
+  };
+
+  const handleTimeButtonClick = (time) => {
+    // 1. Update application state immediately
+    const currentDuration = selectedDuration || 60; // Default or current selected duration
+    const timeSlotData = timeSlots.find(slot => slot.slot === time);
+    let newDurationForSelectedTime = currentDuration;
+  
+    if (timeSlotData) {
+      if (!timeSlotData.allowed.includes(newDurationForSelectedTime)) {
+        if (timeSlotData.allowed.length > 0) {
+          newDurationForSelectedTime = timeSlotData.allowed[0]; // Pick first allowed duration
+        } else {
+          newDurationForSelectedTime = null; // No allowed duration for this new time
+        }
+      }
+    } else {
+      // Should not happen if isTimeAvailable(time) was true before click
+      newDurationForSelectedTime = null;
+    }
+    onSelectTime({ slot: time, dur: newDurationForSelectedTime });
+  
+    // 2. Animate Swiper to center the clicked item
+    const clickedItemIndex = availableTimes.indexOf(time);
+    if (timeSwiperRef.current && clickedItemIndex > -1) {
+      const swiper = timeSwiperRef.current;
+      const slidesPerView = 3; // Your current configuration
+      const middleOffset = Math.floor(slidesPerView / 2); // This will be 1
+  
+      let targetLeftmostIndex = clickedItemIndex - middleOffset;
+  
+      const maxPossibleLeftmostIndex = Math.max(0, availableTimes.length - slidesPerView);
+      targetLeftmostIndex = Math.max(0, Math.min(targetLeftmostIndex, maxPossibleLeftmostIndex));
+      
+      if (swiper.realIndex !== targetLeftmostIndex) {
+        swiper.slideTo(targetLeftmostIndex);
+      }
+    }
+  };
+
   return (
-    <div className="flex flex-col space-y-6">
+    <div className="flex flex-col space-y-4">
       {/* Calendar Section */}
       <div className="bg-white/5 rounded-xl shadow-md overflow-hidden">
-        {/* Calendar Header */}
         <div className="flex items-center justify-between bg-oxfordBlue/30 p-3">
           <button
             onClick={() => onChangeMonth(-1)}
             className="text-white hover:text-darkGold p-1.5 rounded-full hover:bg-white/10 transition-all duration-200"
             aria-label="Previous month"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <h3 className="text-xl text-white font-bold">
@@ -203,47 +291,25 @@ function DateTimeStep({
             className="text-white hover:text-darkGold p-1.5 rounded-full hover:bg-white/10 transition-all duration-200"
             aria-label="Next month"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
-
-        {/* Calendar Grid */}
         <div className="p-2 md:p-3">
-          {/* Weekday Headers - With unique keys */}
           <div className="grid grid-cols-7 gap-1 mb-1">
             {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-              <div
-                key={day}
-                className="text-center py-1 text-darkGold font-semibold text-xs"
-              >
-                {day.charAt(0)}
-              </div>
+              <div key={day} className="text-center py-1 text-darkGold font-semibold text-xs">{day.charAt(0)}</div>
             ))}
           </div>
-
-          {/* Calendar Days */}
           <div className="grid grid-cols-7 gap-1">
             {calendar.map((date, i) => {
               const inMonth = isSameMonth(date, currentMonth);
               const weekend = isWeekend(date);
               const tooSoon = isBefore(date, minDate);
-              const selected = selectedDate && isSameDay(date, selectedDate);
-              const isToday = isSameDay(date, new Date());
+              const isSelectedDate = selectedDate && isSameDay(date, selectedDate);
+              const isCurrentDay = isSameDay(date, new Date()); // Use isSameDay for today's check
               const disabled = !inMonth || weekend || tooSoon;
-
               return (
                 <button
                   key={i}
@@ -251,24 +317,14 @@ function DateTimeStep({
                   disabled={disabled}
                   className={`
                     relative h-8 aspect-square rounded-md flex items-center justify-center transition-all duration-200
-                    ${
-                      selected
-                        ? "bg-darkGold text-black font-bold shadow-md"
-                        : inMonth && !disabled
-                        ? "bg-white/10 text-white hover:bg-darkGold/40"
-                        : "bg-white/5 text-white/40"
-                    }
-                    ${
-                      isToday && !selected
-                        ? "ring-1 ring-darkGold ring-opacity-70"
-                        : ""
-                    }
+                    ${isSelectedDate ? "bg-darkGold text-black font-bold shadow-md"
+                      : inMonth && !disabled ? "bg-white/10 text-white "
+                      : "bg-white/5 text-white/40"}
+                    ${isCurrentDay && !isSelectedDate ? "ring-1 ring-darkGold ring-opacity-70" : ""}
                     ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
                   `}
                 >
-                  <span className="text-xs font-medium">
-                    {format(date, "d")}
-                  </span>
+                  <span className="text-xs font-medium">{format(date, "d")}</span>
                 </button>
               );
             })}
@@ -278,112 +334,121 @@ function DateTimeStep({
 
       {/* Time & Duration Selection */}
       <div className="space-y-4">
-        {/* Duration Carousel */}
-        <div>
-          <h4 className="text-white text-sm font-medium mb-2">Duration</h4>
-          {selectedDate ? (
-            <div className="carousel-container">
-              <Swiper
-                modules={[Navigation, Pagination]}
-                slidesPerView={3}
-                spaceBetween={8}
-                centeredSlides={true}
-                onSwiper={(swiper) => {
-                  durationSwiperRef.current = swiper;
-                }}
-                onSlideChange={(swiper) => {
-                  if (
-                    availableDurations.length > 0 &&
-                    swiper.realIndex < availableDurations.length
-                  ) {
-                    const centeredDuration =
-                      availableDurations[swiper.realIndex];
-                    if (
-                      isDurationAvailable(centeredDuration) &&
-                      centeredDuration !== selectedDuration
-                    ) {
-                      handleDurationSelect(centeredDuration);
-                    }
-                  }
-                }}
-                className="carousel-swiper"
-              >
-                {availableDurations.map((duration) => (
-                  <SwiperSlide key={duration}>
-                    <button
-                      onClick={() => handleDurationSelect(duration)}
-                      disabled={!isDurationAvailable(duration)}
-                      className={`carousel-item
-              ${
-                selectedDuration === duration
-                  ? "bg-darkGold text-black font-bold"
-                  : isDurationAvailable(duration)
-                  ? "bg-white/10 text-white hover:bg-darkGold/40"
-                  : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
-              }`}
-                    >
-                      {formatDuration(duration)}
-                    </button>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
-          ) : (
-            <div className="empty-carousel-container">
-              <p className="text-white/50 text-sm">Select a date first</p>
-            </div>
-          )}
-        </div>
+      {/* Duration Carousel */}
+      <div>
+        <h4 className="text-white text-sm font-medium mb-2">Duration</h4>
+        {selectedDate ? (
+          <div className="carousel-container">
+            <Swiper
+              modules={[Navigation, Pagination]} // Keep your existing modules
+              slidesPerView={3}
+              spaceBetween={8}
+              onSwiper={(swiper) => { durationSwiperRef.current = swiper; }}
+              // MODIFICATION: Use onTransitionEnd instead of onSlideChange
+              onTransitionEnd={(swiper) => {
+                const slidesPerView = swiper.params.slidesPerView; // Should be 3
+                const middleOffset = Math.floor(slidesPerView / 2); // Should be 1
+                // realIndex is the first visible slide in the current view from your data array
+                const middleDataIndex = swiper.realIndex + middleOffset;
 
-        {/* Time Carousel - Using identical structure and classes */}
-        <div>
-          <h4 className="text-white text-sm font-medium mb-2">Time</h4>
-          {selectedDate && availableTimes.length > 0 ? (
-            <div className="carousel-container">
-              <Swiper
-                modules={[Navigation, Pagination]}
-                slidesPerView={3}
-                spaceBetween={8}
-                centeredSlides={true}
-                onSwiper={(swiper) => {
-                  timeSwiperRef.current = swiper;
-                }}
-                onSlideChange={(swiper) => {
-                  if (
-                    availableTimes.length > 0 &&
-                    swiper.realIndex < availableTimes.length
-                  ) {
-                    const centeredTime = availableTimes[swiper.realIndex];
-                    if (
-                      isTimeAvailable(centeredTime) &&
-                      centeredTime !== selectedTime
-                    ) {
-                      handleTimeSelect(centeredTime);
-                    }
+                if (availableDurations.length > 0 && middleDataIndex >= 0 && middleDataIndex < availableDurations.length) {
+                  const newSelectedDuration = availableDurations[middleDataIndex];
+                  
+                  // Only update if the settled duration is different from the currently selected one
+                  // AND if it's an actually available/valid duration choice.
+                  if (newSelectedDuration !== selectedDuration && isDurationAvailable(newSelectedDuration)) {
+                    // Call the main state updater directly.
+                    // This preserves the currently selected time.
+                    // selectedTime comes from the component's props.
+                    onSelectTime({ slot: selectedTime, dur: newSelectedDuration });
                   }
-                }}
-                className="carousel-swiper"
-              >
-                {availableTimes.map((time) => (
-                  <SwiperSlide key={time}>
-                    <button
-                      onClick={() => handleTimeSelect(time)}
-                      disabled={!isTimeAvailable(time)}
-                      className={`carousel-item
-                      ${
-                        selectedTime === time
-                          ? "bg-darkGold text-black font-bold"
-                          : isTimeAvailable(time)
-                          ? "bg-white/10 text-white hover:bg-darkGold/40"
-                          : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
+                }
+              }}
+              className="carousel-swiper"
+            >
+              {availableDurations.map((duration) => (
+                <SwiperSlide key={duration}>
+                  <button
+                    onClick={() => handleDurationButtonClick(duration)} // Click handler remains unchanged
+                    disabled={!isDurationAvailable(duration)}
+                    className={`carousel-item
+                      ${selectedDuration === duration ? "bg-darkGold text-black font-bold"
+                        : isDurationAvailable(duration) ? "bg-white/10 text-white"
+                        : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
                       }`}
-                    >
-                      {time}
-                    </button>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
+                  >
+                    {formatDuration(duration)}
+                  </button>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        ) : (
+          <div className="empty-carousel-container">
+            <p className="text-white/50 text-sm">Select a date first</p>
+          </div>
+        )}
+      </div>
+
+      {/* Time Carousel */}
+      <div>
+        <h4 className="text-white text-sm font-medium mb-2">Time</h4>
+        {selectedDate && availableTimes.length > 0 ? (
+          <div className="carousel-container">
+            <Swiper
+              modules={[Navigation, Pagination]} // Keep your existing modules
+              slidesPerView={3}
+              spaceBetween={8}
+              onSwiper={(swiper) => { timeSwiperRef.current = swiper; }}
+              // MODIFICATION: Use onTransitionEnd instead of onSlideChange
+              onTransitionEnd={(swiper) => {
+                const slidesPerView = swiper.params.slidesPerView; // Should be 3
+                const middleOffset = Math.floor(slidesPerView / 2); // Should be 1
+                const middleDataIndex = swiper.realIndex + middleOffset;
+
+                if (availableTimes.length > 0 && middleDataIndex >= 0 && middleDataIndex < availableTimes.length) {
+                  const newSelectedTime = availableTimes[middleDataIndex];
+
+                  // Only update if the settled time is different from the currently selected one
+                  // AND if it's an actually available/valid time choice.
+                  if (newSelectedTime !== selectedTime && isTimeAvailable(newSelectedTime)) {
+                    // Replicate the logic from your original handleTimeButtonClick
+                    // to adjust duration if the new time doesn't support the current duration.
+                    let newDurationForSelectedTime = selectedDuration || 60; // Default or current
+                    const timeSlotData = timeSlots.find(slot => slot.slot === newSelectedTime);
+
+                    // isTimeAvailable(newSelectedTime) already ensures timeSlotData exists and has allowed durations.
+                    // So, timeSlotData should be valid here.
+                    if (timeSlotData && !timeSlotData.allowed.includes(newDurationForSelectedTime)) {
+                      // If current duration is not allowed, pick the first allowed one.
+                      // isTimeAvailable ensures timeSlotData.allowed has length > 0.
+                      newDurationForSelectedTime = timeSlotData.allowed[0];
+                    }
+                    
+                    // Call the main state updater directly.
+                    onSelectTime({ slot: newSelectedTime, dur: newDurationForSelectedTime });
+                  }
+                }
+              }}
+              className="carousel-swiper"
+            >
+              {availableTimes.map((time) => (
+                <SwiperSlide key={time}>
+                  <button
+                    onClick={() => handleTimeButtonClick(time)} // Click handler remains unchanged
+                    disabled={!isTimeAvailable(time)}
+                    className={`carousel-item
+                      ${selectedTime === time ? "bg-darkGold text-black font-bold"
+                        : isTimeAvailable(time) ? "bg-white/10 text-white"
+                        : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
+                      }`}
+                  >
+                    {time}
+                  </button>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
           ) : (
             <div className="empty-carousel-container">
               <p className="text-white/50 text-sm">
@@ -395,30 +460,25 @@ function DateTimeStep({
       </div>
 
       {/* Compact Booking Summary */}
-      <div className="py-4 mt-2 flex flex-col items-center">
-        {/* Date display centered */}
+      <div className="flex flex-col items-center">
         <div className="mb-2">
-          <div className="bg-white/10 rounded-lg px-4 py-1 text-white text-center">
-            {selectedDate ? format(selectedDate, "EEE, MMM d") : "Tue, Apr 29"}
+          <div className="px-4 py-1 text-white text-center">
+            {selectedDate ? format(selectedDate, "EEE, MMM d") : "-- --- --"}
           </div>
         </div>
-
-        {/* From/To labels - centered */}
         <div className="flex w-full justify-center gap-6">
           <div className="flex flex-col items-center">
             <div className="text-white/80 text-sm">from</div>
-            <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-16 text-center">
-              {selectedTime || "10:00"}
+            <div className="px-2 py-1 text-white w-16 text-center">
+              {selectedTime || "--:--"}
             </div>
           </div>
-
-          {/* To label and time */}
           <div className="flex flex-col items-center">
             <div className="text-white/80 text-sm">to</div>
-            <div className="bg-white/10 rounded-lg px-2 py-1 text-white w-16 text-center">
+            <div className="px-2 py-1 text-white w-16 text-center">
               {selectedTime && selectedDuration
                 ? calculateEndTime(selectedTime, selectedDuration)
-                : "10:00"}
+                : "--:--"}
             </div>
           </div>
         </div>
@@ -869,6 +929,32 @@ export default function Booking({ onBackService }) {
     };
   }, []);
 
+  const loadingSpinner = (
+    <span className="flex items-center">
+      <svg
+        className="animate-spin -ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 text-white" // Or text-black if on darkGold bg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        ></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      {t("booking.processing")}
+    </span>
+  );
+
   return (
     <section
       className="py-4 sm:py-6 md:py-8 px-4 sm:px-4"
@@ -879,18 +965,20 @@ export default function Booking({ onBackService }) {
         <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-4 sm:mb-6 text-black">
           {t("booking.title")}
         </h2>
-        <div className="bg-oxfordBlue rounded-xl p-3 sm:p-6 shadow-xl">
+        <div className="bg-oxfordBlue rounded-xl p-8 sm:p-6 shadow-xl">
           <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-4 font-semibold">
             {STEPS[step - 1].title}
           </h3>
 
-          {loading && step === 1 ? (
+          {/* Initial loading for bookings data, primarily affecting step 1 */}
+          {loading && step === 1 && !selectedDate ? ( // More specific condition for initial load
             <div className="flex justify-center py-6 sm:py-10">
               <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 md:h-16 md:w-16 border-t-2 border-b-2 border-darkGold"></div>
             </div>
           ) : (
-            <>
-              {step === 1 ? (
+            <div className="flex flex-col"> {/* Common wrapper for step content and navigation */}
+              {/* Step Content */}
+              {step === 1 && (
                 <DateTimeStep
                   selectedDate={selectedDate}
                   onSelectDate={setSelectedDate}
@@ -904,16 +992,19 @@ export default function Booking({ onBackService }) {
                   selectedDuration={selectedDuration}
                   onSelectTime={handleSelectTime}
                 />
-              ) : step === 2 ? (
+              )}
+              {step === 2 && (
                 <InfoStep formData={formData} onChange={handleChange} />
-              ) : step === 3 ? (
+              )}
+              {step === 3 && (
                 <PaymentStep
                   selectedDuration={selectedDuration}
                   bookingId={bookingId}
                   formData={formData}
                   onPaymentConfirmed={handlePaymentConfirmed}
                 />
-              ) : (
+              )}
+              {step === 4 && (
                 <InlineChatbotStep
                   requestId={bookingId}
                   tableName="booking_chat_messages"
@@ -925,69 +1016,57 @@ export default function Booking({ onBackService }) {
                       `${process.env.REACT_APP_N8N_BOOKING_COMPLETE_WEBHOOK}`,
                       { session_id: bookingId }
                     )
-                    
-                      .catch(err => console.error("Webhook error:", err));
+                    .catch(err => console.error("Webhook error:", err));
                   }}
                 />
               )}
-            </>
-          )}
 
-          <StepIndicator
-            stepCount={UI_STEPS}
-            currentStep={step + 1}
-            onStepClick={handleStepClick}
-          />
+              {/* Step Indicator - common to all steps */}
+              <StepIndicator
+                stepCount={UI_STEPS}
+                currentStep={step + 1} // e.g. internal step 1 is UI step 2
+                onStepClick={handleStepClick} // Ensure handleStepClick is robust for all steps
+              />
 
-          <div className="flex justify-between mt-4 sm:mt-6">
-            <button
-              onClick={() => (step > 1 ? setStep(step - 1) : onBackService())}
-              className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
-            >
-              {t("booking.back")}
-            </button>
-            {step < STEPS.length && (
-              <button
-                onClick={handleNext}
-                disabled={!canProceed() || loading}
-                className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
-              >
-                {loading ? (
-                  <span className="flex items-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    {t("booking.processing")}
-                  </span>
-                ) : step === 1 ? (
-                  t("booking.step_2") // Contact Info
-                ) : step === 2 ? (
-                  t("booking.step_3") // Keep the existing special case
-                ) : step === 3 ? (
-                  t("booking.step_4") // Chat
-                ) : (
-                  t("booking.next")
+              {/* Navigation Buttons - common structure, text/action varies */}
+              <div className="flex justify-between mt-2"> {/* Added mt-2 for spacing */}
+                <button
+                  onClick={() => (step === 1 ? onBackService() : setStep(step - 1))}
+                  disabled={loading && step === 2} // Example: disable back if a crucial forward step is processing
+                  className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl disabled:opacity-50"
+                >
+                  {t("booking.back")}
+                </button>
+
+                {step < STEPS.length ? ( // Show "Next" button if not the last step
+                  <button
+                    onClick={handleNext}
+                    disabled={!canProceed() || loading}
+                    className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
+                  >
+                    {loading ? loadingSpinner : (
+                      step === 1 ? t("booking.step_2") :
+                      step === 2 ? t("booking.step_3") :
+                      step === 3 ? t("booking.step_4") : // Default/fallback if needed
+                      "Next" // Should not be reached if step < STEPS.length
+                    )}
+                  </button>
+                ) : ( // Last step (step === STEPS.length, which is step 4)
+                  <button
+                    onClick={() => {
+                        // The InlineChatbotStep's onFinish prop already handles the webhook.
+                        // This button can navigate away or close the form.
+                        onBackService(); // Example: Close form or go back to service selection
+                    }}
+                    disabled={loading} // If any final processing might be indicated by 'loading'
+                    className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
+                  >
+                    {t("booking.finish", "Finish")}
+                  </button>
                 )}
-              </button>
-            )}
-          </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>
