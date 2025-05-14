@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -22,6 +22,7 @@ import axios from "axios";
 // Import Swiper React components and styles
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
+import { AuthModalContext } from "../../App";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -136,22 +137,40 @@ function DateTimeStep({
 
   // Effect to set initial DURATION and select it
   useEffect(() => {
-    if (durationSwiperRef.current && availableDurations.length > 0 && !selectedDuration && !firstDurationDisplayHandled.current) {
+    if (
+      durationSwiperRef.current &&
+      availableDurations.length > 0 &&
+      !selectedDuration &&
+      !firstDurationDisplayHandled.current
+    ) {
       const initialTargetDuration = 45; // "1h"
-      const targetIndex = getInitialIndex(availableDurations, initialTargetDuration, 1); // Default to index 1 (60min)
+      const targetIndex = getInitialIndex(
+        availableDurations,
+        initialTargetDuration,
+        1
+      ); // Default to index 1 (60min)
 
       // Set "1h" (60 min) as selected by default
       if (availableDurations.includes(initialTargetDuration)) {
         onSelectTime({ slot: selectedTime, dur: initialTargetDuration });
       } else if (availableDurations.length > targetIndex) {
         // Fallback if 60 is not in the list (should not happen with fixed array)
-        onSelectTime({ slot: selectedTime, dur: availableDurations[targetIndex] });
+        onSelectTime({
+          slot: selectedTime,
+          dur: availableDurations[targetIndex],
+        });
       }
-      
+
       durationSwiperRef.current.slideTo(targetIndex, 0);
       firstDurationDisplayHandled.current = true;
     }
-  }, [durationSwiperRef.current, availableDurations, selectedDuration, onSelectTime, selectedTime]);
+  }, [
+    durationSwiperRef.current,
+    availableDurations,
+    selectedDuration,
+    onSelectTime,
+    selectedTime,
+  ]);
 
   // Reset firstTimeDisplayHandled when selectedDate changes
   useEffect(() => {
@@ -160,26 +179,38 @@ function DateTimeStep({
 
   // Effect to set initial TIME and select it
   useEffect(() => {
-    if (timeSwiperRef.current && selectedDate && availableTimes.length > 0 && !selectedTime && !firstTimeDisplayHandled.current) {
+    if (
+      timeSwiperRef.current &&
+      selectedDate &&
+      availableTimes.length > 0 &&
+      !selectedTime &&
+      !firstTimeDisplayHandled.current
+    ) {
       const initialTargetTime = "10:0";
       let targetIndex = availableTimes.indexOf(initialTargetTime);
       let timeToSelect = initialTargetTime;
 
-      if (targetIndex === -1) { // "10:15" not found
-        if (availableTimes.includes("10:00")) { // Check if "10:00" is available as a close alternative
-            targetIndex = availableTimes.indexOf("10:00");
-            timeToSelect = "10:15";
-        } else if (availableTimes.length > 0) { // Fallback to the first available time
-            targetIndex = 0;
-            timeToSelect = availableTimes[0];
-        } else { // No times available
-            targetIndex = -1; // Indicate no valid selection
+      if (targetIndex === -1) {
+        // "10:15" not found
+        if (availableTimes.includes("10:00")) {
+          // Check if "10:00" is available as a close alternative
+          targetIndex = availableTimes.indexOf("10:00");
+          timeToSelect = "10:15";
+        } else if (availableTimes.length > 0) {
+          // Fallback to the first available time
+          targetIndex = 0;
+          timeToSelect = availableTimes[0];
+        } else {
+          // No times available
+          targetIndex = -1; // Indicate no valid selection
         }
       }
-      
+
       if (targetIndex > -1 && timeToSelect) {
         const durationToEnsure = selectedDuration || 60; // Use current duration or default to 1h
-        const timeSlotData = timeSlots.find(slot => slot.slot === timeToSelect);
+        const timeSlotData = timeSlots.find(
+          (slot) => slot.slot === timeToSelect
+        );
 
         if (timeSlotData && timeSlotData.allowed.includes(durationToEnsure)) {
           onSelectTime({ slot: timeToSelect, dur: durationToEnsure });
@@ -191,7 +222,15 @@ function DateTimeStep({
       }
       firstTimeDisplayHandled.current = true;
     }
-  }, [timeSwiperRef.current, selectedDate, availableTimes, selectedTime, onSelectTime, selectedDuration, timeSlots]);
+  }, [
+    timeSwiperRef.current,
+    selectedDate,
+    availableTimes,
+    selectedTime,
+    onSelectTime,
+    selectedDuration,
+    timeSlots,
+  ]);
 
   const isDurationAvailable = (duration) => {
     if (!selectedTime) return true;
@@ -206,24 +245,36 @@ function DateTimeStep({
 
   const handleDurationButtonClick = (duration) => {
     // 1. Update application state immediately to reflect the selection
-    const currentTime = selectedTime || (availableTimes.indexOf("10:15") > -1 ? "10:15" : (availableTimes.length > 0 ? availableTimes[0] : null));
+    const currentTime =
+      selectedTime ||
+      (availableTimes.indexOf("10:15") > -1
+        ? "10:15"
+        : availableTimes.length > 0
+        ? availableTimes[0]
+        : null);
     onSelectTime({ slot: currentTime, dur: duration });
-  
+
     // 2. Animate Swiper to center the clicked item
     const clickedItemIndex = availableDurations.indexOf(duration);
     if (durationSwiperRef.current && clickedItemIndex > -1) {
       const swiper = durationSwiperRef.current;
       const slidesPerView = 3; // Your current configuration
       const middleOffset = Math.floor(slidesPerView / 2); // This will be 1
-  
+
       // Calculate the target index for the leftmost slide to center the clickedItemIndex
       let targetLeftmostIndex = clickedItemIndex - middleOffset;
-  
+
       // Clamp the targetLeftmostIndex to ensure it's within valid Swiper bounds
       // The maximum index the leftmost slide can be is (total items - slidesPerView)
-      const maxPossibleLeftmostIndex = Math.max(0, availableDurations.length - slidesPerView);
-      targetLeftmostIndex = Math.max(0, Math.min(targetLeftmostIndex, maxPossibleLeftmostIndex));
-  
+      const maxPossibleLeftmostIndex = Math.max(
+        0,
+        availableDurations.length - slidesPerView
+      );
+      targetLeftmostIndex = Math.max(
+        0,
+        Math.min(targetLeftmostIndex, maxPossibleLeftmostIndex)
+      );
+
       // Only slide if the swiper is not already at the target position
       if (swiper.realIndex !== targetLeftmostIndex) {
         swiper.slideTo(targetLeftmostIndex);
@@ -234,9 +285,9 @@ function DateTimeStep({
   const handleTimeButtonClick = (time) => {
     // 1. Update application state immediately
     const currentDuration = selectedDuration || 60; // Default or current selected duration
-    const timeSlotData = timeSlots.find(slot => slot.slot === time);
+    const timeSlotData = timeSlots.find((slot) => slot.slot === time);
     let newDurationForSelectedTime = currentDuration;
-  
+
     if (timeSlotData) {
       if (!timeSlotData.allowed.includes(newDurationForSelectedTime)) {
         if (timeSlotData.allowed.length > 0) {
@@ -250,19 +301,25 @@ function DateTimeStep({
       newDurationForSelectedTime = null;
     }
     onSelectTime({ slot: time, dur: newDurationForSelectedTime });
-  
+
     // 2. Animate Swiper to center the clicked item
     const clickedItemIndex = availableTimes.indexOf(time);
     if (timeSwiperRef.current && clickedItemIndex > -1) {
       const swiper = timeSwiperRef.current;
       const slidesPerView = 3; // Your current configuration
       const middleOffset = Math.floor(slidesPerView / 2); // This will be 1
-  
+
       let targetLeftmostIndex = clickedItemIndex - middleOffset;
-  
-      const maxPossibleLeftmostIndex = Math.max(0, availableTimes.length - slidesPerView);
-      targetLeftmostIndex = Math.max(0, Math.min(targetLeftmostIndex, maxPossibleLeftmostIndex));
-      
+
+      const maxPossibleLeftmostIndex = Math.max(
+        0,
+        availableTimes.length - slidesPerView
+      );
+      targetLeftmostIndex = Math.max(
+        0,
+        Math.min(targetLeftmostIndex, maxPossibleLeftmostIndex)
+      );
+
       if (swiper.realIndex !== targetLeftmostIndex) {
         swiper.slideTo(targetLeftmostIndex);
       }
@@ -279,8 +336,19 @@ function DateTimeStep({
             className="text-white hover:text-darkGold p-1.5 rounded-full hover:bg-white/10 transition-all duration-200"
             aria-label="Previous month"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
           <h3 className="text-xl text-white font-bold">
@@ -291,15 +359,31 @@ function DateTimeStep({
             className="text-white hover:text-darkGold p-1.5 rounded-full hover:bg-white/10 transition-all duration-200"
             aria-label="Next month"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
         </div>
         <div className="p-2 md:p-3">
           <div className="grid grid-cols-7 gap-1 mb-1">
             {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-              <div key={day} className="text-center py-1 text-darkGold font-semibold text-xs">{day.charAt(0)}</div>
+              <div
+                key={day}
+                className="text-center py-1 text-darkGold font-semibold text-xs"
+              >
+                {day.charAt(0)}
+              </div>
             ))}
           </div>
           <div className="grid grid-cols-7 gap-1">
@@ -307,7 +391,8 @@ function DateTimeStep({
               const inMonth = isSameMonth(date, currentMonth);
               const weekend = isWeekend(date);
               const tooSoon = isBefore(date, minDate);
-              const isSelectedDate = selectedDate && isSameDay(date, selectedDate);
+              const isSelectedDate =
+                selectedDate && isSameDay(date, selectedDate);
               const isCurrentDay = isSameDay(date, new Date()); // Use isSameDay for today's check
               const disabled = !inMonth || weekend || tooSoon;
               return (
@@ -317,14 +402,24 @@ function DateTimeStep({
                   disabled={disabled}
                   className={`
                     relative h-8 aspect-square rounded-md flex items-center justify-center transition-all duration-200
-                    ${isSelectedDate ? "bg-darkGold text-black font-bold shadow-md"
-                      : inMonth && !disabled ? "bg-white/10 text-white "
-                      : "bg-white/5 text-white/40"}
-                    ${isCurrentDay && !isSelectedDate ? "ring-1 ring-darkGold ring-opacity-70" : ""}
+                    ${
+                      isSelectedDate
+                        ? "bg-darkGold text-black font-bold shadow-md"
+                        : inMonth && !disabled
+                        ? "bg-white/10 text-white "
+                        : "bg-white/5 text-white/40"
+                    }
+                    ${
+                      isCurrentDay && !isSelectedDate
+                        ? "ring-1 ring-darkGold ring-opacity-70"
+                        : ""
+                    }
                     ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
                   `}
                 >
-                  <span className="text-xs font-medium">{format(date, "d")}</span>
+                  <span className="text-xs font-medium">
+                    {format(date, "d")}
+                  </span>
                 </button>
               );
             })}
@@ -334,121 +429,159 @@ function DateTimeStep({
 
       {/* Time & Duration Selection */}
       <div className="space-y-4">
-      {/* Duration Carousel */}
-      <div>
-        <h4 className="text-white text-sm font-medium mb-2">Duration</h4>
-        {selectedDate ? (
-          <div className="carousel-container">
-            <Swiper
-              modules={[Navigation, Pagination]} // Keep your existing modules
-              slidesPerView={3}
-              spaceBetween={8}
-              onSwiper={(swiper) => { durationSwiperRef.current = swiper; }}
-              // MODIFICATION: Use onTransitionEnd instead of onSlideChange
-              onTransitionEnd={(swiper) => {
-                const slidesPerView = swiper.params.slidesPerView; // Should be 3
-                const middleOffset = Math.floor(slidesPerView / 2); // Should be 1
-                // realIndex is the first visible slide in the current view from your data array
-                const middleDataIndex = swiper.realIndex + middleOffset;
+        {/* Duration Carousel */}
+        <div>
+          <h4 className="text-white text-sm font-medium mb-2">Duration</h4>
+          {selectedDate ? (
+            <div className="carousel-container">
+              <Swiper
+                modules={[Navigation, Pagination]} // Keep your existing modules
+                slidesPerView={3}
+                spaceBetween={8}
+                onSwiper={(swiper) => {
+                  durationSwiperRef.current = swiper;
+                }}
+                // MODIFICATION: Use onTransitionEnd instead of onSlideChange
+                onTransitionEnd={(swiper) => {
+                  const slidesPerView = swiper.params.slidesPerView; // Should be 3
+                  const middleOffset = Math.floor(slidesPerView / 2); // Should be 1
+                  // realIndex is the first visible slide in the current view from your data array
+                  const middleDataIndex = swiper.realIndex + middleOffset;
 
-                if (availableDurations.length > 0 && middleDataIndex >= 0 && middleDataIndex < availableDurations.length) {
-                  const newSelectedDuration = availableDurations[middleDataIndex];
-                  
-                  // Only update if the settled duration is different from the currently selected one
-                  // AND if it's an actually available/valid duration choice.
-                  if (newSelectedDuration !== selectedDuration && isDurationAvailable(newSelectedDuration)) {
-                    // Call the main state updater directly.
-                    // This preserves the currently selected time.
-                    // selectedTime comes from the component's props.
-                    onSelectTime({ slot: selectedTime, dur: newSelectedDuration });
-                  }
-                }
-              }}
-              className="carousel-swiper"
-            >
-              {availableDurations.map((duration) => (
-                <SwiperSlide key={duration}>
-                  <button
-                    onClick={() => handleDurationButtonClick(duration)} // Click handler remains unchanged
-                    disabled={!isDurationAvailable(duration)}
-                    className={`carousel-item
-                      ${selectedDuration === duration ? "bg-darkGold text-black font-bold"
-                        : isDurationAvailable(duration) ? "bg-white/10 text-white"
-                        : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
-                      }`}
-                  >
-                    {formatDuration(duration)}
-                  </button>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-        ) : (
-          <div className="empty-carousel-container">
-            <p className="text-white/50 text-sm">Select a date first</p>
-          </div>
-        )}
-      </div>
+                  if (
+                    availableDurations.length > 0 &&
+                    middleDataIndex >= 0 &&
+                    middleDataIndex < availableDurations.length
+                  ) {
+                    const newSelectedDuration =
+                      availableDurations[middleDataIndex];
 
-      {/* Time Carousel */}
-      <div>
-        <h4 className="text-white text-sm font-medium mb-2">Time</h4>
-        {selectedDate && availableTimes.length > 0 ? (
-          <div className="carousel-container">
-            <Swiper
-              modules={[Navigation, Pagination]} // Keep your existing modules
-              slidesPerView={3}
-              spaceBetween={8}
-              onSwiper={(swiper) => { timeSwiperRef.current = swiper; }}
-              // MODIFICATION: Use onTransitionEnd instead of onSlideChange
-              onTransitionEnd={(swiper) => {
-                const slidesPerView = swiper.params.slidesPerView; // Should be 3
-                const middleOffset = Math.floor(slidesPerView / 2); // Should be 1
-                const middleDataIndex = swiper.realIndex + middleOffset;
-
-                if (availableTimes.length > 0 && middleDataIndex >= 0 && middleDataIndex < availableTimes.length) {
-                  const newSelectedTime = availableTimes[middleDataIndex];
-
-                  // Only update if the settled time is different from the currently selected one
-                  // AND if it's an actually available/valid time choice.
-                  if (newSelectedTime !== selectedTime && isTimeAvailable(newSelectedTime)) {
-                    // Replicate the logic from your original handleTimeButtonClick
-                    // to adjust duration if the new time doesn't support the current duration.
-                    let newDurationForSelectedTime = selectedDuration || 60; // Default or current
-                    const timeSlotData = timeSlots.find(slot => slot.slot === newSelectedTime);
-
-                    // isTimeAvailable(newSelectedTime) already ensures timeSlotData exists and has allowed durations.
-                    // So, timeSlotData should be valid here.
-                    if (timeSlotData && !timeSlotData.allowed.includes(newDurationForSelectedTime)) {
-                      // If current duration is not allowed, pick the first allowed one.
-                      // isTimeAvailable ensures timeSlotData.allowed has length > 0.
-                      newDurationForSelectedTime = timeSlotData.allowed[0];
+                    // Only update if the settled duration is different from the currently selected one
+                    // AND if it's an actually available/valid duration choice.
+                    if (
+                      newSelectedDuration !== selectedDuration &&
+                      isDurationAvailable(newSelectedDuration)
+                    ) {
+                      // Call the main state updater directly.
+                      // This preserves the currently selected time.
+                      // selectedTime comes from the component's props.
+                      onSelectTime({
+                        slot: selectedTime,
+                        dur: newSelectedDuration,
+                      });
                     }
-                    
-                    // Call the main state updater directly.
-                    onSelectTime({ slot: newSelectedTime, dur: newDurationForSelectedTime });
                   }
-                }
-              }}
-              className="carousel-swiper"
-            >
-              {availableTimes.map((time) => (
-                <SwiperSlide key={time}>
-                  <button
-                    onClick={() => handleTimeButtonClick(time)} // Click handler remains unchanged
-                    disabled={!isTimeAvailable(time)}
-                    className={`carousel-item
-                      ${selectedTime === time ? "bg-darkGold text-black font-bold"
-                        : isTimeAvailable(time) ? "bg-white/10 text-white"
-                        : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
+                }}
+                className="carousel-swiper"
+              >
+                {availableDurations.map((duration) => (
+                  <SwiperSlide key={duration}>
+                    <button
+                      onClick={() => handleDurationButtonClick(duration)} // Click handler remains unchanged
+                      disabled={!isDurationAvailable(duration)}
+                      className={`carousel-item
+                      ${
+                        selectedDuration === duration
+                          ? "bg-darkGold text-black font-bold"
+                          : isDurationAvailable(duration)
+                          ? "bg-white/10 text-white"
+                          : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
                       }`}
-                  >
-                    {time}
-                  </button>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
+                    >
+                      {formatDuration(duration)}
+                    </button>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          ) : (
+            <div className="empty-carousel-container">
+              <p className="text-white/50 text-sm">Select a date first</p>
+            </div>
+          )}
+        </div>
+
+        {/* Time Carousel */}
+        <div>
+          <h4 className="text-white text-sm font-medium mb-2">Time</h4>
+          {selectedDate && availableTimes.length > 0 ? (
+            <div className="carousel-container">
+              <Swiper
+                modules={[Navigation, Pagination]} // Keep your existing modules
+                slidesPerView={3}
+                spaceBetween={8}
+                onSwiper={(swiper) => {
+                  timeSwiperRef.current = swiper;
+                }}
+                // MODIFICATION: Use onTransitionEnd instead of onSlideChange
+                onTransitionEnd={(swiper) => {
+                  const slidesPerView = swiper.params.slidesPerView; // Should be 3
+                  const middleOffset = Math.floor(slidesPerView / 2); // Should be 1
+                  const middleDataIndex = swiper.realIndex + middleOffset;
+
+                  if (
+                    availableTimes.length > 0 &&
+                    middleDataIndex >= 0 &&
+                    middleDataIndex < availableTimes.length
+                  ) {
+                    const newSelectedTime = availableTimes[middleDataIndex];
+
+                    // Only update if the settled time is different from the currently selected one
+                    // AND if it's an actually available/valid time choice.
+                    if (
+                      newSelectedTime !== selectedTime &&
+                      isTimeAvailable(newSelectedTime)
+                    ) {
+                      // Replicate the logic from your original handleTimeButtonClick
+                      // to adjust duration if the new time doesn't support the current duration.
+                      let newDurationForSelectedTime = selectedDuration || 60; // Default or current
+                      const timeSlotData = timeSlots.find(
+                        (slot) => slot.slot === newSelectedTime
+                      );
+
+                      // isTimeAvailable(newSelectedTime) already ensures timeSlotData exists and has allowed durations.
+                      // So, timeSlotData should be valid here.
+                      if (
+                        timeSlotData &&
+                        !timeSlotData.allowed.includes(
+                          newDurationForSelectedTime
+                        )
+                      ) {
+                        // If current duration is not allowed, pick the first allowed one.
+                        // isTimeAvailable ensures timeSlotData.allowed has length > 0.
+                        newDurationForSelectedTime = timeSlotData.allowed[0];
+                      }
+
+                      // Call the main state updater directly.
+                      onSelectTime({
+                        slot: newSelectedTime,
+                        dur: newDurationForSelectedTime,
+                      });
+                    }
+                  }
+                }}
+                className="carousel-swiper"
+              >
+                {availableTimes.map((time) => (
+                  <SwiperSlide key={time}>
+                    <button
+                      onClick={() => handleTimeButtonClick(time)} // Click handler remains unchanged
+                      disabled={!isTimeAvailable(time)}
+                      className={`carousel-item
+                      ${
+                        selectedTime === time
+                          ? "bg-darkGold text-black font-bold"
+                          : isTimeAvailable(time)
+                          ? "bg-white/10 text-white"
+                          : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
+                      }`}
+                    >
+                      {time}
+                    </button>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
           ) : (
             <div className="empty-carousel-container">
               <p className="text-white/50 text-sm">
@@ -460,7 +593,7 @@ function DateTimeStep({
       </div>
 
       {/* Compact Booking Summary */}
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center !mb-2">
         <div className="mb-2">
           <div className="px-4 py-1 text-white text-center">
             {selectedDate ? format(selectedDate, "EEE, MMM d") : "-- --- --"}
@@ -490,6 +623,7 @@ function DateTimeStep({
 // Step 2: Contact Info
 function InfoStep({ formData, onChange }) {
   const { t } = useTranslation();
+  const { openAuthModal } = useContext(AuthModalContext);
 
   return (
     <div className="space-y-4 mb-2 max-w-md mx-auto w-full">
@@ -517,6 +651,24 @@ function InfoStep({ formData, onChange }) {
           onChange={onChange}
           className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-xs sm:text-sm md:text-base"
         />
+      </div>
+      <div className="text-white text-sm text-right sm:text-base md:text-lg">
+        <button
+          type="button"
+          onClick={openAuthModal}
+          className="text-xs text-white underline"
+        >
+          {t("services.common_login_signup")}
+        </button>
+      </div>
+      <div className="md:col-span-2 text-center md:text-left">
+        <p className="text-xs text-gray-400">
+          {" "}
+          {t(
+            "pitch_deck_request.form.auto_account_warning",
+            "An account will automatically be created with the info you provide."
+          )}
+        </p>
       </div>
     </div>
   );
@@ -651,20 +803,16 @@ function PaymentStep({
           </button>
         )}
 
-<div className="mt-4 flex justify-center items-center gap-4">
-       {/* Stripe badge */}
-       <img
-         src={stripe}
-         alt="Secure payments powered by Stripe"
-         className="h-8 opacity-90"
-       />
-       {/* SSL lock icon */}
-       <img
-         src={ssl}
-         alt="SSL Secured"
-         className="h-8 opacity-90"
-       />
-     </div>
+        <div className="mt-4 flex justify-center items-center gap-4">
+          {/* Stripe badge */}
+          <img
+            src={stripe}
+            alt="Secure payments powered by Stripe"
+            className="h-8 opacity-90"
+          />
+          {/* SSL lock icon */}
+          <img src={ssl} alt="SSL Secured" className="h-8 opacity-90" />
+        </div>
 
         {/* Help Text */}
         {paymentStarted && !paymentConfirmed && (
@@ -976,7 +1124,9 @@ export default function Booking({ onBackService }) {
               <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 md:h-16 md:w-16 border-t-2 border-b-2 border-darkGold"></div>
             </div>
           ) : (
-            <div className="flex flex-col"> {/* Common wrapper for step content and navigation */}
+            <div className="flex flex-col">
+              {" "}
+              {/* Common wrapper for step content and navigation */}
               {/* Step Content */}
               {step === 1 && (
                 <DateTimeStep
@@ -1012,51 +1162,58 @@ export default function Booking({ onBackService }) {
                   initialMessage={`Welcome, ${formData.name}! Your booking has been confirmed. I'm here to answer any questions about your upcoming session.`}
                   placeholderText="Ask any questions about your booking..."
                   onFinish={() => {
-                    axios.post(
-                      `${process.env.REACT_APP_N8N_BOOKING_COMPLETE_WEBHOOK}`,
-                      { session_id: bookingId }
-                    )
-                    .catch(err => console.error("Webhook error:", err));
+                    axios
+                      .post(
+                        `${process.env.REACT_APP_N8N_BOOKING_COMPLETE_WEBHOOK}`,
+                        { session_id: bookingId }
+                      )
+                      .catch((err) => console.error("Webhook error:", err));
                   }}
                 />
               )}
-
               {/* Step Indicator - common to all steps */}
               <StepIndicator
                 stepCount={UI_STEPS}
                 currentStep={step + 1} // e.g. internal step 1 is UI step 2
                 onStepClick={handleStepClick} // Ensure handleStepClick is robust for all steps
               />
-
               {/* Navigation Buttons - common structure, text/action varies */}
-              <div className="flex justify-between mt-2"> {/* Added mt-2 for spacing */}
+              <div className="flex justify-between mt-2">
+                {" "}
+                {/* Added mt-2 for spacing */}
                 <button
-                  onClick={() => (step === 1 ? onBackService() : setStep(step - 1))}
+                  onClick={() =>
+                    step === 1 ? onBackService() : setStep(step - 1)
+                  }
                   disabled={loading && step === 2} // Example: disable back if a crucial forward step is processing
                   className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl disabled:opacity-50"
                 >
                   {t("booking.back")}
                 </button>
-
                 {step < STEPS.length ? ( // Show "Next" button if not the last step
                   <button
                     onClick={handleNext}
                     disabled={!canProceed() || loading}
                     className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
                   >
-                    {loading ? loadingSpinner : (
-                      step === 1 ? t("booking.step_2") :
-                      step === 2 ? t("booking.step_3") :
-                      step === 3 ? t("booking.step_4") : // Default/fallback if needed
-                      "Next" // Should not be reached if step < STEPS.length
-                    )}
+                    {loading
+                      ? loadingSpinner
+                      : step === 1
+                      ? t("booking.step_2")
+                      : step === 2
+                      ? t("booking.step_3")
+                      : step === 3
+                      ? t("booking.step_4") // Default/fallback if needed
+                      : "Next" // Should not be reached if step < STEPS.length
+                    }
                   </button>
-                ) : ( // Last step (step === STEPS.length, which is step 4)
+                ) : (
+                  // Last step (step === STEPS.length, which is step 4)
                   <button
                     onClick={() => {
-                        // The InlineChatbotStep's onFinish prop already handles the webhook.
-                        // This button can navigate away or close the form.
-                        onBackService(); // Example: Close form or go back to service selection
+                      // The InlineChatbotStep's onFinish prop already handles the webhook.
+                      // This button can navigate away or close the form.
+                      onBackService(); // Example: Close form or go back to service selection
                     }}
                     disabled={loading} // If any final processing might be indicated by 'loading'
                     className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"

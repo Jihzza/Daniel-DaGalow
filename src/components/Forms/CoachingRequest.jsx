@@ -12,9 +12,10 @@ import { ServiceContext } from "../../contexts/ServiceContext";
 import axios from "axios";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 import { autoCreateAccount } from "../../utils/autoSignup";
-import { validatePhoneNumber } from "../../utils/phoneValidation"; // Add this import
+import { validatePhoneNumber } from "../../utils/phoneValidation"; // Ensure this is imported
 import stripe from "../../assets/icons/stripe.svg";
 import ssl from "../../assets/icons/ssl-lock.svg";
+
 // Progress Indicator Component
 function StepIndicator({
   stepCount,
@@ -98,43 +99,39 @@ function FrequencyStep({ formData, onChange }) {
 function ContactStep({ formData, onChange }) {
   const { t } = useTranslation();
   const { openAuthModal } = useContext(AuthModalContext);
-  const [isPhoneValid, setIsPhoneValid] = useState(false);
+  // Removed isPhoneValid and setIsPhoneValid from here as it's managed in the parent CoachingRequest
+  // and primarily used for the canProceed logic. The visual validation within ContactStep
+  // will still be handled by its internal state.
 
-  // Add phone validation handling
   const [validatingPhone, setValidatingPhone] = useState(false);
   const [phoneValidated, setPhoneValidated] = useState(false);
   const [phoneError, setPhoneError] = useState("");
 
-  // Handle phone validation on change with debounce
   const phoneValidationTimeout = useRef(null);
 
   const handlePhoneChange = (phone) => {
-    // Pass the phone number to the parent component
     onChange({ target: { name: "phone", value: phone } });
-
-    // Reset validation states
     setPhoneValidated(false);
     setPhoneError("");
 
-    // Clear existing timeout
     if (phoneValidationTimeout.current) {
       clearTimeout(phoneValidationTimeout.current);
     }
 
-    // Only validate if phone has at least 8 digits
     if (phone.replace(/\D/g, "").length < 8) {
+      // Optionally, if you passed down onPhoneValidation from parent, call it:
+      // onPhoneValidation(false);
       return;
     }
 
-    // Set a timeout to validate the phone number after typing stops
     phoneValidationTimeout.current = setTimeout(async () => {
       setValidatingPhone(true);
-
       try {
         const result = await validatePhoneNumber(phone);
-
         setValidatingPhone(false);
         setPhoneValidated(result.isValid);
+        // Optionally, if you passed down onPhoneValidation from parent:
+        // onPhoneValidation(result.isValid);
 
         if (!result.isValid) {
           setPhoneError(t("coaching_request.form.phone_validation_error"));
@@ -142,13 +139,24 @@ function ContactStep({ formData, onChange }) {
       } catch (error) {
         setValidatingPhone(false);
         setPhoneError("Validation service unavailable");
+        // Optionally, if you passed down onPhoneValidation from parent:
+        // onPhoneValidation(false);
         console.error("Phone validation error:", error);
       }
-    }, 800); // Validate after 800ms of inactivity
+    }, 800);
   };
 
   useEffect(() => {
-    // Cleanup timeout when component unmounts
+    // If an initial phone number is passed via formData (e.g., from autofill),
+    // trigger validation for display purposes if it meets basic length criteria.
+    if (formData.phone && formData.phone.replace(/\D/g, "").length >= 8) {
+        handlePhoneChange(formData.phone);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.phone]); // Re-run if formData.phone changes externally (e.g. from autofill)
+
+
+  useEffect(() => {
     return () => {
       if (phoneValidationTimeout.current) {
         clearTimeout(phoneValidationTimeout.current);
@@ -204,13 +212,12 @@ function ContactStep({ formData, onChange }) {
             searchPlaceholder={t(
               "coaching_request.form.phone_search_placeholder"
             )}
-            value={formData.phone}
+            value={formData.phone} // This will now reflect autofilled data
             onChange={handlePhoneChange}
             dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
             searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
           />
 
-          {/* Add validation indicator */}
           {formData.phone && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
               {validatingPhone && (
@@ -274,7 +281,6 @@ function ContactStep({ formData, onChange }) {
           )}
         </div>
 
-        {/* Show error message if validation fails */}
         {phoneError && (
           <p className="text-red-500 text-sm mt-1">{phoneError}</p>
         )}
@@ -289,6 +295,11 @@ function ContactStep({ formData, onChange }) {
           {t("services.common_login_signup")}
         </button>
       </div>
+      <div className="md:col-span-2 text-center md:text-left">
+  <p className="text-xs text-gray-400"> {/* Lighter gray text */}
+    {t("pitch_deck_request.form.auto_account_warning", "An account will automatically be created with the info you provide.")}
+  </p>
+</div>
     </div>
   );
 }
@@ -304,17 +315,15 @@ function PaymentStep({
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [pollingError, setPollingError] = useState(null);
 
-  // Map the coaching tiers to the correct monthly subscription prices
   const getPriceForTier = (tier) => {
     const prices = {
-      Weekly: "€40", // Basic plan
-      Daily: "€90", // Standard plan
-      Priority: "€230", // Premium plan
+      Weekly: "€40",
+      Daily: "€90",
+      Priority: "€230",
     };
-    return prices[tier] || "€40"; // Default to Basic if tier not found
+    return prices[tier] || "€40";
   };
 
-  // Map your tier names to plan names for clearer communication
   const getPlanNameForTier = (tier) => {
     const planNames = {
       Weekly: "Basic",
@@ -324,11 +333,9 @@ function PaymentStep({
     return planNames[tier] || "Basic";
   };
 
-  // Check for pending payments when component mounts
   useEffect(() => {
     const pendingId = localStorage.getItem("pendingCoachingId");
-
-    if (pendingId && pendingId === requestId.toString()) {
+    if (pendingId && pendingId === requestId?.toString()) { // Added optional chaining for requestId
       setPaymentStarted(true);
       localStorage.removeItem("pendingCoachingId");
     }
@@ -336,6 +343,11 @@ function PaymentStep({
 
   const handleStripeRedirect = async () => {
     try {
+      if (!requestId) { // Ensure requestId is present
+        console.error("Request ID is not available for Stripe redirect.");
+        setPollingError("Failed to start subscription: Missing request ID.");
+        return;
+      }
       localStorage.setItem("pendingCoachingId", requestId.toString());
 
       const { data } = await axios.post(
@@ -357,7 +369,6 @@ function PaymentStep({
     }
   };
 
-  // Payment status polling effect remains the same
   useEffect(() => {
     if (!paymentStarted || !requestId) return;
 
@@ -404,16 +415,13 @@ function PaymentStep({
 
   return (
     <div className="max-w-md mx-auto">
-      {/* Clean, elegant subscription card */}
       <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden mb-6">
         <div className="bg-darkGold/10 p-4 border-b border-white/10">
           <h3 className="text-white font-semibold text-center">
             Subscription Details
           </h3>
         </div>
-
         <div className="p-5 space-y-4">
-          {/* Plan type with badge */}
           <div className="flex justify-between items-center">
             <span className="text-white/70">Selected Plan:</span>
             <div className="flex items-center gap-2">
@@ -425,8 +433,6 @@ function PaymentStep({
               </span>
             </div>
           </div>
-
-          {/* Price with emphasized styling */}
           <div className="flex justify-between items-center">
             <span className="text-white/70">Price:</span>
             <div className="text-darkGold font-bold text-lg">
@@ -434,37 +440,25 @@ function PaymentStep({
               <span className="text-white/50 text-sm font-normal">/month</span>
             </div>
           </div>
-
-          {/* Billing details */}
           <div className="flex justify-between items-center">
             <span className="text-white/70">Billing:</span>
             <span className="text-white">Monthly</span>
           </div>
-
-          {/* Auto-renewal info */}
           <div className="flex justify-between items-center">
             <span className="text-white/70">Renewal:</span>
             <span className="text-white">Automatic</span>
           </div>
-
-          {/* Divider */}
           <div className="border-t border-white/10 my-2"></div>
-
-          {/* Email for receipt/billing */}
           <div className="flex justify-between items-center text-sm">
             <span className="text-white/70">Email for billing:</span>
             <span className="text-white break-all">{formData.email}</span>
           </div>
         </div>
-
-        {/* Cancellation notice */}
         <div className="bg-white/5 p-3 text-xs text-white/60 text-center border-t border-white/10">
           You can cancel your subscription at any time from your account
           settings
         </div>
       </div>
-
-      {/* Payment action and status */}
       <div className="space-y-4">
         {!paymentStarted ? (
           <button
@@ -497,15 +491,11 @@ function PaymentStep({
             <span>Confirming your subscription...</span>
           </div>
         )}
-
-        {/* Error message */}
         {pollingError && (
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-sm text-center">
             {pollingError}. Please refresh the page or contact support.
           </div>
         )}
-
-        {/* Additional info text */}
         {paymentStarted && !paymentConfirmed && !pollingError && (
           <p className="text-white/60 text-sm text-center">
             A payment window has opened in a new tab. Please complete the
@@ -514,64 +504,116 @@ function PaymentStep({
         )}
       </div>
       <div className="mb-2 mt-4 flex justify-center items-center gap-4">
-        {/* Stripe badge */}
         <img
           src={stripe}
           alt="Secure payments powered by Stripe"
           className="h-8 opacity-90"
         />
-        {/* SSL lock icon */}
         <img src={ssl} alt="SSL Secured" className="h-8 opacity-90" />
       </div>
     </div>
   );
 }
+
 // Main Coaching Request Component
 export default function CoachingRequest({ onBackService }) {
   const { t } = useTranslation();
   const { tier } = useContext(ServiceContext);
   const { user } = useAuth();
-  const [step, setStep] = useState(tier ? 2 : 1); // Skip to step 2 if tier is selected
+  const [step, setStep] = useState(tier ? 2 : 1);
   const [formData, setFormData] = useState({
-    frequency: tier || "", // Use the selected tier if available
+    frequency: tier || "",
     name: user?.user_metadata?.full_name || "",
     email: user?.email || "",
-    phone: "",
+    phone: "", // Will be autofilled by the useEffect below
   });
 
-  const [isPhoneValid, setIsPhoneValid] = useState(false);
+  const [isPhoneValid, setIsPhoneValid] = useState(false); // This will be set by autofill or manual input validation
   const formRef = useScrollToTopOnChange([step]);
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
 
-  const [phoneValidationStatus, setPhoneValidationStatus] = useState({
-    validated: false,
-    validating: false,
-    error: null,
-  });
+  // Removed phoneValidationStatus as isPhoneValid is used directly
+
+  // ***** START: ADDED useEffect FOR PHONE AUTOFIL *****
+  useEffect(() => {
+    if (user) {
+      const fetchUserProfile = async () => {
+        try {
+          const { data: profileData, error: profileError } = await supabase
+            .from("profiles") // Ensure 'profiles' is your correct table name
+            .select("phone_number, full_name") // Ensure 'phone_number' is the correct column name
+            .eq("id", user.id)
+            .single();
+
+          if (profileError) {
+            console.warn("Error fetching profile for autofill (CoachingRequest):", profileError.message);
+          }
+
+          setFormData(prevFormData => ({
+            ...prevFormData,
+            name: user.user_metadata?.full_name || profileData?.full_name || prevFormData.name || "",
+            email: user.email || prevFormData.email || "",
+            phone: profileData?.phone_number || prevFormData.phone || "",
+          }));
+
+          if (profileData?.phone_number) {
+            const validationResult = await validatePhoneNumber(profileData.phone_number);
+            setIsPhoneValid(validationResult.isValid);
+            // The ContactStep's own useEffect on formData.phone will handle displaying validation marks
+          }
+
+        } catch (error) {
+          console.error("Error in fetchUserProfile (CoachingRequest):", error);
+        }
+      };
+      fetchUserProfile();
+    }
+  }, [user]); // Rerun if user object changes
+  // ***** END: ADDED useEffect FOR PHONE AUTOFIL *****
+
+
+  useEffect(() => { // Effect to handle tier selection
+    if (tier) {
+      setFormData((prev) => ({ ...prev, frequency: tier }));
+      setStep(2);
+    }
+  }, [tier]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // If phone field is changed manually, reset validation
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // If phone field is changed manually, allow ContactStep to handle its validation
+    // The overall form validity (isPhoneValid) will be updated via onPhoneValidation prop if passed,
+    // or rely on ContactStep's internal validation for display and canProceed for logic.
+    // For simplicity, canProceed will check formData.phone directly along with other fields.
     if (name === "phone") {
-      setIsPhoneValid(false);
+        // Let ContactStep's handlePhoneChange update its visual validation.
+        // The isPhoneValid state in CoachingRequest will be updated by ContactStep's onPhoneValidation callback
+        // or if we directly validate here based on the value.
+        // For now, we rely on ContactStep to eventually call `onPhoneValidation` or the parent `validatePhoneNumber`
+        // if we pass the `handlePhoneValidation` callback.
+        // Given ContactStep has its own validation, we ensure canProceed uses the most up-to-date formData.phone.
+        validatePhoneNumber(value).then(result => setIsPhoneValid(result.isValid)); // Keep isPhoneValid in sync
     }
 
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
     if (name === "frequency" && value) setStep(2);
   };
 
+  // Callback for ContactStep to update parent's isPhoneValid state
   const handlePhoneValidation = (isValid) => {
     setIsPhoneValid(isValid);
   };
 
-  // Update steps to include the payment step
   const STEPS = [
     { title: t("coaching_request.steps.frequency"), component: FrequencyStep },
     { title: t("coaching_request.steps.contact"), component: ContactStep },
-    { title: t("coaching_request.steps.payment"), component: PaymentStep }, // New payment step
+    { title: t("coaching_request.steps.payment"), component: PaymentStep },
     { title: t("coaching_request.steps.chat"), component: InlineChatbotStep },
   ];
 
@@ -582,53 +624,43 @@ export default function CoachingRequest({ onBackService }) {
     setPaymentDone(confirmed);
   };
 
-  useEffect(() => {
-    if (tier) {
-      setFormData((prev) => ({ ...prev, frequency: tier }));
-      setStep(2); // Skip to contact info step
-    }
-  }, [tier]);
-
   const canProceed = () => {
-    if (step === 2) {
-      // Check that name has at least 2 characters
-      const isNameValid = formData.name && formData.name.trim().length >= 2;
+    if (step === 1 && !formData.frequency) return false; // Ensure frequency is selected for step 1
 
-      // Check for valid email format
+    if (step === 2) {
+      const isNameValid = formData.name && formData.name.trim().length >= 2;
       const isEmailValid =
         formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
-
-      // Check that phone number has at least 6 digits (most international formats)
-      const isPhoneValid =
-        formData.phone && formData.phone.replace(/\D/g, "").length >= 6;
-
+      // Use the isPhoneValid state which is updated by autofill and manual input
       return isNameValid && isEmailValid && isPhoneValid;
     }
 
     if (step === 3) return paymentDone;
 
-    return true;
+    return true; // Default for other steps or if conditions met
   };
 
   const handleNext = async () => {
-    if (step === 2) {
-      setIsSubmitting(true);
+    if (!canProceed()) return; // Check if can proceed before doing anything
 
+    if (step === 1 && formData.frequency) { // Moving from Frequency to Contact
+        setStep(2);
+        return;
+    }
+
+    if (step === 2) { // Moving from Contact to Payment
+      setIsSubmitting(true);
       try {
-        // Auto-create account if user is not logged in
         if (!user && formData.name && formData.email) {
           const accountResult = await autoCreateAccount(
             formData.name,
             formData.email
           );
-
-          // Optional: If you're using notifications
           if (accountResult.success && !accountResult.userExists) {
             console.log("Account created successfully");
           }
         }
 
-        // Calculate membership dates
         const membershipStartDate = new Date();
         const membershipEndDate = addMonths(membershipStartDate, 1);
 
@@ -650,22 +682,24 @@ export default function CoachingRequest({ onBackService }) {
           .single();
 
         if (error) {
-          console.error(error);
+          console.error("Error creating coaching request:", error);
           alert("Failed to create coaching request.");
           setIsSubmitting(false);
           return;
         }
         setRequestId(data.id);
         setIsSubmitting(false);
-        setStep(3); // Go to payment step
+        setStep(3);
       } catch (error) {
         console.error("Error creating coaching request:", error);
+        alert("An error occurred. Please try again.");
         setIsSubmitting(false);
       }
-    } else if (step === 3) {
-      setStep(4); // Go to chatbot after payment
+    } else if (step === 3 && paymentDone) { // Moving from Payment to Chat
+      setStep(4);
     }
   };
+
 
   const handleBack = () => {
     if (step > 1) setStep((s) => s - 1);
@@ -673,9 +707,21 @@ export default function CoachingRequest({ onBackService }) {
   };
 
   const handleStepClick = (dot) => {
-    if (dot === 1) onBackService();
-    else setStep(dot - 1);
+    // Allow navigation to previous, completed steps if not submitting.
+    // Only allow going back if the step clicked is less than the current step.
+    if (dot -1 < step && !isSubmitting) { // dot-1 as STEPS is 0-indexed
+      if (dot === 1) { // If first dot is clicked (represents frequency or back to service)
+        if (step === 1) onBackService(); // If already on step 1, go back to service
+        else setStep(1); // Otherwise, go to step 1 (frequency)
+      } else {
+        setStep(dot - 1);
+      }
+    } else if (dot === 1 && step === 1 && !isSubmitting) { // Special case: on step 1, first dot means back to service
+        onBackService();
+    }
+    // Do not allow jumping to future steps not yet completed.
   };
+
 
   return (
     <section className="py-8 px-4" id="coaching-journey" ref={formRef}>
@@ -692,7 +738,10 @@ export default function CoachingRequest({ onBackService }) {
             <ContactStep
               formData={formData}
               onChange={handleChange}
-              onPhoneValidation={handlePhoneValidation}
+              // Pass onPhoneValidation to allow ContactStep to update parent's isPhoneValid
+              // This is crucial if ContactStep handles the detailed validation logic.
+              // However, the autofill useEffect now also sets isPhoneValid.
+              // The handleChange for phone also now directly updates isPhoneValid.
             />
           ) : step === 3 ? (
             <PaymentStep
@@ -701,8 +750,8 @@ export default function CoachingRequest({ onBackService }) {
               formData={formData}
               onPaymentConfirmed={handlePaymentConfirmed}
             />
-          ) : (
-            <InlineChatbotStep
+          ) : ( // Step 4: Chat
+            requestId && <InlineChatbotStep // Ensure requestId is available for Chat
               requestId={requestId}
               tableName="coaching_chat_messages"
               onFinish={async () => {
@@ -710,42 +759,39 @@ export default function CoachingRequest({ onBackService }) {
                   console.error(
                     "No request ID available to complete coaching chat."
                   );
-                  // Optionally, alert the user or handle this error appropriately
                   return;
                 }
                 try {
-                  // Make sure to use your actual n8n webhook URL for coaching completion
                   const webhookUrl =
                     "https://rafaello.app.n8n.cloud/webhook/coaching-complete";
                   console.log(
                     `Coaching chat finished for session_id: ${requestId}. Triggering webhook: ${webhookUrl}`
                   );
-
                   await axios.post(webhookUrl, {
-                    session_id: requestId, // The n8n workflow expects 'session_id' in the body
+                    session_id: requestId,
                   });
-
                   console.log(
                     `Webhook for coaching session ${requestId} triggered successfully.`
                   );
-                  // You might want to provide some feedback to the user here,
-                  // like a success message or disabling the button further.
-                  // The InlineChatbotStep already handles disabling its own button while busy.
-                  // This onFinish doesn't navigate away by default; the main form's "Done" button handles that.
                 } catch (error) {
                   console.error(
                     "Error triggering coaching completion webhook:",
                     error
                   );
-                  // Optionally, alert the user that something went wrong
                 }
               }}
             />
           )}
+          {!requestId && step === 4 && ( // Show message if chat step is reached without requestId
+            <div className="text-center text-red-400 p-4">
+                Preparing chat... If this persists, please go back and try again.
+            </div>
+          )}
+
 
           <StepIndicator
             stepCount={UI_STEPS}
-            currentStep={step + 1}
+            currentStep={step + 1} // UI steps are 1-based for display (dot + 1)
             onStepClick={handleStepClick}
             className="pt-6"
           />
@@ -788,20 +834,12 @@ export default function CoachingRequest({ onBackService }) {
                     </svg>
                     {t("coaching_request.buttons.processing")}
                   </span>
-                ) : step === 1 ? (
-                  t("coaching_request.steps.contact") // Contact info
-                ) : step === 2 ? (
-                  t("coaching_request.steps.payment") // Payment
-                ) : step === 3 ? (
-                  t("coaching_request.steps.chat") // Chat with your coach
-                ) : (
-                  t("coaching_request.buttons.next")
-                )}
+                ) : STEPS[step] ? STEPS[step].title : t("coaching_request.buttons.next")}
               </button>
             )}
-            {step === STEPS.length && (
+            {step === STEPS.length && ( // "Done" button appears at the last step (Chat)
               <button
-                onClick={onBackService}
+                onClick={onBackService} // Or a specific completion handler
                 className="px-3 py-1 bg-darkGold text-black rounded-xl hover:bg-darkGold/90"
               >
                 {t("coaching_request.buttons.done")}

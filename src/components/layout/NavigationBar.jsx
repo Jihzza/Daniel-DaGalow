@@ -1,19 +1,40 @@
 // Update NavigationBar.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-
+import { supabase } from '../../utils/supabaseClient';
+import OctagonalProfile from '../common/Octagonal Profile';
 import home from '../../assets/icons/Home Branco.svg';
 import calendar from '../../assets/icons/Calendar Branco.svg';
 import chatbot from '../../assets/icons/Dagalow Branco.svg';
 import settings from '../../assets/icons/Settings Branco.svg';
-import account from '../../assets/icons/Profile Branco.svg';
 import { useTranslation } from 'react-i18next';
+
 const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const { t } = useTranslation();
+  const [avatarUrl, setAvatarUrl] = useState(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    (async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (!error && data?.avatar_url) {
+        setAvatarUrl(
+          `${process.env.REACT_APP_SUPABASE_URL}/storage/v1/object/public/avatars/${data.avatar_url}`
+        );
+      } else {
+        setAvatarUrl(null);
+      }
+    })();
+  }, [user]);
+
   const handleDagalowIconClick = () => {
     if (location.pathname === "/") {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -24,12 +45,19 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
 
   const handleAccountClick = () => {
     if (user) {
-      // If user is logged in, navigate to profile
       navigate('/profile');
     } else {
-      // If user is not logged in, open auth modal
       onAuthModalOpen();
     }
+  };
+
+  // Helper to get initials for fallback
+  const getInitials = () => {
+    if (!user) return '?';
+    const name = user.user_metadata?.full_name || user.email || '';
+    const parts = name.split(' ');
+    if (parts.length === 1) return parts[0][0]?.toUpperCase() || '?';
+    return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
   };
 
   const icons = [
@@ -37,7 +65,7 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
     {src: calendar, alt: t("navigation.calendar"), to: user ? "/components/Subpages/Calendar" : null, action: user ? null : onAuthModalOpen},
     {src: chatbot, alt: t("navigation.chatbot"), action: onChatbotClick},
     {src: settings, alt: t("navigation.settings"), to: "/components/Subpages/Settings", action: null},
-    {src: account, alt: t("navigation.account"), action: handleAccountClick},
+    // Profile icon will be handled separately below
   ];
   
   return (
@@ -59,6 +87,16 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
           }}
         />
       ))}
+      {/* Profile Octagonal Avatar */}
+      <div role="button" aria-label={t('navigation.account')} onClick={handleAccountClick} className="cursor-pointer">
+      <OctagonalProfile
+            borderColor="#002147"
+            innerBorderColor="#000"
+            imageSrc={avatarUrl}
+            fallbackText={user?.email?.[0]?.toUpperCase() || "?"}
+            size={40}
+          />
+      </div>
     </div>
   );
 };

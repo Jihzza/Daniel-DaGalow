@@ -7,14 +7,13 @@ import DaGalowLogo from "../../assets/logos/DaGalow Logo.svg";
 import Hamburger from "../../assets/icons/Hamburger.svg";
 import { supabase } from "../../utils/supabaseClient";
 import AuthModal from "../Auth/AuthModal";
-import OctagonalProfile from "../common/Octagonal Profile";
 
 // Define language mapping with language codes and country codes for flags
 const languageConfig = {
-  en: { code: "US", name: "en" },
-  pt: { code: "PT", name: "pt-pt" },
-  "pt-BR": { code: "BR", name: "pt-br" },
-  es: { code: "ES", name: "es" },
+  en: { code: "US", name: "EN" },
+  pt: { code: "PT", name: "PT" },
+  "pt-BR": { code: "BR", name: "PT-BR" },
+  es: { code: "ES", name: "ES" },
 };
 
 function useBreakpoint() {
@@ -49,7 +48,6 @@ function Header() {
   const [avatarUrl, setAvatarUrl] = useState(null);
 
   const breakpoint = useBreakpoint();
-  let profileSize = breakpoint === "lg" ? 50 : breakpoint === "md" ? 56 : 40;
 
   const currentLanguage = i18n.language || "en";
   const allLangs = (i18n.options.supportedLngs || []).filter(
@@ -100,7 +98,7 @@ function Header() {
 
   const getFlagImage = (langCode) => {
     const normalized = langCode.toLowerCase();
-    if (normalized === "pt-br" || normalized === "br") {
+    if (normalized === "PT-BR" || normalized === "br") {
       return (
         <img
           src="https://flagcdn.com/w40/br.png"
@@ -135,7 +133,7 @@ function Header() {
 
   const getLanguageName = (langCode) => {
     const normalized = langCode.toLowerCase();
-    if (normalized === "pt-br" || normalized === "br") return "pt-br";
+    if (normalized === "PT-BR" || normalized === "br") return "PT-BR";
     return (
       languageConfig[langCode]?.name ||
       languageConfig[normalized]?.name ||
@@ -150,19 +148,12 @@ function Header() {
           show ? "translate-y-0" : "-translate-y-full"
         }`}
       >
-        <div
-          onClick={handleProfileClick}
-          className="absolute left-4 md:left-8 lg:left-10 top-1/2 transform -translate-y-1/2 cursor-pointer"
+        <button
+          onClick={() => setMenuOpen((o) => !o)}
+          className="focus:outline-none"
         >
-          <OctagonalProfile
-            size={profileSize}
-            borderColor="#002147"
-            innerBorderColor="#000"
-            imageSrc={avatarUrl}
-            fallbackText={user?.email?.[0]?.toUpperCase() || "?"}
-          />
-        </div>
-
+          <img src={Hamburger} alt="Menu" className="w-6 h-6 md:w-8 md:h-8" />
+        </button>
         <div
           onClick={handleLogoClick}
           className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
@@ -181,7 +172,7 @@ function Header() {
               className="focus:outline-none p-1 flex items-center justify-center"
               aria-label="Switch language"
             >
-              {getFlagImage(currentLanguage)}
+              <p className="text-sm md:text-base">{getLanguageName(currentLanguage).toUpperCase()}</p>
             </button>
             {langOpen && (
               <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-lg z-50 min-w-[160px] overflow-hidden">
@@ -205,24 +196,18 @@ function Header() {
               </div>
             )}
           </div>
-          <button
-            onClick={() => setMenuOpen((o) => !o)}
-            className="focus:outline-none"
-          >
-            <img src={Hamburger} alt="Menu" className="w-6 h-6 md:w-8 md:h-8" />
-          </button>
         </div>
       </header>
       {/* Dropdown Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-[70%] md:w-[50%] lg:w-[30%] bg-black transform transition-transform duration-300 ease-in-out z-50 ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 left-0 h-full w-[70%] md:w-[50%] lg:w-[30%] bg-black transform transition-transform duration-300 ease-in-out z-50 ${
+          menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Dropdown Menu */}
         <div
-          className={`fixed top-0 right-0 h-full w-full bg-black transform transition-transform duration-300 ease-in-out z-50 shadow-2xl flex flex-col ${
-            menuOpen ? "translate-x-0" : "translate-x-full"
+          className={`fixed top-0 left-0 h-full w-full bg-black transform transition-transform duration-300 ease-in-out z-50 shadow-2xl flex flex-col ${
+            menuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           {/* Menu Header */}
@@ -296,12 +281,10 @@ function Header() {
                   </p>
                   <button
                     onClick={() => {
-                      document
-                        .getElementById("services")
-                        ?.scrollIntoView({
-                          behavior: "smooth",
-                          block: "start",
-                        });
+                      document.getElementById("services")?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
                       setMenuOpen(false);
                     }}
                     className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
@@ -310,19 +293,17 @@ function Header() {
                   </button>
                   <button
                     onClick={() => {
-                      document
-                        .getElementById("coaching")
-                        ?.scrollIntoView({
-                          behavior: "smooth",
-                          block: "start",
-                        });
+                      document.getElementById("coaching")?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
                       setMenuOpen(false);
                     }}
                     className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
                   >
                     {t("navigation.coaching")}
                   </button>
-                 </div>
+                </div>
 
                 <div className="pt-1 sm:pt-2">
                   <p className="text-xs sm:text-sm text-darkGold px-3 mb-1 opacity-70">
