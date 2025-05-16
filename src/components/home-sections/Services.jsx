@@ -1,5 +1,12 @@
 // components/Services.js
-import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useCallback,
+} from "react";
+import { motion } from "framer-motion";
 // ... (all other imports remain the same) ...
 import Brain from "../../assets/icons/Brain Branco.svg";
 import Phone from "../../assets/icons/Phone Branco.svg";
@@ -12,262 +19,453 @@ import Fitness from "../../assets/icons/Fitness Branco.svg";
 import More from "../../assets/icons/More Branco.svg";
 import Robot from "../../assets/icons/Robot Branco.svg";
 import Consultation from "../../assets/icons/Consultation Preto.svg";
-import { useNavigate } from "react-router-dom";
 import { ServiceContext } from "../../contexts/ServiceContext";
 import { useTranslation } from "react-i18next";
 
 const NAVIGATION_BAR_HEIGHT = 60;
 const BUTTON_PADDING_ABOVE_NAV = 10;
-const SMOOTH_TRANSITION = 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out';
+const SMOOTH_TRANSITION =
+  "opacity 0.2s ease-in-out, transform 0.2s ease-in-out";
 
-function Services() {
-  const { t } = useTranslation();
-  const { service, setService } = useContext(ServiceContext);
-  const [selectedServiceItem, setSelectedServiceItem] = useState(null);
-
-  const [isButtonVisibleBasedOnSection, setIsButtonVisibleBasedOnSection] = useState(false);
-  const [buttonPositionStyle, setButtonPositionStyle] = useState({
-    position: 'absolute', opacity: 0, bottom: '0px', left: '50%',
-    transform: 'translateX(-50%)', transition: SMOOTH_TRANSITION, zIndex: 1,
-  });
-  const sectionRef = useRef(null);
-  const buttonRef = useRef(null);
-  const buttonStopContainerRef = useRef(null);
-  const hasButtonReachedFinalPosition = useRef(false);
-
-  const openForm = (serviceId) => {
-    setService(serviceId || "booking"); // Use the passed serviceId or default
-    document
-      .getElementById("service-selection")
-      ?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  // UPDATED: Add buttonActionKey to each service item
-  const serviceItemsData = [
-    { id: "mindset", titleKey: "services.service_1", Icon: Brain, alt: "Brain", buttonActionKey: "services.button_action_mindset" },
-    { id: "social_media", titleKey: "services.service_2", Icon: Phone, alt: "Phone", buttonActionKey: "services.button_action_social_media" },
-    { id: "finance", titleKey: "services.service_3", Icon: MoneyBag, alt: "MoneyBag", buttonActionKey: "services.button_action_finance" },
-    { id: "marketing", titleKey: "services.service_4", Icon: Target, alt: "Target", buttonActionKey: "services.button_action_marketing" },
-    { id: "business_building", titleKey: "services.service_5", Icon: Bag, alt: "Bag", buttonActionKey: "services.button_action_business_building" },
-    { id: "relationships", titleKey: "services.service_6", Icon: Heart, alt: "Heart", buttonActionKey: "services.button_action_relationships" },
-    { id: "health_fitness", titleKey: "services.service_7", Icon: Fitness, alt: "Fitness", buttonActionKey: "services.button_action_health_fitness" },
-    { id: "onlyfans_services", titleKey: "services.service_8", Icon: OnlyFans, alt: "OnlyFans", buttonActionKey: "services.button_action_onlyfans" },
-    { id: "ai_tech", titleKey: "services.service_9", Icon: Robot, alt: "Robot", buttonActionKey: "services.button_action_ai_tech" },
-    { id: "more_services", titleKey: "services.service_10", Icon: More, alt: "More", buttonActionKey: "services.button_action_more_services" },
-  ];
-
-  const serviceItems = serviceItemsData.map(item => ({
-    ...item,
-    title: t(item.titleKey)
-  }));
-
-  const handleServiceItemClick = (item) => {
-    if (selectedServiceItem && selectedServiceItem.id === item.id) {
-      setSelectedServiceItem(null);
-    } else {
-      setSelectedServiceItem(item);
-    }
-  };
-
-  const handleClearServiceSelection = (e) => {
-    e.stopPropagation();
-    setSelectedServiceItem(null);
-  };
-
-  // ... (useEffect for IntersectionObserver and handleScroll function - keep as is)
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsButtonVisibleBasedOnSection(entry.isIntersecting),
-      { root: null, threshold: 0.1 }
-    );
-    const currentSectionRef = sectionRef.current;
-    if (currentSectionRef) observer.observe(currentSectionRef);
-    return () => {
-      if (currentSectionRef) observer.unobserve(currentSectionRef);
+  function Services() {
+    const { t } = useTranslation();
+    const { setService } = useContext(ServiceContext);
+    const [selectedServiceItem, setSelectedServiceItem] = useState(null);
+  
+    const [isButtonVisibleBasedOnSection, setIsButtonVisibleBasedOnSection] =
+      useState(false);
+    const [buttonPositionStyle, setButtonPositionStyle] = useState({
+      position: "absolute",
+      opacity: 0,
+      bottom: "0px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      transition: SMOOTH_TRANSITION,
+      zIndex: 1,
+    });
+    const sectionRef = useRef(null);
+    const buttonRef = useRef(null);
+    const buttonStopContainerRef = useRef(null);
+    const hasButtonReachedFinalPosition = useRef(false);
+  
+    const getColumns = useCallback(() => {
+      if (typeof window !== "undefined") {
+        return window.innerWidth < 768 ? 2 : 3;
+      }
+      return 3;
+    }, []);
+  
+    const [columns, setColumns] = useState(getColumns());
+  
+    useEffect(() => {
+      const handleResize = () => setColumns(getColumns());
+      window.addEventListener("resize", handleResize);
+      handleResize();
+      return () => window.removeEventListener("resize", handleResize);
+    }, [getColumns]);
+  
+    const openForm = (serviceId) => {
+      setService(serviceId || "booking");
+      document
+        .getElementById("service-selection")
+        ?.scrollIntoView({ behavior: "smooth" });
     };
-  }, []);
-
-  const handleScroll = useCallback(() => {
-    if (!buttonRef.current || !buttonStopContainerRef.current || !sectionRef.current) return;
-    const stopContainerRect = buttonStopContainerRef.current.getBoundingClientRect();
-    const buttonHeight = buttonRef.current.offsetHeight;
-    const effectiveSpaceFromBottomForFixed = NAVIGATION_BAR_HEIGHT + BUTTON_PADDING_ABOVE_NAV;
-    const dockTriggerY = window.innerHeight - buttonHeight - effectiveSpaceFromBottomForFixed;
-
-    if (stopContainerRect.top <= dockTriggerY) {
-      setButtonPositionStyle({
-        position: 'absolute', bottom: '0px', left: '50%',
-        transform: 'translateX(-50%)', opacity: 1, transition: SMOOTH_TRANSITION, zIndex: 1,
-      });
-      hasButtonReachedFinalPosition.current = true;
-    } else {
-      setButtonPositionStyle({
-        position: 'fixed', bottom: `${effectiveSpaceFromBottomForFixed}px`, left: '50%',
-        transform: 'translateX(-50%)', opacity: 1, transition: SMOOTH_TRANSITION, zIndex: 10,
-      });
-      hasButtonReachedFinalPosition.current = false;
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isButtonVisibleBasedOnSection) {
-      handleScroll();
-      window.addEventListener('scroll', handleScroll);
-      window.addEventListener('resize', handleScroll);
-    } else {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-      if (hasButtonReachedFinalPosition.current) {
-        setButtonPositionStyle({
-          position: 'absolute', bottom: '0px', left: '50%',
-          transform: 'translateX(-50%)', opacity: 1, transition: SMOOTH_TRANSITION, zIndex: 1,
-        });
+  
+    const serviceItemsData = [
+      {
+        id: "mindset",
+        titleKey: "services.service_1",
+        Icon: Brain,
+        alt: "Brain",
+        buttonActionKey: "services.button_action_mindset",
+        moreInfoKey: "services.service_1_moreInfo",
+      },
+      {
+        id: "social_media",
+        titleKey: "services.service_2",
+        Icon: Phone,
+        alt: "Phone",
+        buttonActionKey: "services.button_action_social_media",
+        moreInfoKey: "services.service_2_moreInfo",
+      },
+      {
+        id: "finance",
+        titleKey: "services.service_3",
+        Icon: MoneyBag,
+        alt: "MoneyBag",
+        buttonActionKey: "services.button_action_finance",
+        moreInfoKey: "services.service_3_moreInfo",
+      },
+      {
+        id: "marketing",
+        titleKey: "services.service_4",
+        Icon: Target,
+        alt: "Target",
+        buttonActionKey: "services.button_action_marketing",
+        moreInfoKey: "services.service_4_moreInfo",
+      },
+      {
+        id: "business_building",
+        titleKey: "services.service_5",
+        Icon: Bag,
+        alt: "Bag",
+        buttonActionKey: "services.button_action_business_building",
+        moreInfoKey: "services.service_5_moreInfo",
+      },
+      {
+        id: "relationships",
+        titleKey: "services.service_6",
+        Icon: Heart,
+        alt: "Heart",
+        buttonActionKey: "services.button_action_relationships",
+        moreInfoKey: "services.service_6_moreInfo",
+      },
+      {
+        id: "health_fitness",
+        titleKey: "services.service_7",
+        Icon: Fitness,
+        alt: "Fitness",
+        buttonActionKey: "services.button_action_health_fitness",
+        moreInfoKey: "services.service_7_moreInfo",
+      },
+      {
+        id: "onlyfans_services",
+        titleKey: "services.service_8",
+        Icon: OnlyFans,
+        alt: "OnlyFans",
+        buttonActionKey: "services.button_action_onlyfans",
+        moreInfoKey: "services.service_8_moreInfo",
+      },
+      {
+        id: "ai_tech",
+        titleKey: "services.service_9",
+        Icon: Robot,
+        alt: "Robot",
+        buttonActionKey: "services.button_action_ai_tech",
+        moreInfoKey: "services.service_9_moreInfo",
+      },
+      {
+        id: "more_services",
+        titleKey: "services.service_10",
+        Icon: More,
+        alt: "More",
+        buttonActionKey: "services.button_action_more_services",
+        moreInfoKey: "services.service_10_moreInfo",
+      },
+    ];
+  
+    const serviceItems = serviceItemsData.map((item) => ({
+      ...item,
+      title: t(item.titleKey),
+      description: t(item.moreInfoKey),
+      translatedButtonActionKey: t(item.buttonActionKey),
+    }));
+  
+    const handleServiceItemClick = (item) => {
+      if (selectedServiceItem && selectedServiceItem.id === item.id) {
+        setSelectedServiceItem(null);
       } else {
-        setButtonPositionStyle(prev => ({ ...prev, opacity: 0, transition: SMOOTH_TRANSITION }));
+        setSelectedServiceItem(item);
+      }
+    };
+  
+    useEffect(() => {
+      const observer = new IntersectionObserver(
+        ([entry]) => setIsButtonVisibleBasedOnSection(entry.isIntersecting),
+        { root: null, threshold: 0.1 }
+      );
+      const currentSectionRef = sectionRef.current;
+      if (currentSectionRef) observer.observe(currentSectionRef);
+      return () => {
+        if (currentSectionRef) observer.unobserve(currentSectionRef);
+      };
+    }, []);
+  
+    const handleScroll = useCallback(() => {
+      if (
+        !buttonRef.current ||
+        !buttonStopContainerRef.current ||
+        !sectionRef.current
+      )
+        return;
+      const stopContainerRect =
+        buttonStopContainerRef.current.getBoundingClientRect();
+      const buttonHeight = buttonRef.current.offsetHeight;
+      const effectiveSpaceFromBottomForFixed =
+        NAVIGATION_BAR_HEIGHT + BUTTON_PADDING_ABOVE_NAV;
+      const dockTriggerY =
+        window.innerHeight - buttonHeight - effectiveSpaceFromBottomForFixed;
+  
+      if (stopContainerRect.top <= dockTriggerY) {
+        setButtonPositionStyle({
+          position: "absolute",
+          bottom: "0px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          opacity: 1,
+          transition: SMOOTH_TRANSITION,
+          zIndex: 1,
+        });
+        hasButtonReachedFinalPosition.current = true;
+      } else {
+        setButtonPositionStyle({
+          position: "fixed",
+          bottom: `${effectiveSpaceFromBottomForFixed}px`,
+          left: "50%",
+          transform: "translateX(-50%)",
+          opacity: 1,
+          transition: SMOOTH_TRANSITION,
+          zIndex: 10,
+        });
+        hasButtonReachedFinalPosition.current = false;
+      }
+    }, []);
+  
+    useEffect(() => {
+      if (isButtonVisibleBasedOnSection) {
+        handleScroll();
+        window.addEventListener("scroll", handleScroll);
+        window.addEventListener("resize", handleScroll);
+      } else {
+        window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("resize", handleScroll);
+        if (hasButtonReachedFinalPosition.current) {
+          setButtonPositionStyle((prev) => ({
+            ...prev,
+            position: "absolute",
+            opacity: 1,
+          }));
+        } else {
+          setButtonPositionStyle((prev) => ({
+            ...prev,
+            opacity: 0,
+            transition: SMOOTH_TRANSITION,
+          }));
+        }
+      }
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("resize", handleScroll);
+      };
+    }, [isButtonVisibleBasedOnSection, handleScroll]);
+  
+    const floatingButtonText = selectedServiceItem
+      ? selectedServiceItem.translatedButtonActionKey
+      : t("services.button_book_consultation_default");
+  
+    const renderedItemsWithDescriptions = [];
+    let rowBuffer = [];
+  
+    let selectedItemRowIndex = -1;
+    if (selectedServiceItem) {
+      const itemIndex = serviceItems.findIndex(
+        (s) => s.id === selectedServiceItem.id
+      );
+      if (itemIndex !== -1) {
+        selectedItemRowIndex = Math.floor(itemIndex / columns);
       }
     }
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-    };
-  }, [isButtonVisibleBasedOnSection, handleScroll]);
-
-
-  // UPDATED: Dynamic button text using the specific buttonActionKey
-  const floatingButtonText = selectedServiceItem
-    ? t(selectedServiceItem.buttonActionKey) // Use the specific action key
-    : t("services.button_book_consultation_default"); // Default text
-
-  return (
-    <section ref={sectionRef} id="services" className="py-8 px-4 text-white">
-      <div className="max-w-3xl mx-auto text-center space-y-6">
-        <h2 className="text-2xl md:text-4xl font-bold">
-          {t("services.services_title")}
-        </h2>
-        <p className="md:text-xl">{t("services.services_description")}</p>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-white">
-          {serviceItems.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => handleServiceItemClick(item)}
-              className={`
-                flex flex-col items-center justify-center h-full p-6 border-2 rounded-lg text-center shadow-lg cursor-pointer transition-all duration-200 ease-in-out
-                ${selectedServiceItem?.id === item.id
-                  ? 'border-darkGold scale-105'
-                  : 'border-darkGold hover:scale-102'
-                }
-              `}
-            >
-              <div className="flex items-center justify-center mb-3">
+  
+    serviceItems.forEach((item, index) => {
+      // Each card is a motion component for potential individual layout animations if needed later
+      // For now, the primary layout animation is handled by the description container
+      rowBuffer.push(
+        <motion.div // Can add 'layout' here if individual card animations are desired
+          key={item.id}
+          onClick={() => handleServiceItemClick(item)}
+          className={`
+            flex flex-col items-center justify-center p-4 w-[156px] h-[108px] md:w-[200px] md:h-[140px] border-2 rounded-lg text-center shadow-lg cursor-pointer transition-all duration-200 ease-in-out
+            ${
+              selectedServiceItem?.id === item.id
+                ? "border-darkGold scale-105"
+                : "border-darkGold hover:scale-102"
+            }
+          `}
+        >
+          <div className="flex items-center justify-center mb-3">
+            <img
+              src={item.Icon}
+              alt={item.alt}
+              className="w-8 h-8 md:w-12 md:h-12 object-contain"
+            />
+          </div>
+          <div className="font-semibold text-xs md:text-lg">{item.title}</div>
+        </motion.div>
+      );
+  
+      const currentRowIndex = Math.floor(index / columns);
+  
+      if ((index + 1) % columns === 0 || index === serviceItems.length - 1) {
+        renderedItemsWithDescriptions.push(
+          <React.Fragment key={`row-items-${currentRowIndex}`}>
+            {rowBuffer.map((bufferedItem) => bufferedItem)}
+          </React.Fragment>
+        );
+        rowBuffer = [];
+  
+        const isThisRowsDescriptionVisible =
+          selectedServiceItem !== null &&
+          currentRowIndex === selectedItemRowIndex;
+  
+        let rowDescriptionItem = null;
+        if (isThisRowsDescriptionVisible) {
+          const startIdx = currentRowIndex * columns;
+          // const endIdx = Math.min(startIdx + columns, serviceItems.length); // Original
+          // Corrected to ensure we only look within the current row for the selected item
+          const itemsInCurrentRow = serviceItems.slice(startIdx, startIdx + columns);
+          rowDescriptionItem = itemsInCurrentRow.find(si => si.id === selectedServiceItem.id) || null;
+        }
+        
+        const descriptionColSpanClass = columns === 2 ? "col-span-2" : "col-span-3";
+  
+        renderedItemsWithDescriptions.push(
+          <motion.div
+            layout // Key change: Add layout prop for smooth size/position changes
+            key={`desc-slot-for-row-${currentRowIndex}`}
+            className={`${descriptionColSpanClass} overflow-hidden`}
+            initial="collapsed"
+            animate={isThisRowsDescriptionVisible ? "open" : "collapsed"}
+            variants={{
+              open: {
+                opacity: 1,
+                height: 'auto',
+                y: 0,
+                paddingTop: "1rem",
+                paddingBottom: "1rem",
+                marginTop: "0.5rem", 
+                marginBottom: "0.5rem",
+                transition: {
+                  // Key change: Simplified and synchronized transition
+                  duration: 0.5, // Slightly longer duration for smoother effect
+                  ease: "easeInOut", // Standard easing
+                  // Removed separate 'y' spring to sync with main animation
+                },
+              },
+              collapsed: {
+                opacity: 0,
+                height: 0,
+                y: 0, // Changed from -10 to 0 for a more direct collapse
+                paddingTop: "0rem",
+                paddingBottom: "0rem",
+                marginTop: "0rem",
+                marginBottom: "0rem",
+                transition: {
+                  duration: 0.3, // Can be slightly faster for collapse
+                  ease: "easeInOut",
+                },
+              },
+            }}
+            style={{
+              pointerEvents: isThisRowsDescriptionVisible ? "auto" : "none",
+            }}
+          >
+            <div className="rounded-lg text-white">
+              {rowDescriptionItem && (
+                <>
+                  <h3 className="text-lg md:text-xl font-bold mb-2 text-darkGold">
+                    {rowDescriptionItem.title}
+                  </h3>
+                  <p className="text-sm md:text-base">{rowDescriptionItem.description}</p>
+                </>
+              )}
+            </div>
+          </motion.div>
+        );
+      }
+    });
+  
+    const gridLayoutClasses = columns === 2 
+      ? "grid-cols-2" 
+      : "grid-cols-3 md:grid-cols-3";
+  
+    return (
+      <section ref={sectionRef} id="services" className="py-8 px-4 text-white bg-oxfordBlue">
+        <div className="max-w-3xl mx-auto text-center space-y-6">
+          <h2 className="text-2xl md:text-4xl font-bold">
+            {t("services.services_title")}
+          </h2>
+          <p className="md:text-xl">{t("services.services_description")}</p>
+  
+          <div className={`grid ${gridLayoutClasses} gap-2 md:gap-6 place-items-center md:place-items-start`}>
+            {renderedItemsWithDescriptions}
+          </div>
+        </div>
+  
+        {/* ... (rest of your component: structure items, button container) ... */}
+        <div className="w-full mx-auto px-4 mt-8 md:mt-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Item 1 */}
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h4 className="text-xl md:text-3xl font-medium text-white mb-2">{t("services.services_structure_1_title")}</h4>
+              <p className="text-white md:text-xl">{t("services.services_structure_1_description")}</p>
+            </div>
+            {/* Item 2 */}
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h4 className="text-xl md:text-3xl font-medium text-white mb-2">{t("services.services_structure_2_title")}</h4>
+              <p className="text-white md:text-xl">{t("services.services_structure_2_description")}</p>
+            </div>
+            {/* Item 3 */}
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+              </div>
+              <h4 className="text-xl md:text-3xl font-medium text-white mb-2">{t("services.services_structure_3_title")}</h4>
+              <p className="text-white md:text-xl">{t("services.services_structure_3_description")}</p>
+            </div>
+             {/* Item 4 */}
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8V8a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <h4 className="text-xl md:text-3xl font-medium text-white mb-2">{t("services.services_structure_4_title")}</h4>
+              <p className="text-white md:text-xl">{t("services.services_structure_4_description")}</p>
+            </div>
+             {/* Item 5 */}
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
                 <img
-                  src={item.Icon}
-                  alt={item.alt}
-                  className="w-8 h-8 md:w-12 md:h-12 object-contain"
+                  src={Consultation}
+                  alt="Consultation"
+                  className="w-7 h-7 md:w-12 md:h-12 object-contain"
                 />
               </div>
-              <div className="font-semibold text-[13px] md:text-lg">
-                {item.title}
-              </div>
+              <h4 className="text-xl md:text-3xl font-medium text-white mb-2">{t("services.services_structure_5_title")}</h4>
+              <p className="text-white md:text-xl">{t("services.services_structure_5_description")}</p>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ... (Rest of the Services component: features, price, button container) ... */}
-      <div className="w-full mx-auto px-4 mt-8 md:mt-16">
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Video Call Feature */}
-          <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
-              {t("services.services_structure_1_title")}
-            </h4>
-            <p className="text-white md:text-xl">
-              {t("services.services_structure_1_description")}
-            </p>
           </div>
-
-          {/* Duration Feature */}
-          <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
-              {t("services.services_structure_2_title")}
-            </h4>
-            <p className="text-white md:text-xl">
-              {t("services.services_structure_2_description")}
-            </p>
-          </div>
-
-          {/* Recording Feature */}
-          <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
-            </div>
-            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
-              {t("services.services_structure_3_title")}
-            </h4>
-            <p className="text-white md:text-xl">
-              {t("services.services_structure_3_description")}
-            </p>
-          </div>
-
-          {/* Follow-up Email Feature */}
-          <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8V8a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
-              {t("services.services_structure_4_title")}
-            </h4>
-            <p className="text-white md:text-xl">
-              {t("services.services_structure_4_description")}
-            </p>
-          </div>
-
-          {/* Follow-up Consultation Feature */}
-          <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
-              <img src={Consultation} alt="Consultation" className="w-7 h-7 md:w-12 md:h-12 object-contain" />
-            </div>
-            <h4 className="text-xl md:text-3xl font-medium text-white mb-2">
-              {t("services.services_structure_5_title")}
-            </h4>
-            <p className="text-white md:text-xl">
-              {t("services.services_structure_5_description")}
-            </p>
-          </div>
-        </div>
-      <div
-          ref={buttonStopContainerRef}
-          className="relative flex justify-center pt-2 mt-10" // Added mt-10 for spacing
-          style={{ minHeight: '80px' }}
-        >
-          <button
-            ref={buttonRef}
-            onClick={() => openForm(selectedServiceItem ? selectedServiceItem.id : "booking")}
-            style={buttonPositionStyle}
-            className="bg-darkGold w-auto min-w-[15rem] md:min-w-[20rem] max-w-[90vw] sm:max-w-xs md:max-w-sm text-black md:text-xl font-bold px-4 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 truncate"
-            // Added truncate and max-w classes for better text handling
+          <div
+            ref={buttonStopContainerRef}
+            className="relative flex justify-center pt-2 mt-10"
+            style={{ minHeight: "80px" }}
           >
-            {floatingButtonText}
-          </button>
+            <button
+              ref={buttonRef}
+              onClick={() =>
+                openForm(selectedServiceItem ? selectedServiceItem.id : "booking")
+              }
+              style={buttonPositionStyle}
+              className="bg-darkGold w-auto min-w-[15rem] md:min-w-[20rem] max-w-[90vw] sm:max-w-xs md:max-w-sm text-black md:text-xl font-bold px-4 md:px-8 py-3 md:py-4 rounded-lg shadow-lg hover:bg-opacity-90 truncate"
+            >
+              {floatingButtonText}
+            </button>
+          </div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-export default Services;
+      </section>
+    );
+  }
+  
+  export default Services;

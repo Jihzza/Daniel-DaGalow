@@ -4,11 +4,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../utils/supabaseClient';
 import OctagonalProfile from '../common/Octagonal Profile';
-import home from '../../assets/icons/Home Branco.svg';
+import casa from '../../assets/icons/House Branco.svg';
 import calendar from '../../assets/icons/Calendar Branco.svg';
 import chatbot from '../../assets/icons/Dagalow Branco.svg';
 import settings from '../../assets/icons/Settings Branco.svg';
 import { useTranslation } from 'react-i18next';
+import defaultProfile from '../../assets/img/Pessoas/Default.svg';
 
 const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   const navigate = useNavigate();
@@ -61,15 +62,15 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   };
 
   const icons = [
-    {src: home, alt: t("navigation.home"), action: handleDagalowIconClick},
-    {src: calendar, alt: t("navigation.calendar"), to: user ? "/components/Subpages/Calendar" : null, action: user ? null : onAuthModalOpen},
-    {src: chatbot, alt: t("navigation.chatbot"), action: onChatbotClick},
-    {src: settings, alt: t("navigation.settings"), to: "/components/Subpages/Settings", action: null},
+    {src: casa, alt: t("navigation.home"), action: handleDagalowIconClick, size: 26},
+    {src: calendar, alt: t("navigation.calendar"), to: user ? "/components/Subpages/Calendar" : null, action: user ? null : onAuthModalOpen, size: 24},
+    {src: chatbot, alt: t("navigation.chatbot"), action: onChatbotClick, size: 24},
+    {src: settings, alt: t("navigation.settings"), to: "/components/Subpages/Settings", action: null, size: 24},
     // Profile icon will be handled separately below
   ];
   
   return (
-    <div className="fixed h-[56px] bottom-0 left-0 w-full px-8 lg:px-10 lg:h-[60px] z-50 bg-black flex justify-between items-center">
+    <div className="fixed h-[48px] bottom-0 left-0 w-full px-8 lg:px-10 lg:h-[60px] z-50 bg-black flex justify-between items-center">
       {icons.map((icon, i) => (
         <img
           key={i}
@@ -77,7 +78,8 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
           alt={icon.alt}
           aria-label={icon.alt}
           role="button"
-          className="w-8 h-8 md:w-12 md:h-12 lg:w-8 lg:h-8 cursor-pointer drop-shadow-lg transition-all duration-300"
+          style={{ width: icon.size, height: icon.size }}
+          className="cursor-pointer drop-shadow-lg transition-all duration-300"
           onClick={() => {
             if (icon.action) {
               icon.action();
@@ -92,9 +94,9 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
       <OctagonalProfile
             borderColor="#002147"
             innerBorderColor="#000"
-            imageSrc={avatarUrl}
-            fallbackText={user?.email?.[0]?.toUpperCase() || "?"}
-            size={40}
+            imageSrc={avatarUrl || defaultProfile}
+            fallbackText={user?.email?.[0]?.toUpperCase() || ""}
+            size={32}
           />
       </div>
     </div>

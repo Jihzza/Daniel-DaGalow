@@ -144,7 +144,7 @@ function Header() {
   return (
     <>
       <header
-        className={`fixed flex items-center justify-between top-0 p-4 md:p-8 lg:p-10 left-0 right-0 z-30 h-14 md:h-24 lg:h-20 bg-black text-white shadow-lg transform transition-transform duration-300 ${
+        className={`fixed flex items-center justify-between top-0 p-4 md:p-8 lg:p-10 left-0 right-0 z-30 h-12 md:h-24 lg:h-20 bg-black text-white shadow-lg transform transition-transform duration-300 ${
           show ? "translate-y-0" : "-translate-y-full"
         }`}
       >
@@ -152,7 +152,7 @@ function Header() {
           onClick={() => setMenuOpen((o) => !o)}
           className="focus:outline-none"
         >
-          <img src={Hamburger} alt="Menu" className="w-6 h-6 md:w-8 md:h-8" />
+          <img src={Hamburger} alt="Menu" className="w-[18px] h-[18px] md:w-8 md:h-8" />
         </button>
         <div
           onClick={handleLogoClick}
@@ -334,34 +334,6 @@ function Header() {
               {t("navigation.settings")}
             </Link>
           </nav>
-
-          {/* Auth Actions at the bottom */}
-          <div className="p-3 sm:p-4 mt-auto">
-            {" "}
-            {/* mt-auto pushes this to the bottom */}
-            {user ? (
-              <button
-                onClick={async () => {
-                  await signOut();
-                  setMenuOpen(false);
-                  navigate("/");
-                }}
-                className="w-full text-left flex items-center text-red-400 hover:bg-red-400/10 hover:text-red-300 px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
-              >
-                {t("navigation.logout")}
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  setAuthModalOpen(true);
-                  setMenuOpen(false);
-                }}
-                className="w-full text-center flex items-center justify-center text-black bg-darkGold hover:bg-opacity-80 px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors font-semibold"
-              >
-                {t("navigation.login_signup")}
-              </button>
-            )}
-          </div>
         </div>
       </div>
       {menuOpen && (

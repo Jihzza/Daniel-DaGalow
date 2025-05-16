@@ -76,3 +76,29 @@ code {
   transform: scale(1.05);
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.25);
 }
+
+.fullscreen-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  z-index: 2147483647;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: black;
+}
+
+.fullscreen-video {
+  width: 56.25vh !important; /* 9/16 of viewport height */
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  object-fit: cover !important;
+  background: black;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  display: block;
+  margin: 0 auto;
+}

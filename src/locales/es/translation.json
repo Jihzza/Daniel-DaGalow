@@ -14,7 +14,7 @@
     "login": "Iniciar sesión",
     "logout": "Cerrar sesión",
     "login_signup": "Iniciar sesión / Registrarse",
-    "learnMore": "Saber más" 
+    "learnMore": "Saber más"
   },
 
   "hero": {
@@ -93,6 +93,16 @@
     "service_8": "OnlyFans",
     "service_9": "IA y Tecnología",
     "service_10": "Mucho más",
+    "service_1_moreInfo": "Libera el poder de tu mente. Nuestro servicio de Mentalidad y Psicología te ofrece herramientas y estrategias para superar creencias limitantes, reforzar la resiliencia mental y cultivar una mentalidad de crecimiento. Consigue claridad, concentración y equilibrio emocional para destacar en todos los ámbitos de tu vida.",
+    "service_2_moreInfo": "Potencia tu presencia en línea. Te ayudaremos a diseñar una estrategia ganadora en redes sociales, crear contenido atractivo y hacer crecer tu audiencia de forma eficaz. Esta descripción es algo más larga para probar cómo la animación gestiona distintas longitudes de texto y garantizar su fluidez.",
+    "service_3_moreInfo": "Toma el control de tu futuro financiero. Aprende principios sólidos de inversión, técnicas de presupuestación y estrategias de creación de riqueza adaptadas a tus objetivos.",
+    "service_4_moreInfo": "Impulsa tu marca y tus ventas. Ofrecemos estrategias de marketing expertas, desde campañas digitales hasta acciones tradicionales, para ayudarte a llegar a tu público objetivo.",
+    "service_5_moreInfo": "Convierte tu visión en realidad. Recibe orientación sobre planificación empresarial, eficiencia operativa y escalado de tu proyecto para lograr un éxito sostenible. Otra descripción más larga para comprobar la fluidez de la animación cuando el contenido varía significativamente. Esto debería desplazar los elementos inferiores y la animación debe seguir siendo fluida durante todo el proceso de expansión y contracción, sin tirones ni cortes, especialmente al final de la secuencia.",
+    "service_6_moreInfo": "Fomenta conexiones más profundas. Mejora la comunicación, fortalece los vínculos y afronta los retos de las relaciones con asesoramiento experto.",
+    "service_7_moreInfo": "Alcanza tu condición física óptima. Planes de entrenamiento personalizados, orientación nutricional y apoyo motivacional para ayudarte a cumplir tus objetivos de salud.",
+    "service_8_moreInfo": "Maximiza tu éxito en OnlyFans. Estrategias para la creación de contenido, la promoción y la interacción con suscriptores que aumentarán tus ingresos.",
+    "service_9_moreInfo": "Aprovecha la tecnología de vanguardia. Descubre cómo la IA y otras soluciones tecnológicas pueden optimizar tu negocio y tu productividad personal.",
+    "service_10_moreInfo": "¿Tienes otras necesidades? ¡Hablemos! Ofrecemos una amplia gama de servicios de consultoría y podemos adaptar las soluciones a tus desafíos particulares. Este es un caso de prueba final con una descripción de longitud media.",
     "services_structure_1_title": "Videollamada cara a cara",
     "services_structure_1_description": "Nuestras consultas se realizan por videollamada, lo que nos permite conectar de forma personal. Podrás verme durante toda la sesión, creando una experiencia más cercana y dinámica.",
     "services_structure_2_title": "Sesiones mínimas de 45 minutos",

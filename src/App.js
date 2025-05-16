@@ -17,7 +17,6 @@ import Hero from "./components/home-sections/Hero";
 import About from "./components/home-sections/About";
 import Services from "./components/home-sections/Services";
 import Coaching from "./components/home-sections/Coaching";
-import Projects from "./components/home-sections/Projects";
 import VentureInvestment from "./components/home-sections/VentureInvestment";
 import Testimonials from "./components/home-sections/Testimonials";
 import Interviews from "./components/home-sections/Interviews";
@@ -27,7 +26,6 @@ import MergedServiceForm from "./components/Forms/MergedServiceForm";
 import BottomCarouselPages from "./components/carousel/BottomCarouselPages";
 import NavigationBar from "./components/layout/NavigationBar";
 import ChatbotWindow from "./components/chat/ChatbotWindow";
-
 import CalendarPage from "./pages/profile/CalendarPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import EditProfilePage from "./pages/profile/EditProfilePage";
@@ -145,13 +143,12 @@ function App() {
               <Route
                 path="/"
                 element={
-                  <main className="mt-14 md:mt-24 lg:mt-20">
+                  <main className="mt-12 md:mt-24 lg:mt-20">
                     {/* Pass consent state if Hero or other components need it */}
                     <Hero />
                     <About />
                     <Services />
                     <Coaching />
-                    <Projects />
                     <VentureInvestment />
                     <Testimonials onAuthModalOpen={openAuthModal} />
                     <OtherWins />
@@ -196,6 +193,7 @@ function App() {
             </Routes>
 
             {/* Always-on Navigation Bar & Chatbot */}
+
             <NavigationBar
               onChatbotClick={() => openChat()}
               onAuthModalOpen={openAuthModal}

@@ -98,8 +98,8 @@ function Hero() {
           </Marquee>
         </div>
 
-         {/* Hero text - now using translations */}
-         <h1 className="text-2xl md:text-4xl font-extrabold my-8">
+        {/* Hero text - now using translations */}
+        <h1 className="text-2xl md:text-4xl font-extrabold my-8">
           {t("hero.hero_title")}
         </h1>
         <p className="text-lg md:text-2xl my-8 max-w-md mx-auto md:max-w-2xl">
@@ -328,7 +328,7 @@ function Hero() {
 
         <div
           onClick={handleCardScroll}
-          className="flex flex-col items-center justify-center mt-16 border-2 border-darkGold rounded-xl p-4"
+          className="flex flex-col items-center justify-center mt-12 border-2 border-darkGold rounded-xl p-4"
         >
           <div className="flex flex-col items-center justify-center my-8">
             <div className="flex flex-col items-center justify-center">
@@ -356,78 +356,108 @@ function Hero() {
 
         {/* Direct Coaching */}
         <div
-        onClick={handleCoachingCard}
-        className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4"
-      >
-        <div className="flex flex-col items-center justify-center my-8">
-          <div className="flex flex-col items-center justify-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {t("hero.hero_coaching_title")}
-            </h2>
+          onClick={handleCoachingCard}
+          className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4"
+        >
+          <div className="flex flex-col items-center justify-center my-8">
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                {t("hero.hero_coaching_title")}
+              </h2>
 
-            <div className="flex space-x-2 md:space-x-4 mb-4">
-              {/* Basic Tier */}
-              <div
-                onClick={(e) => handleTierSelect(e, "Weekly")}
-                className={`w-20 md:w-32 h-18 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
-                  selectedTier === "Weekly" ? "transform scale-110 z-10" : ""
-                }`}
-              >
-                <span className="text-[16px] md:text-2xl font-extrabold">
-                  40€
-                </span>
-                <span className="text-xs md:text-lg">
-                  {t("hero.hero_coaching_basic")}
-                </span>
+              <div className="flex space-x-2 md:space-x-4 mb-4">
+                {/* Basic Tier */}
+                <div
+                  onClick={(e) => handleTierSelect(e, "Weekly")}
+                  className={`w-20 md:w-32 h-18 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
+                    selectedTier === "Weekly" ? "transform scale-110 z-10" : ""
+                  }`}
+                >
+                  <span className="text-[16px] md:text-2xl font-extrabold">
+                    40€
+                  </span>
+                  <span className="text-xs md:text-lg">
+                    {t("hero.hero_coaching_basic")}
+                  </span>
+                </div>
+
+                {/* Standard Tier */}
+                <div
+                  onClick={(e) => handleTierSelect(e, "Daily")}
+                  className={`w-20 md:w-32 h-18 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
+                    selectedTier === "Daily" ? "transform scale-110 z-10" : ""
+                  }`}
+                >
+                  <span className="text-[16px] md:text-2xl font-extrabold">
+                    90€
+                  </span>
+                  <span className="text-xs md:text-lg">
+                    {t("hero.hero_coaching_standard")}
+                  </span>
+                </div>
+
+                {/* Premium Tier */}
+                <div
+                  onClick={(e) => handleTierSelect(e, "Priority")}
+                  className={`w-20 md:w-32 h-20 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
+                    selectedTier === "Priority"
+                      ? "transform scale-110 z-10"
+                      : ""
+                  }`}
+                >
+                  <span className="text-[16px] md:text-2xl font-extrabold">
+                    230€
+                  </span>
+                  <span className="text-xs md:text-lg">
+                    {t("hero.hero_coaching_premium")}
+                  </span>
+                </div>
               </div>
-              
-              {/* Standard Tier */}
-              <div
-                onClick={(e) => handleTierSelect(e, "Daily")}
-                className={`w-20 md:w-32 h-18 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
-                  selectedTier === "Daily" ? "transform scale-110 z-10" : ""
-                }`}
-              >
-                <span className="text-[16px] md:text-2xl font-extrabold">
-                  90€
-                </span>
-                <span className="text-xs md:text-lg">
-                  {t("hero.hero_coaching_standard")}
-                </span>
-              </div>
-              
-              {/* Premium Tier */}
-              <div
-                onClick={(e) => handleTierSelect(e, "Priority")}
-                className={`w-20 md:w-32 h-20 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
-                  selectedTier === "Priority" ? "transform scale-110 z-10" : ""
-                }`}
-              >
-                <span className="text-[16px] md:text-2xl font-extrabold">
-                  230€
-                </span>
-                <span className="text-xs md:text-lg">
-                  {t("hero.hero_coaching_premium")}
-                </span>
-              </div>
+
+              <p className="text-sm md:text-md font-normal mb-2">
+                {t("hero.hero_coaching_limited_spots")}
+              </p>
             </div>
 
-            <p className="text-sm md:text-md font-normal mb-2">
-              {t("hero.hero_coaching_limited_spots")}
+            <button
+              onClick={openCoachingForm}
+              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+            >
+              {t("hero.hero_get_my_number")}
+            </button>
+            <p role="button" className="text-sm md:text-md font-normal">
+              {t("hero.common_learn_more")}
             </p>
           </div>
-
-          <button
-            onClick={openCoachingForm}
-            className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
-          >
-            {t("hero.hero_get_my_number")}
-          </button>
-          <p role="button" className="text-sm md:text-md font-normal">
-            {t("hero.common_learn_more")}
-          </p>
         </div>
-      </div>
+
+        {/* Pitch Deck */}
+        <div
+          onClick={handleCoachingCard}
+          className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4"
+        >
+          <div className="flex flex-col items-center justify-center my-8">
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                {t("hero.hero_pitchdeck_title")}
+              </h2>
+
+              <p className="text-sm md:text-md font-normal mb-2">
+                {t("hero.hero_pitchdeck_description")}
+              </p>
+            </div>
+
+            <button
+              onClick={openCoachingForm}
+              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+            >
+              {t("hero.hero_pitchdeck_button")}
+            </button>
+            <p role="button" className="text-sm md:text-md font-normal">
+              {t("hero.common_learn_more")}
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );

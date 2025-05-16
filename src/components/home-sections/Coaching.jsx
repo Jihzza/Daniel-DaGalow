@@ -55,7 +55,30 @@ function DirectCoaching() {
   ];
   const coachingServiceItems = coachingServiceItemsData.map(item => ({ ...item, title: t(item.titleKey) }));
 
-  const tiersDataRaw = [ /* ... (keep your tiersDataRaw as is) ... */ ];
+  // Define tiersDataRaw with example tiers
+  const tiersDataRaw = [
+    {
+      id: "weekly",
+      priceKey: "coaching.coaching_tier_basic_price",
+      labelKey: "coaching.coaching_tier_basic_label",
+      descKey: "coaching.coaching_tier_basic_description",
+      value: "Weekly"
+    },
+    {
+      id: "monthly",
+      priceKey: "coaching.coaching_tier_standard_price",
+      labelKey: "coaching.coaching_tier_standard_label",
+      descKey: "coaching.coaching_tier_standard_description",
+      value: "Monthly"
+    },
+    {
+      id: "yearly",
+      priceKey: "coaching.coaching_tier_premium_price",
+      labelKey: "coaching.coaching_tier_premium_label",
+      descKey: "coaching.coaching_tier_premium_description",
+      value: "Yearly"
+    }
+  ];
   const renderedTiers = tiersDataRaw.map(data => ({ ...data, price: t(data.priceKey), label: t(data.labelKey), desc: t(data.descKey) }));
 
   const handleCoachingCategoryClick = (categoryObject) => {
@@ -161,7 +184,7 @@ function DirectCoaching() {
               key={item.id}
               onClick={() => handleCoachingCategoryClick(item)}
               className={`
-                flex flex-col items-center justify-center h-full p-4 md:p-6 border-2 rounded-lg text-center shadow-lg transition-all duration-200 ease-in-out cursor-pointer
+                flex flex-col items-center justify-center p-4 w-[156px] h-[108px] md:w-[200px] md:h-[140px] border-2 rounded-lg text-center shadow-lg transition-all duration-200 ease-in-out cursor-pointer
                 ${selectedCoachingCategory?.id === item.id
                   ? 'border-darkGold scale-105'
                   : 'border-darkGold hover:scale-102'
@@ -248,7 +271,7 @@ function DirectCoaching() {
                 disabled={!selectedCoachingCategory && !selectedTierObject}
                 className={`
                   bg-darkGold w-auto min-w-[15rem] md:min-w-[20rem] max-w-[90vw] sm:max-w-xs md:max-w-sm text-black md:text-xl font-bold
-                  px-4 md:px-8 py-3 md:py-4 mb-2 rounded-lg shadow-lg hover:bg-opacity-90 truncate
+                  px-4 md:px-8 py-3 md:py-4 rounded-lg shadow-lg hover:bg-opacity-90 truncate
                   ${(!selectedCoachingCategory && !selectedTierObject) ? 'opacity-50 cursor-not-allowed' : ''}
                 `}
               >
