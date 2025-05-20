@@ -309,7 +309,10 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
       >
         <div className="w-10 h-1 bg-darkGold rounded-full"></div>
         <button
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
           className="absolute right-4 top-1/2 -translate-y-1/2 text-darkGold text-2xl md:text-3xl leading-none focus:outline-none"
         >
           x
