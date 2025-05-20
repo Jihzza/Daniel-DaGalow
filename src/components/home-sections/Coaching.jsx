@@ -90,8 +90,9 @@ function DirectCoaching() {
     }
   };
 
-  const handleTierClick = (tierObject) => { /* ... (keep as is) ... */ };
-  const handleClearCoachingSelections = (e) => { /* ... (keep as is) ... */};
+  const handleTierClick = (tierObject) => {
+    setSelectedTierObject(tierObject);
+  };
 
   // ... (useEffect for IntersectionObserver and handleScroll function - keep as is)
    useEffect(() => {
