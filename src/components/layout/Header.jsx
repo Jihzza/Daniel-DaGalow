@@ -176,7 +176,7 @@ function Header() {
   return (
     <>
       <header
-        className={`fixed flex items-center justify-between top-0 p-4 md:p-8 lg:p-10 left-0 right-0 z-30 h-12 md:h-24 lg:h-20 bg-black text-white shadow-lg transform transition-transform duration-300 ${
+        className={`fixed flex items-center justify-between top-0 p-4 md:p-8 lg:p-10 left-0 right-0 z-30 h-12 md:h-24 lg:h-20 bg-black text-white shadow-lg transform transition-transform duration-150 ${
           show ? "translate-y-0" : "-translate-y-full"
         }`}
       >
@@ -232,13 +232,13 @@ function Header() {
       </header>
       {/* Dropdown Menu */}
       <div
-        className={`fixed top-0 left-0 h-full w-[70%] md:w-[50%] lg:w-[30%] bg-black transform transition-transform duration-300 ease-in-out z-50 ${
+        className={`fixed top-0 left-0 h-full w-[70%] md:w-[50%] lg:w-[30%] bg-black transform transition-transform duration-150 ease-in-out z-50 ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Dropdown Menu */}
         <div
-          className={`fixed top-0 left-0 h-full w-full bg-black transform transition-transform duration-300 ease-in-out z-50 shadow-2xl flex flex-col ${
+          className={`fixed top-0 left-0 h-full w-full bg-black transform transition-transform duration-150 ease-in-out z-50 shadow-2xl flex flex-col ${
             menuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >

@@ -41,50 +41,91 @@ export default function VentureInvestmentAndProjects() {
   }, []);
 
   const handleScroll = useCallback(() => {
-    if (!buttonRef.current || !buttonStopContainerRef.current || !sectionRef.current) return;
-    const stopContainerRect = buttonStopContainerRef.current.getBoundingClientRect();
+    // Ensure refs are present and the button has a measurable height.
+    if (!buttonRef.current || !buttonStopContainerRef.current || !sectionRef.current || buttonRef.current.offsetHeight === 0) {
+        return;
+    }
+
     const buttonHeight = buttonRef.current.offsetHeight;
     const effectiveSpaceFromBottomForFixed = NAVIGATION_BAR_HEIGHT + BUTTON_PADDING_ABOVE_NAV;
-    const dockTriggerY = window.innerHeight - buttonHeight - effectiveSpaceFromBottomForFixed;
+    const stopContainerRect = buttonStopContainerRef.current.getBoundingClientRect();
 
-    if (stopContainerRect.top <= dockTriggerY) {
-      setButtonPositionStyle({
-        position: 'absolute', bottom: '0px', left: '50%',
-        transform: 'translateX(-50%)', opacity: 1, transition: SMOOTH_TRANSITION, zIndex: 1,
-      });
-      hasButtonReachedFinalPosition.current = true;
-    } else {
-      setButtonPositionStyle({
-        position: 'fixed', bottom: `${effectiveSpaceFromBottomForFixed}px`, left: '50%',
-        transform: 'translateX(-50%)', opacity: 1, transition: SMOOTH_TRANSITION, zIndex: 10,
-      });
-      hasButtonReachedFinalPosition.current = false;
+    // If container is not in viewport or has no dimensions, exit.
+    // (Rects for off-screen elements can have all zeros)
+    if (stopContainerRect.width === 0 && stopContainerRect.height === 0 && stopContainerRect.top === 0 && stopContainerRect.left === 0 && stopContainerRect.bottom === 0 && stopContainerRect.right === 0) {
+        return;
     }
-  }, []);
 
-  useEffect(() => {
-    if (isButtonVisibleBasedOnSection) {
-      handleScroll();
-      window.addEventListener('scroll', handleScroll);
-      window.addEventListener('resize', handleScroll);
-    } else {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-      if (hasButtonReachedFinalPosition.current) {
+    const fixedButtonTopY = window.innerHeight - buttonHeight - effectiveSpaceFromBottomForFixed;
+    const fixedButtonBottomY = window.innerHeight - effectiveSpaceFromBottomForFixed;
+
+    const geometricallyShouldBeDocked = stopContainerRect.top <= fixedButtonTopY &&
+                                      stopContainerRect.bottom <= fixedButtonBottomY;
+
+    if (geometricallyShouldBeDocked) {
+        // Determine and set DOCKED (absolute) state
         setButtonPositionStyle({
-          position: 'absolute', bottom: '0px', left: '50%',
-          transform: 'translateX(-50%)', opacity: 0, transition: SMOOTH_TRANSITION, zIndex: 1,
+            position: 'absolute',
+            bottom: '0px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            opacity: 1, // Ensure button is visible
+            transition: SMOOTH_TRANSITION,
+            zIndex: 1,
         });
-      } else {
-        setButtonPositionStyle(prev => ({ ...prev, opacity: 0, transition: SMOOTH_TRANSITION }));
-      }
+        hasButtonReachedFinalPosition.current = true;
+    } else {
+        // Determine and set FLOATING (fixed) state
+        setButtonPositionStyle({
+            position: 'fixed',
+            bottom: `${effectiveSpaceFromBottomForFixed}px`,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            opacity: 1, // Ensure button is visible
+            transition: SMOOTH_TRANSITION,
+            zIndex: 10,
+        });
+        hasButtonReachedFinalPosition.current = false;
     }
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-    };
-  }, [isButtonVisibleBasedOnSection, handleScroll]);
+}, []); // No dependencies like isButtonVisibleBasedOnSection or component state needed here
 
+useEffect(() => {
+  const buttonElement = buttonRef.current; // Good practice to use var for ref in effect
+  // Ensure button has rendered and has height before attaching scroll listeners
+  if (isButtonVisibleBasedOnSection && buttonElement && buttonElement.offsetHeight > 0) {
+    handleScroll(); // Set initial state correctly (handles opacity: 1)
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
+  } else {
+    // Section is not sufficiently visible, or button not ready
+    window.removeEventListener('scroll', handleScroll);
+    window.removeEventListener('resize', handleScroll);
+
+    // This logic now matches the Services.jsx behavior which you said is correct:
+    if (hasButtonReachedFinalPosition.current) {
+      // Button was DOCKED (absolute). It should remain in its absolute position
+      // and OPAQUE (opacity: 1), to scroll naturally with the (now off-screen) section.
+      setButtonPositionStyle((prev) => ({
+        ...prev, // Preserve existing transform, left, bottom, zIndex from last 'absolute' state
+        position: "absolute", // Ensure position is absolute
+        opacity: 1,           // Keep it visible
+        // transition: SMOOTH_TRANSITION, // Transition opacity if it was changing, otherwise not strictly needed if already 1
+      }));
+    } else {
+      // Button was FLOATING (fixed), or its state is undetermined (initial).
+      // Since the section is gone, the floating button should become transparent.
+      setButtonPositionStyle((prev) => ({
+        ...prev, // Preserve existing transform, left, bottom from last 'fixed' state
+        opacity: 0,
+        transition: SMOOTH_TRANSITION, // Apply opacity transition
+      }));
+    }
+  }
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+    window.removeEventListener('resize', handleScroll);
+  };
+}, [isButtonVisibleBasedOnSection, handleScroll]); // handleScroll is memoized
   const handleServiceClick = (serviceId) => {
     // 1. Set the service in context
     setService(serviceId); // serviceId will be "pitchdeck"

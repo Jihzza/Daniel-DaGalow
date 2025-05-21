@@ -128,44 +128,53 @@ function Services() {
   }, []);
 
   const handleScroll = useCallback(() => {
-    if (
-      !buttonRef.current ||
-      !buttonStopContainerRef.current ||
-      !sectionRef.current
-    )
-      return;
-    const stopContainerRect =
-      buttonStopContainerRef.current.getBoundingClientRect();
-    const buttonHeight = buttonRef.current.offsetHeight;
-    const effectiveSpaceFromBottomForFixed =
-      NAVIGATION_BAR_HEIGHT + BUTTON_PADDING_ABOVE_NAV;
-    const dockTriggerY =
-      window.innerHeight - buttonHeight - effectiveSpaceFromBottomForFixed;
-
-    if (stopContainerRect.top <= dockTriggerY) {
-      setButtonPositionStyle({
-        position: "absolute",
-        bottom: "0px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        opacity: 1,
-        transition: SMOOTH_TRANSITION,
-        zIndex: 1,
-      });
-      hasButtonReachedFinalPosition.current = true;
-    } else {
-      setButtonPositionStyle({
-        position: "fixed",
-        bottom: `${effectiveSpaceFromBottomForFixed}px`,
-        left: "50%",
-        transform: "translateX(-50%)",
-        opacity: 1,
-        transition: SMOOTH_TRANSITION,
-        zIndex: 10,
-      });
-      hasButtonReachedFinalPosition.current = false;
+    // Ensure refs are present and the button has a measurable height.
+    if (!buttonRef.current || !buttonStopContainerRef.current || !sectionRef.current || buttonRef.current.offsetHeight === 0) {
+        return;
     }
-  }, []);
+
+    const buttonHeight = buttonRef.current.offsetHeight;
+    const effectiveSpaceFromBottomForFixed = NAVIGATION_BAR_HEIGHT + BUTTON_PADDING_ABOVE_NAV;
+    const stopContainerRect = buttonStopContainerRef.current.getBoundingClientRect();
+
+    // If container is not in viewport or has no dimensions, exit.
+    // (Rects for off-screen elements can have all zeros)
+    if (stopContainerRect.width === 0 && stopContainerRect.height === 0 && stopContainerRect.top === 0 && stopContainerRect.left === 0 && stopContainerRect.bottom === 0 && stopContainerRect.right === 0) {
+        return;
+    }
+
+    const fixedButtonTopY = window.innerHeight - buttonHeight - effectiveSpaceFromBottomForFixed;
+    const fixedButtonBottomY = window.innerHeight - effectiveSpaceFromBottomForFixed;
+
+    const geometricallyShouldBeDocked = stopContainerRect.top <= fixedButtonTopY &&
+                                      stopContainerRect.bottom <= fixedButtonBottomY;
+
+    if (geometricallyShouldBeDocked) {
+        // Determine and set DOCKED (absolute) state
+        setButtonPositionStyle({
+            position: 'absolute',
+            bottom: '0px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            opacity: 1, // Ensure button is visible
+            transition: SMOOTH_TRANSITION,
+            zIndex: 1,
+        });
+        hasButtonReachedFinalPosition.current = true;
+    } else {
+        // Determine and set FLOATING (fixed) state
+        setButtonPositionStyle({
+            position: 'fixed',
+            bottom: `${effectiveSpaceFromBottomForFixed}px`,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            opacity: 1, // Ensure button is visible
+            transition: SMOOTH_TRANSITION,
+            zIndex: 10,
+        });
+        hasButtonReachedFinalPosition.current = false;
+    }
+}, []); // No dependencies like isButtonVisibleBasedOnSection or component state needed here
 
   useEffect(() => {
     if (isButtonVisibleBasedOnSection) {

@@ -37,7 +37,7 @@ function IncentivePage() {
           </p>
           <button
             onClick={handleSignUp}
-            className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300"
+            className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-150"
           >
             {t('incentivePage.account.cta')}
           </button>

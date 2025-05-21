@@ -354,7 +354,7 @@ function Hero() {
             </div>
             <button
               onClick={handleOpenForm("booking")} // ← booking = consultations
-              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-75 z-10"
             >
               {t("hero.hero_book_consultation")}
             </button>
@@ -431,7 +431,7 @@ function Hero() {
 
             <button
               onClick={openCoachingForm}
-              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-75 z-10"
             >
               {t("hero.hero_get_my_number")}
             </button>
@@ -459,7 +459,7 @@ function Hero() {
 
             <button
               onClick={openPitchDeckForm} // MODIFIED
-              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
+              className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-75 z-10"
             >
               {t("hero.hero_pitchdeck_button")}
             </button>

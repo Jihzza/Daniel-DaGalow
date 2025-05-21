@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState, createContext, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -36,6 +37,7 @@ import Signup from "./components/Auth/Signup";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 import ScrollToTop from "./components/common/ScrollToTop";
+import ScrollToTopButton from "./components/common/ScrollToTopButton"; // Import the button
 import TestimonialReview from "./pages/admin/TestimonialReview";
 import BookingSuccess from "./pages/BookingSuccess";
 import { useAuth } from "./contexts/AuthContext";
@@ -206,7 +208,7 @@ function App() {
                 />
               )}
             </AnimatePresence>
-
+            <ScrollToTopButton /> {/* Add the button here */}
             <AuthModal
               isOpen={authModalOpen}
               onClose={() => setAuthModalOpen(false)}
