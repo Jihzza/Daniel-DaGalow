@@ -48,7 +48,17 @@ function Hero() {
 
   /* parent scrolls to the section */
   const handleCoachingCard = () => scrollTo("coaching");
-  /* button opens the Coaching wizard */
+  const handlePitchDeckCardScroll = () => scrollTo("venture-investment"); // MODIFIED
+
+    // New handler for Pitch Deck form opening
+  const openPitchDeckForm = (e) => { // MODIFIED
+    e.stopPropagation();
+    setService("pitchdeck"); // MODIFIED - set service to"pitchdeck"
+    document
+      .getElementById("service-selection")
+      ?.scrollIntoView({ behavior: "smooth" });
+  };
+
   const openCoachingForm = (e) => {
     e.stopPropagation(); // Stop event from bubbling to parent
     setServiceWithTier("coaching", selectedTier);
@@ -433,7 +443,7 @@ function Hero() {
 
         {/* Pitch Deck */}
         <div
-          onClick={handleCoachingCard}
+          onClick={handlePitchDeckCardScroll} // MODIFIED
           className="flex flex-col items-center justify-center mt-8 border-2 border-darkGold rounded-xl p-4"
         >
           <div className="flex flex-col items-center justify-center my-8">
@@ -448,7 +458,7 @@ function Hero() {
             </div>
 
             <button
-              onClick={openCoachingForm}
+              onClick={openPitchDeckForm} // MODIFIED
               className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 mb-2 mt-6 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-300 z-10"
             >
               {t("hero.hero_pitchdeck_button")}

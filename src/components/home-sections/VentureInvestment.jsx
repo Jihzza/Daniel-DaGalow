@@ -1,8 +1,10 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+// components/home-sections/VentureInvestment.jsx
+import React, { useRef, useState, useEffect, useCallback, useContext } from "react"; // Added useContext
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import perspectiv from "../../assets/logos/Perspectiv Banner.svg";
 import galow from "../../assets/logos/Galow Banner.png";
+import { ServiceContext } from "../../contexts/ServiceContext"; // Ensure this path is correct
 
 // Floating button constants (copied from Coaching/Services)
 const NAVIGATION_BAR_HEIGHT = 60;
@@ -12,6 +14,7 @@ const SMOOTH_TRANSITION = 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out'
 export default function VentureInvestmentAndProjects() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { setService } = useContext(ServiceContext); // Get setService from context
 
   // Floating button state/refs
   const [isButtonVisibleBasedOnSection, setIsButtonVisibleBasedOnSection] = useState(false);
@@ -24,7 +27,7 @@ export default function VentureInvestmentAndProjects() {
   const buttonStopContainerRef = useRef(null);
   const hasButtonReachedFinalPosition = useRef(false);
 
-  // Floating button logic (copied from Coaching/Services)
+  // Floating button logic ( 그대로 유지 )
   useEffect(() => {
     const observer = new window.IntersectionObserver(
       ([entry]) => setIsButtonVisibleBasedOnSection(entry.isIntersecting),
@@ -82,16 +85,41 @@ export default function VentureInvestmentAndProjects() {
     };
   }, [isButtonVisibleBasedOnSection, handleScroll]);
 
-  const handleServiceClick = (service) => {
-    const mapping = {
-      pitchdeck: "#pitch-deck-request",
-    };
-    navigate(`/?service=${service}${mapping[service]}`);
+  const handleServiceClick = (serviceId) => {
+    // 1. Set the service in context
+    setService(serviceId); // serviceId will be "pitchdeck"
+
+    // 2. Navigate to the root path where MergedServiceForm resides.
+    // MergedServiceForm will detect the service from context and render PitchDeckRequest.
+    // We also add a hash to help the browser scroll, though manual scroll is more reliable.
+    const targetFormId = "pitch-deck-request"; // ID of the section in PitchDeckRequest.jsx
+    navigate(`/#${targetFormId}`);
+
+    // 3. Scroll to the MergedServiceForm container first, then to the specific form.
+    // MergedServiceForm's own scroll hook will likely handle scrolling "service-selection" into view.
+    // This timeout ensures that after MergedServiceForm has updated and rendered PitchDeckRequest,
+    // we attempt to scroll to the actual form.
     setTimeout(() => {
-      const id = mapping[service].slice(1);
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
+      const formElement = document.getElementById(targetFormId);
+      if (formElement) {
+        const headerElement = document.querySelector('header'); // Assuming your header is a <header> tag
+        const headerOffset = headerElement ? headerElement.offsetHeight : 70; // Default offset
+        
+        const elementPosition = formElement.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
+      } else {
+        // Fallback scroll to the main service form container if the specific form ID isn't found immediately
+        const serviceSelectionElement = document.getElementById("service-selection");
+        if (serviceSelectionElement) {
+           serviceSelectionElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    }, 150); // Adjust delay if necessary, 150ms is usually a good starting point
   };
 
   const projects = [
@@ -139,7 +167,7 @@ export default function VentureInvestmentAndProjects() {
           >
             <button
               ref={buttonRef}
-              onClick={() => handleServiceClick("pitchdeck")}
+              onClick={() => handleServiceClick("pitchdeck")} // Updated onClick handler
               style={buttonPositionStyle}
               className="bg-darkGold w-auto min-w-[15rem] md:min-w-[20rem] max-w-[90vw] sm:max-w-xs md:max-w-sm text-black md:text-xl font-bold px-4 md:px-8 py-3 md:py-4 rounded-lg shadow-lg hover:bg-opacity-90 truncate"
             >

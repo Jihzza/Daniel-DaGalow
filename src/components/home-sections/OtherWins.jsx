@@ -498,9 +498,9 @@ function OtherWins() {
     background: "none",
     border: "none",
     color: "white",
-    fontSize: "0.8rem", // Slightly smaller icons
+    fontSize: "1rem", // Slightly smaller icons
     cursor: "pointer",
-    padding: "5px", // Added padding for better click area
+    padding: "2px", // Added padding for better click area
     margin: "0 3px", // Reduced margin
   };
 

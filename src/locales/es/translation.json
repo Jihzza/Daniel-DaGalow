@@ -227,10 +227,10 @@
   "booking": {
     "title": "Programa tu consulta",
     "step_datetime": "Selecciona una fecha y hora",
-    "step_1": "Elige una fecha",
+    "step_1": "Elige una echa",
     "step_2": "Contacto",
     "step_3": "Pago",
-    "step_4": "Chatea con nuestro asistente",
+    "step_4": "Chat",
     "back": "Atrás",
     "next": "Siguiente",
     "complete_booking": "Completar reserva",
@@ -245,9 +245,9 @@
     "title": "Coaching directo",
     "steps": {
       "frequency": "Elige la frecuencia de coaching",
-      "contact": "Tu información de contacto",
-      "payment": "Completa tu pago",
-      "chat": "Chatea con tu coach"
+      "contact": "Contacto",
+      "payment": "Pago",
+      "chat": "Chat"
     },
     "frequency_options": {
       "weekly": "Básico",
@@ -280,8 +280,8 @@
     "title": "Solicitar presentación de proyecto",
     "steps": {
       "project": "Selecciona tu proyecto",
-      "contact": "Tu información de contacto",
-      "chat": "Chatea con nuestro asistente"
+      "contact": "Contacto",
+      "payment": "Pago"
     },
     "form": {
       "name_label": "Tu nombre",

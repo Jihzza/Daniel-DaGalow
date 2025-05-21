@@ -237,7 +237,7 @@
     "step_1": "Escolha uma data",
     "step_2": "Contacto",
     "step_3": "Pagamento",
-    "step_4": "Converse com o nosso assistente",
+    "step_4": "Chat",
     "back": "Anterior",
     "next": "Seguinte",
     "complete_booking": "Concluir Agendamento",
@@ -252,9 +252,9 @@
     "title": "Coaching Direto",
     "steps": {
       "frequency": "Escolha a frequência do coaching",
-      "contact": "As suas informações de contacto",
-      "payment": "Complete o seu pagamento",
-      "chat": "Converse com o seu coach"
+      "contact": "Contato",
+      "payment": "Pagamento",
+      "chat": "Chat"
     },
     "frequency_options": {
       "weekly": "Básico",
@@ -287,8 +287,8 @@
     "title": "Solicitar Apresentação",
     "steps": {
       "project": "Selecione o seu projeto",
-      "contact": "As suas informações de contacto",
-      "chat": "Converse com o nosso assistente"
+      "contact": "Contato",
+      "payment": "Pagamento"
     },
     "form": {
       "name_label": "O Seu Nome",
