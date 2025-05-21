@@ -7,14 +7,12 @@ import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../utils/supabaseClient";
 import TypingMessage from "../common/TypingMessage";
 import { useTranslation } from "react-i18next";
+
 // Fallback function to generate UUID for browsers that don't support crypto.randomUUID
 function generateUUID() {
-  // Check if the browser supports crypto.randomUUID
   if (window.crypto && typeof window.crypto.randomUUID === "function") {
     return window.crypto.randomUUID();
   }
-
-  // Fallback implementation
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
     const r = (Math.random() * 16) | 0;
     const v = c === "x" ? r : (r & 0x3) | 0x8;
@@ -29,7 +27,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
   const [isTypingAnimationActive, setIsTypingAnimationActive] = useState(false);
   const panelRef = useRef(null);
   const listRef = useRef(null);
-  const headerRef = useRef(null);
+  const draggableHeaderRef = useRef(null);
   const DEFAULT_HEIGHT = window.innerHeight - 45;
   const initialHeight = useRef(DEFAULT_HEIGHT);
   const [height, setHeight] = useState(DEFAULT_HEIGHT);
@@ -41,7 +39,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
   const userId = user?.id;
   const [isNewChat, setIsNewChat] = useState(true);
   const { t } = useTranslation();
-  // Check if any messages still have active typing animations
+
   const checkTypingAnimations = () => {
     const anyStillTyping = messages.some(
       (msg) => msg.from === "bot" && msg.isTyping
@@ -49,116 +47,30 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
     setIsTypingAnimationActive(anyStillTyping);
   };
 
-  // inside your component, before the return
   const onPointerDown = (e) => {
-    e.preventDefault();
-    setResizing(true);
-    dragging.current = false;
-    // capture the pointer so we continue getting moves
-    headerRef.current.setPointerCapture(e.pointerId);
+    if (draggableHeaderRef.current && draggableHeaderRef.current.contains(e.target)) {
+      e.preventDefault();
+      setResizing(true);
+      dragging.current = false;
+      draggableHeaderRef.current.setPointerCapture(e.pointerId);
+    }
   };
 
   const onPointerMove = (e) => {
     if (!resizing) return;
     dragging.current = true;
-    const newHeight = window.innerHeight - e.clientY - 56;
+    const newHeight = window.innerHeight - e.clientY - 56; 
     setHeight(Math.max(100, Math.min(newHeight, window.innerHeight - 100)));
   };
 
-  // Inside ChatbotWindow.jsx, modify the useEffect where you check for existing messages
-  useEffect(() => {
-    if (!sessionId) return;
-
-    (async () => {
-      // First check if this session already exists in chat_sessions
-      const { data: sessionData, error: sessionError } = await supabase
-        .from("chat_sessions")
-        .select("id, title")
-        .eq("id", sessionId)
-        .single();
-
-      if (sessionError && sessionError.code !== "PGRST116") {
-        // PGRST116 is "not found"
-        console.error("Error checking session:", sessionError);
-      }
-
-      // Fetch existing messages for this session
-      const { data, error } = await supabase
-        .from("messages")
-        .select("role, content, created_at")
-        .eq("session_id", sessionId)
-        .order("created_at", { ascending: true });
-
-      if (!error) {
-        if (data && data.length > 0) {
-          // We have existing messages, load them
-          setMessages(
-            data.map((row) => ({
-              from: row.role === "user" ? "user" : "bot",
-              text: row.content,
-              isTyping: false, // Mark existing messages as already typed
-            }))
-          );
-          setIsNewChat(false);
-
-          // If this session doesn't exist in chat_sessions yet (might have been created before this feature),
-          // create it with a default title
-          if (!sessionData) {
-            await supabase.from("chat_sessions").insert({
-              id: sessionId,
-              user_id: userId,
-              title: "Previous Chat", // Default title for old chats
-            });
-          }
-        } else {
-          // No messages, this is a new chat
-          // Add welcome message immediately to avoid double display
-          const welcomeMessage = {
-            from: "bot",
-            text: t("window_chatbot.welcome_message"),
-            isTyping: true,
-          };
-
-          // Create a new chat session
-          await supabase.from("chat_sessions").insert({
-            id: sessionId,
-            user_id: userId,
-            title: "New Chat", // Initial default title
-          });
-
-          // Update UI first
-          setMessages([welcomeMessage]);
-          setIsNewChat(false);
-          setIsTypingAnimationActive(true);
-
-          // Then save welcome message to database
-          try {
-            await supabase.from("messages").insert({
-              session_id: sessionId,
-              role: "assistant",
-              content: welcomeMessage.text,
-              user_id: userId,
-            });
-          } catch (error) {
-            console.error("Error saving welcome message:", error);
-          }
-        }
-      }
-    })();
-  }, [sessionId, userId]);
-  useEffect(() => {
-    const threshold = initialHeight.current * 0.3;
-    if (height <= threshold) {
-      onClose();
-    }
-  }, [height, onClose]);
-
   const onPointerUp = (e) => {
-    headerRef.current.releasePointerCapture(e.pointerId);
+    if (!resizing) return;
+    if (draggableHeaderRef.current) {
+      draggableHeaderRef.current.releasePointerCapture(e.pointerId);
+    }
     setResizing(false);
 
-    // double‑tap logic
-    if (!dragging.current) {
+    if (!dragging.current && draggableHeaderRef.current && draggableHeaderRef.current.contains(e.target)) {
       const now = Date.now();
       if (now - lastTap.current < 300) {
         onClose();
@@ -171,27 +83,100 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
   };
 
   useEffect(() => {
+    if (!sessionId) return;
+    (async () => {
+      const { data: sessionData, error: sessionError } = await supabase
+        .from("chat_sessions")
+        .select("id, title")
+        .eq("id", sessionId)
+        .single();
+
+      if (sessionError && sessionError.code !== "PGRST116") {
+        console.error("Error checking session:", sessionError);
+      }
+
+      const { data, error } = await supabase
+        .from("messages")
+        .select("role, content, created_at")
+        .eq("session_id", sessionId)
+        .order("created_at", { ascending: true });
+
+      if (!error) {
+        if (data && data.length > 0) {
+          setMessages(
+            data.map((row) => ({
+              from: row.role === "user" ? "user" : "bot",
+              text: row.content,
+              isTyping: false,
+            }))
+          );
+          setIsNewChat(false);
+          if (!sessionData) {
+            await supabase.from("chat_sessions").insert({
+              id: sessionId,
+              user_id: userId,
+              title: "Previous Chat",
+            });
+          }
+        } else {
+          const welcomeMessageText = t("window_chatbot.welcome_message");
+          const welcomeMessage = {
+            from: "bot",
+            text: welcomeMessageText,
+            isTyping: true,
+          };
+          await supabase.from("chat_sessions").insert({
+            id: sessionId,
+            user_id: userId,
+            title: "New Chat",
+          });
+          setMessages([welcomeMessage]);
+          setIsNewChat(false);
+          setIsTypingAnimationActive(true);
+          try {
+            await supabase.from("messages").insert({
+              session_id: sessionId,
+              role: "assistant",
+              content: welcomeMessageText,
+              user_id: userId,
+            });
+          } catch (dbError) {
+            console.error("Error saving welcome message:", dbError);
+          }
+        }
+      } else {
+        console.error("Error fetching messages:", error);
+      }
+    })();
+  }, [sessionId, userId, t]);
+
+  useEffect(() => {
+    const threshold = initialHeight.current * 0.3;
+    if (height <= threshold && !resizing) { 
+      onClose();
+    }
+  }, [height, onClose, resizing, initialHeight]);
+
+  useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [messages, loading]);
 
-  // Check typing animations whenever messages change
   useEffect(() => {
     checkTypingAnimations();
   }, [messages]);
 
   const sendMessage = async () => {
-    if (!userText.trim() || isTypingAnimationActive) return;
+    if (!userText.trim() || isTypingAnimationActive || loading) return;
 
-    // Add user message (no animation needed)
-    setMessages((msgs) => [...msgs, { from: "user", text: userText }]);
-    const textToSend = userText;
+    const newUserMessage = { from: "user", text: userText.trim(), isTyping: false };
+    setMessages((msgs) => [...msgs, newUserMessage]);
+    const textToSend = userText.trim();
     setUserText("");
     setLoading(true);
 
     try {
-      // Send message to chatbot API
       const res = await fetch("https://rafaello.app.n8n.cloud/webhook/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -201,86 +186,44 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
           user_id: userId,
         }),
       });
+      if (!res.ok) {
+        throw new Error(`Webhook failed with status ${res.status}`);
+      }
       const data = await res.json();
-
-      const { output } = data;
-
-      // Add bot response WITH typing animation flag
-      setMessages((msgs) => [
-        ...msgs,
-        {
-          from: "bot",
-          text: output,
-          isTyping: true, // This triggers the typing animation
-        },
-      ]);
+      const botResponseText = data.output || "Sorry, I had trouble understanding that.";
+      
+      const newBotMessage = { from: "bot", text: botResponseText, isTyping: true };
+      setMessages((msgs) => [...msgs, newBotMessage]);
       setIsTypingAnimationActive(true);
 
-      // Save messages to database
       await supabase.from("messages").insert([
-        {
-          session_id: sessionId,
-          role: "user",
-          content: textToSend,
-          user_id: userId,
-        },
-        {
-          session_id: sessionId,
-          role: "assistant",
-          content: output,
-          user_id: userId,
-        },
+        { session_id: sessionId, role: "user", content: textToSend, user_id: userId },
+        { session_id: sessionId, role: "assistant", content: botResponseText, user_id: userId },
       ]);
 
-      // Update chat title after a few messages (e.g., after 3-4 exchanges)
-      const { data: messagesData } = await supabase
-        .from("messages")
-        .select("content, role")
-        .eq("session_id", sessionId)
-        .order("created_at", { ascending: true });
-
-      if (messagesData && messagesData.length >= 4) {
-        // We have enough content to analyze
-        // Only update every 4 messages to avoid too many API calls
-        if (messagesData.length % 3 === 0) {
-          // Generate a title using the same API
-          // NEW: grab *only* the very first user message
-          const firstUser = messagesData.find((msg) => msg.role === "user");
-          const firstPrompt = firstUser ? firstUser.content : "";
-
-          // send just that prompt
-          const titleRes = await fetch("https://rafaello.app.n8n.cloud/webhook/chat-title", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              session_id: sessionId, // make sure your webhook still knows which session
-              firstUserPrompt: firstPrompt, // we’re only sending the 1st user question
-            }),
-          });
-
-          if (titleRes.ok) {
-            const titleData = await titleRes.json();
-            const generatedTitle = titleData.title || "Chat Session";
-
-            // Update the chat session title
-            await supabase
-              .from("chat_sessions")
-              .update({ title: generatedTitle, updated_at: new Date() })
-              .eq("id", sessionId);
-          }
+      if (messages.length + 2 >= 4 && (messages.length + 2) % 3 === 0) {
+        const firstUserMessage = messages.find(msg => msg.from === 'user');
+        if (firstUserMessage) {
+            try {
+                const titleRes = await fetch("https://rafaello.app.n8n.cloud/webhook/chat-title", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ session_id: sessionId, firstUserPrompt: firstUserMessage.text }),
+                });
+                if (titleRes.ok) {
+                    const titleData = await titleRes.json();
+                    await supabase.from("chat_sessions").update({ title: titleData.title || "Chat Session", updated_at: new Date() }).eq("id", sessionId);
+                }
+            } catch (titleError) {
+                console.error("Error updating chat title:", titleError);
+            }
         }
       }
+
     } catch (error) {
       console.error("Chatbot error:", error);
-      // Even error messages need the typing animation
-      setMessages((msgs) => [
-        ...msgs,
-        {
-          from: "bot",
-          text: "Sorry, there was an error. Please try again.",
-          isTyping: true, // Add typing animation to error messages too
-        },
-      ]);
+      const errorMessage = { from: "bot", text: t('window_chatbot.error_message') || "Sorry, there was an error. Please try again.", isTyping: true };
+      setMessages((msgs) => [...msgs, errorMessage]);
       setIsTypingAnimationActive(true);
     } finally {
       setLoading(false);
@@ -299,24 +242,39 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
     >
       {/* Header */}
       <div
-        ref={headerRef}
-        className={`relative w-full flex items-center justify-center py-6 md:pt-10 px-4 cursor-row-resize touch-none ${
+        className={`relative w-full flex items-stretch justify-between py-3 md:py-4 px-2 md:px-4 touch-none ${ // Added relative for absolute positioning of the handle
           resizing ? "bg-opacity-50" : ""
         }`}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
       >
-        <div className="w-10 h-1 bg-darkGold rounded-full"></div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-          }}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-darkGold text-2xl md:text-3xl leading-none focus:outline-none"
+        {/* Draggable Area (takes up space, handles drag events) */}
+        <div
+          ref={draggableHeaderRef}
+          className="flex-grow h-full cursor-row-resize" // Ensure it fills height for reliable drag
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          style={{ touchAction: 'none' }}
         >
-          x
-        </button>
+          {/* This div is now just for capturing pointer events over the main area. */}
+          {/* The visual handle is positioned absolutely relative to the parent. */}
+        </div>
+
+        {/* Centered Drag Handle (Visual) */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-1 bg-darkGold rounded-full pointer-events-none"></div>
+
+
+        {/* Close Button Container */}
+        <div className="flex-shrink-0 flex items-center justify-center pl-2 z-10"> {/* Added z-10 to ensure it's clickable over the draggable area if overlap occurs */}
+          <button
+            onClick={(e) => {
+              onClose();
+            }}
+            className="text-darkGold text-2xl md:text-3xl leading-none focus:outline-none p-2"
+            aria-label="Close chat"
+          >
+            x
+          </button>
+        </div>
       </div>
 
       {/* Message list */}
