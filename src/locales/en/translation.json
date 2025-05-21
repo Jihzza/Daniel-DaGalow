@@ -11,8 +11,8 @@
     "videos": "Videos",
     "profile": "Profile",
     "settings": "Settings",
-    "login": "Login",
-    "logout": "Logout",
+    "login": "Log In",
+    "logout": "Sign Out",
     "login_signup": "Login / Sign Up",
     "chatbot": "Chatbot",
     "account": "Account",
@@ -75,7 +75,7 @@
     "hero_coaching_limited_spots": "Limited Spots",
     "hero_get_my_number": "Get My Number",
     "hero_pitchdeck_title": "Invest With Me",
-    "hero_pitchdeck_description": "I’m always launching new ventures. To explore current and upcoming opportunities, request a pitch deck below.",
+    "hero_pitchdeck_description": "I'm always launching new ventures. To explore current and upcoming opportunities, request a pitch deck below.",
     "hero_pitchdeck_button": "Request Pitch Deck",
     "common_learn_more": "Learn More",
     "steps": {
@@ -168,6 +168,14 @@
     "coaching_service_6": "Habits & Personal Growth",
     "coaching_service_7": "Social Media Manager",
     "coaching_service_8": "Stock Researcher",
+    "coaching_service_1_desc": "Master the markets with confidence. We break down core investment principles, asset allocation, and risk-management tactics so you can build a diversified portfolio that matches your goals and risk appetite.",
+    "coaching_service_2_desc": "Get a tailor-made fitness roadmap. From periodised workout plans to nutrition tweaks and habit tracking, you'll receive step-by-step guidance to hit strength, endurance, and aesthetic targets—safely and sustainably.",
+    "coaching_service_3_desc": "Upgrade your dating life. Hone social-skill fundamentals, craft a magnetic online profile, and learn real-world approach frameworks that boost confidence and attract high-quality partners.",
+    "coaching_service_4_desc": "Turn OnlyFans into a thriving business. We cover niche positioning, content calendars, pricing psychology, fan-funnel design, and cross-platform promotion to scale subscribers and monthly earnings.",
+    "coaching_service_5_desc": "Accelerate your venture's growth. From lean business-plan audits to marketing funnels, ops systems, and KPI dashboards, you'll get actionable strategies to increase revenue and profitability.",
+    "coaching_service_6_desc": "Design habits that stick. Implement science-backed routines for productivity, health, and mindset, while removing self-sabotaging behaviours through accountability loops and progress reviews.",
+    "coaching_service_7_desc": "Grow an engaged audience. Receive content-pillar mapping, algorithm-proof posting schedules, analytic deep-dives, and monetisation tactics to turn followers into loyal customers.",
+    "coaching_service_8_desc": "Make data-driven trades. Learn fundamental and technical research workflows, valuation models, and watch-list curation so you can spot high-conviction stock opportunities before the crowd.",
     "button_get_number_default": "Get My Number",
     "button_action_invest_coaching": "Start Investing Smarter",
     "button_action_trainer_coaching": "Get Your Fitness Plan",
@@ -870,8 +878,9 @@
   "cta": {
     "button": "Create Your Account"
   }
-},
-"incentivePage": {
+  },
+
+  "incentivePage": {
   "account": {
     "title": "Create Your Account",
     "description": "Create an account in moments to schedule services and keep track of your journey with me. It's essential for all bookings and automatically created if you schedule a service.",
@@ -887,13 +896,14 @@
     "benefit2": "Gathers key info before sessions for a focused consultation.",
     "benefit3": "Provides instant answers about our services."
   }
-},
+  },
 
   "window_chatbot": {
     "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?",
     "wait_for_message": "Wait for bot response...",
     "type_message": "Type a message…"
   },
+
   "chatbot": {
     "error_message": "Sorry, I couldn't understand that or something went wrong.",
     "scheduling": {
@@ -930,6 +940,7 @@
       "placeholder_confirmingbooking": "Confirm with 'Yes' or 'No'"
     }
   },
+
   "common": {
     "yes": "Yes, Confirm!",
     "no": "No, Go Back",

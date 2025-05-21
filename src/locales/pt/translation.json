@@ -159,7 +159,16 @@
     "coaching_service_5": "Consultoria de Negócios",
     "coaching_service_6": "Hábitos & Crescimento Pessoal",
     "coaching_service_7": "Redes sociais",
-    "coaching_service_8": "Mercado de ações"
+    "coaching_service_8": "Mercado de ações",
+    "coaching_service_1_desc": "Domina os mercados com confiança. Descomplicamos os princípios básicos do investimento, a alocação de ativos e as táticas de gestão de risco, para que construas uma carteira diversificada alinhada com os teus objetivos e perfil de risco.",
+    "coaching_service_2_desc": "Recebe um plano de fitness à tua medida. De programas de treino periodizados a ajustes nutricionais e monitorização de hábitos, terás orientação passo a passo para alcançar metas de força, resistência e estética, de forma segura e sustentável.",
+    "coaching_service_3_desc": "Melhora a tua vida amorosa. Aperfeiçoa competências sociais essenciais, cria um perfil online magnético e aprende métodos de abordagem no mundo real que aumentam a confiança e atraem parceiros de alta qualidade.",
+    "coaching_service_4_desc": "Transforma o OnlyFans num negócio rentável. Trabalhamos o posicionamento de nicho, calendários de conteúdo, psicologia de preços, desenho do funil de fãs e promoção multicanal para aumentar subscritores e receitas mensais.",
+    "coaching_service_5_desc": "Acelera o crescimento da tua empresa. Desde auditorias lean do plano de negócios a funis de marketing, sistemas operacionais e dashboards de KPIs, receberás estratégias acionáveis para aumentar a receita e a rentabilidade.",
+    "coaching_service_6_desc": "Cria hábitos que perduram. Implementa rotinas comprovadas pela ciência para produtividade, saúde e mentalidade, eliminando comportamentos autossabotadores através de ciclos de responsabilização e revisões de progresso.",
+    "coaching_service_7_desc": "Faz crescer uma audiência empenhada. Recebe mapeamento de pilares de conteúdo, calendários de publicação à prova de algoritmo, análises aprofundadas e táticas de monetização para converter seguidores em clientes leais.",
+    "coaching_service_8_desc": "Realiza operações orientadas por dados. Aprende fluxos de trabalho de análise fundamental e técnica, modelos de avaliação e criação de listas de observação para detetar oportunidades de ações de alta convicção antes da maioria."
+  
   },
 
   "projects": {

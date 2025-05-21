@@ -38,7 +38,7 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [show, setShow] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const lastY = useRef(0);
+  const lastY = useRef(0); // Keep track of the last scroll position
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -53,6 +53,27 @@ function Header() {
   const allLangs = (i18n.options.supportedLngs || []).filter(
     (l) => l !== "cimode" && l !== "*"
   );
+
+  // Effect to handle header visibility on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY > lastY.current && currentY > 56) { // 56 is the height of the header, adjust if needed
+        // Scrolling down
+        setShow(false);
+      } else {
+        // Scrolling up or at the top
+        setShow(true);
+      }
+      lastY.current = currentY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []); // No dependencies, so it runs once on mount and cleans up on unmount
 
   useEffect(() => {
     if (!user?.id) return;
@@ -96,9 +117,20 @@ function Header() {
     }
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    setMenuOpen(false); // Close the menu after sign out
+    navigate("/"); // Navigate to homepage or login page
+  };
+
+  const handleLogIn = () => {
+    setAuthModalOpen(true);
+    setMenuOpen(false); // Close the menu
+  };
+
   const getFlagImage = (langCode) => {
     const normalized = langCode.toLowerCase();
-    if (normalized === "PT-BR" || normalized === "br") {
+    if (normalized === "pt-br" || normalized === "br") {
       return (
         <img
           src="https://flagcdn.com/w40/br.png"
@@ -133,7 +165,7 @@ function Header() {
 
   const getLanguageName = (langCode) => {
     const normalized = langCode.toLowerCase();
-    if (normalized === "PT-BR" || normalized === "br") return "PT-BR";
+    if (normalized === "pt-br" || normalized === "br") return "PT-BR";
     return (
       languageConfig[langCode]?.name ||
       languageConfig[normalized]?.name ||
@@ -278,8 +310,7 @@ function Header() {
                 <div className="pt-1 sm:pt-2">
                   <p className="text-xs sm:text-sm text-darkGold px-3 mb-1 opacity-70">
                     {t("navigation.services")}
-                  </p>
-                  <button
+                  </p>                  <button
                     onClick={() => {
                       document.getElementById("services")?.scrollIntoView({
                         behavior: "smooth",
@@ -333,6 +364,22 @@ function Header() {
             >
               {t("navigation.settings")}
             </Link>
+            {!user && (
+              <button
+                onClick={handleLogIn}
+                className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+              >
+                {t("navigation.login")} {/* Fallback text "Log In" */}
+              </button>
+            )}
+            {user && (
+              <button
+                onClick={handleSignOut}
+                className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+              >
+                {t("navigation.logout")} {/* Fallback text "Sign Out" */}
+              </button>
+            )}
           </nav>
         </div>
       </div>

@@ -153,7 +153,16 @@
     "coaching_service_5": "Asesor empresarial",
     "coaching_service_6": "Hábitos y crecimiento personal",
     "coaching_service_7": "Redes sociales",
-    "coaching_service_8": "Mercado de acciones"
+    "coaching_service_8": "Mercado de acciones",
+    "coaching_service_1_desc": "Domina los mercados con confianza. Desglosamos los principios fundamentales de inversión, la asignación de activos y las tácticas de gestión de riesgos para que construyas una cartera diversificada que se ajuste a tus objetivos y nivel de riesgo.",
+    "coaching_service_2_desc": "Consigue una hoja de ruta de fitness a medida. Desde planes de entrenamiento periodizados hasta ajustes nutricionales y seguimiento de hábitos, recibirás una guía paso a paso para alcanzar tus metas de fuerza, resistencia y estética, de forma segura y sostenible.",
+    "coaching_service_3_desc": "Mejora tu vida amorosa. Perfecciona las habilidades sociales básicas, crea un perfil online magnético y aprende metodologías de acercamiento en el mundo real que aumentan tu confianza y atraen parejas de alta calidad.",
+    "coaching_service_4_desc": "Convierte OnlyFans en un negocio floreciente. Abordamos el posicionamiento de nicho, los calendarios de contenido, la psicología de precios, el diseño del embudo de fans y la promoción multiplataforma para aumentar suscriptores e ingresos mensuales.",
+    "coaching_service_5_desc": "Acelera el crecimiento de tu empresa. Desde auditorías de planes de negocio lean hasta embudos de marketing, sistemas operativos y paneles de KPI, recibirás estrategias accionables para incrementar los ingresos y la rentabilidad.",
+    "coaching_service_6_desc": "Diseña hábitos que perduren. Implementa rutinas respaldadas por la ciencia para la productividad, la salud y la mentalidad, eliminando conductas autodestructivas gracias a bucles de responsabilidad y revisiones de progreso.",
+    "coaching_service_7_desc": "Haz crecer una audiencia comprometida. Obtén un mapa de pilares de contenido, calendarios de publicación a prueba de algoritmos, análisis en profundidad y tácticas de monetización para convertir seguidores en clientes fieles.",
+    "coaching_service_8_desc": "Opera guiado por datos. Aprende flujos de trabajo de análisis fundamental y técnico, modelos de valoración y creación de listas de seguimiento para detectar oportunidades bursátiles de alta convicción antes que la mayoría."
+  
   },
 
   "projects": {

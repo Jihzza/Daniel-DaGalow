@@ -498,16 +498,16 @@ function OtherWins() {
     background: "none",
     border: "none",
     color: "white",
-    fontSize: "1rem", // Slightly smaller icons
+    fontSize: "1.2rem", // Slightly smaller icons
     cursor: "pointer",
     padding: "2px", // Added padding for better click area
-    margin: "0 3px", // Reduced margin
+    margin: "0 2px", // Reduced margin
   };
 
   // Styles for the timeline (seek bar) to make it simpler and smaller
   const timelineSeekStyle = {
     flexGrow: 1,
-    margin: "0 8px", // Adjusted margin
+    margin: "0 4px", // Adjusted margin
     height: "8px", // Make the track thinner
     cursor: "pointer",
     // Basic appearance, for deeper customization use ::-webkit-slider-thumb etc. in CSS
@@ -521,7 +521,7 @@ function OtherWins() {
   // Styles for time display to make it smaller
   const timeDisplayStyle = {
     fontSize: "0.75rem", // Smaller font for time
-    margin: "0 5px",
+    margin: "0 2px",
     minWidth: "80px", // Ensure enough space for HH:MM:SS / HH:MM:SS
     textAlign: "center",
   };

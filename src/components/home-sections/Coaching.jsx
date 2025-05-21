@@ -1,6 +1,6 @@
 // src/components/home-sections/Coaching.jsx
 import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
-// ... (Import your icons as before)
+import { motion } from "framer-motion"; // Ensure motion is imported
 import InvestIcon from "../../assets/icons/Stocks Branco.svg";
 import TrainerIcon from "../../assets/icons/PersonalTrainer Branco.svg";
 import DatingIcon from "../../assets/icons/Dating Branco.svg";
@@ -22,7 +22,7 @@ function DirectCoaching() {
   const { t } = useTranslation();
 
   const [selectedCoachingCategory, setSelectedCoachingCategory] = useState(null);
-  const [selectedTierObject, setSelectedTierObject] = useState(null); // Keep this for tier selection
+  const [selectedTierObject, setSelectedTierObject] = useState(null);
 
   const [isButtonVisibleBasedOnSection, setIsButtonVisibleBasedOnSection] = useState(false);
   const [buttonPositionStyle, setButtonPositionStyle] = useState({
@@ -34,6 +34,10 @@ function DirectCoaching() {
   const buttonStopContainerRef = useRef(null);
   const hasButtonReachedFinalPosition = useRef(false);
 
+  // New state and ref for the description animation
+  const coachingContentRef = useRef(null);
+  const [coachingCalculatedHeight, setCoachingCalculatedHeight] = useState(0);
+
   const openCoachingForm = () => {
     const tierValueToPass = selectedTierObject ? selectedTierObject.value : "Weekly";
     setServiceWithTier("coaching", tierValueToPass);
@@ -42,51 +46,57 @@ function DirectCoaching() {
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // UPDATED: Add buttonActionKey for each coaching category
   const coachingServiceItemsData = [
-    { id: "invest", titleKey: "coaching.coaching_service_1", Icon: InvestIcon, alt: "Investment", buttonActionKey: "coaching.button_action_invest_coaching" },
-    { id: "trainer", titleKey: "coaching.coaching_service_2", Icon: TrainerIcon, alt: "Fitness", buttonActionKey: "coaching.button_action_trainer_coaching" },
-    { id: "dating", titleKey: "coaching.coaching_service_3", Icon: DatingIcon, alt: "Dating", buttonActionKey: "coaching.button_action_dating_coaching" },
-    { id: "onlyfans_coaching", titleKey: "coaching.coaching_service_4", Icon: OnlyFansIcon, alt: "OnlyFans Coaching", buttonActionKey: "coaching.button_action_onlyfans_coaching" },
-    { id: "business_advisor", titleKey: "coaching.coaching_service_5", Icon: BusinessIcon, alt: "Business Advisor", buttonActionKey: "coaching.button_action_business_coaching" },
-    { id: "habits", titleKey: "coaching.coaching_service_6", Icon: HabitsIcon, alt: "Habits", buttonActionKey: "coaching.button_action_habits_coaching" },
-    { id: "social", titleKey: "coaching.coaching_service_7", Icon: SocialIcon, alt: "Social Media", buttonActionKey: "coaching.button_action_social_coaching" },
-    { id: "stocks", titleKey: "coaching.coaching_service_8", Icon: StocksIcon, alt: "Stock Market", buttonActionKey: "coaching.button_action_stocks_coaching" },
+    { id: "invest", titleKey: "coaching.coaching_service_1", Icon: InvestIcon, alt: "Investment", buttonActionKey: "coaching.button_action_invest_coaching", descriptionKey: "coaching.coaching_service_1_desc" },
+    { id: "trainer", titleKey: "coaching.coaching_service_2", Icon: TrainerIcon, alt: "Fitness", buttonActionKey: "coaching.button_action_trainer_coaching", descriptionKey: "coaching.coaching_service_2_desc" },
+    { id: "dating", titleKey: "coaching.coaching_service_3", Icon: DatingIcon, alt: "Dating", buttonActionKey: "coaching.button_action_dating_coaching", descriptionKey: "coaching.coaching_service_3_desc" },
+    { id: "onlyfans_coaching", titleKey: "coaching.coaching_service_4", Icon: OnlyFansIcon, alt: "OnlyFans Coaching", buttonActionKey: "coaching.button_action_onlyfans_coaching", descriptionKey: "coaching.coaching_service_4_desc" },
+    { id: "business_advisor", titleKey: "coaching.coaching_service_5", Icon: BusinessIcon, alt: "Business Advisor", buttonActionKey: "coaching.button_action_business_coaching", descriptionKey: "coaching.coaching_service_5_desc" },
+    { id: "habits", titleKey: "coaching.coaching_service_6", Icon: HabitsIcon, alt: "Habits", buttonActionKey: "coaching.button_action_habits_coaching", descriptionKey: "coaching.coaching_service_6_desc" },
+    { id: "social", titleKey: "coaching.coaching_service_7", Icon: SocialIcon, alt: "Social Media", buttonActionKey: "coaching.button_action_social_coaching", descriptionKey: "coaching.coaching_service_7_desc" },
+    { id: "stocks", titleKey: "coaching.coaching_service_8", Icon: StocksIcon, alt: "Stock Market", buttonActionKey: "coaching.button_action_stocks_coaching", descriptionKey: "coaching.coaching_service_8_desc" },
   ];
-  const coachingServiceItems = coachingServiceItemsData.map(item => ({ ...item, title: t(item.titleKey) }));
 
-  // Define tiersDataRaw with example tiers
-  const tiersDataRaw = [
-    {
-      id: "weekly",
-      priceKey: "coaching.coaching_tier_basic_price",
-      labelKey: "coaching.coaching_tier_basic_label",
-      descKey: "coaching.coaching_tier_basic_description",
-      value: "Weekly"
-    },
-    {
-      id: "monthly",
-      priceKey: "coaching.coaching_tier_standard_price",
-      labelKey: "coaching.coaching_tier_standard_label",
-      descKey: "coaching.coaching_tier_standard_description",
-      value: "Monthly"
-    },
-    {
-      id: "yearly",
-      priceKey: "coaching.coaching_tier_premium_price",
-      labelKey: "coaching.coaching_tier_premium_label",
-      descKey: "coaching.coaching_tier_premium_description",
-      value: "Yearly"
+  const coachingServiceItems = coachingServiceItemsData.map(item => ({
+    ...item,
+    title: t(item.titleKey),
+    description: t(item.descriptionKey) // Make sure to add these to your translation files
+  }));
+
+  const getCoachingColumns = useCallback(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth < 768 ? 2 : 4; // md:grid-cols-4 implies 4 on medium, 2 on small
     }
-  ];
-  const renderedTiers = tiersDataRaw.map(data => ({ ...data, price: t(data.priceKey), label: t(data.labelKey), desc: t(data.descKey) }));
+    return 4; // Default to larger screen column count
+  }, []);
+
+  const [columns, setColumns] = useState(getCoachingColumns());
+
+  useEffect(() => {
+    const handleResize = () => setColumns(getCoachingColumns());
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, [getCoachingColumns]);
+
+  useEffect(() => {
+    if (selectedCoachingCategory && coachingContentRef.current) {
+      const timer = setTimeout(() => {
+        if (coachingContentRef.current) {
+          setCoachingCalculatedHeight(coachingContentRef.current.scrollHeight);
+        }
+      }, 0);
+      return () => clearTimeout(timer);
+    } else if (!selectedCoachingCategory) {
+      setCoachingCalculatedHeight(0);
+    }
+  }, [selectedCoachingCategory]);
 
   const handleCoachingCategoryClick = (categoryObject) => {
     if (selectedCoachingCategory && selectedCoachingCategory.id === categoryObject.id) {
       setSelectedCoachingCategory(null);
     } else {
       setSelectedCoachingCategory(categoryObject);
-      // setSelectedTierObject(null); // Optional: Reset tier when category changes
     }
   };
 
@@ -94,8 +104,7 @@ function DirectCoaching() {
     setSelectedTierObject(tierObject);
   };
 
-  // ... (useEffect for IntersectionObserver and handleScroll function - keep as is)
-   useEffect(() => {
+  useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setIsButtonVisibleBasedOnSection(entry.isIntersecting),
       { root: null, threshold: 0.1 }
@@ -152,59 +161,148 @@ function DirectCoaching() {
     };
   }, [isButtonVisibleBasedOnSection, handleScroll]);
 
-
-  // UPDATED: Dynamic button text for coaching
   let coachingFloatingButtonText;
   if (selectedCoachingCategory) {
     coachingFloatingButtonText = t(selectedCoachingCategory.buttonActionKey);
-    // Optionally, if a tier is also selected, you could append its name or a generic indicator
-    // For max conciseness, the category-specific text might be enough.
-    // if (selectedTierObject) {
-    //   coachingFloatingButtonText += ` (${selectedTierObject.label})`; // Example
-    // }
   } else if (selectedTierObject) {
-    // If only a tier is selected, but no category (less likely in the new flow if category is primary)
-    // You might fall back to a generic "Proceed with Tier" or the default.
-    // For this example, let's prioritize category selection for button text.
-    coachingFloatingButtonText = t("coaching.button_get_number_default"); // Or a specific "Proceed with selected Tier"
+    coachingFloatingButtonText = t("coaching.button_get_number_default");
   } else {
     coachingFloatingButtonText = t("coaching.button_get_number_default");
   }
 
+  const coachingDescriptionVariants = {
+    open: {
+      opacity: 1,
+      height: coachingCalculatedHeight,
+      marginTop: "0.5rem",
+      marginBottom: "0.5rem",
+      transition: {
+        duration: 0.4,
+        ease: "easeInOut",
+      },
+    },
+    collapsed: {
+      opacity: 0,
+      height: 0,
+      marginTop: "0rem",
+      marginBottom: "0rem",
+      transition: {
+        duration: 0.4,
+        ease: "easeInOut",
+      },
+    },
+  };
+
+  const tiersDataRaw = [
+    { id: "weekly", priceKey: "coaching.coaching_tier_basic_price", labelKey: "coaching.coaching_tier_basic_label", descKey: "coaching.coaching_tier_basic_description", value: "Weekly" },
+    { id: "monthly", priceKey: "coaching.coaching_tier_standard_price", labelKey: "coaching.coaching_tier_standard_label", descKey: "coaching.coaching_tier_standard_description", value: "Monthly" },
+    { id: "yearly", priceKey: "coaching.coaching_tier_premium_price", labelKey: "coaching.coaching_tier_premium_label", descKey: "coaching.coaching_tier_premium_description", value: "Yearly" }
+  ];
+  const renderedTiers = tiersDataRaw.map(data => ({ ...data, price: t(data.priceKey), label: t(data.labelKey), desc: t(data.descKey) }));
+
+  const renderedCoachingItemsWithDescriptions = [];
+  let rowBufferCoaching = [];
+  let selectedCategoryRowIndex = -1;
+
+  if (selectedCoachingCategory) {
+    const itemIndex = coachingServiceItems.findIndex(s => s.id === selectedCoachingCategory.id);
+    if (itemIndex !== -1) {
+      selectedCategoryRowIndex = Math.floor(itemIndex / columns);
+    }
+  }
+
+  coachingServiceItems.forEach((item, index) => {
+    rowBufferCoaching.push(
+      <div
+        key={item.id}
+        onClick={() => handleCoachingCategoryClick(item)}
+        className={`
+          flex flex-col items-center justify-center p-4 w-[156px] h-[108px] md:w-[200px] md:h-[140px] border-2 rounded-lg text-center shadow-lg transition-all duration-200 ease-in-out cursor-pointer
+          ${selectedCoachingCategory?.id === item.id
+            ? 'border-darkGold scale-105'
+            : 'border-darkGold hover:scale-102'
+          }
+        `}
+      >
+        <div className="flex items-center justify-center mb-2 md:mb-3">
+          <img src={item.Icon} alt={item.alt} className="w-8 h-8 md:w-10 md:h-10 object-contain"/>
+        </div>
+        <div className="font-semibold text-xs md:text-base">{item.title}</div>
+      </div>
+    );
+
+    const currentRowIndex = Math.floor(index / columns);
+
+    if ((index + 1) % columns === 0 || index === coachingServiceItems.length - 1) {
+      renderedCoachingItemsWithDescriptions.push(
+        <React.Fragment key={`coaching-row-items-${currentRowIndex}`}>
+          {rowBufferCoaching}
+        </React.Fragment>
+      );
+      rowBufferCoaching = [];
+
+      const isDescriptionVisibleForThisRow = selectedCoachingCategory !== null && currentRowIndex === selectedCategoryRowIndex;
+      let categoryDescriptionItem = null;
+      if (isDescriptionVisibleForThisRow) {
+         categoryDescriptionItem = selectedCoachingCategory; // The selected category *is* the item
+      }
+      
+      const descriptionColSpanClass = columns === 2 ? "col-span-2" : "col-span-4"; // md:grid-cols-4
+
+      renderedCoachingItemsWithDescriptions.push(
+        <motion.div
+          layout
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          key={`coaching-desc-slot-for-row-${currentRowIndex}`}
+          className={`${descriptionColSpanClass} overflow-hidden`}
+          initial="collapsed"
+          animate={isDescriptionVisibleForThisRow ? "open" : "collapsed"}
+          variants={coachingDescriptionVariants}
+          style={{
+            pointerEvents: isDescriptionVisibleForThisRow ? "auto" : "none",
+          }}
+        >
+          <div 
+            ref={isDescriptionVisibleForThisRow ? coachingContentRef : null}
+            style={{
+              paddingTop: isDescriptionVisibleForThisRow ? '1rem' : '0rem',
+              paddingBottom: isDescriptionVisibleForThisRow ? '1rem' : '0rem',
+            }}
+          >
+            <div className="rounded-lg text-white text-center md:text-center"> {/* Adjusted text alignment */}
+              {isDescriptionVisibleForThisRow && categoryDescriptionItem && (
+                <>
+                  <h3 className="text-lg md:text-xl font-bold mb-2 text-darkGold">
+                    {categoryDescriptionItem.title}
+                  </h3>
+                  <p className="text-sm md:text-base">{categoryDescriptionItem.description}</p>
+                </>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      );
+    }
+  });
+
+  const coachingGridLayoutClasses = columns === 2 
+    ? "grid-cols-2" 
+    : "grid-cols-4";
+
 
   return (
     <section ref={sectionRef} id="coaching" className="py-8 px-4 text-white">
-      {/* Coaching categories grid */}
       <div className="max-w-3xl mx-auto text-center space-y-6">
         <h2 className="text-2xl md:text-4xl font-bold">{t("coaching.coaching_title")}</h2>
         <p className="md:text-xl">{t("coaching.coaching_description")}</p>
 
-        <div className="grid grid-cols-2 gap-4 md:gap-6 md:grid-cols-4 text-white">
-          {coachingServiceItems.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => handleCoachingCategoryClick(item)}
-              className={`
-                flex flex-col items-center justify-center p-4 w-[156px] h-[108px] md:w-[200px] md:h-[140px] border-2 rounded-lg text-center shadow-lg transition-all duration-200 ease-in-out cursor-pointer
-                ${selectedCoachingCategory?.id === item.id
-                  ? 'border-darkGold scale-105'
-                  : 'border-darkGold hover:scale-102'
-                }
-              `}
-            >
-              <div className="flex items-center justify-center mb-2 md:mb-3">
-                <img src={item.Icon} alt={item.alt} className="w-8 h-8 md:w-10 md:h-10 object-contain"/>
-              </div>
-              <div className="font-semibold text-xs md:text-base">{item.title}</div>
-            </div>
-          ))}
+        <div className={`grid ${coachingGridLayoutClasses} gap-2 md:gap-6 place-items-center md:place-items-start`}>
+          {renderedCoachingItemsWithDescriptions}
         </div>
       </div>
 
-      {/* ... (Features section) ... */}
       <div className="w-full mx-auto px-4 mt-8 md:mt-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Anytime Communication Feature */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="flex flex-col items-center text-center">
             <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
@@ -214,7 +312,6 @@ function DirectCoaching() {
             <h4 className="text-xl md:text-3xl font-medium text-white mb-2">{t("coaching.coaching_feature_1_title")}</h4>
             <p className="text-white md:text-xl">{t("coaching.coaching_feature_1_description")}</p>
           </div>
-           {/* Multi-format Responses */}
           <div className="flex flex-col items-center text-center">
             <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
@@ -224,7 +321,6 @@ function DirectCoaching() {
             <h4 className="text-xl md:text-3xl font-medium text-white mb-2">{t("coaching.coaching_feature_2_title")}</h4>
             <p className="text-white md:text-xl">{t("coaching.coaching_feature_2_description")}</p>
           </div>
-           {/* Personalized Classes */}
           <div className="flex flex-col items-center text-center">
             <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gentleGray text-oxfordBlue rounded-full mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 md:h-12 md:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
@@ -237,7 +333,6 @@ function DirectCoaching() {
             <p className="text-white md:text-xl">{t("coaching.coaching_feature_3_description")}</p>
           </div>
         </div>
-      {/* Tier selection grid and button */}
       <div className="max-w-3xl mx-auto text-center space-y-6">
 
           <div className="grid grid-cols-3 gap-3 md:gap-4 pt-2 mt-2">
