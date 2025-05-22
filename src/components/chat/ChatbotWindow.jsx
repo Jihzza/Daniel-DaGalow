@@ -28,17 +28,39 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
   const panelRef = useRef(null);
   const listRef = useRef(null);
   const draggableHeaderRef = useRef(null);
-  const DEFAULT_HEIGHT = window.innerHeight - 45;
-  const initialHeight = useRef(DEFAULT_HEIGHT);
-  const [height, setHeight] = useState(DEFAULT_HEIGHT);
+  
+  // NavigationBar heights
+  const navBarHeightDefault = 48; 
+  const navBarHeightLg = 60;    
+
+  // Function to calculate the height of the chatbot window
+  // It should fill the screen from the top of the navbar to the top of the viewport
+  const calculateChatbotHeight = () => {
+    const viewportHeight = window.innerHeight;
+    const currentNavBarHeight = window.innerWidth >= 1024 ? navBarHeightLg : navBarHeightDefault;
+    return viewportHeight - currentNavBarHeight;
+  };
+
+  const [height, setHeight] = useState(calculateChatbotHeight());
   const [resizing, setResizing] = useState(false);
   const lastTap = useRef(0);
   const dragging = useRef(false);
   const [sessionId] = useState(() => propSessionId || generateUUID());
   const { user } = useAuth();
   const userId = user?.id;
-  const [isNewChat, setIsNewChat] = useState(true);
+  // const [isNewChat, setIsNewChat] = useState(true); // This state might not be strictly needed if fetch logic handles it
   const { t } = useTranslation();
+
+  // Recalculate height on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setHeight(calculateChatbotHeight());
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial calculation
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
 
   const checkTypingAnimations = () => {
     const anyStillTyping = messages.some(
@@ -52,28 +74,43 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
       e.preventDefault();
       setResizing(true);
       dragging.current = false;
-      draggableHeaderRef.current.setPointerCapture(e.pointerId);
+      if (draggableHeaderRef.current.setPointerCapture) {
+        draggableHeaderRef.current.setPointerCapture(e.pointerId);
+      }
     }
   };
 
   const onPointerMove = (e) => {
     if (!resizing) return;
     dragging.current = true;
-    const newHeight = window.innerHeight - e.clientY - 56; 
-    setHeight(Math.max(100, Math.min(newHeight, window.innerHeight - 100)));
+    const viewportHeight = window.innerHeight;
+    const currentNavBarHeight = window.innerWidth >= 1024 ? navBarHeightLg : navBarHeightDefault;
+    
+    // Calculate new height based on pointer position relative to the top of the viewport
+    // The chatbot's height is viewportHeight - pointerY (relative to viewport top) - navBarHeight
+    const newHeightValue = viewportHeight - e.clientY - currentNavBarHeight;
+
+    // Min height: e.g., 100px. Max height: full available height above navbar.
+    const minChatHeight = 100;
+    const maxChatHeight = viewportHeight - currentNavBarHeight; 
+
+    setHeight(Math.max(minChatHeight, Math.min(newHeightValue, maxChatHeight)));
   };
+  
 
   const onPointerUp = (e) => {
     if (!resizing) return;
     if (draggableHeaderRef.current) {
-      draggableHeaderRef.current.releasePointerCapture(e.pointerId);
+      if (draggableHeaderRef.current.releasePointerCapture) {
+        draggableHeaderRef.current.releasePointerCapture(e.pointerId);
+      }
     }
     setResizing(false);
 
     if (!dragging.current && draggableHeaderRef.current && draggableHeaderRef.current.contains(e.target)) {
       const now = Date.now();
-      if (now - lastTap.current < 300) {
-        onClose();
+      if (now - lastTap.current < 300) { 
+        onClose(); 
         lastTap.current = 0;
       } else {
         lastTap.current = now;
@@ -91,7 +128,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
         .eq("id", sessionId)
         .single();
 
-      if (sessionError && sessionError.code !== "PGRST116") {
+      if (sessionError && sessionError.code !== "PGRST116") { 
         console.error("Error checking session:", sessionError);
       }
 
@@ -107,31 +144,41 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
             data.map((row) => ({
               from: row.role === "user" ? "user" : "bot",
               text: row.content,
-              isTyping: false,
+              isTyping: false, 
             }))
           );
-          setIsNewChat(false);
-          if (!sessionData) {
-            await supabase.from("chat_sessions").insert({
-              id: sessionId,
-              user_id: userId,
-              title: "Previous Chat",
-            });
+          // setIsNewChat(false); 
+          if (!sessionData && !sessionError) { 
+             try {
+                await supabase.from("chat_sessions").insert({
+                    id: sessionId,
+                    user_id: userId, 
+                    title: "Previous Chat", 
+                });
+            } catch (insertError) {
+                console.error("Error creating session for existing messages:", insertError);
+            }
           }
-        } else {
+        } else { 
           const welcomeMessageText = t("window_chatbot.welcome_message");
           const welcomeMessage = {
             from: "bot",
             text: welcomeMessageText,
-            isTyping: true,
+            isTyping: true, 
           };
-          await supabase.from("chat_sessions").insert({
-            id: sessionId,
-            user_id: userId,
-            title: "New Chat",
-          });
+          if (!sessionData && !sessionError) { 
+            try {
+                await supabase.from("chat_sessions").insert({
+                    id: sessionId,
+                    user_id: userId,
+                    title: "New Chat", 
+                });
+            } catch (insertError) {
+                console.error("Error creating new session:", insertError);
+            }
+          }
           setMessages([welcomeMessage]);
-          setIsNewChat(false);
+          // setIsNewChat(false); 
           setIsTypingAnimationActive(true);
           try {
             await supabase.from("messages").insert({
@@ -148,24 +195,29 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
         console.error("Error fetching messages:", error);
       }
     })();
-  }, [sessionId, userId, t]);
+  }, [sessionId, userId, t]); 
 
   useEffect(() => {
-    const threshold = initialHeight.current * 0.3;
-    if (height <= threshold && !resizing) { 
-      onClose();
+    // Simplified drag-to-close logic: if height becomes very small, close.
+    // This threshold should be less than minChatHeight.
+    const closeThreshold = 50; 
+    if (height <= closeThreshold && resizing) { // Only consider closing during active resize
+      // To prevent accidental closure, perhaps add a delay or require a more deliberate gesture.
+      // For now, direct close.
+      // onClose(); // This might be too aggressive. Double-tap is more reliable.
     }
-  }, [height, onClose, resizing, initialHeight]);
+  }, [height, onClose, resizing]);
+
 
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
-  }, [messages, loading]);
+  }, [messages, loading]); 
 
   useEffect(() => {
     checkTypingAnimations();
-  }, [messages]);
+  }, [messages]); 
 
   const sendMessage = async () => {
     if (!userText.trim() || isTypingAnimationActive || loading) return;
@@ -177,20 +229,20 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
     setLoading(true);
 
     try {
-      const res = await fetch("https://rafaello.app.n8n.cloud/webhook/chat", {
+      const res = await fetch("https://rafaello.app.n8n.cloud/webhook/chat", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           session_id: sessionId,
           chatInput: textToSend,
-          user_id: userId,
+          user_id: userId, 
         }),
       });
       if (!res.ok) {
         throw new Error(`Webhook failed with status ${res.status}`);
       }
       const data = await res.json();
-      const botResponseText = data.output || "Sorry, I had trouble understanding that.";
+      const botResponseText = data.output || t('window_chatbot.error_understanding'); 
       
       const newBotMessage = { from: "bot", text: botResponseText, isTyping: true };
       setMessages((msgs) => [...msgs, newBotMessage]);
@@ -201,18 +253,20 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
         { session_id: sessionId, role: "assistant", content: botResponseText, user_id: userId },
       ]);
 
-      if (messages.length + 2 >= 4 && (messages.length + 2) % 3 === 0) {
+      if (messages.length + 2 >= 4 && (messages.length + 2) % 3 === 0) { 
         const firstUserMessage = messages.find(msg => msg.from === 'user');
         if (firstUserMessage) {
             try {
-                const titleRes = await fetch("https://rafaello.app.n8n.cloud/webhook/chat-title", {
+                const titleRes = await fetch("https://rafaello.app.n8n.cloud/webhook/chat-title", { 
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ session_id: sessionId, firstUserPrompt: firstUserMessage.text }),
                 });
                 if (titleRes.ok) {
                     const titleData = await titleRes.json();
-                    await supabase.from("chat_sessions").update({ title: titleData.title || "Chat Session", updated_at: new Date() }).eq("id", sessionId);
+                    await supabase.from("chat_sessions")
+                                  .update({ title: titleData.title || "Chat Session", updated_at: new Date() })
+                                  .eq("id", sessionId);
                 }
             } catch (titleError) {
                 console.error("Error updating chat title:", titleError);
@@ -222,7 +276,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
 
     } catch (error) {
       console.error("Chatbot error:", error);
-      const errorMessage = { from: "bot", text: t('window_chatbot.error_message') || "Sorry, there was an error. Please try again.", isTyping: true };
+      const errorMessage = { from: "bot", text: t('window_chatbot.error_message'), isTyping: true };
       setMessages((msgs) => [...msgs, errorMessage]);
       setIsTypingAnimationActive(true);
     } finally {
@@ -233,79 +287,68 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
   return (
     <motion.div
       ref={panelRef}
-      className="fixed bottom-14 w-full bg-oxfordBlue shadow-2xl rounded-t-2xl overflow-visible border-t-2 border-darkGold flex flex-col z-40 touch-none overscroll-contain"
-      style={{ height: `${height}px` }}
-      initial={{ y: "100%" }}
-      animate={{ y: 0 }}
-      exit={{ y: "100%" }}
+      className="fixed w-full bg-oxfordBlue shadow-2xl rounded-t-2xl overflow-visible border-t-2 border-darkGold flex flex-col z-40 touch-none overscroll-contain bottom-[48px] lg:bottom-[60px]"
+      style={{ height: `${height}px` }} // Height is now calculated to be full height above navbar
+      initial={{ y: "100%" }} 
+      animate={{ y: 0 }} 
+      exit={{ y: "100%" }} 
       transition={{ type: "tween", duration: 0.3 }}
     >
       {/* Header */}
       <div
-        className={`relative w-full flex items-stretch justify-between py-3 md:py-4 px-2 md:px-4 touch-none ${ // Added relative for absolute positioning of the handle
+        className={`relative w-full flex items-stretch justify-between py-3 md:py-4 px-2 md:px-4 touch-none ${ 
           resizing ? "bg-opacity-50" : ""
         }`}
       >
-        {/* Draggable Area (takes up space, handles drag events) */}
         <div
           ref={draggableHeaderRef}
-          className="flex-grow h-full cursor-row-resize" // Ensure it fills height for reliable drag
+          className="flex-grow h-full cursor-row-resize" 
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
-          style={{ touchAction: 'none' }}
+          style={{ touchAction: 'none' }} 
         >
-          {/* This div is now just for capturing pointer events over the main area. */}
-          {/* The visual handle is positioned absolutely relative to the parent. */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-1 bg-darkGold rounded-full pointer-events-none"></div>
         </div>
 
-        {/* Centered Drag Handle (Visual) */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-1 bg-darkGold rounded-full pointer-events-none"></div>
-
-
-        {/* Close Button Container */}
-        <div className="flex-shrink-0 flex items-center justify-center pl-2 z-10"> {/* Added z-10 to ensure it's clickable over the draggable area if overlap occurs */}
+        <div className="flex-shrink-0 flex items-center justify-center pl-2 z-10">
           <button
-            onClick={(e) => {
-              onClose();
-            }}
-            className="text-darkGold text-2xl md:text-3xl leading-none focus:outline-none p-2"
+            onClick={onClose} 
+            className="text-darkGold text-2xl md:text-3xl leading-none focus:outline-none p-2" 
             aria-label="Close chat"
           >
-            x
+            &times; 
           </button>
         </div>
       </div>
 
       {/* Message list */}
-      <div className="flex-1 w-full text-white overflow-auto space-y-2">
+      <div className="flex-1 w-full text-white overflow-auto space-y-2 px-2"> 
         <div
           ref={listRef}
           className="flex-1 w-full text-white overflow-auto space-y-2"
         >
           {messages.map((m, i) => (
             <div
-              key={i}
-              className={`px-4 py-2 ${
+              key={i} 
+              className={`px-4 py-2 rounded-lg whitespace-pre-wrap break-words ${ 
                 m.from === "user"
-                  ? "bg-gentleGray/20 md:text-xl self-end text-white"
-                  : "self-start md:text-xl text-white"
+                  ? "bg-gentleGray/20 md:text-xl self-end text-white ml-auto max-w-[80%]" 
+                  : "self-start md:text-xl text-white bg-oxfordBlue/50 max-w-[80%]" 
               }`}
             >
               {m.from === "bot" ? (
                 <TypingMessage
                   text={m.text}
                   isComplete={!m.isTyping}
-                  typingSpeed={2} // Fast typing speed
-                  startDelay={10} // Quick start delay
+                  typingSpeed={2} 
+                  startDelay={100} 
                   onComplete={() => {
-                    // Mark this message as completed
                     setMessages((prevMsgs) =>
                       prevMsgs.map((msg, idx) =>
                         idx === i ? { ...msg, isTyping: false } : msg
                       )
                     );
-                    // This will trigger our useEffect to check if any messages are still typing
                   }}
                 />
               ) : (
@@ -314,21 +357,21 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
             </div>
           ))}
 
-          {loading && (
-            <div className="text-center px-4 py-2 text-gray-500">
-              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-gray-900 dark:border-white"></div>
+          {loading && ( 
+            <div className="text-center px-4 py-2 text-gray-400"> 
+              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-darkGold mx-auto"></div> 
             </div>
           )}
         </div>
       </div>
-      {/* Input & attachments - Disabled while typing animation is active */}
-      <div className="pb-2 md:pb-10 px-2">
+      {/* Input & attachments */}
+      <div className="pb-2 md:pb-4 px-2"> 
         <div className="relative w-full">
-          <button className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-            <img src={Anexar} alt="Anexar" className="w-6 h-6 md:w-10 md:h-10" />
+          <button className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-1"> 
+            <img src={Anexar} alt={t("window_chatbot.attach_alt")} className="w-5 h-5 md:w-6 md:h-6" /> 
           </button>
           <input
-            className="w-full h-12 md:h-16 border-2 border-darkGold bg-oxfordBlue text-white md:text-xl rounded-full p-4 px-12 md:px-16"
+            className="w-full h-12 md:h-14 border-2 border-darkGold bg-oxfordBlue text-white md:text-lg rounded-full p-3 pl-10 pr-12 md:pl-12 md:pr-14" 
             value={userText}
             onChange={(e) => setUserText(e.target.value)}
             onKeyDown={(e) =>
@@ -336,20 +379,20 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
             }
             placeholder={
               isTypingAnimationActive
-                ? "Wait for message..."
-                : "Type a message…"
+                ? t("window_chatbot.placeholder_waiting")
+                : t("window_chatbot.placeholder_default")
             }
             disabled={loading || isTypingAnimationActive}
           />
           <button
-            className="absolute right-4 top-1/2 -translate-y-1/2 pb-1 z-10"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-1" 
             onClick={sendMessage}
             disabled={loading || isTypingAnimationActive}
           >
             <img
               src={Send}
-              alt="Send"
-              className={`w-6 h-6 md:w-10 md:h-10 ${
+              alt={t("window_chatbot.send_alt")}
+              className={`w-5 h-5 md:w-6 md:h-6 ${ 
                 loading || isTypingAnimationActive ? "opacity-50" : ""
               }`}
             />

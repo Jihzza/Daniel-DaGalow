@@ -858,7 +858,9 @@
   "window_chatbot": {
     "welcome_message": "Bem-vindo ao assistente pessoal de DaGalow! Posso ajudá-lo com informações sobre serviços, agendamentos ou responder a perguntas sobre a experiência do Daniel — como posso assisti-lo hoje?",
     "wait_for_message": "Aguarde a resposta do bot...",
-    "type_message": "Escreva uma mensagem…"
+    "type_message": "Escreva uma mensagem…",
+    "placeholder_default": "Escreva uma mensagem…",
+    "placeholder_waiting": "Aguarde a resposta do bot..."
   },
   "chatbot": {
     "error_message": "Desculpe, não consegui entender ou algo correu mal.",

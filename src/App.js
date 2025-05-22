@@ -5,13 +5,15 @@ import {
   Routes,
   Route,
   Navigate,
-  Link // Import Link for the Privacy Policy link in the banner
+  Link, // Import Link for the Privacy Policy link in the banner
+  useLocation // Import useLocation
 } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import CookieConsent, { Cookies } from "react-cookie-consent"; // <- Add this import
 
 import { supabase } from "./utils/supabaseClient";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext"; // Ensure useAuth is imported if used in this file
+import { ServiceProvider } from "./contexts/ServiceContext"; // Assuming you have this
 import AuthModal from "./components/Auth/AuthModal";
 import Header from "./components/layout/Header";
 import Hero from "./components/home-sections/Hero";
@@ -40,8 +42,8 @@ import ScrollToTop from "./components/common/ScrollToTop";
 import ScrollToTopButton from "./components/common/ScrollToTopButton"; // Import the button
 import TestimonialReview from "./pages/admin/TestimonialReview";
 import BookingSuccess from "./pages/BookingSuccess";
-import { useAuth } from "./contexts/AuthContext";
-// Removed duplicate CookieConsent import here
+import { I18nextProvider } from 'react-i18next'; // For internationalization
+import i18n from './i18n'; // Your i18n configuration file
 
 // Context to expose the AuthModal opener
 export const AuthModalContext = createContext({
@@ -49,10 +51,10 @@ export const AuthModalContext = createContext({
 });
 
 const PrivateRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuth(); // useAuth hook from your AuthContext
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen text-white"> {/* Added text-white for visibility */}
         Loading...
       </div>
     );
@@ -64,10 +66,10 @@ const PrivateRoute = ({ children }) => {
 };
 
 const PublicOnlyRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuth(); // useAuth hook from your AuthContext
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen text-white"> {/* Added text-white for visibility */}
         Loading...
       </div>
     );
@@ -78,25 +80,21 @@ const PublicOnlyRoute = ({ children }) => {
   return children;
 };
 
-function App() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
+// This wrapper component is needed to use useLocation hook
+function AppContent() {
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false); // Renamed from isChatOpen for clarity
   const [chatSessionId, setChatSessionId] = useState(null);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const location = useLocation(); // useLocation hook
 
-  // ---- START: Cookie Consent Changes ----
   const [acceptsFunctionalCookies, setAcceptsFunctionalCookies] = useState(
-    () => Cookies.get("siteCookieConsent") === "true" // Check initial state from cookie
+    () => Cookies.get("siteCookieConsent") === "true"
   );
 
   useEffect(() => {
-    // Re-check on component mount in case cookie was set/cleared differently
     setAcceptsFunctionalCookies(Cookies.get("siteCookieConsent") === "true");
-    console.log("Initial cookie consent check:", Cookies.get("siteCookieConsent") === "true");
   }, []);
-  // ---- END: Cookie Consent Changes ----
 
-
-  // Reset scroll position and clear hash fragments on load
   useEffect(() => {
     window.scrollTo(0, 0);
     if (window.location.hash) {
@@ -105,152 +103,153 @@ function App() {
     }
   }, []);
 
-  // Subscribe to Supabase auth state changes
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // console.log(event, session); // For debugging auth state changes
     });
     return () => subscription.unsubscribe();
   }, []);
 
-  const openChat = (sessionId = null) => {
-    setChatSessionId(sessionId);
-    setIsChatOpen(true);
+  // Function to toggle chatbot visibility
+  const toggleChatbot = (sessionId = null) => {
+    if (sessionId && !isChatbotOpen) { // If opening with a session ID
+        setChatSessionId(sessionId);
+    }
+    setIsChatbotOpen(prev => !prev);
   };
 
+
+  const openAuthModal = () => {
+    if (isChatbotOpen) { // If chatbot is open when trying to open auth modal, close chatbot
+        setIsChatbotOpen(false);
+    }
+    setIsAuthModalOpen(true);
+  };
+  const closeAuthModal = () => setIsAuthModalOpen(false);
+
+  // Close chatbot if navigating to a new page and it's open
+  useEffect(() => {
+    if (isChatbotOpen) {
+      setIsChatbotOpen(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]); // Only trigger on pathname change
+
+
   const OptionalAuthRoute = ({ children }) => {
-    const { loading } = useAuth();
+    const { loading } = useAuth(); // useAuth hook from your AuthContext
     if (loading) {
       return (
-        <div className="flex justify-center items-center h-screen">
+        <div className="flex justify-center items-center h-screen text-white"> {/* Added text-white for visibility */}
           Loading...
         </div>
       );
     }
-    // Pass the consent state down if needed
-    // return React.cloneElement(children, { acceptsFunctionalCookies });
-    return children; // Simpler approach: pass prop directly in Route element
+    return children;
   };
 
-  const openAuthModal = () => setAuthModalOpen(true);
-
   return (
-    <AuthModalContext.Provider value={{ openAuthModal }}>
-      <AuthProvider>
-        <Router>
-          <ScrollToTop />
-          <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray overflow-hidden">
-            <Header onAuthModalOpen={openAuthModal} />
+    <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal, isAuthModalOpen }}>
+      <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray overflow-x-hidden"> {/* Added overflow-x-hidden */}
+        <Header onAuthModalOpen={openAuthModal} /> {/* Pass openAuthModal to Header */}
+        <ScrollToTop /> {/* Component to scroll to top on route change */}
 
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <main className="mt-12 md:mt-24 lg:mt-20">
-                    {/* Pass consent state if Hero or other components need it */}
-                    <Hero />
-                    <About />
-                    <Services />
-                    <Coaching />
-                    <VentureInvestment />
-                    <Testimonials onAuthModalOpen={openAuthModal} />
-                    <OtherWins />
-                    <Interviews />
-                    <IncentivePage />
-                    <MergedServiceForm />
-                    <BottomCarouselPages />
-                  </main>
-                }
-              />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <main className="mt-12 md:mt-24 lg:mt-20"> {/* Adjusted top margin for header */}
+                <Hero />
+                <About />
+                <Services />
+                <Coaching />
+                <VentureInvestment />
+                <Testimonials onAuthModalOpen={openAuthModal} /> {/* Pass openAuthModal */}
+                <OtherWins />
+                <Interviews />
+                <IncentivePage /> {/* IncentivePage might also need onAuthModalOpen */}
+                <MergedServiceForm />
+                <BottomCarouselPages />
+              </main>
+            }
+          />
+          <Route path="/booking-success" element={<BookingSuccess />} />
+          <Route
+            path="/admin/testimonials"
+            element={<PrivateRoute><TestimonialReview /></PrivateRoute>}
+          />
+          <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+          <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} /> {/* Changed from /auth/reset-password */}
+          
+          <Route path="/profile" element={<PrivateRoute><ProfilePage onChatOpen={toggleChatbot} /></PrivateRoute>} />
+          <Route path="/edit-profile" element={<PrivateRoute><EditProfilePage /></PrivateRoute>} />
+          
+          <Route path="/settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
+          <Route path="/components/Subpages/Calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
+          <Route path="/components/Subpages/Settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
+        </Routes>
 
-              {/* Stripe redirects here on successful payment */}
-              <Route path="/booking-success" element={<BookingSuccess />} />
-
-              <Route
-                path="/admin/testimonials"
-                element={
-                  <PrivateRoute>
-                    <TestimonialReview />
-                  </PrivateRoute>
-                }
-              />
-
-              {/* Auth Routes - Public Only */}
-              <Route path="/login" element={ <PublicOnlyRoute><Login /></PublicOnlyRoute> } />
-              <Route path="/signup" element={ <PublicOnlyRoute><Signup /></PublicOnlyRoute> } />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-
-              {/* Protected Routes */}
-              <Route path="/profile" element={ <PrivateRoute><ProfilePage onChatOpen={openChat} /></PrivateRoute> } />
-              <Route path="/edit-profile" element={ <PrivateRoute><EditProfilePage /></PrivateRoute> } />
-
-              {/* Settings route - pass consent state */}
-              <Route path="/settings" element={ <OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
-
-              <Route path="/components/Subpages/Calendar" element={ <PrivateRoute><CalendarPage /></PrivateRoute> } />
-
-              {/* Another Settings Route - ensure it also gets the prop */}
-              <Route path="/components/Subpages/Settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
-
-            </Routes>
-
-            {/* Always-on Navigation Bar & Chatbot */}
-
-            <NavigationBar
-              onChatbotClick={() => openChat()}
-              onAuthModalOpen={openAuthModal}
+        <NavigationBar
+          isChatbotOpen={isChatbotOpen} // Pass the state
+          onChatbotClick={toggleChatbot} // Pass the toggle function
+          onAuthModalOpen={openAuthModal} // Pass the function to open auth modal
+        />
+        <AnimatePresence>
+          {isChatbotOpen && ( // Use isChatbotOpen state here
+            <ChatbotWindow
+              sessionId={chatSessionId}
+              onClose={toggleChatbot} // Pass toggleChatbot to close it
             />
-            <AnimatePresence>
-              {isChatOpen && (
-                <ChatbotWindow
-                  sessionId={chatSessionId}
-                  onClose={() => setIsChatOpen(false)}
-                />
-              )}
-            </AnimatePresence>
-            <ScrollToTopButton /> {/* Add the button here */}
-            <AuthModal
-              isOpen={authModalOpen}
-              onClose={() => setAuthModalOpen(false)}
-            />
-            <Footer />
+          )}
+        </AnimatePresence>
+        <ScrollToTopButton />
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={closeAuthModal}
+        />
+        <Footer />
 
-            {/* ---- START: Cookie Consent Component ---- */}
-            <CookieConsent
-              location="bottom"
-              buttonText="Accept Cookies"
-              cookieName="siteCookieConsent" // This name MUST match the one used in useState/useEffect
-              style={{ background: "#001F3F", color: "#FFFFFF", fontSize: "13px", borderTop: "1px solid #BFA200", zIndex: 1000 }} // Ensure high z-index
-              buttonStyle={{ color: "#000000", background: "#BFA200", fontSize: "14px", borderRadius: "5px", padding: "8px 15px", fontWeight: "bold" }}
-              expires={150}
-              onAccept={() => {
-                console.log("User accepted cookies via banner");
-                setAcceptsFunctionalCookies(true);
-                // Optional: Initialize things that depend on consent here
-              }}
-              enableDeclineButton
-              declineButtonText="Decline"
-              declineButtonStyle={{ background: "#555", color: "#fff", fontSize: "14px", borderRadius: "5px", padding: "8px 15px", marginLeft: "10px" }}
-              onDecline={() => {
-                 console.log("User declined cookies via banner");
-                 setAcceptsFunctionalCookies(false);
-                 // You might want to explicitly delete non-essential cookies here
-                 // import { deleteCookie } from './utils/cookieUtils'; // If needed
-                 // deleteCookie('userTheme');
-              }}
-              // debug={true} // Remove this in production
-            >
-              This website uses cookies to enhance the user experience. See our{" "}
-              <Link to="/settings" state={{ section: 'privacy-policy' }} style={{ color: "#BFA200", textDecoration: "underline" }}>
-                Privacy Policy
-              </Link> for more details. {/* Ensure you have a way to navigate/show this */}
-            </CookieConsent>
-            {/* ---- END: Cookie Consent Component ---- */}
-
-          </div>
-        </Router>
-      </AuthProvider>
+        <CookieConsent
+          location="bottom"
+          buttonText="Accept Cookies"
+          cookieName="siteCookieConsent"
+          style={{ background: "#001F3F", color: "#FFFFFF", fontSize: "13px", borderTop: "1px solid #BFA200", zIndex: 1000 }}
+          buttonStyle={{ color: "#000000", background: "#BFA200", fontSize: "14px", borderRadius: "5px", padding: "8px 15px", fontWeight: "bold" }}
+          expires={150}
+          onAccept={() => {
+            setAcceptsFunctionalCookies(true);
+          }}
+          enableDeclineButton
+          declineButtonText="Decline"
+          declineButtonStyle={{ background: "#555", color: "#fff", fontSize: "14px", borderRadius: "5px", padding: "8px 15px", marginLeft: "10px" }}
+          onDecline={() => {
+             setAcceptsFunctionalCookies(false);
+          }}
+        >
+          This website uses cookies to enhance the user experience. See our{" "}
+          <Link to="/settings" state={{ section: 'privacy-policy' }} style={{ color: "#BFA200", textDecoration: "underline" }}>
+            Privacy Policy
+          </Link> for more details.
+        </CookieConsent>
+      </div>
     </AuthModalContext.Provider>
+  );
+}
+
+
+function App() {
+  return (
+    <I18nextProvider i18n={i18n}> {/* Ensure i18n is initialized */}
+      <AuthProvider>
+        <ServiceProvider> {/* Assuming ServiceProvider is correctly set up */}
+          <Router>
+            <AppContent /> {/* Wrap content that uses useLocation */}
+          </Router>
+        </ServiceProvider>
+      </AuthProvider>
+    </I18nextProvider>
   );
 }
 

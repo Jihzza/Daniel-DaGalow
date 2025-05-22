@@ -11,7 +11,7 @@ import settings from '../../assets/icons/Settings Branco.svg';
 import { useTranslation } from 'react-i18next';
 import defaultProfile from '../../assets/img/Pessoas/Default.svg';
 
-const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
+const NavigationBar = ({ onChatbotClick, onAuthModalOpen, isChatbotOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -44,15 +44,20 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
     }
   };
 
+  // Updated handleAccountClick
   const handleAccountClick = () => {
+    if (isChatbotOpen) {
+      onChatbotClick(); // This should be the toggle function, so it closes the chatbot
+    }
     if (user) {
       navigate('/profile');
     } else {
-      onAuthModalOpen();
+      if (typeof onAuthModalOpen === 'function') {
+        onAuthModalOpen();
+      }
     }
   };
 
-  // Helper to get initials for fallback
   const getInitials = () => {
     if (!user) return '?';
     const name = user.user_metadata?.full_name || user.email || '';
@@ -62,18 +67,17 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
   };
 
   const icons = [
-    {src: casa, alt: t("navigation.home"), action: handleDagalowIconClick, size: 26},
-    {src: calendar, alt: t("navigation.calendar"), to: user ? "/components/Subpages/Calendar" : null, action: user ? null : onAuthModalOpen, size: 24},
-    {src: chatbot, alt: t("navigation.chatbot"), action: onChatbotClick, size: 24},
-    {src: settings, alt: t("navigation.settings"), to: "/components/Subpages/Settings", action: null, size: 24},
-    // Profile icon will be handled separately below
+    { id: 'home', src: casa, alt: t("navigation.home"), action: handleDagalowIconClick, size: 26 },
+    { id: 'calendar', src: calendar, alt: t("navigation.calendar"), to: user ? "/components/Subpages/Calendar" : null, action: user ? null : onAuthModalOpen, size: 24 },
+    { id: 'chatbot', src: chatbot, alt: t("navigation.chatbot"), action: onChatbotClick, size: 24 }, // onChatbotClick is the toggle function
+    { id: 'settings', src: settings, alt: t("navigation.settings"), to: "/components/Subpages/Settings", action: null, size: 24 },
   ];
   
   return (
     <div className="fixed h-[48px] bottom-0 left-0 w-full px-8 lg:px-10 lg:h-[60px] z-50 bg-black flex justify-between items-center">
       {icons.map((icon, i) => (
         <img
-          key={i}
+          key={icon.id || i} // Use a stable key like id
           src={icon.src}
           alt={icon.alt}
           aria-label={icon.alt}
@@ -81,7 +85,15 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
           style={{ width: icon.size, height: icon.size }}
           className="cursor-pointer drop-shadow-lg transition-all duration-300"
           onClick={() => {
-            if (icon.action) {
+            // If any icon OTHER than the chatbot icon is clicked AND the chatbot is open, close it.
+            if (isChatbotOpen && icon.id !== 'chatbot') {
+              onChatbotClick(); // This is the toggle function, so it will close the chatbot.
+            }
+
+            // Perform the icon's specific action.
+            // For the chatbot icon, its action (onChatbotClick) IS the toggle.
+            // For other icons, their action is performed (or navigation occurs).
+            if (icon.action && typeof icon.action === 'function') {
               icon.action();
             } else if (icon.to) {
               navigate(icon.to);
@@ -95,7 +107,7 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen }) => {
             borderColor="#002147"
             innerBorderColor="#000"
             imageSrc={avatarUrl || defaultProfile}
-            fallbackText={user?.email?.[0]?.toUpperCase() || ""}
+            fallbackText={getInitials()} // Use getInitials for fallback
             size={32}
           />
       </div>

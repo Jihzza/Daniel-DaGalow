@@ -17,18 +17,27 @@ function Hero() {
   const { setService, setServiceWithTier } = useContext(ServiceContext);
   const [selectedTier, setSelectedTier] = useState(null); // Default to Basic tier
 
-  const scrollTo = (id) => {
+  const scrollTo = (id, duration = 50) => {
     const el = document.getElementById(id);
-    if (el) {
-      // Calculate the header height (14 is the h-14 in your header)
-      const headerHeight = 56; // 14 * 4 = 56px
+    if (!el) return;
 
-      // Scroll with an offset to account for the header
-      window.scrollTo({
-        top: el.offsetTop - headerHeight,
-        behavior: "smooth",
-      });
+    const headerHeight = 56;
+    const targetY = el.offsetTop - headerHeight;
+    const startY = window.scrollY;
+    const diff = targetY - startY;
+    const startTime = performance.now();
+
+    function animateScroll(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      window.scrollTo(0, startY + diff * progress);
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      }
     }
+
+    requestAnimationFrame(animateScroll);
   };
 
   const openForm = (service) => {
@@ -38,7 +47,7 @@ function Hero() {
       ?.scrollIntoView({ behavior: "smooth" }); // MDN example :contentReference[oaicite:2]{index=2}
   };
 
-  const handleCardScroll = () => scrollTo("services"); // parent scroll
+ 
 
   const handleOpenForm = (service) => (e) => {
     // button action
@@ -47,8 +56,10 @@ function Hero() {
   };
 
   /* parent scrolls to the section */
-  const handleCoachingCard = () => scrollTo("coaching");
-  const handlePitchDeckCardScroll = () => scrollTo("venture-investment"); // MODIFIED
+ // In Hero.jsx
+const handleCardScroll = () => scrollTo("services", 100);
+const handleCoachingCard = () => scrollTo("coaching", 100);
+const handlePitchDeckCardScroll = () => scrollTo("venture-investment", 100);
 
     // New handler for Pitch Deck form opening
   const openPitchDeckForm = (e) => { // MODIFIED
@@ -379,7 +390,7 @@ function Hero() {
                 {/* Basic Tier */}
                 <div
                   onClick={(e) => handleTierSelect(e, "Weekly")}
-                  className={`w-20 md:w-32 h-18 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
+                  className={`w-20 md:w-32 h-18 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-100 ${
                     selectedTier === "Weekly" ? "transform scale-110 z-10" : ""
                   }`}
                 >
@@ -394,7 +405,7 @@ function Hero() {
                 {/* Standard Tier */}
                 <div
                   onClick={(e) => handleTierSelect(e, "Daily")}
-                  className={`w-20 md:w-32 h-18 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
+                  className={`w-20 md:w-32 h-18 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-100 ${
                     selectedTier === "Daily" ? "transform scale-110 z-10" : ""
                   }`}
                 >
@@ -409,7 +420,7 @@ function Hero() {
                 {/* Premium Tier */}
                 <div
                   onClick={(e) => handleTierSelect(e, "Priority")}
-                  className={`w-20 md:w-32 h-20 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-200 ${
+                  className={`w-20 md:w-32 h-20 md:h-24 border-2 border-darkGold rounded-lg cursor-pointer flex flex-col items-center justify-center gap-1 transition-all duration-100 ${
                     selectedTier === "Priority"
                       ? "transform scale-110 z-10"
                       : ""

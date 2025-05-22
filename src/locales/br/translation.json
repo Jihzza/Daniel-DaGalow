@@ -837,7 +837,9 @@
   "window_chatbot": {
     "welcome_message": "Bem-vindo ao assistente pessoal do DaGalow! Posso ajudar com informações sobre serviços, agendamentos ou responder suas dúvidas sobre a expertise do Daniel. Como posso ajudar hoje?",
     "wait_for_message": "Aguarde a resposta do bot...",
-    "type_message": "Digite uma mensagem…"
+    "type_message": "Digite uma mensagem…",
+    "placeholder_default": "Digite uma mensagem…",
+    "placeholder_waiting": "Aguarde a resposta do bot..."
   },
   "chatbot": {
     "error_message": "Desculpe, não consegui entender ou algo deu errado.",

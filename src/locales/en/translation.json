@@ -901,7 +901,9 @@
   "window_chatbot": {
     "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?",
     "wait_for_message": "Wait for bot response...",
-    "type_message": "Type a message…"
+    "type_message": "Type a message…",
+    "placeholder_default": "Type a message…",
+    "placeholder_waiting": "Wait for bot response..."
   },
 
   "chatbot": {

@@ -851,7 +851,9 @@
   "window_chatbot": {
     "welcome_message": "¡Bienvenido al asistente personal de DaGalow! Puedo ayudarte con información sobre servicios, reservas o responder preguntas sobre la experiencia de Daniel. ¿En qué puedo ayudarte hoy?",
     "wait_for_message": "Espera la respuesta del bot...",
-    "type_message": "Escribe un mensaje…"
+    "type_message": "Escribe un mensaje…",
+    "placeholder_default": "Escribe un mensaje…",
+    "placeholder_waiting": "Espera la respuesta del bot..."
   },
   "chatbot": {
     "error_message": "Lo siento, no pude entender eso o algo salió mal.",
