@@ -112,6 +112,7 @@ function AppContent() {
 
   // Function to toggle chatbot visibility
   const toggleChatbot = (sessionId = null) => {
+    console.log("App.js: toggleChatbot called. Current state:", isChatbotOpen); // For debugging
     if (sessionId && !isChatbotOpen) { // If opening with a session ID
         setChatSessionId(sessionId);
     }
@@ -130,7 +131,7 @@ function AppContent() {
   // Close chatbot if navigating to a new page and it's open
   useEffect(() => {
     if (isChatbotOpen) {
-      setIsChatbotOpen(false);
+      // setIsChatbotOpen(false); // Commenting this out as per previous discussions, behavior might be desired differently
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]); // Only trigger on pathname change
@@ -167,7 +168,8 @@ function AppContent() {
                 <Testimonials onAuthModalOpen={openAuthModal} /> {/* Pass openAuthModal */}
                 <OtherWins />
                 <Interviews />
-                <IncentivePage /> {/* IncentivePage might also need onAuthModalOpen */}
+                {/* THIS IS THE KEY CHANGE: Pass toggleChatbot to IncentivePage */}
+                <IncentivePage onChatbotOpen={toggleChatbot} onAuthModalOpen={openAuthModal} />
                 <MergedServiceForm />
                 <BottomCarouselPages />
               </main>
