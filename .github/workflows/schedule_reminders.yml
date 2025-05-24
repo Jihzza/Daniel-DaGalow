@@ -1,0 +1,26 @@
+name: Call Booking Reminder Edge Function
+
+on:
+  schedule:
+    # Runs every hour at the start of the hour
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+
+jobs:
+  call_edge_function:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Supabase Edge Function
+        env:
+          SUPABASE_FUNCTION_URL: ${{ secrets.SUPABASE_FUNCTION_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          CRON_SECRET_TOKEN: ${{ secrets.CRON_SECRET_TOKEN }}
+        run: |
+          echo "Calling Supabase Edge Function to process booking reminders..."
+          curl -X POST "${SUPABASE_FUNCTION_URL}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            -H "X-Cron-Secret: ${CRON_SECRET_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{}" \
+            --fail # Makes curl exit with an error code if the HTTP request fails (e.g., 4xx or 5xx)
+          echo "Function call attempt finished."
