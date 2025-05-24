@@ -33,6 +33,7 @@ import CalendarPage from "./pages/profile/CalendarPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import EditProfilePage from "./pages/profile/EditProfilePage";
 import SettingsPage from "./pages/profile/SettingsPage";
+import NotificationsPage from "./components/notifications/NotificationsPage";
 import Footer from "./components/layout/Footer";
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
@@ -45,47 +46,50 @@ import BookingSuccess from "./pages/BookingSuccess";
 import { I18nextProvider } from 'react-i18next'; // For internationalization
 import i18n from './i18n'; // Your i18n configuration file
 
+// NEW: Import the DirectMessagesPage component
+import DirectMessagesPage from './pages/DirectMessages'; // Adjust path if necessary
+
 // Context to expose the AuthModal opener
 export const AuthModalContext = createContext({
   openAuthModal: () => {}
 });
 
 const PrivateRoute = ({ children }) => {
-  const { user, loading } = useAuth(); // useAuth hook from your AuthContext
+  const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen text-white"> {/* Added text-white for visibility */}
+      <div className="flex justify-center items-center h-screen text-white">
         Loading...
       </div>
     );
   }
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />; // Added replace for better history management
   }
   return children;
 };
 
 const PublicOnlyRoute = ({ children }) => {
-  const { user, loading } = useAuth(); // useAuth hook from your AuthContext
+  const { user, loading } = useAuth();
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen text-white"> {/* Added text-white for visibility */}
+      <div className="flex justify-center items-center h-screen text-white">
         Loading...
       </div>
     );
   }
   if (user) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />; // Added replace
   }
   return children;
 };
 
 // This wrapper component is needed to use useLocation hook
 function AppContent() {
-  const [isChatbotOpen, setIsChatbotOpen] = useState(false); // Renamed from isChatOpen for clarity
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [chatSessionId, setChatSessionId] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const location = useLocation(); // useLocation hook
+  const location = useLocation();
 
   const [acceptsFunctionalCookies, setAcceptsFunctionalCookies] = useState(
     () => Cookies.get("siteCookieConsent") === "true"
@@ -105,43 +109,39 @@ function AppContent() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // console.log(event, session); // For debugging auth state changes
+      // console.log('Auth state change:', event, session);
     });
     return () => subscription.unsubscribe();
   }, []);
 
-  // Function to toggle chatbot visibility
   const toggleChatbot = (sessionId = null) => {
-    console.log("App.js: toggleChatbot called. Current state:", isChatbotOpen); // For debugging
-    if (sessionId && !isChatbotOpen) { // If opening with a session ID
+    if (sessionId && !isChatbotOpen) {
         setChatSessionId(sessionId);
     }
     setIsChatbotOpen(prev => !prev);
   };
 
-
   const openAuthModal = () => {
-    if (isChatbotOpen) { // If chatbot is open when trying to open auth modal, close chatbot
+    if (isChatbotOpen) {
         setIsChatbotOpen(false);
     }
     setIsAuthModalOpen(true);
   };
   const closeAuthModal = () => setIsAuthModalOpen(false);
 
-  // Close chatbot if navigating to a new page and it's open
   useEffect(() => {
-    if (isChatbotOpen) {
-      // setIsChatbotOpen(false); // Commenting this out as per previous discussions, behavior might be desired differently
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]); // Only trigger on pathname change
+    // Optional: Close chatbot on route change if desired, but often better to let user manage it.
+    // if (isChatbotOpen) {
+    //   setIsChatbotOpen(false);
+    // }
+  }, [location.pathname]);
 
 
   const OptionalAuthRoute = ({ children }) => {
-    const { loading } = useAuth(); // useAuth hook from your AuthContext
+    const { loading } = useAuth();
     if (loading) {
       return (
-        <div className="flex justify-center items-center h-screen text-white"> {/* Added text-white for visibility */}
+        <div className="flex justify-center items-center h-screen text-white">
           Loading...
         </div>
       );
@@ -151,24 +151,23 @@ function AppContent() {
 
   return (
     <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal, isAuthModalOpen }}>
-      <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray overflow-x-hidden"> {/* Added overflow-x-hidden */}
-        <Header onAuthModalOpen={openAuthModal} /> {/* Pass openAuthModal to Header */}
-        <ScrollToTop /> {/* Component to scroll to top on route change */}
+      <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray overflow-x-hidden">
+        <Header onAuthModalOpen={openAuthModal} /> {/* This prop is correctly passed */}
+        <ScrollToTop />
 
         <Routes>
           <Route
             path="/"
             element={
-              <main className="mt-12 md:mt-24 lg:mt-20"> {/* Adjusted top margin for header */}
+              <main className="mt-14 md:mt-24 lg:mt-20"> {/* Adjusted based on Header's height */}
                 <Hero />
                 <About />
                 <Services />
                 <Coaching />
                 <VentureInvestment />
-                <Testimonials onAuthModalOpen={openAuthModal} /> {/* Pass openAuthModal */}
+                <Testimonials onAuthModalOpen={openAuthModal} />
                 <OtherWins />
                 <Interviews />
-                {/* THIS IS THE KEY CHANGE: Pass toggleChatbot to IncentivePage */}
                 <IncentivePage onChatbotOpen={toggleChatbot} onAuthModalOpen={openAuthModal} />
                 <MergedServiceForm />
                 <BottomCarouselPages />
@@ -182,27 +181,38 @@ function AppContent() {
           />
           <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
           <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} /> {/* Changed from /auth/reset-password */}
+          <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
+          <Route path="/reset-password" element={<PublicOnlyRoute><ResetPassword /></PublicOnlyRoute>} />
           
           <Route path="/profile" element={<PrivateRoute><ProfilePage onChatOpen={toggleChatbot} /></PrivateRoute>} />
           <Route path="/edit-profile" element={<PrivateRoute><EditProfilePage /></PrivateRoute>} />
           
+          {/* NEW: Route for Direct Messages Page */}
+          <Route
+            path="/messages"
+            element={
+              <PrivateRoute>
+                <DirectMessagesPage />
+              </PrivateRoute>
+            }
+          />
+
           <Route path="/settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
           <Route path="/components/Subpages/Calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
           <Route path="/components/Subpages/Settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
+          <Route path="/notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
         </Routes>
 
         <NavigationBar
-          isChatbotOpen={isChatbotOpen} // Pass the state
-          onChatbotClick={toggleChatbot} // Pass the toggle function
-          onAuthModalOpen={openAuthModal} // Pass the function to open auth modal
+          isChatbotOpen={isChatbotOpen}
+          onChatbotClick={toggleChatbot}
+          onAuthModalOpen={openAuthModal}
         />
         <AnimatePresence>
-          {isChatbotOpen && ( // Use isChatbotOpen state here
+          {isChatbotOpen && (
             <ChatbotWindow
               sessionId={chatSessionId}
-              onClose={toggleChatbot} // Pass toggleChatbot to close it
+              onClose={toggleChatbot}
             />
           )}
         </AnimatePresence>
@@ -243,11 +253,11 @@ function AppContent() {
 
 function App() {
   return (
-    <I18nextProvider i18n={i18n}> {/* Ensure i18n is initialized */}
+    <I18nextProvider i18n={i18n}>
       <AuthProvider>
-        <ServiceProvider> {/* Assuming ServiceProvider is correctly set up */}
+        <ServiceProvider>
           <Router>
-            <AppContent /> {/* Wrap content that uses useLocation */}
+            <AppContent />
           </Router>
         </ServiceProvider>
       </AuthProvider>
