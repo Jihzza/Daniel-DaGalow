@@ -816,7 +816,7 @@ function PaymentStep({
           </button>
         )}
 
-        <div className="mt-4 flex justify-center items-center gap-4">
+        <div className="mb-4 flex justify-center items-center gap-4">
           {/* Stripe badge */}
           <img
             src={stripe}
