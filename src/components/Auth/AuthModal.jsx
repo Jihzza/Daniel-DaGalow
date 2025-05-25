@@ -1,8 +1,8 @@
-// components/auth/AuthModal.jsx
+// src/components/Auth/AuthModal.jsx
 import React, { useState, useEffect } from "react";
 import Login from "./Login";
 import Signup from "./Signup";
-import ForgotPassword from "./ForgotPassword"; // Add this import
+import ForgotPassword from "./ForgotPassword";
 import { supabase } from "../../utils/supabaseClient"; // adjust path as needed
 
 const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
@@ -111,15 +111,37 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
                 />
               </>
             ) : view === "signup" ? (
-              <Signup
-                isModal={true}
-                onSuccess={onClose}
-                onSwitchToLogin={() => setView("login")}
-              />
+              <>
+                <button // Added Google button for Signup
+                  className="w-full flex items-center justify-center py-2 mb-4 border border-oxfordBlue rounded-lg"
+                  onClick={async () => {
+                    const { error } = await supabase.auth.signInWithOAuth({
+                      provider: "google",
+                    });
+                    if (error) {
+                      alert("Google sign-up failed: " + error.message);
+                    }
+                    // No onSuccess or onClose here for OAuth, as it causes a redirect.
+                  }}
+                  type="button"
+                >
+                  <img
+                    src="https://www.svgrepo.com/show/355037/google.svg"
+                    alt="Google"
+                    className="w-5 h-5 mr-2"
+                  />
+                  Continue with Google
+                </button>
+                <Signup
+                  isModal={true}
+                  onSuccess={onClose} // This applies to email/password signup
+                  onSwitchToLogin={() => setView("login")}
+                />
+              </>
             ) : (
               <ForgotPassword
                 isModal={true}
-                onSuccess={onClose}
+                onSuccess={onClose} // This might need to be adjusted if ForgotPassword also has OAuth
                 onBackToLogin={() => setView("login")}
               />
             )}

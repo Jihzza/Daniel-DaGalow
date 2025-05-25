@@ -57,7 +57,7 @@ function StepIndicator({
   );
 }
 
-// Step1: Contact Info
+// Step1: Contact Info - Now perfectly aligned with CoachingRequest's ContactStep
 function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
   const { t } = useTranslation();
   const { openAuthModal } = useContext(AuthModalContext);
@@ -154,11 +154,11 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
 
         <div>
           <label htmlFor="pitchdeck-phone" className="block text-white text-sm font-medium mb-1.5">
-            {t("coaching_request.form.phone_label", "Phone Number")} {/* Assuming you use the same translation key */}
+            {t("coaching_request.form.phone_label", "Phone Number")}
           </label>
           <div className="relative">
             <PhoneInput
-              containerClass="!w-full !h-[42px] md:!h-[44px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/10" // Adjusted height
+              containerClass="!w-full !h-[42px] md:!h-[44px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/10"
               buttonClass="!bg-white/5 !border-none !h-full"
               inputClass={`!text-sm !bg-white/5 !w-full !border-none !px-3 !py-2.5 !h-full text-white placeholder-white/50 ${
                 phoneError ? "!border !border-red-500" : ""
@@ -227,7 +227,7 @@ export default function PitchDeckRequest({ onBackService }) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [step, setStep] = useState(1);
-  const [isPhoneValid, setIsPhoneValid] = useState(false); // Parent's phone validity state
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
 
   const STEPS = [
     {
@@ -237,30 +237,28 @@ export default function PitchDeckRequest({ onBackService }) {
     { title: t("pitch_deck_request.steps.chat"), component: InlineChatbotStep },
   ];
 
-  const UI_STEPS = STEPS.length + 1; // +1 for the "back to service" conceptual step
+  const UI_STEPS = STEPS.length + 1;
   const formRef = useScrollToTopOnChange([step]);
 
   const [formData, setFormData] = useState({
     name: user?.user_metadata?.full_name || "",
     email: user?.email || "",
-    phone: "", // Initialized as empty, to be autofilled
+    phone: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestId, setRequestId] = useState(null);
 
-  // useEffect for autofilling user profile data (including phone)
   useEffect(() => {
     if (user) {
       const fetchUserProfile = async () => {
         try {
             const { data: profileData, error: profileError } = await supabase
             .from("profiles")
-            .select("phone_number, full_name") // Ensure these column names are correct
+            .select("phone_number, full_name")
             .eq("id", user.id)
             .single();
 
-            if (profileError) {
-                // Don't throw an error, just log it, as profile might not exist yet
+            if (profileError && profileError.code !== 'PGRST116') { // Ignore "no rows found" error
                 console.warn("Error fetching profile for autofill (PitchDeck):", profileError.message);
             }
 
@@ -268,43 +266,29 @@ export default function PitchDeckRequest({ onBackService }) {
                 ...prevFormData,
                 name: user.user_metadata?.full_name || profileData?.full_name || prevFormData.name || "",
                 email: user.email || prevFormData.email || "",
-                phone: profileData?.phone_number || prevFormData.phone || "", // Autofill phone
+                phone: profileData?.phone_number || prevFormData.phone || "",
             }));
 
-            // If phone number is fetched, validate it and update parent's state
-            if (profileData?.phone_number) {
-                const validationResult = await validatePhoneNumber(profileData.phone_number);
-                setIsPhoneValid(validationResult.isValid);
-            }
+            // **FIX**: Removed the redundant validation from here.
+            // The ContactInfoStep's own useEffect will handle the validation
+            // when it receives the updated `formData.phone` prop.
+
         } catch (error) {
             console.error("Error in fetchUserProfile (PitchDeck):", error);
         }
       };
       fetchUserProfile();
     }
-  }, [user]); // Dependency: user object
+  }, [user]);
 
-  // ***** MODIFIED handleChange *****
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prevFormData) => {
-      const newFormData = {
-        ...prevFormData,
-        [name]: type === "checkbox" ? checked : value,
-      };
-
-      // If the phone field is being changed, update parent's isPhoneValid state directly
-      if (name === "phone") {
-        validatePhoneNumber(value).then(result => {
-          setIsPhoneValid(result.isValid);
-        });
-      }
-      return newFormData;
-    });
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
   };
 
-  // Callback for ContactInfoStep to update parent's isPhoneValid state
-  // This is still useful if ContactInfoStep's internal logic calls it.
   const handlePhoneValidation = (isValid) => {
     setIsPhoneValid(isValid);
   };
@@ -313,17 +297,15 @@ export default function PitchDeckRequest({ onBackService }) {
     if (step === 1) {
       const isNameValid = formData.name && formData.name.trim().length >= 2;
       const isEmailValid = formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
-      // Use the parent's isPhoneValid state for the condition
       return isNameValid && isEmailValid && isPhoneValid;
     }
-    // For other steps, assume proceedable unless specific conditions are added
     return true;
   };
 
   const handleNext = async () => {
     if (!canProceed()) return;
 
-    if (step === 1) { // From Contact Info to Chat
+    if (step === 1) {
       setIsSubmitting(true);
       try {
         if (!user && formData.name && formData.email) {
@@ -337,55 +319,49 @@ export default function PitchDeckRequest({ onBackService }) {
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
-            // user_id will be set if user is logged in
         };
         if (user?.id) payload.user_id = user.id;
 
         const { data, error } = await supabase
-          .from("pitch_requests") // Ensure this is your correct table name
+          .from("pitch_requests")
           .insert(payload)
           .select("id")
           .single();
 
         if (error) {
             console.error("Error submitting pitch request:", error.message);
-            // Potentially set an error message state to display to user
             alert("Failed to submit request: " + error.message);
-            throw error; // Rethrow to be caught by outer catch if necessary
+            throw error;
         }
 
         setRequestId(data.id);
-        setStep(2); // Move to chat step
+        setStep(2);
       } catch (error) {
-        // Error already logged, setIsSubmitting will be handled in finally
+        // Error already handled
       } finally {
         setIsSubmitting(false);
       }
-    } else if (step < STEPS.length) { // For any other intermediate steps if added later
+    } else if (step < STEPS.length) {
         setStep(step + 1);
     }
-    // If step === STEPS.length, the "Done" button handles action
   };
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
-    else onBackService(); // If on first step, go back to service selection
+    else onBackService();
   };
 
   const handleStepClick = (clickedStepNum) => {
-    // clickedStepNum is 1-based from the UI
-    // Allow navigation to previous, completed steps if not submitting.
-    if (clickedStepNum < step +1 && !isSubmitting) { // step is 1-based, currentStep in indicator is step+1
-      if (clickedStepNum === 1 && step === 1) { // Clicking first dot on first step
+    if (clickedStepNum < step + 1 && !isSubmitting) {
+      if (clickedStepNum === 1 && step === 1) {
         onBackService();
       } else {
-        setStep(clickedStepNum - 1); // STEPS is 0-indexed, step state is 1-based
+        setStep(clickedStepNum - 1);
       }
-    } else if (clickedStepNum === 1 && step ===1 && !isSubmitting) {
+    } else if (clickedStepNum === 1 && step === 1 && !isSubmitting) {
         onBackService();
     }
   };
-
 
   const loadingSpinner = (
     <span className="flex items-center">
@@ -418,25 +394,25 @@ export default function PitchDeckRequest({ onBackService }) {
               <ContactInfoStep 
                   formData={formData} 
                   onChange={handleChange} 
-                  onPhoneValidation={handlePhoneValidation} // Pass validation handler to child
+                  onPhoneValidation={handlePhoneValidation}
               />
             }
             {step === 2 && requestId && (
               <InlineChatbotStep 
                 requestId={requestId} 
-                tableName="pitchdeck_chat_messages" // Ensure this is your correct chat table
-                workflowKey="pitch_deck_finalization" // Optional: if you use different n8n workflows
+                tableName="pitchdeck_chat_messages"
+                workflowKey="pitch_deck_finalization"
               />
             )}
-            {step === 2 && !requestId && ( // Show message if chat step is reached without requestId
+            {step === 2 && !requestId && (
                <div className="text-center text-red-400 p-4">
                 There was an issue preparing the chat. Please go back and try again.
               </div>
             )}
 
             <StepIndicator
-              stepCount={UI_STEPS} // Total conceptual steps including "back"
-              currentStep={step + 1} // UI step number is current step state + 1
+              stepCount={UI_STEPS}
+              currentStep={step + 1}
               onStepClick={handleStepClick}
             />
 
@@ -448,21 +424,20 @@ export default function PitchDeckRequest({ onBackService }) {
               >
                 {t("pitch_deck_request.buttons.back")}
               </button>
-              {step < STEPS.length && ( // "Next" button, if not on the last defined step
+              {step < STEPS.length && (
                 <button
                   onClick={handleNext}
                   disabled={!canProceed() || isSubmitting}
                   className={`px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50`}
                 >
                   {isSubmitting ? loadingSpinner : (
-                    // Display title of the *next* step or a generic "Next"
                     STEPS[step] ? STEPS[step].title : t("pitch_deck_request.buttons.next")
                   )}
                 </button>
               )}
-              {step === STEPS.length && ( // "Done" button, if on the last defined step (e.g., Chat step)
+              {step === STEPS.length && (
                 <button
-                  onClick={onBackService} // Or a specific completion handler
+                  onClick={onBackService}
                   className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
                 >
                   {t("pitch_deck_request.buttons.done")}

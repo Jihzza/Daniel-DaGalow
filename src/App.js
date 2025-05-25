@@ -1,4 +1,5 @@
 // src/App.js
+// src/App.js
 import React, { useState, createContext, useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -39,7 +40,6 @@ import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
-import ScrollToTop from "./components/common/ScrollToTop";
 import ScrollToTopButton from "./components/common/ScrollToTopButton";
 import TestimonialReview from "./pages/admin/TestimonialReview";
 import BookingSuccess from "./pages/BookingSuccess";
@@ -249,7 +249,7 @@ function AppContent() {
     <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal, isAuthModalOpen }}>
       <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray overflow-x-hidden">
         <Header onAuthModalOpen={openAuthModal} />
-        <ScrollToTop />
+        {/* <ScrollToTop /> */} {/* Removed */}
 
         {/* NEW: UI to request notification permission */}
         {isNotificationAPISupported() && notificationPermission === 'default' && (
