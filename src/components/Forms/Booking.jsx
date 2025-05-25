@@ -626,49 +626,62 @@ function InfoStep({ formData, onChange }) {
   const { openAuthModal } = useContext(AuthModalContext);
 
   return (
-    <div className="space-y-4 mb-2 max-w-md mx-auto w-full">
-      <div className="w-full flex flex-col gap-2">
-        <label className="block text-white text-sm sm:text-base md:text-lg">
-          {t("booking.name_label")}
-        </label>
-        <input
-          name="name"
-          placeholder={t("booking.name_placeholder")}
-          value={formData.name}
-          onChange={onChange}
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-xs sm:text-sm md:text-base"
-        />
+    <div className="space-y-6 mb-4 max-w-md mx-auto w-full">
+      {/* Section 1: User Details Input */}
+      <div className="space-y-4 text-left">
+        <div>
+          <label htmlFor="booking-name" className="block text-white text-sm font-medium mb-1.5">
+            {t("booking.name_label", "Full Name")}
+          </label>
+          {/* Removed icon span and pl-10 from input */}
+          <input
+            id="booking-name"
+            name="name"
+            placeholder={t("booking.name_placeholder", "Enter your full name")}
+            value={formData.name}
+            onChange={onChange}
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+          />
+        </div>
+        <div>
+          <label htmlFor="booking-email" className="block text-white text-sm font-medium mb-1.5">
+            {t("booking.email_label", "Email Address")}
+          </label>
+          {/* Removed icon span and pl-10 from input */}
+          <input
+            id="booking-email"
+            name="email"
+            type="email"
+            placeholder={t("booking.email_placeholder", "Enter your email")}
+            value={formData.email}
+            onChange={onChange}
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+          />
+        </div>
       </div>
-      <div className="w-full flex flex-col gap-2">
-        <label className="block text-white text-sm sm:text-base md:text-lg">
-          {t("booking.email_label")}
-        </label>
-        <input
-          name="email"
-          type="email"
-          placeholder={t("booking.email_placeholder")}
-          value={formData.email}
-          onChange={onChange}
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-xs sm:text-sm md:text-base"
-        />
-      </div>
-      <div className="text-white text-sm text-right sm:text-base md:text-lg">
-        <button
-          type="button"
-          onClick={openAuthModal}
-          className="text-xs text-white underline"
-        >
-          {t("services.common_login_signup")}
-        </button>
-      </div>
-      <div className="md:col-span-2 text-center md:text-left">
-        <p className="text-xs text-gray-400">
-          {" "}
-          {t(
-            "pitch_deck_request.form.auto_account_warning",
-            "An account will automatically be created with the info you provide."
-          )}
-        </p>
+
+      {/* Section 2: Account Creation Notice & Login Option */}
+      <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 space-y-3">
+        {/* Account Creation Notice - Icon removed */}
+        <div className="flex items-center justify-center text-yellow-200 text-xs sm:text-sm">
+          <p>
+            {t("booking.account_creation_notice_simple", "We'll create an account with these details to manage your booking.")}
+          </p>
+        </div>
+        
+        <div className="pt-2">
+          <p className="text-white/80 text-sm mb-2">
+            {t("booking.login_prompt_simple", "Already have an account?")}
+          </p>
+          {/* Login Button - Icon removed */}
+          <button
+            type="button"
+            onClick={openAuthModal}
+            className="inline-flex items-center justify-center bg-darkGold text-black font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90 transition-colors text-sm"
+          >
+            {t("booking.login_button", "Log In Here")}
+          </button>
+        </div>
       </div>
     </div>
   );

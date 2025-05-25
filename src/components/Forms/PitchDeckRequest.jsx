@@ -68,10 +68,7 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
   const phoneValidationTimeout = useRef(null);
 
   const handlePhoneChange = (phone) => {
-    // Propagate change to parent form data
     onChange({ target: { name: "phone", value: phone } });
-
-    // Reset local validation display
     setPhoneValidated(false);
     setPhoneError("");
 
@@ -79,46 +76,39 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
       clearTimeout(phoneValidationTimeout.current);
     }
 
-    // Basic check: if phone number is too short, mark as invalid immediately
     if (phone.replace(/\D/g, "").length < 8) {
-      if (onPhoneValidation) onPhoneValidation(false); // Update parent's validity state
+      if (onPhoneValidation) onPhoneValidation(false);
       return;
     }
 
-    // Debounced validation
     phoneValidationTimeout.current = setTimeout(async () => {
       setValidatingPhone(true);
       try {
         const result = await validatePhoneNumber(phone);
         setValidatingPhone(false);
         setPhoneValidated(result.isValid);
-        if (onPhoneValidation) onPhoneValidation(result.isValid); // Update parent's validity state
+        if (onPhoneValidation) onPhoneValidation(result.isValid);
 
         if (!result.isValid) {
-          setPhoneError(t("pitch_deck_request.form.phone_validation_error"));
+          setPhoneError(t("pitch_deck_request.form.phone_validation_error", "Invalid phone number."));
         }
       } catch (error) {
         setValidatingPhone(false);
         setPhoneError("Validation service unavailable");
-        if (onPhoneValidation) onPhoneValidation(false); // Update parent's validity state
+        if (onPhoneValidation) onPhoneValidation(false);
         console.error("Phone validation error:", error);
       }
     }, 800);
   };
 
-  // ***** MODIFIED useEffect *****
-  // This effect now listens to formData.phone to react to autofill
   useEffect(() => {
     if (formData.phone && formData.phone.replace(/\D/g, "").length >= 8) {
-      // Call handlePhoneChange to trigger visual validation if phone is pre-filled and long enough
-      // This ensures the green check or red cross appears correctly after autofill.
       handlePhoneChange(formData.phone);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.phone]); // Dependency: re-run when formData.phone changes (e.g., from autofill)
+  }, [formData.phone]);
 
   useEffect(() => {
-    // Cleanup timeout on component unmount
     return () => {
       if (phoneValidationTimeout.current) {
         clearTimeout(phoneValidationTimeout.current);
@@ -127,105 +117,108 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
-      <div className="w-full flex flex-col gap-2">
-        <label className="block text-white text-sm sm:text-base md:text-lg">
-          {t("pitch_deck_request.form.name_label")}
-        </label>
-        <input
-          name="name"
-          type="text"
-          value={formData.name}
-          onChange={onChange}
-          placeholder={t("pitch_deck_request.form.name_placeholder")}
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-xs sm:text-sm md:text-base"
-          required
-        />
-      </div>
-
-      <div className="w-full flex flex-col gap-2">
-        <label className="block text-white text-sm sm:text-base md:text-lg">
-          {t("pitch_deck_request.form.email_label")}
-        </label>
-        <input
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={onChange}
-          placeholder={t("pitch_deck_request.form.email_placeholder")}
-          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-xs sm:text-sm md:text-base"
-          required
-        />
-      </div>
-
-      <div className="w-full flex flex-col gap-2">
-        <label className="block text-white text-sm sm:text-base md:text-lg">
-          {t("coaching_request.form.phone_label")}
-        </label>
-        <div className="relative">
-          <PhoneInput
-            containerClass="!w-full !h-[48px] md:!h-[52px] lg:!h-[46px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
-            buttonClass="!bg-white/5 !border-none h-full"
-            inputClass={`!bg-white/5 !w-full !border-none px-2 md:px-4 !h-full text-white placeholder-white/50 text-base md:text-lg ${
-              phoneError ? "!border !border-red-500" : ""
-            }`}
-            country="es"
-            enableSearch
-            searchPlaceholder={t(
-              "coaching_request.form.phone_search_placeholder"
-            )}
-            value={formData.phone} // Value comes from parent's formData
-            onChange={handlePhoneChange} // Use the modified handlePhoneChange
-            dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
-            searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
+    <div className="space-y-6 mb-4 max-w-md mx-auto w-full">
+      {/* Section 1: User Details Input */}
+      <div className="space-y-4 text-left">
+        <div>
+          <label htmlFor="pitchdeck-name" className="block text-white text-sm font-medium mb-1.5">
+            {t("pitch_deck_request.form.name_label", "Full Name")}
+          </label>
+          <input
+            id="pitchdeck-name"
+            name="name"
+            type="text"
+            value={formData.name}
+            onChange={onChange}
+            placeholder={t("pitch_deck_request.form.name_placeholder", "Enter your full name")}
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+            required
           />
-          {/* Validation indicators */}
-          {formData.phone && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
-              {validatingPhone && (
-                <svg
-                  className="animate-spin h-5 w-5 text-gray-300"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              )}
-              {!validatingPhone && phoneValidated && (
-                <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-              )}
-              {!validatingPhone && !phoneValidated && formData.phone && formData.phone.replace(/\D/g, "").length >= 8 && (
-                  <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        </div>
+
+        <div>
+          <label htmlFor="pitchdeck-email" className="block text-white text-sm font-medium mb-1.5">
+            {t("pitch_deck_request.form.email_label", "Email Address")}
+          </label>
+          <input
+            id="pitchdeck-email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={onChange}
+            placeholder={t("pitch_deck_request.form.email_placeholder", "Enter your email")}
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="pitchdeck-phone" className="block text-white text-sm font-medium mb-1.5">
+            {t("coaching_request.form.phone_label", "Phone Number")} {/* Assuming you use the same translation key */}
+          </label>
+          <div className="relative">
+            <PhoneInput
+              containerClass="!w-full !h-[42px] md:!h-[44px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/10" // Adjusted height
+              buttonClass="!bg-white/5 !border-none !h-full"
+              inputClass={`!text-sm !bg-white/5 !w-full !border-none !px-3 !py-2.5 !h-full text-white placeholder-white/50 ${
+                phoneError ? "!border !border-red-500" : ""
+              }`}
+              country="es"
+              enableSearch
+              searchPlaceholder={t("coaching_request.form.phone_search_placeholder")}
+              value={formData.phone}
+              onChange={handlePhoneChange}
+              dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
+              searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
+            />
+            {formData.phone && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center pointer-events-none">
+                {validatingPhone && (
+                  <svg className="animate-spin h-4 w-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                )}
+                {!validatingPhone && phoneValidated && (
+                  <svg className="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                )}
+                {!validatingPhone && !phoneValidated && formData.phone && formData.phone.replace(/\D/g, "").length >= 8 && (
+                  <svg className="h-4 w-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                   </svg>
                 )}
-            </div>
+              </div>
+            )}
+          </div>
+          {phoneError && (
+            <p className="text-red-500 text-xs mt-1">{phoneError}</p>
           )}
         </div>
-        {phoneError && (
-          <p className="text-red-500 text-sm mt-1">{phoneError}</p>
-        )}
       </div>
 
-      <div className="text-white text-sm text-right sm:text-base md:text-lg">
-        <button
-          type="button"
-          onClick={openAuthModal}
-          className="text-xs text-white underline"
-        >
-          {t("services.common_login_signup")}
-        </button>
+      {/* Section 2: Account Creation Notice & Login Option */}
+      <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 space-y-3 mt-6">
+        <div className="flex items-center justify-center text-yellow-200 text-xs sm:text-sm">
+          <p>
+            {t("pitch_deck_request.form.auto_account_warning", "An account will automatically be created with the info you provide.")}
+          </p>
+        </div>
+        
+        <div className="pt-2">
+          <p className="text-white/80 text-sm mb-2">
+            {t("booking.login_prompt_simple", "Already have an account?")}
+          </p>
+          <button
+            type="button"
+            onClick={openAuthModal}
+            className="inline-flex items-center justify-center bg-darkGold text-black font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90 transition-colors text-sm"
+          >
+            {t("booking.login_button", "Log In Here")}
+          </button>
+        </div>
       </div>
-      {/* SUBTLE WARNING MESSAGE - Option 1 */}
-<div className="md:col-span-2 text-center md:text-left">
-  <p className="text-xs text-gray-400"> {/* Lighter gray text */}
-    {t("pitch_deck_request.form.auto_account_warning", "An account will automatically be created with the info you provide.")}
-  </p>
-</div>
     </div>
   );
 }

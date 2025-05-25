@@ -6,6 +6,20 @@ import { useAuth } from "../../contexts/AuthContext"; // Needed for signUp
 import { supabase } from "../../utils/supabaseClient"; // Needed for direct Supabase operations if any, or by useAuth
 import chatbotIcon from '../../assets/icons/Dagalow Preto.svg';
 
+const EyeIcon = ({ color = "currentColor" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+  );
+  
+const EyeOffIcon = ({ color = "currentColor" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+      <line x1="1" y1="1" x2="23" y2="23"></line>
+    </svg>
+);
+
 function IncentivePage({ onChatbotOpen }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -14,7 +28,9 @@ function IncentivePage({ onChatbotOpen }) {
   // State for the simplified signup form
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -128,29 +144,49 @@ function IncentivePage({ onChatbotOpen }) {
               <label htmlFor="passwordIncentive" className="block text-sm font-medium text-black mb-1">
                 {t('auth.signup.password.label')}
               </label>
-              <input
-                id="passwordIncentive"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder={t('auth.signup.password.placeholder')}
-                className="w-full px-3 py-2 bg-transparent border border-darkGold placeholder:text-black/50 rounded-md shadow-sm focus:outline-none focus:ring-darkGold focus:border-darkGold sm:text-sm"
-              />
+              <div className="relative w-full">
+                <input
+                    id="passwordIncentive"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    placeholder={t('auth.signup.password.placeholder')}
+                    className="w-full px-3 py-2 bg-transparent border border-darkGold placeholder:text-black/50 rounded-md shadow-sm focus:outline-none focus:ring-darkGold focus:border-darkGold sm:text-sm"
+                />
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                    {showPassword ? <EyeOffIcon color="#000"/> : <EyeIcon color="#000" />}
+                </button>
+              </div>
             </div>
             <div>
               <label htmlFor="confirmPasswordIncentive" className="block text-sm font-medium text-black mb-1">
                 {t('auth.signup.confirm_password.label')}
               </label>
-              <input
-                id="confirmPasswordIncentive"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                placeholder={t('auth.signup.confirm_password.placeholder')}
-                className="w-full px-3 py-2 bg-transparent border border-darkGold placeholder:text-black/50 rounded-md shadow-sm focus:outline-none focus:ring-darkGold focus:border-darkGold sm:text-sm"
-              />
+              <div className="relative w-full">
+                <input
+                    id="confirmPasswordIncentive"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    placeholder={t('auth.signup.confirm_password.placeholder')}
+                    className="w-full px-3 py-2 bg-transparent border border-darkGold placeholder:text-black/50 rounded-md shadow-sm focus:outline-none focus:ring-darkGold focus:border-darkGold sm:text-sm"
+                />
+                <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600"
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                    {showConfirmPassword ? <EyeOffIcon color="#000"/> : <EyeIcon color="#000"/>}
+                </button>
+              </div>
             </div>
             {/* Wrapped button in a div with text-center to center it */}
             <div className="text-center">
@@ -174,11 +210,15 @@ function IncentivePage({ onChatbotOpen }) {
           <p className="md:text-lg text-black">
             {t('incentivePage.chatbot.description')}
           </p>
+          {/* Chatbot icon and label outside the button */}
+          <div className="flex flex-col items-center mb-2">
+            <img src={chatbotIcon} alt={t("navigation.chatbot")} className="w-10 h-10 mb-1" />
+            <span className="text-xs text-gray-600">{t('incentivePage.chatbot.logoLabel', 'Chatbot logo')}</span>
+          </div>
           <button
             onClick={handleChatbotClick}
             className="bg-darkGold w-60 md:w-80 text-black md:text-xl font-bold px-6 md:px-8 py-3 md:py-4 rounded-lg shadow-lg hover:bg-opacity-90 transition-all duration-150 inline-flex items-center justify-center space-x-3"
           >
-            <img src={chatbotIcon} alt={t("navigation.chatbot")} className="w-6 h-6" />
             <span>{t('incentivePage.chatbot.cta', 'Chatbot')}</span>
           </button>
         </div>

@@ -7,7 +7,7 @@ import OctagonalProfile from '../common/Octagonal Profile';
 import casa from '../../assets/icons/House Branco.svg';
 import calendar from '../../assets/icons/Calendar Branco.svg';
 import chatbot from '../../assets/icons/Dagalow Branco.svg';
-import notificationsIcon from '../../assets/icons/notifications white.svg'; // <-- ADD YOUR NOTIFICATIONS ICON
+import messagesIcon from '../../assets/icons/Messages Branco.svg'; // Import messages icon
 
 import { useTranslation } from 'react-i18next';
 import defaultProfile from '../../assets/img/Pessoas/Default.svg';
@@ -70,8 +70,8 @@ const NavigationBar = ({ onChatbotClick, onAuthModalOpen, isChatbotOpen }) => {
   const icons = [
     { id: 'home', src: casa, alt: t("navigation.home"), action: handleDagalowIconClick, size: 26 },
     { id: 'calendar', src: calendar, alt: t("navigation.calendar"), to: user ? "/components/Subpages/Calendar" : null, action: user ? null : onAuthModalOpen, size: 24 },
-    { id: 'chatbot', src: chatbot, alt: t("navigation.chatbot"), action: onChatbotClick, size: 24 }, // onChatbotClick is the toggle function
-    { id: 'notifications', src: notificationsIcon, alt: t("navigation.notifications"), to: "/notifications", action: null, size: 24 },
+    { id: 'chatbot', src: chatbot, alt: t("navigation.chatbot"), action: onChatbotClick, size: 24 },
+    { id: 'messages', src: messagesIcon, alt: t("navigation.messages"), to: user ? "/messages" : null, action: user ? null : onAuthModalOpen, size: 24 },
   ];
   
   return (

@@ -6,15 +6,16 @@ import { useTranslation } from "react-i18next";
 import DaGalowLogo from "../../assets/logos/DaGalow Logo.svg";
 import Hamburger from "../../assets/icons/Hamburger.svg";
 import { supabase } from "../../utils/supabaseClient";
-import AuthModal from "../Auth/AuthModal"; // Assuming this is used for login popups
+import AuthModal from "../Auth/AuthModal"; 
 import SettingsIcon from "../../assets/icons/Settings Branco.svg";
-import MessageSquareIcon from "../../assets/icons/Messages Branco.svg"; // Import a messages icon
+import NotificationsIcon from "../../assets/icons/notifications white.svg";
+// LoginIcon and LogoutIcon imports are removed as they are no longer used.
 
 // Define language mapping with language codes and country codes for flags
 const languageConfig = {
   en: { code: "US", name: "EN" },
   pt: { code: "PT", name: "PT" },
-  "pt-BR": { code: "BR", name: "PT-BR" }, // Ensure this matches your i18n setup
+  "pt-BR": { code: "BR", name: "PT-BR" }, 
   es: { code: "ES", name: "ES" },
 };
 
@@ -38,10 +39,10 @@ function useBreakpoint() {
   return breakpoint;
 }
 
-function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
+function Header({ onAuthModalOpen }) { 
   const [menuOpen, setMenuOpen] = useState(false);
   const [show, setShow] = useState(true);
-  const [authModalOpen, setAuthModalOpen] = useState(false); // Internal state for modal
+  const [authModalOpen, setAuthModalOpen] = useState(false); 
   const lastY = useRef(0);
   const { user, signOut } = useAuth();
   const location = useLocation();
@@ -49,14 +50,12 @@ function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
   const { t, i18n } = useTranslation();
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef(null);
-  // Avatar URL state is not directly used in this header's display but kept for consistency if needed later
-  // const [avatarUrl, setAvatarUrl] = useState(null); 
-
+  
   const breakpoint = useBreakpoint();
 
   const currentLanguage = i18n.language || "en";
   const allLangs = (i18n.options.supportedLngs || []).filter(
-    (l) => l !== "cimode" && l !== "*" // Filter out i18next specific codes
+    (l) => l !== "cimode" && l !== "*" 
   );
 
   useEffect(() => {
@@ -72,9 +71,6 @@ function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Removed avatar fetching logic as it's not displayed in this header version.
-  // If you need it for a profile icon in the header later, it can be re-added.
 
   useEffect(() => {
     function onClick(e) {
@@ -92,7 +88,7 @@ function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
     } else {
       navigate("/");
     }
-    setMenuOpen(false); // Close menu on logo click
+    setMenuOpen(false); 
   };
 
   const handleSignOut = async () => {
@@ -103,24 +99,31 @@ function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
 
   const handleLogIn = () => {
     if (typeof onAuthModalOpen === 'function') {
-      onAuthModalOpen(); // Use prop if available
+      onAuthModalOpen(); 
     } else {
-      setAuthModalOpen(true); // Fallback to internal state
+      setAuthModalOpen(true); 
     }
     setMenuOpen(false);
   };
 
-  const handleMessagesClick = () => {
-    if (user) {
-      navigate("/messages");
-    } else {
-      if (typeof onAuthModalOpen === 'function') {
-        onAuthModalOpen();
-      } else {
-        setAuthModalOpen(true);
+  const handleScrollToSection = (sectionId) => {
+    setMenuOpen(false);
+    if (location.pathname === '/') {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        // Calculate position considering header height
+        const headerHeight = breakpoint === "lg" ? 80 : breakpoint === "md" ? 96 : 56;
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - headerHeight;
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
       }
+    } else {
+      navigate(`/#${sectionId}`);
     }
-    setMenuOpen(false); // Close menu if open
   };
 
   const getFlagImage = (langCode) => {
@@ -133,7 +136,7 @@ function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
         alt={`${langDetails.name} flag`}
         className="w-6 h-4 object-cover rounded-sm"
         onError={(e) => {
-          e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'%3E%3C/svg%3E"; // Placeholder
+          e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'%3E%3C/svg%3E"; 
         }}
       />
     );
@@ -145,7 +148,6 @@ function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
     return langDetails.name.toUpperCase();
   };
 
-
   return (
     <>
       <header
@@ -153,16 +155,14 @@ function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
           show ? "translate-y-0" : "-translate-y-full"
         }`}
       >
-        {/* Left: Hamburger Menu */}
         <button
           onClick={() => setMenuOpen((o) => !o)}
-          className="focus:outline-none z-10 p-2 -ml-2 md:p-0 md:ml-0" // Added padding for easier tap on mobile
+          className="focus:outline-none z-10 p-2 -ml-2 md:p-0 md:ml-0" 
           aria-label="Open menu"
         >
           <img src={Hamburger} alt="Menu" className="w-5 h-5 md:w-7 md:h-7" />
         </button>
 
-        {/* Center: Logo */}
         <div
           onClick={handleLogoClick}
           className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
@@ -171,13 +171,11 @@ function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
           <img
             src={DaGalowLogo}
             alt="DaGalow Logo"
-            className="w-[130px] md:w-[220px] lg:w-[250px] h-auto object-cover" // Adjusted sizes
+            className="w-[130px] md:w-[220px] lg:w-[250px] h-auto object-cover" 
           />
         </div>
 
-        {/* Right: Language Switcher and Messages Icon */}
         <div className="flex items-center gap-3 md:gap-4">
-          {/* Language Switcher */}
           <div ref={langRef} className="relative">
             <button
               onClick={() => setLangOpen((o) => !o)}
@@ -209,27 +207,23 @@ function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
             )}
           </div>
 
-          {/* Messages Icon - Conditionally rendered */}
-          {user && (
-            <button
-              onClick={handleMessagesClick}
-              className="focus:outline-none p-1"
-              aria-label="Open messages"
-            >
-              <img src={MessageSquareIcon} alt="Messages" className="w-5 h-5 md:w-6 md:h-6" />
-            </button>
-          )}
+          <button
+            onClick={() => navigate("/notifications")}
+            className="focus:outline-none p-1"
+            aria-label="Open notifications"
+          >
+            <img src={NotificationsIcon} alt="Notifications" className="w-5 h-5 md:w-6 md:h-6" />
+          </button>
         </div>
       </header>
 
-      {/* Dropdown Menu */}
       <div
         className={`fixed top-0 left-0 w-[70vw] sm:w-[50vw] md:w-[40vw] lg:w-[30vw] xl:w-[25vw] max-w-xs bg-black transform transition-transform duration-300 ease-in-out z-50 shadow-2xl flex flex-col ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{
-          height: `calc(100vh - ${breakpoint === "lg" ? "80px" : breakpoint === "md" ? "96px" : "56px"})`, // Adjusted based on header height
-          top: `${breakpoint === "lg" ? "80px" : breakpoint === "md" ? "96px" : "56px"}`, // Position below header
+          height: `calc(100vh - ${breakpoint === "lg" ? "80px" : breakpoint === "md" ? "96px" : "56px"})`, 
+          top: `${breakpoint === "lg" ? "80px" : breakpoint === "md" ? "96px" : "56px"}`, 
         }}
       >
         <nav className="flex-grow p-3 sm:p-4 space-y-1 overflow-y-auto">
@@ -249,98 +243,108 @@ function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
               {t("navigation.profile")}
             </Link>
           )}
-           {user && ( // Show Messages link in menu if user is logged in
+           {user && ( 
             <Link
               to="/messages"
               className="flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
               onClick={() => setMenuOpen(false)}
             >
-              Messages {/* You can translate this if needed */}
+              Messages 
             </Link>
           )}
           {user && (
             <Link
-              to="/components/Subpages/Calendar" // Ensure this path is correct
+              to="/components/Subpages/Calendar" 
               className="flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               {t("navigation.calendar")}
             </Link>
           )}
-          {location.pathname === "/" && (
-            <>
-              <div className="pt-1 sm:pt-2">
-                <p className="text-xs sm:text-sm text-darkGold px-3 mb-1 opacity-70">
-                  {t("navigation.services")}
-                </p>
-                <button
-                  onClick={() => {
-                    document.getElementById("services")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    setMenuOpen(false);
-                  }}
-                  className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
-                >
-                  {t("services.services_title")}
-                </button>
-                <button
-                  onClick={() => {
-                    document.getElementById("coaching")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    setMenuOpen(false);
-                  }}
-                  className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
-                >
-                  {t("navigation.coaching")}
-                </button>
-              </div>
-              <div className="pt-1 sm:pt-2">
-                <p className="text-xs sm:text-sm text-darkGold px-3 mb-1 opacity-70">
-                  {t("navigation.learnMore")}
-                </p>
-                <button
-                  onClick={() => {
-                    document.getElementById("bottom-carousel")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    setMenuOpen(false);
-                  }}
-                  className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
-                >
-                  {t("bottom_carousel.pages.faqs")}
-                </button>
-              </div>
-            </>
-          )}
-          {!user && (
+          
+          {/* Sections for All Users */}
+          <div className="pt-1 sm:pt-2">
+            <p className="text-xs sm:text-sm text-darkGold px-3 mb-1 opacity-70">
+              {t("navigation.explore")}
+            </p>
             <button
-              onClick={handleLogIn}
+              onClick={() => handleScrollToSection("services")}
               className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
             >
-              {t("navigation.login")}
+              {t("services.services_title")}
             </button>
-          )}
+            <button
+                onClick={() => handleScrollToSection("coaching")}
+              className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+            >
+              {t("navigation.coaching")}
+            </button>
+            <button
+                onClick={() => handleScrollToSection('venture-investment')}
+                className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+            >
+                {t("venture_investment.venture_title")}
+            </button>
+             <button
+              onClick={() => handleScrollToSection("testimonials")}
+              className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+            >
+              {t("testimonials.testimonials_title")}
+            </button>
+            <button
+                onClick={() => handleScrollToSection('interviews')}
+                className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+            >
+                {t("interviews.interviews_title")}
+            </button>
+              <button
+                onClick={() => handleScrollToSection('other-wins')}
+                className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+            >
+                {t("other_wins.other_wins_title")}
+            </button>
+            <button
+              onClick={() => handleScrollToSection("bottom-carousel")}
+              className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+            >
+              {t("bottom_carousel.pages.faqs")}
+            </button>
+          </div>
+
+          {/* Conditional Log In / Log Out */}
+          <div className="pt-2 border-t border-darkGold/20 mt-2">
+            {!user ? (
+              <button
+                onClick={handleLogIn}
+                className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+              >
+                {/* Icon removed */}
+                {t("navigation.login")}
+              </button>
+            ) : (
+              <button
+                onClick={handleSignOut}
+                className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+              >
+                {/* Icon removed */}
+                {t("navigation.logout")}
+              </button>
+            )}
+          </div>
         </nav>
         
-        {/* Footer of Menu: Settings and Sign Out */}
         <div className="p-3 sm:p-4 border-t border-darkGold/30 flex-shrink-0 space-y-2">
           <Link
-            to="/settings" // Ensure this path is correct for your SettingsPage
+            to="/settings" 
             className="flex items-center gap-3 text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors w-full"
             onClick={() => setMenuOpen(false)}
           >
             <img src={SettingsIcon} alt="Settings" className="w-5 h-5 md:w-6 md:h-6" />
             <span>{t("navigation.settings")}</span>
           </Link>
-          {user && (
-            <button
-              onClick={handleSignOut}
-              className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
-            >
-               <svg className="w-5 h-5 md:w-6 md:h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-              {t("navigation.logout")}
-            </button>
-          )}
         </div>
       </div>
 
-      {/* Overlay for when menu is open */}
       {menuOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
@@ -348,7 +352,6 @@ function Header({ onAuthModalOpen }) { // Added onAuthModalOpen prop
         />
       )}
 
-      {/* Auth Modal (if not using context-based modal opening from App.js) */}
       {!onAuthModalOpen && (
         <AuthModal
           isOpen={authModalOpen}

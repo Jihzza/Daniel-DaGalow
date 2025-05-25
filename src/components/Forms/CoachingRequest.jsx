@@ -12,7 +12,7 @@ import { ServiceContext } from "../../contexts/ServiceContext";
 import axios from "axios";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
 import { autoCreateAccount } from "../../utils/autoSignup";
-import { validatePhoneNumber } from "../../utils/phoneValidation"; // Ensure this is imported
+import { validatePhoneNumber } from "../../utils/phoneValidation";
 import stripe from "../../assets/icons/stripe.svg";
 import ssl from "../../assets/icons/ssl-lock.svg";
 
@@ -96,17 +96,13 @@ function FrequencyStep({ formData, onChange }) {
 }
 
 // Step 2: Contact Info
-function ContactStep({ formData, onChange }) {
+function ContactStep({ formData, onChange, onPhoneValidation }) { // Added onPhoneValidation back as it's used
   const { t } = useTranslation();
   const { openAuthModal } = useContext(AuthModalContext);
-  // Removed isPhoneValid and setIsPhoneValid from here as it's managed in the parent CoachingRequest
-  // and primarily used for the canProceed logic. The visual validation within ContactStep
-  // will still be handled by its internal state.
 
   const [validatingPhone, setValidatingPhone] = useState(false);
   const [phoneValidated, setPhoneValidated] = useState(false);
   const [phoneError, setPhoneError] = useState("");
-
   const phoneValidationTimeout = useRef(null);
 
   const handlePhoneChange = (phone) => {
@@ -119,8 +115,7 @@ function ContactStep({ formData, onChange }) {
     }
 
     if (phone.replace(/\D/g, "").length < 8) {
-      // Optionally, if you passed down onPhoneValidation from parent, call it:
-      // onPhoneValidation(false);
+      if (onPhoneValidation) onPhoneValidation(false);
       return;
     }
 
@@ -130,8 +125,7 @@ function ContactStep({ formData, onChange }) {
         const result = await validatePhoneNumber(phone);
         setValidatingPhone(false);
         setPhoneValidated(result.isValid);
-        // Optionally, if you passed down onPhoneValidation from parent:
-        // onPhoneValidation(result.isValid);
+        if (onPhoneValidation) onPhoneValidation(result.isValid);
 
         if (!result.isValid) {
           setPhoneError(t("coaching_request.form.phone_validation_error"));
@@ -139,21 +133,18 @@ function ContactStep({ formData, onChange }) {
       } catch (error) {
         setValidatingPhone(false);
         setPhoneError("Validation service unavailable");
-        // Optionally, if you passed down onPhoneValidation from parent:
-        // onPhoneValidation(false);
+        if (onPhoneValidation) onPhoneValidation(false);
         console.error("Phone validation error:", error);
       }
     }, 800);
   };
 
   useEffect(() => {
-    // If an initial phone number is passed via formData (e.g., from autofill),
-    // trigger validation for display purposes if it meets basic length criteria.
     if (formData.phone && formData.phone.replace(/\D/g, "").length >= 8) {
         handlePhoneChange(formData.phone);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData.phone]); // Re-run if formData.phone changes externally (e.g. from autofill)
+  }, [formData.phone]);
 
 
   useEffect(() => {
@@ -165,146 +156,114 @@ function ContactStep({ formData, onChange }) {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
-      <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">
-          {t("coaching_request.form.name_label")}
-        </label>
-        <input
-          name="name"
-          type="text"
-          value={formData.name}
-          onChange={onChange}
-          placeholder={t("coaching_request.form.name_placeholder")}
-          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold shadow-inner text-base md:text-lg transition-colors"
-          required
-        />
-      </div>
-
-      <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2">
-          {t("coaching_request.form.email_label")}
-        </label>
-        <input
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={onChange}
-          placeholder={t("coaching_request.form.email_placeholder")}
-          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold shadow-inner text-base md:text-lg transition-colors"
-          required
-        />
-      </div>
-
-      <div className="w-full flex flex-col gap-2">
-        <label className="block text-white mb-2 font-medium">
-          {t("coaching_request.form.phone_label")}
-        </label>
-        <div className="relative">
-          <PhoneInput
-            containerClass="!w-full !h-[48px] md:!h-[52px] lg:!h-[46px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/30"
-            buttonClass="!bg-white/5 !border-none h-full"
-            inputClass={`!bg-white/5 !w-full !border-none px-2 md:px-4 !h-full text-white placeholder-white/50 text-base md:text-lg ${
-              phoneError ? "!border !border-red-500" : ""
-            }`}
-            country="es"
-            enableSearch
-            searchPlaceholder={t(
-              "coaching_request.form.phone_search_placeholder"
-            )}
-            value={formData.phone} // This will now reflect autofilled data
-            onChange={handlePhoneChange}
-            dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
-            searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
+    <div className="space-y-6 mb-4 max-w-md mx-auto w-full">
+      {/* Section 1: User Details Input */}
+      <div className="space-y-4 text-left">
+        <div>
+          <label htmlFor="coaching-name" className="block text-white text-sm font-medium mb-1.5">
+            {t("coaching_request.form.name_label", "Full Name")}
+          </label>
+          <input
+            id="coaching-name"
+            name="name"
+            type="text"
+            value={formData.name}
+            onChange={onChange}
+            placeholder={t("coaching_request.form.name_placeholder", "Enter your full name")}
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+            required
           />
-
-          {formData.phone && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center">
-              {validatingPhone && (
-                <svg
-                  className="animate-spin h-5 w-5 text-gray-300"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-              )}
-
-              {!validatingPhone && phoneValidated && (
-                <svg
-                  className="h-5 w-5 text-green-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  ></path>
-                </svg>
-              )}
-
-              {!validatingPhone &&
-                !phoneValidated &&
-                formData.phone &&
-                formData.phone.replace(/\D/g, "").length >= 8 && (
-                  <svg
-                    className="h-5 w-5 text-red-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    ></path>
-                  </svg>
-                )}
-            </div>
-          )}
         </div>
 
-        {phoneError && (
-          <p className="text-red-500 text-sm mt-1">{phoneError}</p>
-        )}
+        <div>
+          <label htmlFor="coaching-email" className="block text-white text-sm font-medium mb-1.5">
+            {t("coaching_request.form.email_label", "Email Address")}
+          </label>
+          <input
+            id="coaching-email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={onChange}
+            placeholder={t("coaching_request.form.email_placeholder", "Enter your email")}
+            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="coaching-phone" className="block text-white text-sm font-medium mb-1.5">
+            {t("coaching_request.form.phone_label", "Phone Number")}
+          </label>
+          <div className="relative">
+            <PhoneInput
+              containerClass="!w-full !h-[42px] md:!h-[44px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/10" // Adjusted height for consistency
+              buttonClass="!bg-white/5 !border-none !h-full" // Ensure button takes full height of container
+              inputClass={`!text-sm !bg-white/5 !w-full !border-none !px-3 !py-2.5 !h-full text-white placeholder-white/50 ${
+                phoneError ? "!border !border-red-500" : ""
+              }`} // Ensure input takes full height
+              country="es"
+              enableSearch
+              searchPlaceholder={t("coaching_request.form.phone_search_placeholder")}
+              value={formData.phone}
+              onChange={handlePhoneChange} // This now correctly triggers validation that updates parent
+              dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
+              searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
+            />
+            {/* Validation indicators (optional, can be styled further) */}
+            {formData.phone && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center pointer-events-none">
+                {validatingPhone && (
+                  <svg className="animate-spin h-4 w-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                )}
+                {!validatingPhone && phoneValidated && (
+                  <svg className="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                )}
+                {!validatingPhone && !phoneValidated && formData.phone && formData.phone.replace(/\D/g, "").length >= 8 && (
+                  <svg className="h-4 w-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                )}
+              </div>
+            )}
+          </div>
+          {phoneError && (
+            <p className="text-red-500 text-xs mt-1">{phoneError}</p>
+          )}
+        </div>
       </div>
 
-      <div className="text-white text-sm text-right sm:text-base md:text-lg">
-        <button
-          type="button"
-          onClick={openAuthModal}
-          className="text-xs text-white underline"
-        >
-          {t("services.common_login_signup")}
-        </button>
+      {/* Section 2: Account Creation Notice & Login Option */}
+      <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 space-y-3 mt-6">
+        <div className="flex items-center justify-center text-yellow-200 text-xs sm:text-sm">
+          <p>
+            {t("coaching_request.form.auto_account_warning", "An account will be created with these details to manage your subscription.")}
+          </p>
+        </div>
+        
+        <div className="pt-2">
+          <p className="text-white/80 text-sm mb-2">
+            {t("booking.login_prompt_simple", "Already have an account?")} 
+          </p>
+          <button
+            type="button"
+            onClick={openAuthModal}
+            className="inline-flex items-center justify-center bg-darkGold text-black font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90 transition-colors text-sm"
+          >
+            {t("booking.login_button", "Log In Here")}
+          </button>
+        </div>
       </div>
-      <div className="md:col-span-2 text-center md:text-left">
-  <p className="text-xs text-gray-400"> {/* Lighter gray text */}
-    {t("pitch_deck_request.form.auto_account_warning", "An account will automatically be created with the info you provide.")}
-  </p>
-</div>
     </div>
   );
 }
 
-// Step 3: Payment Step - Responsive, Mobile-First Design
+// Step 3: Payment Step
 function PaymentStep({
   selectedTier,
   requestId,
@@ -335,7 +294,7 @@ function PaymentStep({
 
   useEffect(() => {
     const pendingId = localStorage.getItem("pendingCoachingId");
-    if (pendingId && pendingId === requestId?.toString()) { // Added optional chaining for requestId
+    if (pendingId && pendingId === requestId?.toString()) {
       setPaymentStarted(true);
       localStorage.removeItem("pendingCoachingId");
     }
@@ -343,7 +302,7 @@ function PaymentStep({
 
   const handleStripeRedirect = async () => {
     try {
-      if (!requestId) { // Ensure requestId is present
+      if (!requestId) {
         console.error("Request ID is not available for Stripe redirect.");
         setPollingError("Failed to start subscription: Missing request ID.");
         return;
@@ -525,25 +484,22 @@ export default function CoachingRequest({ onBackService }) {
     frequency: tier || "",
     name: user?.user_metadata?.full_name || "",
     email: user?.email || "",
-    phone: "", // Will be autofilled by the useEffect below
+    phone: "",
   });
 
-  const [isPhoneValid, setIsPhoneValid] = useState(false); // This will be set by autofill or manual input validation
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
   const formRef = useScrollToTopOnChange([step]);
   const [requestId, setRequestId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
 
-  // Removed phoneValidationStatus as isPhoneValid is used directly
-
-  // ***** START: ADDED useEffect FOR PHONE AUTOFIL *****
   useEffect(() => {
     if (user) {
       const fetchUserProfile = async () => {
         try {
           const { data: profileData, error: profileError } = await supabase
-            .from("profiles") // Ensure 'profiles' is your correct table name
-            .select("phone_number, full_name") // Ensure 'phone_number' is the correct column name
+            .from("profiles")
+            .select("phone_number, full_name")
             .eq("id", user.id)
             .single();
 
@@ -561,7 +517,6 @@ export default function CoachingRequest({ onBackService }) {
           if (profileData?.phone_number) {
             const validationResult = await validatePhoneNumber(profileData.phone_number);
             setIsPhoneValid(validationResult.isValid);
-            // The ContactStep's own useEffect on formData.phone will handle displaying validation marks
           }
 
         } catch (error) {
@@ -570,42 +525,21 @@ export default function CoachingRequest({ onBackService }) {
       };
       fetchUserProfile();
     }
-  }, [user]); // Rerun if user object changes
-  // ***** END: ADDED useEffect FOR PHONE AUTOFIL *****
+  }, [user]);
 
-
-  useEffect(() => { // Effect to handle tier selection
+  useEffect(() => {
     if (tier) {
       setFormData((prev) => ({ ...prev, frequency: tier }));
       setStep(2);
     }
   }, [tier]);
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // If phone field is changed manually, allow ContactStep to handle its validation
-    // The overall form validity (isPhoneValid) will be updated via onPhoneValidation prop if passed,
-    // or rely on ContactStep's internal validation for display and canProceed for logic.
-    // For simplicity, canProceed will check formData.phone directly along with other fields.
-    if (name === "phone") {
-        // Let ContactStep's handlePhoneChange update its visual validation.
-        // The isPhoneValid state in CoachingRequest will be updated by ContactStep's onPhoneValidation callback
-        // or if we directly validate here based on the value.
-        // For now, we rely on ContactStep to eventually call `onPhoneValidation` or the parent `validatePhoneNumber`
-        // if we pass the `handlePhoneValidation` callback.
-        // Given ContactStep has its own validation, we ensure canProceed uses the most up-to-date formData.phone.
-        validatePhoneNumber(value).then(result => setIsPhoneValid(result.isValid)); // Keep isPhoneValid in sync
-    }
-
-
     if (name === "frequency" && value) setStep(2);
   };
 
-  // Callback for ContactStep to update parent's isPhoneValid state
   const handlePhoneValidation = (isValid) => {
     setIsPhoneValid(isValid);
   };
@@ -625,30 +559,29 @@ export default function CoachingRequest({ onBackService }) {
   };
 
   const canProceed = () => {
-    if (step === 1 && !formData.frequency) return false; // Ensure frequency is selected for step 1
+    if (step === 1 && !formData.frequency) return false;
 
     if (step === 2) {
       const isNameValid = formData.name && formData.name.trim().length >= 2;
       const isEmailValid =
         formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
-      // Use the isPhoneValid state which is updated by autofill and manual input
       return isNameValid && isEmailValid && isPhoneValid;
     }
 
     if (step === 3) return paymentDone;
 
-    return true; // Default for other steps or if conditions met
+    return true;
   };
 
   const handleNext = async () => {
-    if (!canProceed()) return; // Check if can proceed before doing anything
+    if (!canProceed()) return;
 
-    if (step === 1 && formData.frequency) { // Moving from Frequency to Contact
+    if (step === 1 && formData.frequency) {
         setStep(2);
         return;
     }
 
-    if (step === 2) { // Moving from Contact to Payment
+    if (step === 2) {
       setIsSubmitting(true);
       try {
         if (!user && formData.name && formData.email) {
@@ -695,11 +628,10 @@ export default function CoachingRequest({ onBackService }) {
         alert("An error occurred. Please try again.");
         setIsSubmitting(false);
       }
-    } else if (step === 3 && paymentDone) { // Moving from Payment to Chat
+    } else if (step === 3 && paymentDone) {
       setStep(4);
     }
   };
-
 
   const handleBack = () => {
     if (step > 1) setStep((s) => s - 1);
@@ -707,21 +639,17 @@ export default function CoachingRequest({ onBackService }) {
   };
 
   const handleStepClick = (dot) => {
-    // Allow navigation to previous, completed steps if not submitting.
-    // Only allow going back if the step clicked is less than the current step.
-    if (dot -1 < step && !isSubmitting) { // dot-1 as STEPS is 0-indexed
-      if (dot === 1) { // If first dot is clicked (represents frequency or back to service)
-        if (step === 1) onBackService(); // If already on step 1, go back to service
-        else setStep(1); // Otherwise, go to step 1 (frequency)
+    if (dot -1 < step && !isSubmitting) {
+      if (dot === 1) {
+        if (step === 1) onBackService();
+        else setStep(1);
       } else {
         setStep(dot - 1);
       }
-    } else if (dot === 1 && step === 1 && !isSubmitting) { // Special case: on step 1, first dot means back to service
+    } else if (dot === 1 && step === 1 && !isSubmitting) {
         onBackService();
     }
-    // Do not allow jumping to future steps not yet completed.
   };
-
 
   return (
     <section className="py-8 px-4" id="coaching-journey" ref={formRef}>
@@ -738,10 +666,7 @@ export default function CoachingRequest({ onBackService }) {
             <ContactStep
               formData={formData}
               onChange={handleChange}
-              // Pass onPhoneValidation to allow ContactStep to update parent's isPhoneValid
-              // This is crucial if ContactStep handles the detailed validation logic.
-              // However, the autofill useEffect now also sets isPhoneValid.
-              // The handleChange for phone also now directly updates isPhoneValid.
+              onPhoneValidation={handlePhoneValidation}
             />
           ) : step === 3 ? (
             <PaymentStep
@@ -750,8 +675,8 @@ export default function CoachingRequest({ onBackService }) {
               formData={formData}
               onPaymentConfirmed={handlePaymentConfirmed}
             />
-          ) : ( // Step 4: Chat
-            requestId && <InlineChatbotStep // Ensure requestId is available for Chat
+          ) : (
+            requestId && <InlineChatbotStep
               requestId={requestId}
               tableName="coaching_chat_messages"
               onFinish={async () => {
@@ -782,16 +707,15 @@ export default function CoachingRequest({ onBackService }) {
               }}
             />
           )}
-          {!requestId && step === 4 && ( // Show message if chat step is reached without requestId
+          {!requestId && step === 4 && (
             <div className="text-center text-red-400 p-4">
                 Preparing chat... If this persists, please go back and try again.
             </div>
           )}
 
-
           <StepIndicator
             stepCount={UI_STEPS}
-            currentStep={step + 1} // UI steps are 1-based for display (dot + 1)
+            currentStep={step + 1}
             onStepClick={handleStepClick}
             className="pt-6"
           />
@@ -837,9 +761,9 @@ export default function CoachingRequest({ onBackService }) {
                 ) : STEPS[step] ? STEPS[step].title : t("coaching_request.buttons.next")}
               </button>
             )}
-            {step === STEPS.length && ( // "Done" button appears at the last step (Chat)
+            {step === STEPS.length && (
               <button
-                onClick={onBackService} // Or a specific completion handler
+                onClick={onBackService}
                 className="px-3 py-1 bg-darkGold text-black rounded-xl hover:bg-darkGold/90"
               >
                 {t("coaching_request.buttons.done")}
