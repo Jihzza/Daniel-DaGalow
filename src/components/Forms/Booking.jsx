@@ -84,8 +84,8 @@ function DateTimeStep({
   onChangeMonth,
   selectedTime,
   selectedDuration,
-  onSelectTime, // This callback should update both selectedTime and selectedDuration in parent
-  availability, // Expects an array of { slot: "HH:mm", allowed: [durations] }
+  onSelectTime,
+  availability,
   minDate,
 }) {
   // Calendar setup
@@ -115,6 +115,35 @@ function DateTimeStep({
   const firstDurationDisplayHandled = useRef(false);
   const firstTimeDisplayHandled = useRef(false);
 
+  // Touch swipe state
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const calendarGridRef = useRef(null); // Ref for the calendar grid
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current - touchEndX.current > 75) { // Min swipe distance
+      // Swiped left (next month)
+      onChangeMonth(1);
+    }
+
+    if (touchStartX.current - touchEndX.current < -75) { // Min swipe distance
+      // Swiped right (previous month)
+      onChangeMonth(-1);
+    }
+    // Reset touch positions
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  };
+
+
   const formatDuration = (minutes) => {
     if (minutes < 60) return `${minutes}min`;
     if (minutes % 60 === 0) return `${Math.floor(minutes / 60)}h`;
@@ -130,13 +159,11 @@ function DateTimeStep({
     return format(endDate, "HH:mm");
   };
 
-  // Helper to get initial index for Swiper
   const getInitialIndex = (items, targetValue, fallbackIndex = 0) => {
     const index = items.indexOf(targetValue);
     return index > -1 ? index : fallbackIndex;
   };
 
-  // Effect to set initial DURATION and select it
   useEffect(() => {
     if (
       durationSwiperRef.current &&
@@ -144,18 +171,16 @@ function DateTimeStep({
       !selectedDuration &&
       !firstDurationDisplayHandled.current
     ) {
-      const initialTargetDuration = 45; // "1h"
+      const initialTargetDuration = 45;
       const targetIndex = getInitialIndex(
         availableDurations,
         initialTargetDuration,
         1
-      ); // Default to index 1 (60min)
+      );
 
-      // Set "1h" (60 min) as selected by default
       if (availableDurations.includes(initialTargetDuration)) {
         onSelectTime({ slot: selectedTime, dur: initialTargetDuration });
       } else if (availableDurations.length > targetIndex) {
-        // Fallback if 60 is not in the list (should not happen with fixed array)
         onSelectTime({
           slot: selectedTime,
           dur: availableDurations[targetIndex],
@@ -166,19 +191,17 @@ function DateTimeStep({
       firstDurationDisplayHandled.current = true;
     }
   }, [
-    durationSwiperRef, // Reverted to just ref name as per original code
+    durationSwiperRef,
     availableDurations,
     selectedDuration,
     onSelectTime,
     selectedTime,
   ]);
 
-  // Reset firstTimeDisplayHandled when selectedDate changes
   useEffect(() => {
     firstTimeDisplayHandled.current = false;
   }, [selectedDate]);
 
-  // Effect to set initial TIME and select it
   useEffect(() => {
     if (
       timeSwiperRef.current &&
@@ -192,23 +215,19 @@ function DateTimeStep({
       let timeToSelect = initialTargetTime;
 
       if (targetIndex === -1) {
-        // "10:15" not found
         if (availableTimes.includes("10:00")) {
-          // Check if "10:00" is available as a close alternative
           targetIndex = availableTimes.indexOf("10:00");
-          timeToSelect = "10:15"; // Intentionally keeping 10:15 if 10:00 is found, as per original
+          timeToSelect = "10:15";
         } else if (availableTimes.length > 0) {
-          // Fallback to the first available time
           targetIndex = 0;
           timeToSelect = availableTimes[0];
         } else {
-          // No times available
-          targetIndex = -1; // Indicate no valid selection
+          targetIndex = -1;
         }
       }
 
       if (targetIndex > -1 && timeToSelect) {
-        const durationToEnsure = selectedDuration || 60; // Use current duration or default to 1h
+        const durationToEnsure = selectedDuration || 60;
         const timeSlotData = timeSlots.find(
           (slot) => slot.slot === timeToSelect
         );
@@ -216,15 +235,14 @@ function DateTimeStep({
         if (timeSlotData && timeSlotData.allowed.includes(durationToEnsure)) {
           onSelectTime({ slot: timeToSelect, dur: durationToEnsure });
         } else if (timeSlotData && timeSlotData.allowed.length > 0) {
-          onSelectTime({ slot: timeToSelect, dur: timeSlotData.allowed[0] }); // Pick first allowed duration
+          onSelectTime({ slot: timeToSelect, dur: timeSlotData.allowed[0] });
         }
-        // If no valid duration, onSelectTime might not be called, or you might clear duration
         timeSwiperRef.current.slideTo(targetIndex, 0);
       }
       firstTimeDisplayHandled.current = true;
     }
   }, [
-    timeSwiperRef, // Reverted to just ref name
+    timeSwiperRef,
     selectedDate,
     availableTimes,
     selectedTime,
@@ -245,7 +263,6 @@ function DateTimeStep({
   };
 
   const handleDurationButtonClick = (duration) => {
-    // 1. Update application state immediately to reflect the selection
     const currentTime =
       selectedTime ||
       (availableTimes.indexOf("10:15") > -1
@@ -255,18 +272,12 @@ function DateTimeStep({
         : null);
     onSelectTime({ slot: currentTime, dur: duration });
 
-    // 2. Animate Swiper to center the clicked item
     const clickedItemIndex = availableDurations.indexOf(duration);
     if (durationSwiperRef.current && clickedItemIndex > -1) {
       const swiper = durationSwiperRef.current;
-      const slidesPerView = 3; // Your current configuration
-      const middleOffset = Math.floor(slidesPerView / 2); // This will be 1
-
-      // Calculate the target index for the leftmost slide to center the clickedItemIndex
+      const slidesPerView = 3;
+      const middleOffset = Math.floor(slidesPerView / 2);
       let targetLeftmostIndex = clickedItemIndex - middleOffset;
-
-      // Clamp the targetLeftmostIndex to ensure it's within valid Swiper bounds
-      // The maximum index the leftmost slide can be is (total items - slidesPerView)
       const maxPossibleLeftmostIndex = Math.max(
         0,
         availableDurations.length - slidesPerView
@@ -275,8 +286,6 @@ function DateTimeStep({
         0,
         Math.min(targetLeftmostIndex, maxPossibleLeftmostIndex)
       );
-
-      // Only slide if the swiper is not already at the target position
       if (swiper.realIndex !== targetLeftmostIndex) {
         swiper.slideTo(targetLeftmostIndex);
       }
@@ -284,34 +293,29 @@ function DateTimeStep({
   };
 
   const handleTimeButtonClick = (time) => {
-    // 1. Update application state immediately
-    const currentDuration = selectedDuration || 60; // Default or current selected duration
+    const currentDuration = selectedDuration || 60;
     const timeSlotData = timeSlots.find((slot) => slot.slot === time);
     let newDurationForSelectedTime = currentDuration;
 
     if (timeSlotData) {
       if (!timeSlotData.allowed.includes(newDurationForSelectedTime)) {
         if (timeSlotData.allowed.length > 0) {
-          newDurationForSelectedTime = timeSlotData.allowed[0]; // Pick first allowed duration
+          newDurationForSelectedTime = timeSlotData.allowed[0];
         } else {
-          newDurationForSelectedTime = null; // No allowed duration for this new time
+          newDurationForSelectedTime = null;
         }
       }
     } else {
-      // Should not happen if isTimeAvailable(time) was true before click
       newDurationForSelectedTime = null;
     }
     onSelectTime({ slot: time, dur: newDurationForSelectedTime });
 
-    // 2. Animate Swiper to center the clicked item
     const clickedItemIndex = availableTimes.indexOf(time);
     if (timeSwiperRef.current && clickedItemIndex > -1) {
       const swiper = timeSwiperRef.current;
-      const slidesPerView = 3; // Your current configuration
-      const middleOffset = Math.floor(slidesPerView / 2); // This will be 1
-
+      const slidesPerView = 3;
+      const middleOffset = Math.floor(slidesPerView / 2);
       let targetLeftmostIndex = clickedItemIndex - middleOffset;
-
       const maxPossibleLeftmostIndex = Math.max(
         0,
         availableTimes.length - slidesPerView
@@ -320,7 +324,6 @@ function DateTimeStep({
         0,
         Math.min(targetLeftmostIndex, maxPossibleLeftmostIndex)
       );
-
       if (swiper.realIndex !== targetLeftmostIndex) {
         swiper.slideTo(targetLeftmostIndex);
       }
@@ -331,7 +334,13 @@ function DateTimeStep({
   return (
     <div className="flex flex-col space-y-4">
       {/* Calendar Section */}
-      <div className="bg-white/5 rounded-xl shadow-md overflow-hidden">
+      <div
+        ref={calendarGridRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="bg-white/5 rounded-xl shadow-md overflow-hidden cursor-grab active:cursor-grabbing" // Added cursor styles
+      >
         <div className="flex items-center justify-between bg-oxfordBlue/30 p-3">
           <button
             onClick={() => onChangeMonth(-1)}
@@ -393,30 +402,22 @@ function DateTimeStep({
               const isSelectedDate = selectedDate && isSameDay(date, selectedDate);
               const isCurrentCalendarPageMonth = isSameMonth(date, currentMonth);
               const isPreviousMonthPadding = !isSameMonth(date, currentMonth) && date < startOfMonth(currentMonth);
-              
               const isWeekendDay = isWeekend(date);
-              const isPastDay = isBefore(date, startOfDay(minDate)); 
+              const isPastDay = isBefore(date, startOfDay(minDate));
               const isTodayDay = isSameDay(date, new Date());
-
               const isDisabledForSelection = isWeekendDay || isPastDay || isPreviousMonthPadding;
-
               let dayButtonClasses = "relative h-8 aspect-square rounded-md flex items-center justify-center transition-all duration-200 text-xs font-medium ";
 
               if (isSelectedDate) {
                 dayButtonClasses += "bg-darkGold text-black font-bold shadow-md";
               } else if (isDisabledForSelection) {
                 dayButtonClasses += "bg-white/5 text-white/40 cursor-not-allowed";
-              } else { 
+              } else {
                 dayButtonClasses += "bg-white/10 text-white hover:bg-darkGold/20 cursor-pointer";
-                if (!isCurrentCalendarPageMonth) {
-                  // Optional: slightly different style for next month's selectable days
-                  // dayButtonClasses += " text-gray-300"; // Example
-                }
-                if (isTodayDay) { // Apply ring if it's today and selectable
+                if (isTodayDay) {
                   dayButtonClasses += " ring-1 ring-darkGold ring-opacity-70";
                 }
               }
-              
               return (
                 <button
                   key={i}
@@ -449,8 +450,8 @@ function DateTimeStep({
                   durationSwiperRef.current = swiper;
                 }}
                 onTransitionEnd={(swiper) => {
-                  const slidesPerView = swiper.params.slidesPerView; 
-                  const middleOffset = Math.floor(slidesPerView / 2); 
+                  const slidesPerView = swiper.params.slidesPerView;
+                  const middleOffset = Math.floor(slidesPerView / 2);
                   const middleDataIndex = swiper.realIndex + middleOffset;
 
                   if (
@@ -479,13 +480,12 @@ function DateTimeStep({
                       onClick={() => handleDurationButtonClick(duration)}
                       disabled={!isDurationAvailable(duration)}
                       className={`carousel-item
-                      ${
-                        selectedDuration === duration
+                      ${selectedDuration === duration
                           ? "bg-darkGold text-black font-bold"
                           : isDurationAvailable(duration)
-                          ? "bg-white/10 text-white"
-                          : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
-                      }`}
+                            ? "bg-white/10 text-white"
+                            : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
+                        }`}
                     >
                       {formatDuration(duration)}
                     </button>
@@ -513,8 +513,8 @@ function DateTimeStep({
                   timeSwiperRef.current = swiper;
                 }}
                 onTransitionEnd={(swiper) => {
-                  const slidesPerView = swiper.params.slidesPerView; 
-                  const middleOffset = Math.floor(slidesPerView / 2); 
+                  const slidesPerView = swiper.params.slidesPerView;
+                  const middleOffset = Math.floor(slidesPerView / 2);
                   const middleDataIndex = swiper.realIndex + middleOffset;
 
                   if (
@@ -528,7 +528,7 @@ function DateTimeStep({
                       newSelectedTime !== selectedTime &&
                       isTimeAvailable(newSelectedTime)
                     ) {
-                      let newDurationForSelectedTime = selectedDuration || 60; 
+                      let newDurationForSelectedTime = selectedDuration || 60;
                       const timeSlotData = timeSlots.find(
                         (slot) => slot.slot === newSelectedTime
                       );
@@ -555,13 +555,12 @@ function DateTimeStep({
                       onClick={() => handleTimeButtonClick(time)}
                       disabled={!isTimeAvailable(time)}
                       className={`carousel-item
-                      ${
-                        selectedTime === time
+                      ${selectedTime === time
                           ? "bg-darkGold text-black font-bold"
                           : isTimeAvailable(time)
-                          ? "bg-white/10 text-white"
-                          : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
-                      }`}
+                            ? "bg-white/10 text-white"
+                            : "bg-white/5 text-white/40 cursor-not-allowed opacity-50"
+                        }`}
                     >
                       {time}
                     </button>
