@@ -1,23 +1,32 @@
-import React from "react";
+// src/components/common/Octagonal Profile.jsx
+import React, { useState, useEffect } from "react"; // Added useEffect
 
 function OctagonalProfile({ size = 50, borderColor, innerBorderColor = "", onClick, imageSrc, fallbackText }) {
-  // Define the octagon shape once as a variable for consistency
   const octagonClipPath = "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
-  
-  // Calculate spacing sizes based on the component size
   const borderThickness = size * 0.05;
   const whiteSpaceThickness = size * 0.05;
-  
+
+  // State to handle image loading errors
+  const [hasImageError, setHasImageError] = useState(false);
+
+  const handleImageError = () => {
+    setHasImageError(true);
+  };
+
+  // Reset error state if imageSrc changes
+  useEffect(() => {
+    setHasImageError(false);
+  }, [imageSrc]);
+
   return (
-    <div 
-      className="relative drop-shadow-lg" 
-      style={{ 
-        width: `${size}px`, 
-        height: `${size}px` 
+    <div
+      className="relative drop-shadow-lg"
+      style={{
+        width: `${size}px`,
+        height: `${size}px`
       }}
       onClick={onClick}
     >
-      {/* 1) Outer layer: colored border */}
       <div
         className="absolute inset-0"
         style={{
@@ -25,8 +34,6 @@ function OctagonalProfile({ size = 50, borderColor, innerBorderColor = "", onCli
           clipPath: octagonClipPath,
         }}
       />
-
-      {/* 2) Middle layer: inner border */}
       <div
         className="absolute"
         style={{
@@ -38,8 +45,6 @@ function OctagonalProfile({ size = 50, borderColor, innerBorderColor = "", onCli
           clipPath: octagonClipPath,
         }}
       />
-
-      {/* 3) Inner layer: image or fallback text */}
       <div
         className="absolute overflow-hidden flex items-center justify-center"
         style={{
@@ -48,18 +53,21 @@ function OctagonalProfile({ size = 50, borderColor, innerBorderColor = "", onCli
           right: `${borderThickness + whiteSpaceThickness}px`,
           bottom: `${borderThickness + whiteSpaceThickness}px`,
           clipPath: octagonClipPath,
-          backgroundColor: "#002147",
+          backgroundColor: "#002147", // Fallback background for text
         }}
       >
-        {imageSrc ? (
+        {imageSrc && !hasImageError ? (
           <img
             src={imageSrc}
             alt="Profile"
             className="w-full h-full object-cover"
+            onError={handleImageError} // Fallback to text if image fails to load
           />
         ) : (
-          <div className="text-[#BFA200] text-4xl font-bold">
-            {fallbackText || "?"}
+          <div className="text-[#BFA200] font-bold flex items-center justify-center w-full h-full"
+               style={{ fontSize: `${size * 0.45}px`, lineHeight: `${size * 0.9}px` }} // Adjust font size & line height
+          >
+            {(fallbackText || "?").slice(0,2)} {/* Ensure fallbackText is used, limit to 2 chars */}
           </div>
         )}
       </div>

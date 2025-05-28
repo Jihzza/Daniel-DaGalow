@@ -13,6 +13,7 @@ import {
   addMinutes,
   isBefore,
   addMonths,
+  startOfDay,
 } from "date-fns";
 import { fetchBookings } from "../../services/bookingService";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
@@ -165,7 +166,7 @@ function DateTimeStep({
       firstDurationDisplayHandled.current = true;
     }
   }, [
-    durationSwiperRef.current,
+    durationSwiperRef, // Reverted to just ref name as per original code
     availableDurations,
     selectedDuration,
     onSelectTime,
@@ -195,7 +196,7 @@ function DateTimeStep({
         if (availableTimes.includes("10:00")) {
           // Check if "10:00" is available as a close alternative
           targetIndex = availableTimes.indexOf("10:00");
-          timeToSelect = "10:15";
+          timeToSelect = "10:15"; // Intentionally keeping 10:15 if 10:00 is found, as per original
         } else if (availableTimes.length > 0) {
           // Fallback to the first available time
           targetIndex = 0;
@@ -223,7 +224,7 @@ function DateTimeStep({
       firstTimeDisplayHandled.current = true;
     }
   }, [
-    timeSwiperRef.current,
+    timeSwiperRef, // Reverted to just ref name
     selectedDate,
     availableTimes,
     selectedTime,
@@ -326,6 +327,7 @@ function DateTimeStep({
     }
   };
 
+
   return (
     <div className="flex flex-col space-y-4">
       {/* Calendar Section */}
@@ -388,34 +390,39 @@ function DateTimeStep({
           </div>
           <div className="grid grid-cols-7 gap-1">
             {calendar.map((date, i) => {
-              const inMonth = isSameMonth(date, currentMonth);
-              const weekend = isWeekend(date);
-              const tooSoon = isBefore(date, minDate);
-              const isSelectedDate =
-                selectedDate && isSameDay(date, selectedDate);
-              const isCurrentDay = isSameDay(date, new Date()); // Use isSameDay for today's check
-              const disabled = !inMonth || weekend || tooSoon;
+              const isSelectedDate = selectedDate && isSameDay(date, selectedDate);
+              const isCurrentCalendarPageMonth = isSameMonth(date, currentMonth);
+              const isPreviousMonthPadding = !isSameMonth(date, currentMonth) && date < startOfMonth(currentMonth);
+              
+              const isWeekendDay = isWeekend(date);
+              const isPastDay = isBefore(date, startOfDay(minDate)); 
+              const isTodayDay = isSameDay(date, new Date());
+
+              const isDisabledForSelection = isWeekendDay || isPastDay || isPreviousMonthPadding;
+
+              let dayButtonClasses = "relative h-8 aspect-square rounded-md flex items-center justify-center transition-all duration-200 text-xs font-medium ";
+
+              if (isSelectedDate) {
+                dayButtonClasses += "bg-darkGold text-black font-bold shadow-md";
+              } else if (isDisabledForSelection) {
+                dayButtonClasses += "bg-white/5 text-white/40 cursor-not-allowed";
+              } else { 
+                dayButtonClasses += "bg-white/10 text-white hover:bg-darkGold/20 cursor-pointer";
+                if (!isCurrentCalendarPageMonth) {
+                  // Optional: slightly different style for next month's selectable days
+                  // dayButtonClasses += " text-gray-300"; // Example
+                }
+                if (isTodayDay) { // Apply ring if it's today and selectable
+                  dayButtonClasses += " ring-1 ring-darkGold ring-opacity-70";
+                }
+              }
+              
               return (
                 <button
                   key={i}
-                  onClick={() => !disabled && onSelectDate(date)}
-                  disabled={disabled}
-                  className={`
-                    relative h-8 aspect-square rounded-md flex items-center justify-center transition-all duration-200
-                    ${
-                      isSelectedDate
-                        ? "bg-darkGold text-black font-bold shadow-md"
-                        : inMonth && !disabled
-                        ? "bg-white/10 text-white "
-                        : "bg-white/5 text-white/40"
-                    }
-                    ${
-                      isCurrentDay && !isSelectedDate
-                        ? "ring-1 ring-darkGold ring-opacity-70"
-                        : ""
-                    }
-                    ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
-                  `}
+                  onClick={() => !isDisabledForSelection && onSelectDate(date)}
+                  disabled={isDisabledForSelection}
+                  className={dayButtonClasses}
                 >
                   <span className="text-xs font-medium">
                     {format(date, "d")}
@@ -435,17 +442,15 @@ function DateTimeStep({
           {selectedDate ? (
             <div className="carousel-container">
               <Swiper
-                modules={[Navigation, Pagination]} // Keep your existing modules
+                modules={[Navigation, Pagination]}
                 slidesPerView={3}
                 spaceBetween={8}
                 onSwiper={(swiper) => {
                   durationSwiperRef.current = swiper;
                 }}
-                // MODIFICATION: Use onTransitionEnd instead of onSlideChange
                 onTransitionEnd={(swiper) => {
-                  const slidesPerView = swiper.params.slidesPerView; // Should be 3
-                  const middleOffset = Math.floor(slidesPerView / 2); // Should be 1
-                  // realIndex is the first visible slide in the current view from your data array
+                  const slidesPerView = swiper.params.slidesPerView; 
+                  const middleOffset = Math.floor(slidesPerView / 2); 
                   const middleDataIndex = swiper.realIndex + middleOffset;
 
                   if (
@@ -455,16 +460,10 @@ function DateTimeStep({
                   ) {
                     const newSelectedDuration =
                       availableDurations[middleDataIndex];
-
-                    // Only update if the settled duration is different from the currently selected one
-                    // AND if it's an actually available/valid duration choice.
                     if (
                       newSelectedDuration !== selectedDuration &&
                       isDurationAvailable(newSelectedDuration)
                     ) {
-                      // Call the main state updater directly.
-                      // This preserves the currently selected time.
-                      // selectedTime comes from the component's props.
                       onSelectTime({
                         slot: selectedTime,
                         dur: newSelectedDuration,
@@ -477,7 +476,7 @@ function DateTimeStep({
                 {availableDurations.map((duration) => (
                   <SwiperSlide key={duration}>
                     <button
-                      onClick={() => handleDurationButtonClick(duration)} // Click handler remains unchanged
+                      onClick={() => handleDurationButtonClick(duration)}
                       disabled={!isDurationAvailable(duration)}
                       className={`carousel-item
                       ${
@@ -507,16 +506,15 @@ function DateTimeStep({
           {selectedDate && availableTimes.length > 0 ? (
             <div className="carousel-container">
               <Swiper
-                modules={[Navigation, Pagination]} // Keep your existing modules
+                modules={[Navigation, Pagination]}
                 slidesPerView={3}
                 spaceBetween={8}
                 onSwiper={(swiper) => {
                   timeSwiperRef.current = swiper;
                 }}
-                // MODIFICATION: Use onTransitionEnd instead of onSlideChange
                 onTransitionEnd={(swiper) => {
-                  const slidesPerView = swiper.params.slidesPerView; // Should be 3
-                  const middleOffset = Math.floor(slidesPerView / 2); // Should be 1
+                  const slidesPerView = swiper.params.slidesPerView; 
+                  const middleOffset = Math.floor(slidesPerView / 2); 
                   const middleDataIndex = swiper.realIndex + middleOffset;
 
                   if (
@@ -526,33 +524,22 @@ function DateTimeStep({
                   ) {
                     const newSelectedTime = availableTimes[middleDataIndex];
 
-                    // Only update if the settled time is different from the currently selected one
-                    // AND if it's an actually available/valid time choice.
                     if (
                       newSelectedTime !== selectedTime &&
                       isTimeAvailable(newSelectedTime)
                     ) {
-                      // Replicate the logic from your original handleTimeButtonClick
-                      // to adjust duration if the new time doesn't support the current duration.
-                      let newDurationForSelectedTime = selectedDuration || 60; // Default or current
+                      let newDurationForSelectedTime = selectedDuration || 60; 
                       const timeSlotData = timeSlots.find(
                         (slot) => slot.slot === newSelectedTime
                       );
-
-                      // isTimeAvailable(newSelectedTime) already ensures timeSlotData exists and has allowed durations.
-                      // So, timeSlotData should be valid here.
                       if (
                         timeSlotData &&
                         !timeSlotData.allowed.includes(
                           newDurationForSelectedTime
                         )
                       ) {
-                        // If current duration is not allowed, pick the first allowed one.
-                        // isTimeAvailable ensures timeSlotData.allowed has length > 0.
                         newDurationForSelectedTime = timeSlotData.allowed[0];
                       }
-
-                      // Call the main state updater directly.
                       onSelectTime({
                         slot: newSelectedTime,
                         dur: newDurationForSelectedTime,
@@ -565,7 +552,7 @@ function DateTimeStep({
                 {availableTimes.map((time) => (
                   <SwiperSlide key={time}>
                     <button
-                      onClick={() => handleTimeButtonClick(time)} // Click handler remains unchanged
+                      onClick={() => handleTimeButtonClick(time)}
                       disabled={!isTimeAvailable(time)}
                       className={`carousel-item
                       ${
@@ -869,7 +856,7 @@ export default function Booking({ onBackService }) {
   };
 
   // Business hours buffer - start scheduling from tomorrow
-  const minDate = addDays(new Date(), 1);
+  const minDate = addDays(new Date(), 2);
 
   // Load existing bookings
   useEffect(() => {

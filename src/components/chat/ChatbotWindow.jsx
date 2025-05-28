@@ -20,7 +20,7 @@ function generateUUID() {
   });
 }
 
-export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
+export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatOpenedViaNotification }) {
   const [messages, setMessages] = useState([]);
   const [userText, setUserText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -160,7 +160,10 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
             }
           }
         } else { 
-          const welcomeMessageText = t("window_chatbot.welcome_message");
+          const welcomeMessageText = chatOpenedViaNotification
+            ? t('window_chatbot.guided_welcome_message', "I'm here to help you explore all available services! How can I assist you today?")
+            : t("window_chatbot.welcome_message");
+          
           const welcomeMessage = {
             from: "bot",
             text: welcomeMessageText,
@@ -171,7 +174,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
                 await supabase.from("chat_sessions").insert({
                     id: sessionId,
                     user_id: userId,
-                    title: "New Chat", 
+                    title: chatOpenedViaNotification ? "Guided Service Chat" : "New Chat",
                 });
             } catch (insertError) {
                 console.error("Error creating new session:", insertError);
@@ -195,7 +198,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
         console.error("Error fetching messages:", error);
       }
     })();
-  }, [sessionId, userId, t]); 
+  }, [sessionId, userId, t, chatOpenedViaNotification]); 
 
   useEffect(() => {
     // Simplified drag-to-close logic: if height becomes very small, close.
@@ -368,7 +371,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
       <div className="pb-2 md:pb-4 px-2"> 
         <div className="relative w-full">
           <button className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-1"> 
-            <img src={Anexar} alt={t("window_chatbot.attach_alt")} className="w-5 h-5 md:w-6 md:h-6" /> 
+            <img src={Anexar} alt={t("window_chatbot.attach_alt", "Attach file")} className="w-5 h-5 md:w-6 md:h-6" /> 
           </button>
           <input
             className="w-full h-12 md:h-14 border-2 border-darkGold bg-oxfordBlue text-white md:text-lg rounded-full p-3 pl-10 pr-12 md:pl-12 md:pr-14" 
@@ -379,8 +382,8 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
             }
             placeholder={
               isTypingAnimationActive
-                ? t("window_chatbot.placeholder_waiting")
-                : t("window_chatbot.placeholder_default")
+                ? t("window_chatbot.placeholder_waiting", "Wait for bot response...")
+                : t("window_chatbot.placeholder_default", "Type a message…")
             }
             disabled={loading || isTypingAnimationActive}
           />
@@ -391,7 +394,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId }) {
           >
             <img
               src={Send}
-              alt={t("window_chatbot.send_alt")}
+              alt={t("window_chatbot.send_alt", "Send message")}
               className={`w-5 h-5 md:w-6 md:h-6 ${ 
                 loading || isTypingAnimationActive ? "opacity-50" : ""
               }`}

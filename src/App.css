@@ -86,3 +86,37 @@
   display: inline;
   word-break: break-word;
 }
+
+/* In src/index.css or src/App.css */
+.relative {
+  position: relative;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 0; /* Adjust as needed */
+  right: 0; /* Adjust as needed */
+  width: 0.625rem; /* 10px */
+  height: 0.625rem; /* 10px */
+  background-color: #EF4444; /* red-500 */
+  border-radius: 9999px; /* Full circle */
+  ring-width: 2px;
+  --tw-ring-color: black; 
+}
+
+/* Optional: Animation for the dot */
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+.animate-pulse-dot { /* You can use a more specific name if 'animate-pulse' is used elsewhere */
+  animation: pulse-dot 1.5s infinite ease-in-out;
+}
+

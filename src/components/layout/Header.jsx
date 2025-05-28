@@ -1,5 +1,4 @@
 // src/components/layout/Header.jsx
-// src/components/layout/Header.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -18,7 +17,7 @@ const languageConfig = {
   es: { code: "ES", name: "ES" },
 };
 
-// Internal useBreakpoint hook, as it was in your original file
+// Internal useBreakpoint hook
 function useBreakpoint() {
   const getBreakpoint = () => {
     if (typeof window !== "undefined") {
@@ -43,7 +42,7 @@ function Header({ onAuthModalOpen }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [show, setShow] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const lastY = useRef(0); // For header show/hide on scroll
+  const lastY = useRef(0);
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -58,13 +57,10 @@ function Header({ onAuthModalOpen }) {
     (l) => l !== "cimode" && l !== "*"
   );
 
-  // Removed useEffect for scroll-padding-top
-
-  // Original logic for showing/hiding header on scroll
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
-      if (currentY > lastY.current && currentY > 56) { // 56 is h-14 (default header height)
+      if (currentY > lastY.current && currentY > 56) {
         setShow(false);
       } else {
         setShow(true);
@@ -73,9 +69,8 @@ function Header({ onAuthModalOpen }) {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []); // lastY.current is mutated, so it doesn't need to be in dependencies
+  }, []);
 
-  // Click outside listener for language dropdown
   useEffect(() => {
     function onClick(e) {
       if (langRef.current && !langRef.current.contains(e.target)) {
@@ -110,13 +105,11 @@ function Header({ onAuthModalOpen }) {
     setMenuOpen(false);
   };
 
-  // Simplified handleScrollToSection
   const handleScrollToSection = (sectionId) => {
     setMenuOpen(false);
     if (location.pathname === '/') {
       const element = document.getElementById(sectionId);
       if (element) {
-        // Calculate offset based on current header height
         const headerHeight = breakpoint === "lg" ? 80 : breakpoint === "md" ? 96 : 56;
         const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
         const offsetPosition = elementPosition - headerHeight;
@@ -140,7 +133,7 @@ function Header({ onAuthModalOpen }) {
         src={`https://flagcdn.com/w40/${countryCode}.png`}
         alt={`${langDetails.name} flag`}
         className="w-6 h-4 object-cover rounded-sm"
-        onError={(e) => { // Fallback for missing flags
+        onError={(e) => {
           e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'%3E%3C/svg%3E"; 
         }}
       />
@@ -151,6 +144,16 @@ function Header({ onAuthModalOpen }) {
     const normalized = langCode.toLowerCase();
     const langDetails = languageConfig[normalized] || languageConfig[langCode.split('-')[0]] || languageConfig.en;
     return langDetails.name.toUpperCase();
+  };
+
+  // Calculate heights based on breakpoint
+  const headerHeightValue = breakpoint === "lg" ? 80 : breakpoint === "md" ? 96 : 56;
+  const navBarHeightValue = breakpoint === "lg" ? 60 : 48;
+
+  const mobileMenuStyle = {
+    height: `calc(100vh - ${headerHeightValue}px - ${navBarHeightValue}px)`,
+    top: `${headerHeightValue}px`,
+    zIndex: 51, // Increased z-index
   };
 
   return (
@@ -224,19 +227,17 @@ function Header({ onAuthModalOpen }) {
 
       {/* Mobile Menu (Side Panel) */}
       <div
-        className={`fixed top-0 left-0 w-[70vw] sm:w-[50vw] md:w-[40vw] lg:w-[30vw] xl:w-[25vw] max-w-xs bg-black transform transition-transform duration-300 ease-in-out z-50 shadow-2xl flex flex-col ${
-          menuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed left-0 w-[70vw] sm:w-[50vw] md:w-[40vw] lg:w-[30vw] xl:w-[25vw] max-w-xs bg-black transform transition-transform duration-300 ease-in-out shadow-2xl flex flex-col`}
         style={{
-          height: `calc(100vh - ${breakpoint === "lg" ? "80px" : breakpoint === "md" ? "96px" : "56px"})`,
-          top: `${breakpoint === "lg" ? "80px" : breakpoint === "md" ? "96px" : "56px"}`,
+          ...mobileMenuStyle, // Apply dynamic height, top, and zIndex
+          transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
         }}
       >
         <nav className="flex-grow p-3 sm:p-4 space-y-1 overflow-y-auto">
           <Link
             to="/"
             className="flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
-            onClick={() => { handleLogoClick(); }} // setMenuOpen is handled by handleLogoClick
+            onClick={handleLogoClick}
           >
             {t("navigation.home")}
           </Link>
@@ -255,7 +256,7 @@ function Header({ onAuthModalOpen }) {
               className="flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
               onClick={() => setMenuOpen(false)}
             >
-              {t("navigation.messages", "Messages")} {/* Fallback translation */}
+              {t("navigation.messages", "Messages")}
             </Link>
           )}
           {user && (
@@ -268,10 +269,9 @@ function Header({ onAuthModalOpen }) {
             </Link>
           )}
           
-          {/* Sections for All Users */}
           <div className="pt-1 sm:pt-2">
             <p className="text-xs sm:text-sm text-darkGold px-3 mb-1 opacity-70">
-              {t("navigation.explore")}
+              {t("navigation.explore", "Explore")}
             </p>
             <button
               onClick={() => handleScrollToSection("services")}
@@ -283,7 +283,7 @@ function Header({ onAuthModalOpen }) {
                 onClick={() => handleScrollToSection("coaching")}
               className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
             >
-              {t("coaching.coaching_title", "Coaching")} {/* Fallback translation */}
+              {t("coaching.coaching_title", "Coaching")}
             </button>
             <button
                 onClick={() => handleScrollToSection('venture-investment')}
@@ -317,7 +317,6 @@ function Header({ onAuthModalOpen }) {
             </button>
           </div>
 
-          {/* Conditional Log In / Log Out */}
           <div className="pt-2 border-t border-darkGold/20 mt-2">
             {!user ? (
               <button
@@ -349,15 +348,13 @@ function Header({ onAuthModalOpen }) {
         </div>
       </div>
 
-      {/* Overlay for when mobile menu is open */}
       {menuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" // Only show on mobile
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setMenuOpen(false)}
         />
       )}
 
-      {/* AuthModal, if not handled by a prop */}
       {!onAuthModalOpen && (
         <AuthModal
           isOpen={authModalOpen}

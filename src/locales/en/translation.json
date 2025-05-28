@@ -899,11 +899,14 @@
   },
 
   "window_chatbot": {
-    "welcome_message": "Welcome to DaGalow's personal assistant! I can help you with info on services, booking, or answer questions about Daniel's expertise—how can I assist you today?",
+    "welcome_message": "Ready to unlock your potential? I can guide you through all our services to find exactly what you need. What are you looking to achieve today?",
+    "guided_welcome_message": "Ready to unlock your potential? I can guide you through all our services to find exactly what you need. What are you looking to achieve today?",
     "wait_for_message": "Wait for bot response...",
     "type_message": "Type a message…",
     "placeholder_default": "Type a message…",
-    "placeholder_waiting": "Wait for bot response..."
+    "placeholder_waiting": "Wait for bot response...",
+    "send_alt": "Send message",
+    "attach_alt": "Attach file"
   },
 
   "chatbot": {

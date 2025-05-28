@@ -1,6 +1,5 @@
 // src/App.js
-// src/App.js
-import React, { useState, createContext, useEffect } from "react";
+import React, { useState, createContext, useEffect, useCallback, useRef } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -40,23 +39,24 @@ import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
-import ScrollToTopButton from "./components/common/ScrollToTopButton";
 import TestimonialReview from "./pages/admin/TestimonialReview";
 import BookingSuccess from "./pages/BookingSuccess";
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import DirectMessagesPage from './pages/DirectMessages';
+import ScrollToTopButton from "./components/common/ScrollToTopButton";
 
-// NEW: Import notification utility functions
 import {
   requestNotificationPermission,
   getNotificationPermission,
   isNotificationAPISupported,
   showNotification
-} from "./utils/notificationUtils"; // Adjust path if needed
+} from "./utils/notificationUtils";
 
 export const AuthModalContext = createContext({
-  openAuthModal: () => {}
+  openAuthModal: () => {},
+  closeAuthModal: () => {},
+  isAuthModalOpen: false
 });
 
 const PrivateRoute = ({ children }) => {
@@ -82,30 +82,72 @@ const PublicOnlyRoute = ({ children }) => {
 };
 
 function AppContent() {
-  const { user } = useAuth(); // Get user from AuthContext
+  const { user } = useAuth();
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [chatSessionId, setChatSessionId] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const location = useLocation();
-
-  // NEW: State for notification permission
   const [notificationPermission, setNotificationPermission] = useState(getNotificationPermission());
-
   const [acceptsFunctionalCookies, setAcceptsFunctionalCookies] = useState(
     () => Cookies.get("siteCookieConsent") === "true"
   );
+
+  const [showChatbotIconNotification, setShowChatbotIconNotification] = useState(false);
+  const [chatOpenedViaNotification, setChatOpenedViaNotification] = useState(false);
+  const [hasShownNotificationThisSession, setHasShownNotificationThisSession] = useState(false); // New state
+  const notificationTimerRef = useRef(null);
 
   useEffect(() => {
     setAcceptsFunctionalCookies(Cookies.get("siteCookieConsent") === "true");
   }, []);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    if (window.location.hash) {
-      const cleanUrl = window.location.pathname + window.location.search;
-      window.history.replaceState(null, '', cleanUrl);
-    }
+    const resetScrollAndHash = () => {
+      if (window.scrollY !== 0) {
+        window.scrollTo(0, 0);
+      }
+      if (window.location.hash &&
+          !window.location.hash.includes('access_token=') &&
+          !window.location.hash.includes('refresh_token=') &&
+          !window.location.hash.includes('error_description=')) {
+        const cleanUrl = window.location.pathname + window.location.search;
+        window.history.replaceState(null, document.title, cleanUrl);
+      }
+    };
+    const timer = setTimeout(resetScrollAndHash, 100);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
+
+  // useEffect for the 5-second notification timer
+  useEffect(() => {
+    if (notificationTimerRef.current) {
+      clearTimeout(notificationTimerRef.current);
+    }
+
+    // Condition: Not chatbot open, dot not already showing, AND not shown this session yet
+    if (!isChatbotOpen && !showChatbotIconNotification && !hasShownNotificationThisSession) {
+      notificationTimerRef.current = setTimeout(() => {
+        console.log("Timer fired: Setting showChatbotIconNotification and hasShownNotificationThisSession to true");
+        setShowChatbotIconNotification(true);
+        setHasShownNotificationThisSession(true); // Mark as shown for this session
+      }, 5000);
+    } else {
+      console.log("Notification timer condition not met:", {
+            isChatbotOpen,
+            showChatbotIconNotification,
+            hasShownNotificationThisSession
+        });
+    }
+
+    return () => {
+      if (notificationTimerRef.current) {
+        clearTimeout(notificationTimerRef.current);
+      }
+    };
+  }, [isChatbotOpen, showChatbotIconNotification, hasShownNotificationThisSession]);
+
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -114,12 +156,29 @@ function AppContent() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const toggleChatbot = (sessionId = null) => {
-    if (sessionId && !isChatbotOpen) {
-        setChatSessionId(sessionId);
-    }
-    setIsChatbotOpen(prev => !prev);
-  };
+  const toggleChatbot = useCallback((sessionId = null) => {
+    setIsChatbotOpen(prevIsChatbotOpen => {
+      const openingChatbot = !prevIsChatbotOpen;
+      if (openingChatbot) {
+        if (sessionId) {
+          setChatSessionId(sessionId);
+        }
+        // If the dot is showing when chatbot is opened, it means it was opened via notification
+        if (showChatbotIconNotification) {
+          setChatOpenedViaNotification(true);
+          setShowChatbotIconNotification(false); // Hide the dot
+          // `hasShownNotificationThisSession` is already true if dot was visible
+        } else {
+          setChatOpenedViaNotification(false);
+        }
+      } else {
+        // Reset if closing
+        setChatOpenedViaNotification(false);
+      }
+      return openingChatbot;
+    });
+  }, [showChatbotIconNotification, setChatOpenedViaNotification, setChatSessionId, setShowChatbotIconNotification]);
+
 
   const openAuthModal = () => {
     if (isChatbotOpen) {
@@ -129,49 +188,31 @@ function AppContent() {
   };
   const closeAuthModal = () => setIsAuthModalOpen(false);
 
-  useEffect(() => {
-    // Optional: Close chatbot on route change
-    // if (isChatbotOpen) {
-    //   setIsChatbotOpen(false);
-    // }
-  }, [location.pathname]);
-
-  // NEW: Handler to request notification permission
   const handleRequestNotification = async () => {
     const permission = await requestNotificationPermission();
     setNotificationPermission(permission);
   };
 
-  // NEW: useEffect for real-time notifications and initial check
   useEffect(() => {
     if (!user || notificationPermission !== 'granted') {
-      return; // Only listen if user is logged in and permission is granted
+      return;
     }
-
     const processAndShowNotification = (payload) => {
       const newNotification = payload.new;
-      // console.log("Real-time: New notification received from DB:", newNotification);
-
       if (newNotification.type === 'reminder' && !newNotification.is_read) {
         const notifyAtDate = newNotification.notify_at ? new Date(newNotification.notify_at) : null;
         const now = new Date();
         const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
-        const oneHourAgo = new Date(now.getTime() - 1 * 60 * 60 * 1000); // Only consider recently created
-
-        // Logic to show pop-up:
-        // 1. notify_at is in the past or within the next 5 minutes.
-        // 2. The notification record itself was created in the last hour (to avoid old pop-ups on login).
+        const oneHourAgo = new Date(now.getTime() - 1 * 60 * 60 * 1000);
         if (notifyAtDate && notifyAtDate <= fiveMinutesFromNow && new Date(newNotification.created_at) >= oneHourAgo) {
-          // console.log("Showing browser notification for:", newNotification.message);
           showNotification("Consultation Reminder", {
             body: newNotification.message,
-            icon: "/logo192.png", // Replace with your actual logo path (e.g., in public folder)
-            tag: `reminder-${newNotification.id}` // Helps prevent duplicate popups if event fires multiple times
+            icon: "/logo192.png",
+            tag: `reminder-${newNotification.id}`
           }, newNotification.link);
         }
       }
     };
-
     const notificationsChannel = supabase
       .channel(`public:notifications:user_id=eq.${user.id}`)
       .on(
@@ -193,15 +234,11 @@ function AppContent() {
           console.error('Error subscribing to notifications channel:', err);
         }
       });
-
-    // Check for any already existing unread reminders that might be due when app loads/user logs in
     const checkForInitialDueReminders = async () => {
         if (notificationPermission !== 'granted') return;
-
         const now = new Date();
         const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
         const oneHourAgo = new Date(now.getTime() - 1 * 60 * 60 * 1000);
-
         const { data: dueNotifications, error } = await supabase
             .from('notifications')
             .select('*')
@@ -210,32 +247,27 @@ function AppContent() {
             .eq('is_read', false)
             .lte('notify_at', fiveMinutesFromNow.toISOString())
             .gte('created_at', oneHourAgo.toISOString());
-
         if (error) {
             console.error("Error fetching initial due reminders:", error);
             return;
         }
-
         if (dueNotifications) {
             dueNotifications.forEach(n => {
-                 // console.log("Showing initial browser notification for:", n.message);
                  showNotification("Consultation Reminder", {
                     body: n.message,
-                    icon: "/logo192.png", // Replace with your actual logo path
+                    icon: "/logo192.png",
                     tag: `reminder-${n.id}`
                  }, n.link);
             });
         }
     };
     checkForInitialDueReminders();
-
     return () => {
       if (notificationsChannel) {
         supabase.removeChannel(notificationsChannel);
-        // console.log('Unsubscribed from notifications channel.');
       }
     };
-  }, [user, notificationPermission]); // Re-run if user or notificationPermission changes
+  }, [user, notificationPermission]);
 
   const OptionalAuthRoute = ({ children }) => {
     const { loading } = useAuth();
@@ -249,20 +281,18 @@ function AppContent() {
     <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal, isAuthModalOpen }}>
       <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray overflow-x-hidden">
         <Header onAuthModalOpen={openAuthModal} />
-        {/* <ScrollToTop /> */} {/* Removed */}
 
-        {/* NEW: UI to request notification permission */}
         {isNotificationAPISupported() && notificationPermission === 'default' && (
           <div style={{
             position: 'fixed',
-            bottom: '70px', // Adjusted to be above nav bar + some padding
+            bottom: '70px',
             left: '50%',
             transform: 'translateX(-50%)',
             padding: '10px 15px',
-            background: 'rgba(30,30,30,0.9)', // Darker, slightly transparent
+            background: 'rgba(30,30,30,0.9)',
             color: 'white',
             borderRadius: '8px',
-            zIndex: 1001, // Ensure it's above most content, below modals
+            zIndex: 1001,
             textAlign: 'center',
             boxShadow: '0 2px 10px rgba(0,0,0,0.3)'
           }}>
@@ -275,8 +305,6 @@ function AppContent() {
             </button>
             <button
               onClick={() => {
-                // Hide the banner for this session if user clicks "Later"
-                // A more robust solution might use localStorage to remember dismissal
                 const banner = document.querySelector('[style*="position: fixed"][style*="bottom: 70px"]');
                 if (banner) banner.style.display = 'none';
               }}
@@ -286,7 +314,6 @@ function AppContent() {
             </button>
           </div>
         )}
-        {/* End NEW UI */}
 
         <Routes>
           <Route
@@ -332,16 +359,20 @@ function AppContent() {
           isChatbotOpen={isChatbotOpen}
           onChatbotClick={toggleChatbot}
           onAuthModalOpen={openAuthModal}
+          showChatbotIconNotification={showChatbotIconNotification}
         />
         <AnimatePresence>
           {isChatbotOpen && (
             <ChatbotWindow
               sessionId={chatSessionId}
               onClose={toggleChatbot}
+              chatOpenedViaNotification={chatOpenedViaNotification}
             />
           )}
         </AnimatePresence>
+        
         <ScrollToTopButton />
+        
         <AuthModal
           isOpen={isAuthModalOpen}
           onClose={closeAuthModal}

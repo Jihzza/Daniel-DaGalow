@@ -38,7 +38,6 @@ const Signup = ({ isModal = false, onSuccess = () => {}, onSwitchToLogin = () =>
     setMessage('');
     setLoading(true);
 
-    // Password validation
     if (password !== confirmPassword) {
       setError(t('auth.signup.errors.password_mismatch'));
       setLoading(false);
@@ -52,8 +51,10 @@ const Signup = ({ isModal = false, onSuccess = () => {}, onSwitchToLogin = () =>
     }
 
     try {
+      // MODIFIED: Added emailRedirectTo option
       const { data, error } = await signUp(email, password, {
-        data: { full_name: fullName }
+        data: { full_name: fullName },
+        emailRedirectTo: window.location.origin // Ensures Supabase redirects to your app's root
       });
       
       if (error) throw error;
@@ -62,7 +63,9 @@ const Signup = ({ isModal = false, onSuccess = () => {}, onSwitchToLogin = () =>
         onSuccess();
       } else {
         setMessage(t('auth.signup.success.message'));
-        setTimeout(() => navigate('/login'), 5000);
+        // Consider not auto-navigating away from the success message page,
+        // or ensure the user sees it before navigation.
+        // The main issue is the auto-login after email confirmation.
       }
     } catch (error) {
       setError(error.message || t('auth.signup.errors.default'));
@@ -176,16 +179,18 @@ const Signup = ({ isModal = false, onSuccess = () => {}, onSwitchToLogin = () =>
       </form>
       
       <div className="mt-4 text-center">
-    <p className="text-black/50">
-      {t('auth.signup.login_prompt')}{' '}
-      <button 
-        onClick={onSwitchToLogin}
-        className="text-oxfordBlue hover:underline bg-transparent border-none p-0 cursor-pointer"
-      >
-        {t('auth.signup.login_link')}
-      </button>
-    </p>
-  </div>
+        <p className="text-black/50">
+          {t('auth.signup.login_prompt')}{' '}
+          <button 
+            onClick={onSwitchToLogin} // This should be passed if Signup is used in a modal context
+            // If not in modal, you might want a Link component here:
+            // <Link to="/login" className="text-oxfordBlue hover:underline">
+            className="text-oxfordBlue hover:underline bg-transparent border-none p-0 cursor-pointer"
+          >
+            {t('auth.signup.login_link')}
+          </button>
+        </p>
+      </div>
     </div>
   );
 };
