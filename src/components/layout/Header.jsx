@@ -81,6 +81,19 @@ function Header({ onAuthModalOpen }) {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
+  // Effect to handle body scroll when menu opens/closes
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    // Cleanup function to reset overflow when component unmounts
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
+
   const handleLogoClick = () => {
     if (location.pathname === "/") {
       window.scrollTo({ top: 0, behavior: "smooth" }); 

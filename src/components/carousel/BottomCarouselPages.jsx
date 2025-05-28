@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import SocialMedia from "./SocialMedia";
 import FAQs from "./FAQs";
 import Bugs from "./Bugs";
-import SocialMedia from "./SocialMedia";
 
 export default function PageCarousel() {
   const { t } = useTranslation();
