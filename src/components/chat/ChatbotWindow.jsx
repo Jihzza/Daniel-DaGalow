@@ -290,62 +290,62 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
   return (
     <motion.div
       ref={panelRef}
-      className="fixed w-full bg-oxfordBlue shadow-2xl rounded-t-2xl overflow-visible border-t-2 border-darkGold flex flex-col z-40 touch-none overscroll-contain bottom-[48px] lg:bottom-[60px]"
-      style={{ height: `${height}px` }} // Height is now calculated to be full height above navbar
-      initial={{ y: "100%" }} 
-      animate={{ y: 0 }} 
-      exit={{ y: "100%" }} 
-      transition={{ type: "tween", duration: 0.3 }}
+      className="fixed w-full bg-oxfordBlue shadow-2xl rounded-t-2xl overflow-visible border-t-2 border-darkGold flex flex-col z-50 touch-none overscroll-contain bottom-[48px] lg:bottom-[60px]" // MODIFIED: Changed z-40 to z-50
+      style={{ height: `${height}px` }}
+      initial={{ y: "100%" }}
+      animate={{ y: 0 }}
+      exit={{ y: "100%" }}
+      transition={{ type: "tween", duration: 0.15 }}
     >
       {/* Header */}
       <div
-        className={`relative w-full flex items-stretch justify-between py-3 md:py-4 px-2 md:px-4 touch-none ${ 
+        className={`relative w-full flex items-stretch justify-between py-3 md:py-4 px-2 md:px-4 touch-none ${
           resizing ? "bg-opacity-50" : ""
         }`}
       >
         <div
           ref={draggableHeaderRef}
-          className="flex-grow h-full cursor-row-resize" 
+          className="flex-grow h-full cursor-row-resize"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
-          style={{ touchAction: 'none' }} 
+          style={{ touchAction: 'none' }}
         >
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-1 bg-darkGold rounded-full pointer-events-none"></div>
         </div>
 
-        <div className="flex-shrink-0 flex items-center justify-center pl-2 z-10">
+        <div className="flex-shrink-0 flex items-center justify-center pl-2 z-10"> {/* Note: This inner z-10 is relative to its parent stacking context */}
           <button
-            onClick={onClose} 
-            className="text-darkGold text-2xl md:text-3xl leading-none focus:outline-none p-2" 
+            onClick={onClose}
+            className="text-darkGold text-2xl md:text-3xl leading-none focus:outline-none p-2"
             aria-label="Close chat"
           >
-            &times; 
+            &times;
           </button>
         </div>
       </div>
 
       {/* Message list */}
-      <div className="flex-1 w-full text-white overflow-auto space-y-2 px-2"> 
+      <div className="flex-1 w-full text-white overflow-auto space-y-2 px-2">
         <div
           ref={listRef}
           className="flex-1 w-full text-white overflow-auto space-y-2"
         >
           {messages.map((m, i) => (
             <div
-              key={i} 
-              className={`px-4 py-2 rounded-lg whitespace-pre-wrap break-words ${ 
+              key={i}
+              className={`px-4 py-2 rounded-lg whitespace-pre-wrap break-words ${
                 m.from === "user"
-                  ? "bg-gentleGray/20 md:text-xl self-end text-white ml-auto max-w-[80%]" 
-                  : "self-start md:text-xl text-white bg-oxfordBlue/50 max-w-[80%]" 
+                  ? "bg-gentleGray/20 md:text-xl self-end text-white ml-auto max-w-[80%]"
+                  : "self-start md:text-xl text-white bg-oxfordBlue/50 max-w-[80%]"
               }`}
             >
               {m.from === "bot" ? (
                 <TypingMessage
                   text={m.text}
                   isComplete={!m.isTyping}
-                  typingSpeed={2} 
-                  startDelay={100} 
+                  typingSpeed={2}
+                  startDelay={100}
                   onComplete={() => {
                     setMessages((prevMsgs) =>
                       prevMsgs.map((msg, idx) =>
@@ -360,21 +360,21 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
             </div>
           ))}
 
-          {loading && ( 
-            <div className="text-center px-4 py-2 text-gray-400"> 
-              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-darkGold mx-auto"></div> 
+          {loading && (
+            <div className="text-center px-4 py-2 text-gray-400">
+              <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-darkGold mx-auto"></div>
             </div>
           )}
         </div>
       </div>
       {/* Input & attachments */}
-      <div className="pb-2 md:pb-4 px-2"> 
+      <div className="pb-2 md:pb-4 px-2">
         <div className="relative w-full">
-          <button className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-1"> 
-            <img src={Anexar} alt={t("window_chatbot.attach_alt", "Attach file")} className="w-5 h-5 md:w-6 md:h-6" /> 
+          <button className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-1"> {/* Note: This inner z-10 is relative to its parent stacking context */}
+            <img src={Anexar} alt={t("window_chatbot.attach_alt", "Attach file")} className="w-5 h-5 md:w-6 md:h-6" />
           </button>
           <input
-            className="w-full h-12 md:h-14 border-2 border-darkGold bg-oxfordBlue text-white md:text-lg rounded-full p-3 pl-10 pr-12 md:pl-12 md:pr-14" 
+            className="w-full h-12 md:h-14 border-2 border-darkGold bg-oxfordBlue text-white md:text-lg rounded-full p-3 pl-10 pr-12 md:pl-12 md:pr-14"
             value={userText}
             onChange={(e) => setUserText(e.target.value)}
             onKeyDown={(e) =>
@@ -388,14 +388,14 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
             disabled={loading || isTypingAnimationActive}
           />
           <button
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-1" 
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-1"  // Note: This inner z-10 is relative to its parent stacking context
             onClick={sendMessage}
             disabled={loading || isTypingAnimationActive}
           >
             <img
               src={Send}
               alt={t("window_chatbot.send_alt", "Send message")}
-              className={`w-5 h-5 md:w-6 md:h-6 ${ 
+              className={`w-5 h-5 md:w-6 md:h-6 ${
                 loading || isTypingAnimationActive ? "opacity-50" : ""
               }`}
             />

@@ -94,58 +94,77 @@ function AppContent() {
 
   const [showChatbotIconNotification, setShowChatbotIconNotification] = useState(false);
   const [chatOpenedViaNotification, setChatOpenedViaNotification] = useState(false);
-  const [hasShownNotificationThisSession, setHasShownNotificationThisSession] = useState(false); // New state
+  const [hasShownNotificationThisSession, setHasShownNotificationThisSession] = useState(false);
   const notificationTimerRef = useRef(null);
 
   useEffect(() => {
     setAcceptsFunctionalCookies(Cookies.get("siteCookieConsent") === "true");
   }, []);
 
+  // Scroll to top logic
   useEffect(() => {
-    const resetScrollAndHash = () => {
-      if (window.scrollY !== 0) {
-        window.scrollTo(0, 0);
-      }
-      if (window.location.hash &&
-          !window.location.hash.includes('access_token=') &&
-          !window.location.hash.includes('refresh_token=') &&
-          !window.location.hash.includes('error_description=')) {
-        const cleanUrl = window.location.pathname + window.location.search;
-        window.history.replaceState(null, document.title, cleanUrl);
-      }
-    };
-    const timer = setTimeout(resetScrollAndHash, 100);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
+    console.log(`[App.js useEffect] Path changed to: ${location.pathname}. Initial window.scrollY: ${window.scrollY}`);
 
-  // useEffect for the 5-second notification timer
+    const attemptScrollToTop = (context = "initial") => {
+      console.log(`[App.js ${context} scroll] Forcing scrollTo(0,0) for path: ${location.pathname}. Current scrollY: ${window.scrollY}`);
+      window.scrollTo(0, 0);
+      console.log(`[App.js ${context} scroll] After scrollTo(0,0). Current scrollY: ${window.scrollY}`);
+    };
+
+    // Initial scroll attempt, deferred slightly.
+    const initialScrollTimer = setTimeout(() => attemptScrollToTop("initial"), 0);
+
+    // More robust scroll for the homepage, especially on direct navigation to it.
+    let delayedHomepageScrollTimer = null;
+    let finalHomepageScrollTimer = null;
+    if (location.pathname === '/') {
+      // This longer delay helps ensure content (like Hero images) has loaded
+      // and layout shifts have mostly settled before the final scroll.
+      delayedHomepageScrollTimer = setTimeout(() => {
+        attemptScrollToTop("delayed homepage");
+        // A final, quick check and re-scroll if somehow still not at the top.
+        // This can be useful for very stubborn, late layout shifts.
+        if (window.scrollY !== 0) {
+          finalHomepageScrollTimer = setTimeout(() => attemptScrollToTop("final homepage check"), 50); // Shorter delay for the final check
+        }
+      }, 250); // Increased delay (e.g., 200-300ms). Adjust based on observed layout shift timing.
+    }
+
+    // Hash cleaning logic (remains the same)
+    if (
+      window.location.hash &&
+      !window.location.hash.includes('access_token=') &&
+      !window.location.hash.includes('refresh_token=') &&
+      !window.location.hash.includes('error_description=')
+    ) {
+      console.log('[App.js useEffect] Cleaning hash:', window.location.hash);
+      const cleanUrl = window.location.pathname + window.location.search;
+      window.history.replaceState(null, document.title, cleanUrl);
+    }
+
+    return () => {
+      clearTimeout(initialScrollTimer);
+      if (delayedHomepageScrollTimer) {
+        clearTimeout(delayedHomepageScrollTimer);
+      }
+      if (finalHomepageScrollTimer) {
+        clearTimeout(finalHomepageScrollTimer);
+      }
+    };
+  }, [location.pathname]); // Effect runs on path change
+
+
   useEffect(() => {
     if (notificationTimerRef.current) {
       clearTimeout(notificationTimerRef.current);
     }
 
-    // Condition: Not chatbot open, dot not already showing, AND not shown this session yet
     if (!isChatbotOpen && !showChatbotIconNotification && !hasShownNotificationThisSession) {
       notificationTimerRef.current = setTimeout(() => {
-        console.log("Timer fired: Setting showChatbotIconNotification and hasShownNotificationThisSession to true");
         setShowChatbotIconNotification(true);
-        setHasShownNotificationThisSession(true); // Mark as shown for this session
+        setHasShownNotificationThisSession(true); 
       }, 5000);
-    } else {
-      console.log("Notification timer condition not met:", {
-            isChatbotOpen,
-            showChatbotIconNotification,
-            hasShownNotificationThisSession
-        });
     }
-
-    return () => {
-      if (notificationTimerRef.current) {
-        clearTimeout(notificationTimerRef.current);
-      }
-    };
   }, [isChatbotOpen, showChatbotIconNotification, hasShownNotificationThisSession]);
 
 
@@ -163,21 +182,18 @@ function AppContent() {
         if (sessionId) {
           setChatSessionId(sessionId);
         }
-        // If the dot is showing when chatbot is opened, it means it was opened via notification
         if (showChatbotIconNotification) {
           setChatOpenedViaNotification(true);
-          setShowChatbotIconNotification(false); // Hide the dot
-          // `hasShownNotificationThisSession` is already true if dot was visible
+          setShowChatbotIconNotification(false); 
         } else {
           setChatOpenedViaNotification(false);
         }
       } else {
-        // Reset if closing
         setChatOpenedViaNotification(false);
       }
       return openingChatbot;
     });
-  }, [showChatbotIconNotification, setChatOpenedViaNotification, setChatSessionId, setShowChatbotIconNotification]);
+  }, [showChatbotIconNotification]); // Removed setChatOpenedViaNotification, setChatSessionId, setShowChatbotIconNotification from deps as they are state setters
 
 
   const openAuthModal = () => {
@@ -371,7 +387,7 @@ function AppContent() {
           )}
         </AnimatePresence>
         
-        <ScrollToTopButton />
+        <ScrollToTopButton isChatbotOpen={isChatbotOpen} />
         
         <AuthModal
           isOpen={isAuthModalOpen}

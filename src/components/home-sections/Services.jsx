@@ -68,7 +68,7 @@ function Services() {
   }, [getColumns]);
 
   const openForm = (serviceId) => {
-    setService(serviceId || "booking");
+    setService(serviceId || "booking"); // Default to "booking" (consultation)
     document
       .getElementById("service-selection")
       ?.scrollIntoView({ behavior: "smooth" });
@@ -205,8 +205,9 @@ function Services() {
   }, [isButtonVisibleBasedOnSection, handleScroll]);
 
   const floatingButtonText = selectedServiceItem
-    ? selectedServiceItem.translatedButtonActionKey
-    : t("services.button_book_consultation_default");
+    ? `${t(selectedServiceItem.buttonActionKey)} - ${t("services.services_price_button")}`
+    : `${t("services.button_book_consultation_default")} - ${t("services.services_price_button")}`;
+
 
     const descriptionVariants = {
       open: {

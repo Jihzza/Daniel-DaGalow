@@ -12,8 +12,8 @@ import NotificationsIcon from "../../assets/icons/notifications white.svg";
 // Define language mapping with language codes and country codes for flags
 const languageConfig = {
   en: { code: "US", name: "EN" },
-  pt: { code: "PT", name: "PT" },
-  "pt-BR": { code: "BR", name: "PT-BR" },
+  pt: { code: "PT", name: "PT" },       // For 'pt' from i18n (Portugal)
+  br: { code: "BR", name: "PT-BR" },   // Add 'br' key for Brazil, maps to "PT-BR" name and BR flag
   es: { code: "ES", name: "ES" },
 };
 
@@ -284,7 +284,7 @@ function Header({ onAuthModalOpen }) {
           
           <div className="pt-1 sm:pt-2">
             <p className="text-xs sm:text-sm text-darkGold px-3 mb-1 opacity-70">
-              {t("navigation.explore", "Explore")}
+              {t("navigation.explore")}
             </p>
             <button
               onClick={() => handleScrollToSection("services")}

@@ -14,7 +14,9 @@
     "login": "Entrar",
     "logout": "Sair",
     "login_signup": "Entrar / Cadastrar",
-    "learnMore": "Saiba Mais"
+    "learnMore": "Saiba Mais",
+    "explore": "Explorar",
+    "messages": "Mensagens"
   },
 
   "hero": {
@@ -766,10 +768,12 @@
         "default": "Error al crear la cuenta",
         "password_mismatch": "Las contraseñas no coinciden",
         "password_length": "La contraseña debe tener al menos 6 caracteres",
-        "network_error": "Error de red. Por favor, inténtalo de nuevo."
+        "network_error": "Error de red. Por favor, inténtalo de nuevo.",
+        "full_name_required": "El nombre completo es obligatorio."
       },
       "success": {
-        "message": "¡Registro exitoso! Revisa tu correo para el enlace de confirmación."
+        "message": "¡Registro exitoso! Revisa tu correo para el enlace de confirmación.",
+        "message_incentive_page": "¡Revisa tu correo para el enlace de confirmación!"
       }
     },
     "reset_password": {
@@ -823,14 +827,17 @@
       "benefit1": "Agende todos os serviços como consultorias e coaching.",
       "benefit2": "Acesse seu histórico de agendamentos e conversas salvas do chatbot.",
       "benefit3": "Mantenha-se informado com atualizações dos serviços.",
-      "cta": "Crie Conta Gratuita"
+      "cta": "Crie Conta Gratuita",
+      "ctaDirect": "Criar conta"
     },
     "chatbot": {
       "title": "Assistência Inteligente: Nosso Chatbot de IA",
       "description": "Nosso assistente de IA ajuda você a encontrar os serviços certos e nos prepara para suas consultorias, economizando seu tempo e dinheiro.",
       "benefit1": "Guia você para o melhor serviço para suas necessidades.",
       "benefit2": "Coleta informações importantes antes das sessões para uma consultoria focada.",
-      "benefit3": "Fornece respostas instantâneas sobre nossos serviços."
+      "benefit3": "Fornece respostas instantâneas sobre nossos serviços.",
+      "logoLabel": "Logo do chatbot",
+      "cta": "Chatbot"
     }
   },
 

@@ -16,7 +16,9 @@
     "login_signup": "Login / Sign Up",
     "chatbot": "Chatbot",
     "account": "Account",
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "explore": "Explore",
+    "messages": "Messages"
   },
 
   "hero": {
@@ -65,7 +67,7 @@
     "achievement_17_title": "Age 13",
     "achievement_17_description": "website reached 60K+ users",
     "hero_individual_consultation": "Individual Consultation",
-    "hero_individual_consultation_price": "90€ / hour",
+    "hero_individual_consultation_price": "90€/hour",
     "hero_individual_consultation_minimum_time": "Minimum 45 minutes",
     "hero_book_consultation": "Book a Consultation",
     "hero_coaching_title": "Direct Coaching",
@@ -126,6 +128,7 @@
     "services_structure_5_description": "Book a follow-up consultation to review your progress, address new challenges, and receive continued support on your journey.",
     "services_structure_description": "These features are designed to maximize the value of our time together and provide you with ongoing support even after our session ends. Your comfort and progress are my top priorities.",
     "services_price": "90€ / hour",
+    "services_price_button": "90€/h",
     "services_price_minimum_time": "Minimum 45 minutes",
     "common_login_signup": "Login / Sign Up",
     "button_book_consultation_default": "Book a Consultation",
@@ -138,7 +141,7 @@
     "button_action_health_fitness": "Achieve Fitness Goals",
     "button_action_onlyfans": "Grow on OnlyFans",
     "button_action_ai_tech": "Leverage AI & Tech",
-    "button_action_more_services": "Explore More Options"
+    "button_action_more_services": "Life advices"
   },
 
   "coaching": {
@@ -803,10 +806,12 @@
         "default": "Failed to create an account",
         "password_mismatch": "Passwords do not match",
         "password_length": "Password must be at least 6 characters",
-        "network_error": "Network error. Please try again."
+        "network_error": "Network error. Please try again.",
+        "full_name_required": "Full name is required."
       },
       "success": {
-        "message": "Signup successful! Please check your email for the confirmation link."
+        "message": "Signup successful! Please check your email for the confirmation link.",
+        "message_incentive_page": "Check your email for the confirmation link!"
       }
     },
     "reset_password": {
@@ -853,49 +858,25 @@
     }
   },
 
-  "incentive": { 
-  "title": "Create Your Account Today",
-  "description": "Join our community and unlock exclusive benefits to accelerate your personal growth journey.",
-  "benefits": {
-    "title": "Account Benefits",
-    "items": {
-      "consultation": "Easy consultation scheduling with priority access",
-      "history": "Save and access your consultation history",
-      "content": "Exclusive content and service updates",
-      "dashboard": "Personalized dashboard to track your progress"
-    }
-  },
-  "chatbot": {
-    "title": "Get Help From Our Chatbot",
-    "description": "Our intelligent assistant is available 24/7 to answer your questions about our services.",
-    "capabilities": {
-      "title": "With our chatbot, you can:",
-      "info": "Get instant information about services and pricing",
-      "recommendations": "Receive recommendations based on your goals",
-      "preparation": "Prepare for your consultations with guidance"
-    }
-  },
-  "cta": {
-    "button": "Create Your Account"
-  }
-  },
-
   "incentivePage": {
-  "account": {
-    "title": "Create Your Account",
-    "description": "Create an account in moments to schedule services and keep track of your journey with me. It's essential for all bookings and automatically created if you schedule a service.",
-    "benefit1": "Schedule all services like consultations & coaching.",
-    "benefit2": "Access your appointment history and saved chatbot conversations.",
-    "benefit3": "Stay informed with service updates",
-    "cta": "Create Your Account"
-  },
-  "chatbot": {
-    "title": "Smart Assistance: Our AI Chatbot",
-    "description": "Our AI assistant helps you find the right services and prepares us for your consultations, saving you time and money.",
-    "benefit1": "Guides you to the best service for your needs.",
-    "benefit2": "Gathers key info before sessions for a focused consultation.",
-    "benefit3": "Provides instant answers about our services."
-  }
+    "account": {
+      "title": "Create Your Account",
+      "description": "Create an account in moments to schedule services and keep track of your journey with me. It's essential for all bookings and automatically created if you schedule a service.",
+      "benefit1": "Schedule all services like consultations & coaching.",
+      "benefit2": "Access your appointment history and saved chatbot conversations.",
+      "benefit3": "Stay informed with service updates",
+      "cta": "Create Your Account",
+      "ctaDirect": "Create Account"
+    },
+    "chatbot": {
+      "title": "Smart Assistance: Our AI Chatbot",
+      "description": "Our AI assistant helps you find the right services and prepares us for your consultations, saving you time and money.",
+      "benefit1": "Guides you to the best service for your needs.",
+      "benefit2": "Gathers key info before sessions for a focused consultation.",
+      "benefit3": "Provides instant answers about our services.",
+      "logoLabel": "Chatbot logo",
+      "cta": "Chatbot"
+    }
   },
 
   "window_chatbot": {

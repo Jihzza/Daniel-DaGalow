@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -7,11 +7,14 @@ import { useAuth } from "../../contexts/AuthContext";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { addMonths } from "date-fns";
 import { AuthModalContext } from "../../App";
-import { useContext } from "react";
-import { ServiceContext } from "../../contexts/ServiceContext";
+// Removed ServiceContext import as 'tier' is passed via props or router state in many apps.
+// If you still use ServiceContext to get the tier, you can add it back.
+// import { ServiceContext } from "../../contexts/ServiceContext";
 import axios from "axios";
-import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
-import { autoCreateAccount } from "../../utils/autoSignup";
+import { useScrollToTopOnChange }
+from "../../hooks/useScrollToTopOnChange";
+// Removed autoCreateAccount as direct signup is implemented
+// import { autoCreateAccount } from "../../utils/autoSignup";
 import { validatePhoneNumber } from "../../utils/phoneValidation";
 import stripe from "../../assets/icons/stripe.svg";
 import ssl from "../../assets/icons/ssl-lock.svg";
@@ -24,7 +27,7 @@ function StepIndicator({
   className = "",
 }) {
   return (
-    <div className="flex items-center justify-center py-2 gap-1 md:gap-2">
+    <div className={`flex items-center justify-center py-2 gap-1 md:gap-2 ${className}`}>
       {Array.from({ length: stepCount }).map((_, idx) => {
         const stepNum = idx + 1;
         const isActive = currentStep === stepNum;
@@ -95,8 +98,8 @@ function FrequencyStep({ formData, onChange }) {
   );
 }
 
-// Step 2: Contact Info
-function ContactStep({ formData, onChange, onPhoneValidation }) { // Added onPhoneValidation back as it's used
+// Step 2: Contact Info / Signup
+function ContactStep({ formData, onChange, onPhoneValidation, user }) {
   const { t } = useTranslation();
   const { openAuthModal } = useContext(AuthModalContext);
 
@@ -104,6 +107,23 @@ function ContactStep({ formData, onChange, onPhoneValidation }) { // Added onPho
   const [phoneValidated, setPhoneValidated] = useState(false);
   const [phoneError, setPhoneError] = useState("");
   const phoneValidationTimeout = useRef(null);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const EyeIcon = ({ color = "currentColor" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+  );
+  
+  const EyeOffIcon = ({ color = "currentColor" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+      <line x1="1" y1="1" x2="23" y2="23"></line>
+    </svg>
+  );
 
   const handlePhoneChange = (phone) => {
     onChange({ target: { name: "phone", value: phone } });
@@ -138,8 +158,9 @@ function ContactStep({ formData, onChange, onPhoneValidation }) { // Added onPho
       }
     }, 800);
   };
-
+  
   useEffect(() => {
+    // Trigger validation if formData.phone already has a value (e.g. from prefill)
     if (formData.phone && formData.phone.replace(/\D/g, "").length >= 8) {
         handlePhoneChange(formData.phone);
     }
@@ -157,7 +178,6 @@ function ContactStep({ formData, onChange, onPhoneValidation }) { // Added onPho
 
   return (
     <div className="space-y-6 mb-4 max-w-md mx-auto w-full">
-      {/* Section 1: User Details Input */}
       <div className="space-y-4 text-left">
         <div>
           <label htmlFor="coaching-name" className="block text-white text-sm font-medium mb-1.5">
@@ -188,8 +208,65 @@ function ContactStep({ formData, onChange, onPhoneValidation }) { // Added onPho
             placeholder={t("coaching_request.form.email_placeholder", "Enter your email")}
             className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
             required
+            readOnly={!!user} 
           />
+           {!!user && <p className="text-xs text-white/60 mt-1">{t("edit_profile.form.email.cannot_change", "Email cannot be changed")}</p>}
         </div>
+
+        {!user && (
+          <>
+            <div>
+              <label htmlFor="coaching-password" className="block text-white text-sm font-medium mb-1.5">
+                {t('auth.signup.password.label')}
+              </label>
+              <div className="relative">
+                <input
+                  id="coaching-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={onChange}
+                  placeholder={t('auth.signup.password.placeholder')}
+                  className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+                  required
+                />
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-white/70"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label htmlFor="coaching-confirmPassword" className="block text-white text-sm font-medium mb-1.5">
+                {t('auth.signup.confirm_password.label')}
+              </label>
+               <div className="relative">
+                <input
+                  id="coaching-confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={formData.confirmPassword}
+                  onChange={onChange}
+                  placeholder={t('auth.signup.confirm_password.placeholder')}
+                  className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+                  required
+                />
+                 <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-white/70"
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                    {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
 
         <div>
           <label htmlFor="coaching-phone" className="block text-white text-sm font-medium mb-1.5">
@@ -197,20 +274,19 @@ function ContactStep({ formData, onChange, onPhoneValidation }) { // Added onPho
           </label>
           <div className="relative">
             <PhoneInput
-              containerClass="!w-full !h-[42px] md:!h-[44px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/10" // Adjusted height for consistency
-              buttonClass="!bg-white/5 !border-none !h-full" // Ensure button takes full height of container
+              containerClass="!w-full !h-[42px] md:!h-[44px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/10"
+              buttonClass="!bg-white/5 !border-none !h-full"
               inputClass={`!text-sm !bg-white/5 !w-full !border-none !px-3 !py-2.5 !h-full text-white placeholder-white/50 ${
                 phoneError ? "!border !border-red-500" : ""
-              }`} // Ensure input takes full height
-              country="es"
+              }`}
+              country="es" // Default country
               enableSearch
               searchPlaceholder={t("coaching_request.form.phone_search_placeholder")}
               value={formData.phone}
-              onChange={handlePhoneChange} // This now correctly triggers validation that updates parent
+              onChange={handlePhoneChange}
               dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
               searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
             />
-            {/* Validation indicators (optional, can be styled further) */}
             {formData.phone && (
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center pointer-events-none">
                 {validatingPhone && (
@@ -238,37 +314,33 @@ function ContactStep({ formData, onChange, onPhoneValidation }) { // Added onPho
         </div>
       </div>
 
-      {/* Section 2: Account Creation Notice & Login Option */}
-      <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 space-y-3 mt-6">
-        <div className="flex items-center justify-center text-yellow-200 text-xs sm:text-sm">
-          <p>
-            {t("coaching_request.form.auto_account_warning", "An account will be created with these details to manage your subscription.")}
-          </p>
+      {!user && (
+        <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 space-y-3 mt-6">
+          <div className="pt-2">
+            <p className="text-white/80 text-sm mb-2">
+              {t("booking.login_prompt_simple", "Already have an account?")} 
+            </p>
+            <button
+              type="button"
+              onClick={openAuthModal}
+              className="inline-flex items-center justify-center bg-darkGold text-black font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90 transition-colors text-sm"
+            >
+              {t("booking.login_button", "Log In Here")}
+            </button>
+          </div>
         </div>
-        
-        <div className="pt-2">
-          <p className="text-white/80 text-sm mb-2">
-            {t("booking.login_prompt_simple", "Already have an account?")} 
-          </p>
-          <button
-            type="button"
-            onClick={openAuthModal}
-            className="inline-flex items-center justify-center bg-darkGold text-black font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90 transition-colors text-sm"
-          >
-            {t("booking.login_button", "Log In Here")}
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
-// Step 3: Payment Step
+
+// Step 3: Payment Step (remains largely the same, ensure it uses formData.email correctly)
 function PaymentStep({
   selectedTier,
   requestId,
   onPaymentConfirmed,
-  formData,
+  formData, // Pass full formData
 }) {
   const [paymentStarted, setPaymentStarted] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
@@ -280,7 +352,7 @@ function PaymentStep({
       Daily: "€90",
       Priority: "€230",
     };
-    return prices[tier] || "€40";
+    return prices[tier] || "€40"; // Default to Basic if somehow tier is not matching
   };
 
   const getPlanNameForTier = (tier) => {
@@ -289,14 +361,15 @@ function PaymentStep({
       Daily: "Standard",
       Priority: "Premium",
     };
-    return planNames[tier] || "Basic";
+    return planNames[tier] || "Basic"; // Default for safety
   };
 
+  // Effect to check if returning from Stripe
   useEffect(() => {
     const pendingId = localStorage.getItem("pendingCoachingId");
     if (pendingId && pendingId === requestId?.toString()) {
       setPaymentStarted(true);
-      localStorage.removeItem("pendingCoachingId");
+      localStorage.removeItem("pendingCoachingId"); // Clean up
     }
   }, [requestId]);
 
@@ -307,21 +380,24 @@ function PaymentStep({
         setPollingError("Failed to start subscription: Missing request ID.");
         return;
       }
+      // Store requestId to check on return (optional, helps if user closes tab)
       localStorage.setItem("pendingCoachingId", requestId.toString());
 
       const { data } = await axios.post(
-        "/.netlify/functions/createCoachingSession",
+        "/.netlify/functions/createCoachingSession", // Ensure this is your correct Netlify function endpoint
         {
-          requestId,
-          tier: selectedTier,
-          email: formData.email,
-          productId: "prod_SBC2yFeKHqFXZr",
-          isTestBooking: false,
+          requestId, // This is the coaching_requests.id
+          tier: selectedTier, // 'Weekly', 'Daily', 'Priority'
+          email: formData.email, // Use email from formData
+          // Supabase Price IDs (replace with your actual IDs from Stripe Dashboard)
+          // Ensure these map correctly to your tiers and are for subscriptions
+          productId: "prod_SBC2yFeKHqFXZr", // Replace with your actual Product ID from Stripe
+          isTestBooking: false, // Set to true for test cards
         }
       );
 
-      window.open(data.url, "_blank");
-      setPaymentStarted(true);
+      window.open(data.url, "_blank"); // Open Stripe checkout in a new tab
+      setPaymentStarted(true); // Indicate that Stripe process has started
     } catch (error) {
       console.error("Error creating Stripe subscription:", error);
       setPollingError("Failed to start subscription process");
@@ -334,21 +410,23 @@ function PaymentStep({
     const interval = setInterval(async () => {
       try {
         const response = await axios.get(
-          `/.netlify/functions/getCoachingStatus?id=${requestId}`
+          `/.netlify/functions/getCoachingStatus?id=${requestId}` // Your Netlify function endpoint
         );
 
         if (response.data.paymentStatus === "paid") {
           setPaymentConfirmed(true);
-          onPaymentConfirmed(true);
+          onPaymentConfirmed(true); // Notify parent
           clearInterval(interval);
         } else if (
           response.data.paymentStatus === "pending" &&
           Math.random() < 0.2
         ) {
+          // Fallback: Attempt to force update status (for cases where webhook might be delayed)
           try {
             await axios.get(
               `/.netlify/functions/forceUpdateCoaching?id=${requestId}`
-            );
+            ); // Another Netlify function if needed
+            // Re-check status after attempting force update
             const verifyResponse = await axios.get(
               `/.netlify/functions/getCoachingStatus?id=${requestId}`
             );
@@ -365,9 +443,9 @@ function PaymentStep({
       } catch (error) {
         console.error("Error checking payment status:", error);
         setPollingError("Error checking subscription status");
-        clearInterval(interval);
+        clearInterval(interval); // Stop polling on error
       }
-    }, 5000);
+    }, 5000); // Poll every 5 seconds
 
     return () => clearInterval(interval);
   }, [paymentStarted, requestId, onPaymentConfirmed]);
@@ -474,17 +552,22 @@ function PaymentStep({
   );
 }
 
+
 // Main Coaching Request Component
-export default function CoachingRequest({ onBackService }) {
+export default function CoachingRequest({ onBackService, tier: propTier }) { // tier can be passed as a prop
   const { t } = useTranslation();
-  const { tier } = useContext(ServiceContext);
-  const { user } = useAuth();
-  const [step, setStep] = useState(tier ? 2 : 1);
+  const { user, signUp: contextSignUp } = useAuth(); // Renamed signUp from context
+  const initialTier = propTier || ""; // Use propTier if available
+
+  const [step, setStep] = useState(initialTier && user ? 2 : initialTier && !user ? 2 : 1);
+  
   const [formData, setFormData] = useState({
-    frequency: tier || "",
-    name: user?.user_metadata?.full_name || "",
-    email: user?.email || "",
+    frequency: initialTier,
+    name: "", 
+    email: "", 
     phone: "",
+    password: "", 
+    confirmPassword: "" 
   });
 
   const [isPhoneValid, setIsPhoneValid] = useState(false);
@@ -503,41 +586,65 @@ export default function CoachingRequest({ onBackService }) {
             .eq("id", user.id)
             .single();
 
-          if (profileError) {
+          if (profileError && profileError.code !== 'PGRST116') { // Ignore "no rows found" error
             console.warn("Error fetching profile for autofill (CoachingRequest):", profileError.message);
           }
 
           setFormData(prevFormData => ({
             ...prevFormData,
-            name: user.user_metadata?.full_name || profileData?.full_name || prevFormData.name || "",
-            email: user.email || prevFormData.email || "",
-            phone: profileData?.phone_number || prevFormData.phone || "",
+            name: user.user_metadata?.full_name || profileData?.full_name || "",
+            email: user.email || "",
+            phone: profileData?.phone_number || "",
+            password: '', 
+            confirmPassword: '',
+            frequency: initialTier || prevFormData.frequency // Preserve tier if already set
           }));
 
           if (profileData?.phone_number) {
             const validationResult = await validatePhoneNumber(profileData.phone_number);
             setIsPhoneValid(validationResult.isValid);
+          } else {
+            setIsPhoneValid(false); 
           }
 
         } catch (error) {
           console.error("Error in fetchUserProfile (CoachingRequest):", error);
+            setFormData(prev => ({ ...prev, password: '', confirmPassword: '', frequency: initialTier || prev.frequency}));
+            setIsPhoneValid(false);
         }
       };
       fetchUserProfile();
+    } else {
+      setFormData(prev => ({
+          frequency: initialTier || prev.frequency, 
+          name: "",
+          email: "",
+          phone: "",
+          password: "",
+          confirmPassword: ""
+      }));
+      setIsPhoneValid(false); 
     }
-  }, [user]);
+  }, [user, initialTier]);
+
 
   useEffect(() => {
-    if (tier) {
-      setFormData((prev) => ({ ...prev, frequency: tier }));
-      setStep(2);
+    // This effect now primarily handles initial step setting based on tier and user status
+    // The formData.frequency is already initialized with propTier
+    if (initialTier) {
+      setStep(2); // If a tier is provided (e.g., from Hero section), always start at step 2
+    } else {
+      setStep(1); // Otherwise, start at step 1 (frequency selection)
     }
-  }, [tier]);
+  }, [initialTier]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (name === "frequency" && value) setStep(2);
+    if (name === "frequency" && value) {
+        setStep(2); // Move to contact step after frequency selection
+    }
   };
 
   const handlePhoneValidation = (isValid) => {
@@ -551,8 +658,8 @@ export default function CoachingRequest({ onBackService }) {
     { title: t("coaching_request.steps.chat"), component: InlineChatbotStep },
   ];
 
-  const Current = STEPS[step - 1].component;
-  const UI_STEPS = STEPS.length + 1;
+  const CurrentStepComponent = STEPS[step - 1].component;
+  const UI_STEPS = STEPS.length + 1; // Total steps for the UI indicator
 
   const handlePaymentConfirmed = (confirmed) => {
     setPaymentDone(confirmed);
@@ -561,170 +668,261 @@ export default function CoachingRequest({ onBackService }) {
   const canProceed = () => {
     if (step === 1 && !formData.frequency) return false;
 
-    if (step === 2) {
+    if (step === 2) { // Contact/Signup step
       const isNameValid = formData.name && formData.name.trim().length >= 2;
-      const isEmailValid =
-        formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
-      return isNameValid && isEmailValid && isPhoneValid;
+      const isEmailValid = formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
+      let passwordChecks = true;
+      if (!user) { 
+        passwordChecks = formData.password && formData.password.length >= 6 && formData.password === formData.confirmPassword;
+      }
+      return isNameValid && isEmailValid && isPhoneValid && passwordChecks;
     }
 
-    if (step === 3) return paymentDone;
+    if (step === 3) return paymentDone; // Payment step
 
-    return true;
+    return true; // For Chat step or if other steps are added
   };
 
-  const handleNext = async () => {
+const handleNext = async () => {
     if (!canProceed()) return;
 
     if (step === 1 && formData.frequency) {
-        setStep(2);
+        setStep(2); // Move from Frequency to Contact/Signup
         return;
     }
 
-    if (step === 2) {
-      setIsSubmitting(true);
-      try {
-        if (!user && formData.name && formData.email) {
-          const accountResult = await autoCreateAccount(
-            formData.name,
-            formData.email
-          );
-          if (accountResult.success && !accountResult.userExists) {
-            console.log("Account created successfully");
-          }
+    if (step === 2) { // Processing Contact Info / Signup
+        setIsSubmitting(true);
+        try {
+            let currentUserId = user?.id;
+            let currentEmail = user?.email || formData.email; 
+
+            if (!user) { // User is not logged in, so sign them up
+                // Password validation already in canProceed, but double-check here for safety
+                if (formData.password !== formData.confirmPassword) {
+                    alert(t('auth.signup.errors.password_mismatch'));
+                    setIsSubmitting(false);
+                    return;
+                }
+                if (formData.password.length < 6) {
+                    alert(t('auth.signup.errors.password_length'));
+                    setIsSubmitting(false);
+                    return;
+                }
+
+                const { data: signUpData, error: signUpError } = await contextSignUp(
+                    formData.email,
+                    formData.password,
+                    {
+                        data: { // This data goes into auth.users.raw_user_meta_data
+                            full_name: formData.name,
+                            // Phone number is handled separately below by updating the 'profiles' table
+                        }
+                    }
+                );
+
+                if (signUpError) {
+                    alert(signUpError.message || t('auth.signup.errors.default'));
+                    setIsSubmitting(false);
+                    return;
+                }
+                
+                currentUserId = signUpData.user.id;
+                currentEmail = signUpData.user.email; 
+
+                // After successful signup, Supabase trigger should create a profile.
+                // Now, update that profile with the phone number.
+                if (signUpData.user && formData.phone) {
+                    const { error: profileUpdateError } = await supabase
+                        .from('profiles')
+                        .update({ phone_number: formData.phone }) // Only update phone, name is from metadata
+                        .eq('id', signUpData.user.id);
+                    if (profileUpdateError) {
+                        console.warn('Failed to update profile with phone number after signup:', profileUpdateError.message);
+                    }
+                }
+                alert("Account created! Please check your email for confirmation. Your request is being processed.");
+            } else { // User is already logged in
+                // Check if name or phone number changed and update profile
+                let profileUpdates = {};
+                // Fetch current profile details to compare
+                const {data: currentProfileData, error: currentProfileError} = await supabase
+                    .from('profiles')
+                    .select('full_name, phone_number')
+                    .eq('id', user.id)
+                    .single();
+
+                if (currentProfileError && currentProfileError.code !== 'PGRST116') {
+                    console.warn('Could not fetch current profile to compare:', currentProfileError.message);
+                } else {
+                    if (formData.name !== (currentProfileData?.full_name || user.user_metadata?.full_name)) {
+                        profileUpdates.full_name = formData.name;
+                    }
+                    if (formData.phone && formData.phone !== currentProfileData?.phone_number) {
+                        profileUpdates.phone_number = formData.phone;
+                    }
+                }
+                
+                if (Object.keys(profileUpdates).length > 0) {
+                    const { error: profileUpdateError } = await supabase
+                        .from('profiles')
+                        .update(profileUpdates)
+                        .eq('id', user.id);
+                    if (profileUpdateError) console.warn('Failed to update profile for existing user:', profileUpdateError.message);
+                }
+            }
+
+            // Common logic: Create coaching request
+            const membershipStartDate = new Date();
+            const membershipEndDate = addMonths(membershipStartDate, 1);
+
+            const payload = {
+                name: formData.name,
+                email: currentEmail, 
+                phone: formData.phone,
+                service_type: formData.frequency,
+                membership_start_date: membershipStartDate.toISOString(),
+                membership_end_date: membershipEndDate.toISOString(),
+                payment_status: "pending", 
+                user_id: currentUserId,
+            };
+            
+            const { data: coachingRequestData, error: coachingError } = await supabase
+                .from("coaching_requests")
+                .insert(payload)
+                .select("id")
+                .single();
+
+            if (coachingError) {
+                console.error("Error creating coaching request:", coachingError);
+                alert("Failed to create coaching request: " + coachingError.message);
+                throw coachingError; // Throw to be caught by outer catch
+            }
+            setRequestId(coachingRequestData.id);
+            setStep(3); // Proceed to Payment Step
+
+        } catch (error) { 
+            console.error("Error in contact/signup step processing:", error);
+            // No generic alert here, specific ones are shown inside the try block
+        } finally {
+            setIsSubmitting(false);
         }
-
-        const membershipStartDate = new Date();
-        const membershipEndDate = addMonths(membershipStartDate, 1);
-
-        const payload = {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          service_type: formData.frequency,
-          membership_start_date: membershipStartDate.toISOString(),
-          membership_end_date: membershipEndDate.toISOString(),
-          payment_status: "pending",
-        };
-        if (user?.id) payload.user_id = user.id;
-
-        const { data, error } = await supabase
-          .from("coaching_requests")
-          .insert(payload)
-          .select("id")
-          .single();
-
-        if (error) {
-          console.error("Error creating coaching request:", error);
-          alert("Failed to create coaching request.");
-          setIsSubmitting(false);
-          return;
-        }
-        setRequestId(data.id);
-        setIsSubmitting(false);
-        setStep(3);
-      } catch (error) {
-        console.error("Error creating coaching request:", error);
-        alert("An error occurred. Please try again.");
-        setIsSubmitting(false);
-      }
     } else if (step === 3 && paymentDone) {
-      setStep(4);
+        setStep(4); // Move from Payment to Chat
     }
-  };
+};
+
 
   const handleBack = () => {
-    if (step > 1) setStep((s) => s - 1);
-    else onBackService();
-  };
-
-  const handleStepClick = (dot) => {
-    if (dot -1 < step && !isSubmitting) {
-      if (dot === 1) {
-        if (step === 1) onBackService();
-        else setStep(1);
-      } else {
-        setStep(dot - 1);
-      }
-    } else if (dot === 1 && step === 1 && !isSubmitting) {
+    if (step > 1) {
+      if (step === 2 && initialTier) { // If coming from Hero with a tier, back from contact goes to service selection
         onBackService();
+      } else {
+        setStep((s) => s - 1);
+      }
+    } else {
+      onBackService(); // If on step 1, back goes to service selection
     }
   };
 
+  const handleStepClick = (clickedStepNum) => {
+    // clickedStepNum is 1-based for UI, step is 0-based internal state usually, but here step is 1-based
+    // UI_STEPS is total dots, so step 1 (Frequency) is dot 2 if UI_STEPS = STEPS.length + 1
+    const targetInternalStep = clickedStepNum - 1; // Convert UI dot to internal step
+
+    if (targetInternalStep < step && !isSubmitting) { // Can only go back to previous steps
+        if (targetInternalStep === 0) { // Corresponds to UI dot 1 (Main Service Selection)
+             onBackService();
+        } else {
+            setStep(targetInternalStep);
+        }
+    }
+  };
+  
+  const loadingSpinner = (
+    <span className="flex items-center">
+      <svg
+        className="animate-spin -ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      {t("hero.buttons.processing")} 
+    </span>
+  );
+
   return (
-    <section className="py-8 px-4" id="coaching-journey" ref={formRef}>
-      <div className="max-w-3xl mx-auto">
-        <h2 className="text-2xl font-bold text-center mb-6 text-black">
+    <section className="py-4 sm:py-6 md:py-8 px-4 sm:px-4" id="coaching-journey" ref={formRef}>
+      <div className="max-w-full sm:max-w-2xl md:max-w-3xl mx-auto">
+        <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-4 sm:mb-6 text-black">
           {t("coaching_request.title")}
         </h2>
-        <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-8 shadow-xl">
-          <h3 className="text-xl text-white mb-4">{STEPS[step - 1].title}</h3>
+        <div className="bg-oxfordBlue backdrop-blur-md rounded-2xl p-4 sm:p-6 md:p-8 shadow-xl">
+          <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-4 font-semibold">
+            {STEPS[step - 1].title}
+          </h3>
 
-          {step === 1 ? (
+          {step === 1 && (
             <FrequencyStep formData={formData} onChange={handleChange} />
-          ) : step === 2 ? (
+          )}
+          {step === 2 && (
             <ContactStep
               formData={formData}
               onChange={handleChange}
               onPhoneValidation={handlePhoneValidation}
+              user={user} 
             />
-          ) : step === 3 ? (
+          )}
+          {step === 3 && (
             <PaymentStep
               selectedTier={formData.frequency}
               requestId={requestId}
-              formData={formData}
+              formData={formData} 
               onPaymentConfirmed={handlePaymentConfirmed}
             />
-          ) : (
-            requestId && <InlineChatbotStep
-              requestId={requestId}
-              tableName="coaching_chat_messages"
+          )}
+           {step === 4 && requestId && (
+            <InlineChatbotStep 
+              requestId={requestId} 
+              tableName="coaching_chat_messages" 
               onFinish={async () => {
-                if (!requestId) {
-                  console.error(
-                    "No request ID available to complete coaching chat."
-                  );
-                  return;
-                }
-                try {
-                  const webhookUrl =
-                    "https://rafaello.app.n8n.cloud/webhook/coaching-complete";
-                  console.log(
-                    `Coaching chat finished for session_id: ${requestId}. Triggering webhook: ${webhookUrl}`
-                  );
-                  await axios.post(webhookUrl, {
-                    session_id: requestId,
-                  });
-                  console.log(
-                    `Webhook for coaching session ${requestId} triggered successfully.`
-                  );
-                } catch (error) {
-                  console.error(
-                    "Error triggering coaching completion webhook:",
-                    error
-                  );
-                }
+                 if (!requestId) {
+                    console.error("No request ID available to complete coaching chat.");
+                    return;
+                  }
+                  try {
+                    // This URL should match the trigger in your N8N workflow
+                    const webhookUrl = "https://rafaello.app.n8n.cloud/webhook/coaching-complete"; 
+                    await axios.post(webhookUrl, {
+                      session_id: requestId, // Ensure your N8N workflow expects session_id
+                    });
+                  } catch (error) {
+                    console.error("Error triggering coaching completion webhook:", error);
+                  }
               }}
             />
           )}
-          {!requestId && step === 4 && (
-            <div className="text-center text-red-400 p-4">
+          {step === 4 && !requestId && ( // Fallback if requestId isn't set for chat step
+               <div className="text-center text-red-400 p-4">
                 Preparing chat... If this persists, please go back and try again.
-            </div>
+              </div>
           )}
 
           <StepIndicator
-            stepCount={UI_STEPS}
-            currentStep={step + 1}
+            stepCount={UI_STEPS} 
+            currentStep={step + 1} 
             onStepClick={handleStepClick}
             className="pt-6"
           />
 
-          <div className="flex justify-between mt-2">
+          <div className="flex justify-between mt-4 sm:mt-6"> {/* Increased margin-top */}
             <button
               onClick={handleBack}
               disabled={isSubmitting}
-              className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl"
+              className="px-4 py-2 sm:px-6 sm:py-2.5 border-2 border-darkGold text-darkGold rounded-xl hover:bg-darkGold/10 transition-colors disabled:opacity-50 text-sm sm:text-base"
             >
               {t("coaching_request.buttons.back")}
             </button>
@@ -732,39 +930,20 @@ export default function CoachingRequest({ onBackService }) {
               <button
                 onClick={handleNext}
                 disabled={!canProceed() || isSubmitting}
-                className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
+                className="px-4 py-2 sm:px-6 sm:py-2.5 bg-darkGold text-black font-semibold rounded-xl hover:bg-opacity-90 transition-colors disabled:opacity-50 text-sm sm:text-base"
               >
-                {isSubmitting ? (
-                  <span className="flex items-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    {t("coaching_request.buttons.processing")}
-                  </span>
-                ) : STEPS[step] ? STEPS[step].title : t("coaching_request.buttons.next")}
+                {isSubmitting ? loadingSpinner : (
+                  // Display the title of the *next* step if available, otherwise default "Next"
+                  STEPS[step] ? STEPS[step].title : t("coaching_request.buttons.next")
+                )}
               </button>
             )}
-            {step === STEPS.length && (
+            {step === STEPS.length && ( 
               <button
-                onClick={onBackService}
-                className="px-3 py-1 bg-darkGold text-black rounded-xl hover:bg-darkGold/90"
+                onClick={() => {
+                    onBackService(); // Or navigate to profile, or whatever "Done" means
+                }}
+                className="px-4 py-2 sm:px-6 sm:py-2.5 bg-darkGold text-black font-semibold rounded-xl hover:bg-opacity-90 transition-colors text-sm sm:text-base"
               >
                 {t("coaching_request.buttons.done")}
               </button>

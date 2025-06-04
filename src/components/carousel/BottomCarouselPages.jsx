@@ -7,9 +7,9 @@ import Bugs from "./Bugs";
 export default function PageCarousel() {
   const { t } = useTranslation();
   const pages = [
+    { label: t("bottom_carousel.pages.social_media"), Component: SocialMedia },
     { label: t("bottom_carousel.pages.faqs"), Component: FAQs },
     { label: t("bottom_carousel.pages.bugs"), Component: Bugs },
-    { label: t("bottom_carousel.pages.social_media"), Component: SocialMedia },
   ];
 
   const [activeIdx, setActiveIdx] = useState(0);

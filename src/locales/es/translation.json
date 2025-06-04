@@ -14,7 +14,9 @@
     "login": "Iniciar sesión",
     "logout": "Cerrar sesión",
     "login_signup": "Iniciar sesión / Registrarse",
-    "learnMore": "Saber más"
+    "learnMore": "Saber más",
+    "explore": "Explorar",
+    "messages": "Mensajes"
   },
 
   "hero": {
@@ -780,10 +782,12 @@
         "default": "Error al crear la cuenta",
         "password_mismatch": "Las contraseñas no coinciden",
         "password_length": "La contraseña debe tener al menos 6 caracteres",
-        "network_error": "Error de red. Por favor, inténtalo de nuevo."
+        "network_error": "Error de red. Por favor, inténtalo de nuevo.",
+        "full_name_required": "El nombre completo es obligatorio."
       },
       "success": {
-        "message": "¡Registro exitoso! Revisa tu correo para el enlace de confirmación."
+        "message": "¡Registro exitoso! Revisa tu correo para el enlace de confirmación.",
+        "message_incentive_page": "¡Revisa tu correo para el enlace de confirmación!"
       }
     },
     "reset_password": {
@@ -837,14 +841,17 @@
       "benefit1": "Programa todos los servicios como consultas y coaching.",
       "benefit2": "Accede a tu historial de citas y conversaciones guardadas del chatbot.",
       "benefit3": "Mantente informado con actualizaciones de servicios.",
-      "cta": "Crea tu cuenta gratuita"
+      "cta": "Crea tu cuenta gratuita",
+      "ctaDirect": "Crear cuenta"
     },
     "chatbot": {
       "title": "Asistencia Inteligente: Nuestro Chatbot de IA",
       "description": "Nuestro asistente de IA te ayuda a encontrar los servicios adecuados y nos prepara para tus consultas, ahorrándote tiempo y dinero.",
       "benefit1": "Te guía hacia el mejor servicio para tus necesidades.",
       "benefit2": "Recopila información clave antes de las sesiones para una consulta enfocada.",
-      "benefit3": "Proporciona respuestas instantáneas sobre nuestros servicios."
+      "benefit3": "Proporciona respuestas instantáneas sobre nuestros servicios.",
+      "logoLabel": "Logo del chatbot",
+      "cta": "Chatbot"
     }
   },
 

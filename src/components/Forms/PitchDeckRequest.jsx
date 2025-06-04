@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
-import { useAuth } from "../../contexts/AuthContext";
-import { AuthModalContext } from "../../App";
-import { useContext } from "react";
+import { useAuth } from "../../contexts/AuthContext"; // Ensure useAuth is imported
+import { AuthModalContext } from "../../App"; // Ensure AuthModalContext is imported
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
-import { autoCreateAccount } from "../../utils/autoSignup";
+// import { autoCreateAccount } from "../../utils/autoSignup"; // REMOVE THIS LINE
 import { validatePhoneNumber } from "../../utils/phoneValidation";
 
 // Progress Indicator Component - Standardized
@@ -57,8 +56,8 @@ function StepIndicator({
   );
 }
 
-// Step1: Contact Info - Now perfectly aligned with CoachingRequest's ContactStep
-function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
+// Step1: Contact Info / Signup - MODIFIED ContactInfoStep
+function ContactInfoStep({ formData, onChange, onPhoneValidation, user }) { // Added user prop
   const { t } = useTranslation();
   const { openAuthModal } = useContext(AuthModalContext);
 
@@ -66,6 +65,24 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
   const [phoneValidated, setPhoneValidated] = useState(false);
   const [phoneError, setPhoneError] = useState("");
   const phoneValidationTimeout = useRef(null);
+
+  // Password visibility states
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const EyeIcon = ({ color = "currentColor" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+  );
+  
+  const EyeOffIcon = ({ color = "currentColor" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+      <line x1="1" y1="1" x2="23" y2="23"></line>
+    </svg>
+  );
 
   const handlePhoneChange = (phone) => {
     onChange({ target: { name: "phone", value: phone } });
@@ -103,10 +120,11 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
 
   useEffect(() => {
     if (formData.phone && formData.phone.replace(/\D/g, "").length >= 8) {
-      handlePhoneChange(formData.phone);
+        handlePhoneChange(formData.phone);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.phone]);
+
 
   useEffect(() => {
     return () => {
@@ -118,7 +136,6 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
 
   return (
     <div className="space-y-6 mb-4 max-w-md mx-auto w-full">
-      {/* Section 1: User Details Input */}
       <div className="space-y-4 text-left">
         <div>
           <label htmlFor="pitchdeck-name" className="block text-white text-sm font-medium mb-1.5">
@@ -149,12 +166,69 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
             placeholder={t("pitch_deck_request.form.email_placeholder", "Enter your email")}
             className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
             required
+            readOnly={!!user}
           />
+          {!!user && <p className="text-xs text-white/60 mt-1">{t("edit_profile.form.email.cannot_change", "Email cannot be changed")}</p>}
         </div>
+
+        {!user && (
+          <>
+            <div>
+              <label htmlFor="pitchdeck-password" className="block text-white text-sm font-medium mb-1.5">
+                {t('auth.signup.password.label')}
+              </label>
+              <div className="relative">
+                <input
+                  id="pitchdeck-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={onChange}
+                  placeholder={t('auth.signup.password.placeholder')}
+                  className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+                  required
+                />
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-white/70"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label htmlFor="pitchdeck-confirmPassword" className="block text-white text-sm font-medium mb-1.5">
+                {t('auth.signup.confirm_password.label')}
+              </label>
+              <div className="relative">
+                <input
+                  id="pitchdeck-confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={formData.confirmPassword}
+                  onChange={onChange}
+                  placeholder={t('auth.signup.confirm_password.placeholder')}
+                  className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
+                  required
+                />
+                 <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-white/70"
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                    {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
 
         <div>
           <label htmlFor="pitchdeck-phone" className="block text-white text-sm font-medium mb-1.5">
-            {t("coaching_request.form.phone_label", "Phone Number")}
+            {t("pitch_deck_request.form.phone_label", "Phone Number")}
           </label>
           <div className="relative">
             <PhoneInput
@@ -165,7 +239,7 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
               }`}
               country="es"
               enableSearch
-              searchPlaceholder={t("coaching_request.form.phone_search_placeholder")}
+              searchPlaceholder={t("pitch_deck_request.form.phone_search_placeholder")}
               value={formData.phone}
               onChange={handlePhoneChange}
               dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
@@ -198,36 +272,43 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation }) {
         </div>
       </div>
 
-      {/* Section 2: Account Creation Notice & Login Option */}
-      <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 space-y-3 mt-6">
-        <div className="flex items-center justify-center text-yellow-200 text-xs sm:text-sm">
-          <p>
-            {t("pitch_deck_request.form.auto_account_warning", "An account will automatically be created with the info you provide.")}
-          </p>
+      {!user && (
+        <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 space-y-3 mt-6">
+          <div className="pt-2">
+            <p className="text-white/80 text-sm mb-2">
+              {t("booking.login_prompt_simple", "Already have an account?")}
+            </p>
+            <button
+              type="button"
+              onClick={openAuthModal}
+              className="inline-flex items-center justify-center bg-darkGold text-black font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90 transition-colors text-sm"
+            >
+              {t("booking.login_button", "Log In Here")}
+            </button>
+          </div>
         </div>
-        
-        <div className="pt-2">
-          <p className="text-white/80 text-sm mb-2">
-            {t("booking.login_prompt_simple", "Already have an account?")}
-          </p>
-          <button
-            type="button"
-            onClick={openAuthModal}
-            className="inline-flex items-center justify-center bg-darkGold text-black font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90 transition-colors text-sm"
-          >
-            {t("booking.login_button", "Log In Here")}
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
 export default function PitchDeckRequest({ onBackService }) {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, signUp: contextSignUp } = useAuth(); // Get signUp from context
   const [step, setStep] = useState(1);
   const [isPhoneValid, setIsPhoneValid] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "", // New field
+    confirmPassword: "" // New field
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [requestId, setRequestId] = useState(null);
+  
+  const formRef = useScrollToTopOnChange([step]);
 
   const STEPS = [
     {
@@ -236,17 +317,8 @@ export default function PitchDeckRequest({ onBackService }) {
     },
     { title: t("pitch_deck_request.steps.chat"), component: InlineChatbotStep },
   ];
+  const UI_STEPS = STEPS.length + 1; // +1 for the initial implicit "service selected" step
 
-  const UI_STEPS = STEPS.length + 1;
-  const formRef = useScrollToTopOnChange([step]);
-
-  const [formData, setFormData] = useState({
-    name: user?.user_metadata?.full_name || "",
-    email: user?.email || "",
-    phone: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [requestId, setRequestId] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -258,26 +330,43 @@ export default function PitchDeckRequest({ onBackService }) {
             .eq("id", user.id)
             .single();
 
-            if (profileError && profileError.code !== 'PGRST116') { // Ignore "no rows found" error
+            if (profileError && profileError.code !== 'PGRST116') { 
                 console.warn("Error fetching profile for autofill (PitchDeck):", profileError.message);
             }
 
             setFormData(prevFormData => ({
                 ...prevFormData,
-                name: user.user_metadata?.full_name || profileData?.full_name || prevFormData.name || "",
-                email: user.email || prevFormData.email || "",
-                phone: profileData?.phone_number || prevFormData.phone || "",
+                name: user.user_metadata?.full_name || profileData?.full_name || "",
+                email: user.email || "",
+                phone: profileData?.phone_number || "",
+                password: '', 
+                confirmPassword: '',
             }));
-
-            // **FIX**: Removed the redundant validation from here.
-            // The ContactInfoStep's own useEffect will handle the validation
-            // when it receives the updated `formData.phone` prop.
+            
+            if (profileData?.phone_number) {
+                 const validationResult = await validatePhoneNumber(profileData.phone_number);
+                 setIsPhoneValid(validationResult.isValid);
+            } else {
+                setIsPhoneValid(false);
+            }
 
         } catch (error) {
             console.error("Error in fetchUserProfile (PitchDeck):", error);
+            setFormData(prev => ({ ...prev, name: user.user_metadata?.full_name || "", email: user.email || "", password: '', confirmPassword: ''}));
+            setIsPhoneValid(false);
         }
       };
       fetchUserProfile();
+    } else {
+      // User is not logged in, clear all fields for signup
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirmPassword: ""
+      });
+      setIsPhoneValid(false); 
     }
   }, [user]);
 
@@ -294,57 +383,125 @@ export default function PitchDeckRequest({ onBackService }) {
   };
 
   const canProceed = () => {
-    if (step === 1) {
+    if (step === 1) { // Contact/Signup step
       const isNameValid = formData.name && formData.name.trim().length >= 2;
       const isEmailValid = formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
-      return isNameValid && isEmailValid && isPhoneValid;
+      let passwordChecks = true;
+      if (!user) { // Only check passwords if user is not logged in (i.e., signing up)
+        passwordChecks = formData.password && formData.password.length >= 6 && formData.password === formData.confirmPassword;
+      }
+      // For PitchDeck, phone might be optional, adjust if it's required
+      // For now, assuming if phone is provided, it must be valid. If not provided, it's okay.
+      const phoneCheck = formData.phone ? isPhoneValid : true; 
+      return isNameValid && isEmailValid && phoneCheck && passwordChecks;
     }
-    return true;
+    return true; // For chat step
   };
 
   const handleNext = async () => {
     if (!canProceed()) return;
+    setIsSubmitting(true);
 
-    if (step === 1) {
-      setIsSubmitting(true);
+    if (step === 1) { // Contact Info / Signup Step
       try {
-        if (!user && formData.name && formData.email) {
-          const accountResult = await autoCreateAccount(formData.name, formData.email);
-          if (accountResult.success && !accountResult.userExists) {
-            console.log("Account created successfully for PitchDeck request.");
+        let currentUserId = user?.id;
+        let currentEmail = user?.email || formData.email;
+
+        if (!user) { // User is not logged in, sign them up
+          if (formData.password !== formData.confirmPassword) {
+            alert(t('auth.signup.errors.password_mismatch'));
+            setIsSubmitting(false);
+            return;
           }
+          if (formData.password.length < 6) {
+            alert(t('auth.signup.errors.password_length'));
+            setIsSubmitting(false);
+            return;
+          }
+
+          const { data: signUpData, error: signUpError } = await contextSignUp(
+            formData.email,
+            formData.password,
+            {
+              data: { full_name: formData.name } 
+            }
+          );
+
+          if (signUpError) {
+            alert(signUpError.message || t('auth.signup.errors.default'));
+            setIsSubmitting(false);
+            return;
+          }
+          
+          currentUserId = signUpData.user.id;
+          currentEmail = signUpData.user.email;
+
+          if (signUpData.user && formData.phone) {
+              const { error: profileUpdateError } = await supabase
+                  .from('profiles')
+                  .update({ phone_number: formData.phone })
+                  .eq('id', signUpData.user.id);
+              if (profileUpdateError) {
+                  console.warn('Failed to update profile with phone number after signup:', profileUpdateError.message);
+              }
+          }
+          alert("Account created! Please check your email for confirmation. Your request is being processed.");
+        } else { // User is logged in, update profile if details changed
+            let profileUpdates = {};
+            const {data: currentProfileData} = await supabase.from('profiles').select('full_name, phone_number').eq('id', user.id).single();
+
+            if (formData.name !== (currentProfileData?.full_name || user.user_metadata?.full_name)) {
+                profileUpdates.full_name = formData.name;
+            }
+            if (formData.phone && formData.phone !== currentProfileData?.phone_number) {
+                profileUpdates.phone_number = formData.phone;
+            }
+
+            if (Object.keys(profileUpdates).length > 0) {
+                const { error: profileUpdateError } = await supabase
+                    .from('profiles')
+                    .update(profileUpdates)
+                    .eq('id', user.id);
+                if (profileUpdateError) console.warn('Failed to update profile for existing user (PitchDeck):', profileUpdateError.message);
+            }
         }
         
+        // Create pitch request
         const payload = {
             name: formData.name,
-            email: formData.email,
+            email: currentEmail,
             phone: formData.phone,
+            // project: formData.project, // Assuming project selection was a previous step or is static for now
         };
-        if (user?.id) payload.user_id = user.id;
+        if (currentUserId) payload.user_id = currentUserId;
 
-        const { data, error } = await supabase
+        const { data: pitchRequestData, error: pitchError } = await supabase
           .from("pitch_requests")
           .insert(payload)
           .select("id")
           .single();
 
-        if (error) {
-            console.error("Error submitting pitch request:", error.message);
-            alert("Failed to submit request: " + error.message);
-            throw error;
+        if (pitchError) {
+            console.error("Error submitting pitch request:", pitchError.message);
+            alert("Failed to submit request: " + pitchError.message);
+            throw pitchError;
         }
 
-        setRequestId(data.id);
-        setStep(2);
+        setRequestId(pitchRequestData.id);
+        setStep(2); // Proceed to Chat Step
       } catch (error) {
-        // Error already handled
+        // Error already handled by specific alerts or console logs
       } finally {
         setIsSubmitting(false);
       }
-    } else if (step < STEPS.length) {
-        setStep(step + 1);
+    } 
+    // If there was another step like payment before chat, it would be:
+    // else if (step === X && paymentDone) { setStep(Y); setIsSubmitting(false); }
+    else {
+        setIsSubmitting(false); // For any other case
     }
   };
+
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
@@ -352,14 +509,13 @@ export default function PitchDeckRequest({ onBackService }) {
   };
 
   const handleStepClick = (clickedStepNum) => {
-    if (clickedStepNum < step + 1 && !isSubmitting) {
-      if (clickedStepNum === 1 && step === 1) {
+    const targetInternalStep = clickedStepNum - 1;
+    if (targetInternalStep < step && !isSubmitting) {
+      if (targetInternalStep === 0) { 
         onBackService();
       } else {
-        setStep(clickedStepNum - 1);
+        setStep(targetInternalStep);
       }
-    } else if (clickedStepNum === 1 && step === 1 && !isSubmitting) {
-        onBackService();
     }
   };
 
@@ -384,7 +540,7 @@ export default function PitchDeckRequest({ onBackService }) {
         <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-center mb-4 sm:mb-6 text-black">
           {t("pitch_deck_request.title")}
         </h2>
-        <div className="bg-oxfordBlue rounded-xl p-8 sm:p-6 shadow-xl">
+        <div className="bg-oxfordBlue rounded-xl p-4 sm:p-6 md:p-8 shadow-xl"> {/* Adjusted padding */}
           <h3 className="text-lg sm:text-xl md:text-2xl text-white mb-4 font-semibold">
             {STEPS[step - 1].title}
           </h3>
@@ -395,32 +551,34 @@ export default function PitchDeckRequest({ onBackService }) {
                   formData={formData} 
                   onChange={handleChange} 
                   onPhoneValidation={handlePhoneValidation}
+                  user={user} // Pass user prop
               />
             }
             {step === 2 && requestId && (
               <InlineChatbotStep 
                 requestId={requestId} 
                 tableName="pitchdeck_chat_messages"
-                workflowKey="pitch_deck_finalization"
+                // workflowKey="pitch_deck_finalization" // Keep if you use it
               />
             )}
             {step === 2 && !requestId && (
                <div className="text-center text-red-400 p-4">
-                There was an issue preparing the chat. Please go back and try again.
+                Preparing chat... If this persists, please go back and try again.
               </div>
             )}
 
             <StepIndicator
               stepCount={UI_STEPS}
-              currentStep={step + 1}
+              currentStep={step + 1} // UI step is internal step + 1
               onStepClick={handleStepClick}
+              className="pt-6" // Added padding top
             />
 
-            <div className="flex justify-between mt-2">
+            <div className="flex justify-between mt-4 sm:mt-6"> {/* Adjusted margin-top */}
               <button
                 onClick={handleBack}
                 disabled={isSubmitting}
-                className="px-3 py-1 border-2 border-darkGold text-darkGold rounded-xl disabled:opacity-50"
+                className="px-4 py-2 sm:px-6 sm:py-2.5 border-2 border-darkGold text-darkGold rounded-xl hover:bg-darkGold/10 transition-colors disabled:opacity-50 text-sm sm:text-base"
               >
                 {t("pitch_deck_request.buttons.back")}
               </button>
@@ -428,17 +586,18 @@ export default function PitchDeckRequest({ onBackService }) {
                 <button
                   onClick={handleNext}
                   disabled={!canProceed() || isSubmitting}
-                  className={`px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50`}
+                  className="px-4 py-2 sm:px-6 sm:py-2.5 bg-darkGold text-black font-semibold rounded-xl hover:bg-opacity-90 transition-colors disabled:opacity-50 text-sm sm:text-base"
                 >
                   {isSubmitting ? loadingSpinner : (
+                    // Display the title of the *next* step
                     STEPS[step] ? STEPS[step].title : t("pitch_deck_request.buttons.next")
                   )}
                 </button>
               )}
-              {step === STEPS.length && (
+              {step === STEPS.length && ( // This is the "Done" button on the Chat step
                 <button
-                  onClick={onBackService}
-                  className="px-3 py-1 bg-darkGold text-black rounded-xl disabled:opacity-50"
+                  onClick={onBackService} // Or navigate to profile, etc.
+                  className="px-4 py-2 sm:px-6 sm:py-2.5 bg-darkGold text-black font-semibold rounded-xl hover:bg-opacity-90 transition-colors text-sm sm:text-base"
                 >
                   {t("pitch_deck_request.buttons.done")}
                 </button>

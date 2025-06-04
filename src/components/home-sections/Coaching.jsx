@@ -39,7 +39,7 @@ function DirectCoaching() {
   const [coachingCalculatedHeight, setCoachingCalculatedHeight] = useState(0);
 
   const openCoachingForm = () => {
-    const tierValueToPass = selectedTierObject ? selectedTierObject.value : "Weekly";
+    const tierValueToPass = selectedTierObject ? selectedTierObject.value : "Weekly"; // Default to Weekly if somehow none selected
     setServiceWithTier("coaching", tierValueToPass);
     document
       .getElementById("service-selection")
@@ -102,6 +102,9 @@ function DirectCoaching() {
 
   const handleTierClick = (tierObject) => {
     setSelectedTierObject(tierObject);
+    // If a coaching category was also selected, clear it,
+    // as tier selection should be the primary action for the button.
+    setSelectedCoachingCategory(null);
   };
 
   useEffect(() => {
@@ -202,14 +205,19 @@ useEffect(() => {
     window.removeEventListener('resize', handleScroll);
   };
 }, [isButtonVisibleBasedOnSection, handleScroll]); // handleScroll is memoized
+
   let coachingFloatingButtonText;
-  if (selectedCoachingCategory) {
+  if (selectedTierObject) {
+    // If a tier is selected, prioritize showing its price
+    coachingFloatingButtonText = `${t("coaching.button_get_number_default")} - ${selectedTierObject.price}/m`;
+  } else if (selectedCoachingCategory) {
+    // If only a category is selected (no tier yet), use the category's action text
     coachingFloatingButtonText = t(selectedCoachingCategory.buttonActionKey);
-  } else if (selectedTierObject) {
-    coachingFloatingButtonText = t("coaching.button_get_number_default");
   } else {
+    // Default text if nothing is selected
     coachingFloatingButtonText = t("coaching.button_get_number_default");
   }
+
 
   const coachingDescriptionVariants = {
     open: {
@@ -236,8 +244,8 @@ useEffect(() => {
 
   const tiersDataRaw = [
     { id: "weekly", priceKey: "coaching.coaching_tier_basic_price", labelKey: "coaching.coaching_tier_basic_label", descKey: "coaching.coaching_tier_basic_description", value: "Weekly" },
-    { id: "monthly", priceKey: "coaching.coaching_tier_standard_price", labelKey: "coaching.coaching_tier_standard_label", descKey: "coaching.coaching_tier_standard_description", value: "Monthly" },
-    { id: "yearly", priceKey: "coaching.coaching_tier_premium_price", labelKey: "coaching.coaching_tier_premium_label", descKey: "coaching.coaching_tier_premium_description", value: "Yearly" }
+    { id: "monthly", priceKey: "coaching.coaching_tier_standard_price", labelKey: "coaching.coaching_tier_standard_label", descKey: "coaching.coaching_tier_standard_description", value: "Daily" }, // Corrected value from "Monthly" to "Daily" to match key
+    { id: "yearly", priceKey: "coaching.coaching_tier_premium_price", labelKey: "coaching.coaching_tier_premium_label", descKey: "coaching.coaching_tier_premium_description", value: "Priority" } // Corrected value from "Yearly" to "Priority"
   ];
   const renderedTiers = tiersDataRaw.map(data => ({ ...data, price: t(data.priceKey), label: t(data.labelKey), desc: t(data.descKey) }));
 

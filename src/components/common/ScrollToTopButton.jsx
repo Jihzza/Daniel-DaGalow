@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // Using a simpler chevron icon to match your image
 import { FiChevronUp } from 'react-icons/fi';
 
-const ScrollToTopButton = () => {
+const ScrollToTopButton = ({ isChatbotOpen }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   const scrollToTop = () => {
@@ -27,6 +27,8 @@ const ScrollToTopButton = () => {
       window.removeEventListener('scroll', toggleVisibility);
     };
   }, []);
+
+  if (isChatbotOpen) return null; // Don't render when chatbot is open
 
   return (
     <button
