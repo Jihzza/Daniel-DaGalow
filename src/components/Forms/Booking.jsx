@@ -514,7 +514,7 @@ function DateTimeStep({
 }
 
 // Step 2: Contact Info / Signup
-function InfoStep({ formData, onChange, user }) { // Added user prop
+function InfoStep({ formData, onChange, user }) {
   const { t } = useTranslation();
   const { openAuthModal } = useContext(AuthModalContext);
 
@@ -566,7 +566,7 @@ function InfoStep({ formData, onChange, user }) { // Added user prop
             onChange={onChange}
             className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
             required
-            readOnly={!!user} // Make email read-only if user is logged in
+            readOnly={!!user}
           />
           {!!user && <p className="text-xs text-white/60 mt-1">{t("edit_profile.form.email.cannot_change", "Email cannot be changed")}</p>}
         </div>
@@ -660,6 +660,7 @@ function PaymentStep({
   onPaymentConfirmed,
   formData, // formData now includes email
 }) {
+  const { t } = useTranslation();
   const [paymentStarted, setPaymentStarted] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [isTestBooking, setIsTestBooking] = useState(false); // Kept for potential testing
@@ -678,7 +679,7 @@ function PaymentStep({
     try {
       if (!bookingId) {
          console.error("Booking ID is not available for Stripe redirect.");
-         setPollingError("Failed to initiate payment: Missing Booking ID.");
+         setPollingError(t('booking.payment.error_missing_id'));
          return;
       }
       // Store bookingId to check on return (helps if user closes tab)
@@ -698,7 +699,7 @@ function PaymentStep({
       setPaymentStarted(true); // Indicate that Stripe process has started
     } catch (error) {
       console.error("Error creating Stripe session:", error);
-      setPollingError("Failed to start payment process");
+      setPollingError(t('booking.payment.error_start_process'));
     }
   };
 
@@ -715,17 +716,15 @@ function PaymentStep({
           onPaymentConfirmed(true); // Notify parent component
           clearInterval(interval);
         }
-        // Optional: Add fallback if webhook is slow, e.g., after X attempts, try force update
-        // This part is more advanced and depends on your backend capabilities
       } catch (error) {
         console.error("Error checking payment status:", error);
-        setPollingError("Error checking payment status");
+        setPollingError(t('booking.payment.error_check_status'));
         clearInterval(interval); // Stop polling on error
       }
     }, 5000); // Poll every 5 seconds
 
     return () => clearInterval(interval);
-  }, [paymentStarted, bookingId, onPaymentConfirmed]);
+  }, [paymentStarted, bookingId, onPaymentConfirmed, t]);
 
   const sessionPrice = isTestBooking ? "0.00" : (selectedDuration * 1.5).toFixed(2);
 
@@ -734,19 +733,19 @@ function PaymentStep({
       <div className="flex flex-col gap-5">
         <div className="rounded-lg border border-white/10 overflow-hidden">
           <div className="bg-white/5 p-3 border-b border-white/10">
-            <h3 className="text-white font-medium">Booking Details</h3>
+            <h3 className="text-white font-medium">{t('booking.payment.title')}</h3>
           </div>
           <div className="p-4 space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-white/60">Duration:</span>
-              <span className="text-white">{selectedDuration} minutes</span>
+              <span className="text-white/60">{t('booking.payment.duration')}</span>
+              <span className="text-white">{t('booking.payment.duration_value', { duration: selectedDuration })}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-white/60">Price:</span>
+              <span className="text-white/60">{t('booking.payment.price')}</span>
               <span className="text-white font-medium">€{sessionPrice}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-white/60">Email:</span>
+              <span className="text-white/60">{t('booking.payment.email')}</span>
               <span className="text-white break-all">{formData.email}</span>
             </div>
           </div>
@@ -765,17 +764,17 @@ function PaymentStep({
             {paymentConfirmed ? (
               <div className="flex items-center text-green-400">
                 <div className="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
-                <span>Payment confirmed</span>
+                <span>{t('booking.payment.status_confirmed')}</span>
               </div>
             ) : paymentStarted ? (
               <div className="flex items-center text-yellow-400">
                 <div className="w-2 h-2 rounded-full bg-yellow-400 mr-2 animate-pulse"></div>
-                <span>Awaiting payment</span>
+                <span>{t('booking.payment.status_awaiting')}</span>
               </div>
             ) : (
               <div className="flex items-center text-white/60">
                 <div className="w-2 h-2 rounded-full bg-white/60 mr-2"></div>
-                <span>Ready for payment</span>
+                <span>{t('booking.payment.status_ready')}</span>
               </div>
             )}
           </div>
@@ -786,33 +785,29 @@ function PaymentStep({
             onClick={handleStripeRedirect}
             className="mt-2 py-3 px-4 bg-gradient-to-r from-darkGold to-yellow-500 text-black font-medium rounded-lg transition-transform hover:scale-[1.02] active:scale-[0.98]"
           >
-            {isTestBooking
-              ? "Process Test Payment (€0.00)"
-              : `Complete Payment (€${sessionPrice})`}
+            {isTestBooking ? t('booking.payment.button_process_test') : t('booking.payment.button_complete_payment', { price: sessionPrice })}
           </button>
         )}
          {pollingError && (
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-sm text-center">
-            {pollingError}. Please try again or contact support if the issue persists.
+            {pollingError}
           </div>
         )}
 
         <div className="mb-4 flex justify-center items-center gap-4">
-          <img src={stripe} alt="Secure payments powered by Stripe" className="h-8 opacity-90"/>
-          <img src={ssl} alt="SSL Secured" className="h-8 opacity-90" />
+          <img src={stripe} alt={t('booking.payment.alt_stripe')} className="h-8 opacity-90"/>
+          <img src={ssl} alt={t('booking.payment.alt_ssl')} className="h-8 opacity-90" />
         </div>
 
         {paymentStarted && !paymentConfirmed && !pollingError && (
           <p className="text-center text-white/70 text-sm mt-2">
-            The payment window has opened in a new tab. We're waiting for Stripe
-            to confirm your payment.
+            {t('booking.payment.prompt_window_opened')}
           </p>
         )}
 
         {paymentConfirmed && (
           <p className="text-center text-green-400 text-sm mt-2">
-            Your payment has been successfully processed. You can now proceed to
-            the next step.
+            {t('booking.payment.prompt_success')}
           </p>
         )}
       </div>
@@ -836,9 +831,8 @@ export default function Booking({ onBackService }) {
   const [formData, setFormData] = useState({
     name: "", 
     email: "",
-    phone: "",      // Added phone
-    password: "",   // Added password
-    confirmPassword: "" // Added confirmPassword
+    password: "",   
+    confirmPassword: "" 
   });
   const [paymentDone, setPaymentDone] = useState(false);
   const [loading, setLoading] = useState(true); // Combined loading state
@@ -911,11 +905,10 @@ export default function Booking({ onBackService }) {
   useEffect(() => {
     if (user) {
       const fetchUserProfile = async () => {
-        // setLoading(true); // Already handled by main loading state
         try {
           const { data: profileData, error: profileError } = await supabase
             .from("profiles")
-            .select("phone_number, full_name")
+            .select("full_name")
             .eq("id", user.id)
             .single();
 
@@ -927,30 +920,18 @@ export default function Booking({ onBackService }) {
             ...prevFormData,
             name: user.user_metadata?.full_name || profileData?.full_name || "",
             email: user.email || "",
-            phone: profileData?.phone_number || "",
             password: '', 
             confirmPassword: '',
           }));
 
-          if (profileData?.phone_number) {
-            const validationResult = await validatePhoneNumber(profileData.phone_number);
-            setIsPhoneValidInParent(validationResult.isValid);
-          } else {
-             setIsPhoneValidInParent(false);
-          }
-
         } catch (error) {
           console.error("Error in fetchUserProfile (Booking):", error);
           setFormData(prev => ({ ...prev, password: '', confirmPassword: ''}));
-           setIsPhoneValidInParent(false);
-        } finally {
-            // setLoading(false); // Controlled by main loading
         }
       };
       fetchUserProfile();
     } else {
-      setFormData({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
-      setIsPhoneValidInParent(false);
+      setFormData({ name: "", email: "", password: "", confirmPassword: "" });
     }
   }, [user]);
 
@@ -976,7 +957,7 @@ export default function Booking({ onBackService }) {
       if (!user) { // Only check passwords if user is not logged in (signing up)
         passwordChecks = formData.password && formData.password.length >= 6 && formData.password === formData.confirmPassword;
       }
-      return isNameValid && isEmailValid && isPhoneValidInParent && passwordChecks;
+      return isNameValid && isEmailValid && passwordChecks;
     }
     if (step === 3) return paymentDone;
     return true;
@@ -1017,19 +998,11 @@ export default function Booking({ onBackService }) {
           currentUserId = signUpData.user.id;
           currentEmail = signUpData.user.email;
 
-          if (signUpData.user && formData.phone) {
-            const { error: profileUpdateError } = await supabase
-              .from('profiles')
-              .update({ phone_number: formData.phone })
-              .eq('id', signUpData.user.id);
-            if (profileUpdateError) console.warn('Failed to update profile phone after signup (Booking):', profileUpdateError.message);
-          }
           alert("Account created! Please check your email for confirmation. Your booking request is being processed.");
         } else { // User is logged in
             let profileUpdates = {};
-            const {data: currentProfileData} = await supabase.from('profiles').select('full_name, phone_number').eq('id', user.id).single();
+            const {data: currentProfileData} = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
             if (formData.name !== (currentProfileData?.full_name || user.user_metadata?.full_name)) profileUpdates.full_name = formData.name;
-            if (formData.phone && formData.phone !== currentProfileData?.phone_number) profileUpdates.phone_number = formData.phone;
 
             if (Object.keys(profileUpdates).length > 0) {
                 const { error: profileUpdateError } = await supabase.from('profiles').update(profileUpdates).eq('id', user.id);
@@ -1053,8 +1026,7 @@ export default function Booking({ onBackService }) {
             appointment_date,
             duration_minutes: selectedDuration,
             name: formData.name,
-            email: currentEmail, 
-            phone_number: formData.phone, // Save phone number with booking
+            email: currentEmail,
             payment_status: "pending",
           })
           .select("id")

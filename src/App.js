@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState, createContext, useEffect, useCallback, useRef } from "react";
+import React, { useState, createContext, useEffect, useCallback, useRef, useContext } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -53,10 +53,11 @@ import {
   showNotification
 } from "./utils/notificationUtils";
 
+// Define and export AuthModalContext
 export const AuthModalContext = createContext({
   openAuthModal: () => {},
   closeAuthModal: () => {},
-  isAuthModalOpen: false
+  isAuthModalOpen: false,
 });
 
 const PrivateRoute = ({ children }) => {
@@ -85,7 +86,9 @@ function AppContent() {
   const { user } = useAuth();
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [chatSessionId, setChatSessionId] = useState(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  // Consuming context for modal state
+  const { isAuthModalOpen, openAuthModal: contextOpenAuthModal, closeAuthModal: contextCloseAuthModal } = useContext(AuthModalContext);
+
   const location = useLocation();
   const [notificationPermission, setNotificationPermission] = useState(getNotificationPermission());
   const [acceptsFunctionalCookies, setAcceptsFunctionalCookies] = useState(
@@ -97,37 +100,81 @@ function AppContent() {
   const [hasShownNotificationThisSession, setHasShownNotificationThisSession] = useState(false);
   const notificationTimerRef = useRef(null);
 
+  // Refs for scroll-to-top logic after modal login
+  const justClosedAuthModalAfterLogin = useRef(false);
+  const prevUser = useRef(user);
+  const prevIsAuthModalOpen = useRef(isAuthModalOpen);
+  const scrollSkipFlagTimeoutRef = useRef(null);
+
+
   useEffect(() => {
     setAcceptsFunctionalCookies(Cookies.get("siteCookieConsent") === "true");
   }, []);
 
-  // Scroll to top logic
+  // Effect to detect modal login and set the scroll skip flag
   useEffect(() => {
-    console.log(`[App.js useEffect] Path changed to: ${location.pathname}. Initial window.scrollY: ${window.scrollY}`);
+    if (prevUser.current === null && user !== null && prevIsAuthModalOpen.current && !isAuthModalOpen) {
+      // console.log("[App.js] Modal login detected, setting flag to skip scroll.");
+      justClosedAuthModalAfterLogin.current = true;
+
+      // Clear any existing timeout for resetting the flag
+      if (scrollSkipFlagTimeoutRef.current) {
+        clearTimeout(scrollSkipFlagTimeoutRef.current);
+      }
+      // Set a new timeout to reset the flag. This ensures it's active for a short period
+      // to cover immediate re-renders, then automatically clears.
+      scrollSkipFlagTimeoutRef.current = setTimeout(() => {
+        // console.log("[App.js] Resetting modal login scroll skip flag after timeout.");
+        justClosedAuthModalAfterLogin.current = false;
+      }, 150); // Adjust timeout if needed, 150ms is a starting point
+    }
+    prevUser.current = user;
+    prevIsAuthModalOpen.current = isAuthModalOpen;
+  }, [user, isAuthModalOpen]);
+
+
+  // Scroll to top logic - MODIFIED
+  useEffect(() => {
+    // This effect handles scrolling to the top of the page on navigation,
+    // unless a modal login just occurred (flagged by justClosedAuthModalAfterLogin).
+
+    // console.log(`[App.js scroll useEffect] Path: ${location.pathname}. Flag: ${justClosedAuthModalAfterLogin.current}. ScrollY: ${window.scrollY}`);
 
     const attemptScrollToTop = (context = "initial") => {
-      console.log(`[App.js ${context} scroll] Forcing scrollTo(0,0) for path: ${location.pathname}. Current scrollY: ${window.scrollY}`);
+      // Check the flag *before* attempting to scroll
+      if (justClosedAuthModalAfterLogin.current) {
+        // console.log(`[App.js scroll useEffect] Modal login flag is TRUE. Skipping scrollToTop for ${context}.`);
+        // The flag will be reset by its own timer, so no need to reset it here.
+        return;
+      }
+      // console.log(`[App.js ${context} scroll] Forcing scrollTo(0,0) for path: ${location.pathname}. Current scrollY: ${window.scrollY}`);
       window.scrollTo(0, 0);
-      console.log(`[App.js ${context} scroll] After scrollTo(0,0). Current scrollY: ${window.scrollY}`);
+      // console.log(`[App.js ${context} scroll] After scrollTo(0,0). Current scrollY: ${window.scrollY}`);
     };
 
-    // Initial scroll attempt, deferred slightly.
-    const initialScrollTimer = setTimeout(() => attemptScrollToTop("initial"), 0);
+    // If the flag is true, we don't even set up the scroll timers for this path change.
+    // The flag will be reset by its own timeout, allowing normal scroll behavior on subsequent navigations.
+    if (justClosedAuthModalAfterLogin.current) {
+        // console.log("[App.js scroll useEffect] Skipping scroll setup due to modal login flag.");
+    } else {
+        const initialScrollTimer = setTimeout(() => attemptScrollToTop("initial"), 0);
 
-    // More robust scroll for the homepage, especially on direct navigation to it.
-    let delayedHomepageScrollTimer = null;
-    let finalHomepageScrollTimer = null;
-    if (location.pathname === '/') {
-      // This longer delay helps ensure content (like Hero images) has loaded
-      // and layout shifts have mostly settled before the final scroll.
-      delayedHomepageScrollTimer = setTimeout(() => {
-        attemptScrollToTop("delayed homepage");
-        // A final, quick check and re-scroll if somehow still not at the top.
-        // This can be useful for very stubborn, late layout shifts.
-        if (window.scrollY !== 0) {
-          finalHomepageScrollTimer = setTimeout(() => attemptScrollToTop("final homepage check"), 50); // Shorter delay for the final check
+        let delayedHomepageScrollTimer = null;
+        let finalHomepageScrollTimer = null;
+        if (location.pathname === '/') {
+          delayedHomepageScrollTimer = setTimeout(() => {
+            attemptScrollToTop("delayed homepage");
+            if (window.scrollY !== 0) {
+              finalHomepageScrollTimer = setTimeout(() => attemptScrollToTop("final homepage check"), 50);
+            }
+          }, 250);
         }
-      }, 250); // Increased delay (e.g., 200-300ms). Adjust based on observed layout shift timing.
+        // Cleanup for these timers
+        return () => {
+          clearTimeout(initialScrollTimer);
+          if (delayedHomepageScrollTimer) clearTimeout(delayedHomepageScrollTimer);
+          if (finalHomepageScrollTimer) clearTimeout(finalHomepageScrollTimer);
+        };
     }
 
     // Hash cleaning logic (remains the same)
@@ -137,21 +184,21 @@ function AppContent() {
       !window.location.hash.includes('refresh_token=') &&
       !window.location.hash.includes('error_description=')
     ) {
-      console.log('[App.js useEffect] Cleaning hash:', window.location.hash);
+      // console.log('[App.js useEffect] Cleaning hash:', window.location.hash);
       const cleanUrl = window.location.pathname + window.location.search;
       window.history.replaceState(null, document.title, cleanUrl);
     }
 
+  }, [location.pathname]); // Effect runs on path change
+
+  // Cleanup timeout on component unmount
+  useEffect(() => {
     return () => {
-      clearTimeout(initialScrollTimer);
-      if (delayedHomepageScrollTimer) {
-        clearTimeout(delayedHomepageScrollTimer);
-      }
-      if (finalHomepageScrollTimer) {
-        clearTimeout(finalHomepageScrollTimer);
+      if (scrollSkipFlagTimeoutRef.current) {
+        clearTimeout(scrollSkipFlagTimeoutRef.current);
       }
     };
-  }, [location.pathname]); // Effect runs on path change
+  }, []);
 
 
   useEffect(() => {
@@ -162,7 +209,7 @@ function AppContent() {
     if (!isChatbotOpen && !showChatbotIconNotification && !hasShownNotificationThisSession) {
       notificationTimerRef.current = setTimeout(() => {
         setShowChatbotIconNotification(true);
-        setHasShownNotificationThisSession(true); 
+        setHasShownNotificationThisSession(true);
       }, 5000);
     }
   }, [isChatbotOpen, showChatbotIconNotification, hasShownNotificationThisSession]);
@@ -184,7 +231,7 @@ function AppContent() {
         }
         if (showChatbotIconNotification) {
           setChatOpenedViaNotification(true);
-          setShowChatbotIconNotification(false); 
+          setShowChatbotIconNotification(false);
         } else {
           setChatOpenedViaNotification(false);
         }
@@ -193,16 +240,8 @@ function AppContent() {
       }
       return openingChatbot;
     });
-  }, [showChatbotIconNotification]); // Removed setChatOpenedViaNotification, setChatSessionId, setShowChatbotIconNotification from deps as they are state setters
+  }, [showChatbotIconNotification]);
 
-
-  const openAuthModal = () => {
-    if (isChatbotOpen) {
-        setIsChatbotOpen(false);
-    }
-    setIsAuthModalOpen(true);
-  };
-  const closeAuthModal = () => setIsAuthModalOpen(false);
 
   const handleRequestNotification = async () => {
     const permission = await requestNotificationPermission();
@@ -294,142 +333,150 @@ function AppContent() {
   };
 
   return (
-    <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal, isAuthModalOpen }}>
-      <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray overflow-x-hidden">
-        <Header onAuthModalOpen={openAuthModal} />
+    <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray overflow-x-hidden">
+      <Header onAuthModalOpen={contextOpenAuthModal} />
 
-        {isNotificationAPISupported() && notificationPermission === 'default' && (
-          <div style={{
-            position: 'fixed',
-            bottom: '70px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            padding: '10px 15px',
-            background: 'rgba(30,30,30,0.9)',
-            color: 'white',
-            borderRadius: '8px',
-            zIndex: 1001,
-            textAlign: 'center',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.3)'
-          }}>
-            <p className="text-sm mb-2">Enable notifications for consultation reminders?</p>
-            <button
-              onClick={handleRequestNotification}
-              className="bg-darkGold text-black px-4 py-1.5 rounded text-sm font-medium hover:bg-opacity-90"
-            >
-              Enable
-            </button>
-            <button
-              onClick={() => {
-                const banner = document.querySelector('[style*="position: fixed"][style*="bottom: 70px"]');
-                if (banner) banner.style.display = 'none';
-              }}
-              className="ml-3 text-gray-400 px-3 py-1.5 text-sm hover:text-white"
-            >
-              Later
-            </button>
-          </div>
+      {isNotificationAPISupported() && notificationPermission === 'default' && (
+        <div style={{
+          position: 'fixed',
+          bottom: '70px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          padding: '10px 15px',
+          background: 'rgba(30,30,30,0.9)',
+          color: 'white',
+          borderRadius: '8px',
+          zIndex: 1001,
+          textAlign: 'center',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.3)'
+        }}>
+          <p className="text-sm mb-2">Enable notifications for consultation reminders?</p>
+          <button
+            onClick={handleRequestNotification}
+            className="bg-darkGold text-black px-4 py-1.5 rounded text-sm font-medium hover:bg-opacity-90"
+          >
+            Enable
+          </button>
+          <button
+            onClick={() => {
+              const banner = document.querySelector('[style*="position: fixed"][style*="bottom: 70px"]');
+              if (banner) banner.style.display = 'none';
+            }}
+            className="ml-3 text-gray-400 px-3 py-1.5 text-sm hover:text-white"
+          >
+            Later
+          </button>
+        </div>
+      )}
+
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <main className="mt-14 md:mt-24 lg:mt-20">
+              <Hero />
+              <About />
+              <Services />
+              <Coaching />
+              <VentureInvestment />
+              <Testimonials onAuthModalOpen={contextOpenAuthModal} />
+              <OtherWins />
+              <Interviews />
+              <IncentivePage onChatbotOpen={toggleChatbot} onAuthModalOpen={contextOpenAuthModal} />
+              <MergedServiceForm />
+              <BottomCarouselPages />
+            </main>
+          }
+        />
+        <Route path="/booking-success" element={<BookingSuccess />} />
+        <Route
+          path="/admin/testimonials"
+          element={<PrivateRoute><TestimonialReview /></PrivateRoute>}
+        />
+        <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+        <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
+        <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
+        <Route path="/reset-password" element={<PublicOnlyRoute><ResetPassword /></PublicOnlyRoute>} />
+        <Route path="/profile" element={<PrivateRoute><ProfilePage onChatOpen={toggleChatbot} /></PrivateRoute>} />
+        <Route path="/edit-profile" element={<PrivateRoute><EditProfilePage /></PrivateRoute>} />
+        <Route
+          path="/messages"
+          element={<PrivateRoute><DirectMessagesPage /></PrivateRoute>}
+        />
+        <Route path="/settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
+        <Route path="/components/Subpages/Calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
+        <Route path="/components/Subpages/Settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
+        <Route path="/notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
+      </Routes>
+
+      <NavigationBar
+        isChatbotOpen={isChatbotOpen}
+        onChatbotClick={toggleChatbot}
+        onAuthModalOpen={contextOpenAuthModal}
+        showChatbotIconNotification={showChatbotIconNotification}
+      />
+      <AnimatePresence>
+        {isChatbotOpen && (
+          <ChatbotWindow
+            sessionId={chatSessionId}
+            onClose={toggleChatbot}
+            chatOpenedViaNotification={chatOpenedViaNotification}
+          />
         )}
+      </AnimatePresence>
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <main className="mt-14 md:mt-24 lg:mt-20">
-                <Hero />
-                <About />
-                <Services />
-                <Coaching />
-                <VentureInvestment />
-                <Testimonials onAuthModalOpen={openAuthModal} />
-                <OtherWins />
-                <Interviews />
-                <IncentivePage onChatbotOpen={toggleChatbot} onAuthModalOpen={openAuthModal} />
-                <MergedServiceForm />
-                <BottomCarouselPages />
-              </main>
-            }
-          />
-          <Route path="/booking-success" element={<BookingSuccess />} />
-          <Route
-            path="/admin/testimonials"
-            element={<PrivateRoute><TestimonialReview /></PrivateRoute>}
-          />
-          <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
-          <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
-          <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
-          <Route path="/reset-password" element={<PublicOnlyRoute><ResetPassword /></PublicOnlyRoute>} />
-          <Route path="/profile" element={<PrivateRoute><ProfilePage onChatOpen={toggleChatbot} /></PrivateRoute>} />
-          <Route path="/edit-profile" element={<PrivateRoute><EditProfilePage /></PrivateRoute>} />
-          <Route
-            path="/messages"
-            element={<PrivateRoute><DirectMessagesPage /></PrivateRoute>}
-          />
-          <Route path="/settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
-          <Route path="/components/Subpages/Calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
-          <Route path="/components/Subpages/Settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
-          <Route path="/notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
-        </Routes>
+      <ScrollToTopButton isChatbotOpen={isChatbotOpen} />
 
-        <NavigationBar
-          isChatbotOpen={isChatbotOpen}
-          onChatbotClick={toggleChatbot}
-          onAuthModalOpen={openAuthModal}
-          showChatbotIconNotification={showChatbotIconNotification}
-        />
-        <AnimatePresence>
-          {isChatbotOpen && (
-            <ChatbotWindow
-              sessionId={chatSessionId}
-              onClose={toggleChatbot}
-              chatOpenedViaNotification={chatOpenedViaNotification}
-            />
-          )}
-        </AnimatePresence>
-        
-        <ScrollToTopButton isChatbotOpen={isChatbotOpen} />
-        
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={closeAuthModal}
-        />
-        <Footer />
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={contextCloseAuthModal} // Use context provided close
+      />
+      <Footer />
 
-        <CookieConsent
-          location="bottom"
-          buttonText="Accept Cookies"
-          cookieName="siteCookieConsent"
-          style={{ background: "#001F3F", color: "#FFFFFF", fontSize: "13px", borderTop: "1px solid #BFA200", zIndex: 1000 }}
-          buttonStyle={{ color: "#000000", background: "#BFA200", fontSize: "14px", borderRadius: "5px", padding: "8px 15px", fontWeight: "bold" }}
-          expires={150}
-          onAccept={() => {
-            setAcceptsFunctionalCookies(true);
-          }}
-          enableDeclineButton
-          declineButtonText="Decline"
-          declineButtonStyle={{ background: "#555", color: "#fff", fontSize: "14px", borderRadius: "5px", padding: "8px 15px", marginLeft: "10px" }}
-          onDecline={() => {
-             setAcceptsFunctionalCookies(false);
-          }}
-        >
-          This website uses cookies to enhance the user experience. See our{" "}
-          <Link to="/settings" state={{ section: 'privacy-policy' }} style={{ color: "#BFA200", textDecoration: "underline" }}>
-            Privacy Policy
-          </Link> for more details.
-        </CookieConsent>
-      </div>
-    </AuthModalContext.Provider>
+      <CookieConsent
+        location="bottom"
+        buttonText="Accept Cookies"
+        cookieName="siteCookieConsent"
+        style={{ background: "#001F3F", color: "#FFFFFF", fontSize: "13px", borderTop: "1px solid #BFA200", zIndex: 1000 }}
+        buttonStyle={{ color: "#000000", background: "#BFA200", fontSize: "14px", borderRadius: "5px", padding: "8px 15px", fontWeight: "bold" }}
+        expires={150}
+        onAccept={() => {
+          setAcceptsFunctionalCookies(true);
+        }}
+        enableDeclineButton
+        declineButtonText="Decline"
+        declineButtonStyle={{ background: "#555", color: "#fff", fontSize: "14px", borderRadius: "5px", padding: "8px 15px", marginLeft: "10px" }}
+        onDecline={() => {
+           setAcceptsFunctionalCookies(false);
+        }}
+      >
+        This website uses cookies to enhance the user experience. See our{" "}
+        <Link to="/settings" state={{ section: 'privacy-policy' }} style={{ color: "#BFA200", textDecoration: "underline" }}>
+          Privacy Policy
+        </Link> for more details.
+      </CookieConsent>
+    </div>
   );
 }
 
 function App() {
+  // State for AuthModalContext needs to be at this level
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const openAuthModal = useCallback(() => {
+    setIsAuthModalOpen(true);
+  }, []);
+  const closeAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
+
   return (
     <I18nextProvider i18n={i18n}>
       <AuthProvider>
         <ServiceProvider>
-          <Router>
-            <AppContent />
-          </Router>
+          {/* Provide the context value here */}
+          <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal, isAuthModalOpen }}>
+            <Router>
+              <AppContent />
+            </Router>
+          </AuthModalContext.Provider>
         </ServiceProvider>
       </AuthProvider>
     </I18nextProvider>

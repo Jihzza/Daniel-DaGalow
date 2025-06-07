@@ -334,14 +334,14 @@ function ContactStep({ formData, onChange, onPhoneValidation, user }) {
   );
 }
 
-
 // Step 3: Payment Step (remains largely the same, ensure it uses formData.email correctly)
 function PaymentStep({
   selectedTier,
   requestId,
   onPaymentConfirmed,
-  formData, // Pass full formData
+  formData,
 }) {
+  const { t } = useTranslation();
   const [paymentStarted, setPaymentStarted] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [pollingError, setPollingError] = useState(null);
@@ -352,7 +352,7 @@ function PaymentStep({
       Daily: "€90",
       Priority: "€230",
     };
-    return prices[tier] || "€40"; // Default to Basic if somehow tier is not matching
+    return prices[tier] || "€40";
   };
 
   const getPlanNameForTier = (tier) => {
@@ -361,15 +361,14 @@ function PaymentStep({
       Daily: "Standard",
       Priority: "Premium",
     };
-    return planNames[tier] || "Basic"; // Default for safety
+    return planNames[tier] || "Basic";
   };
 
-  // Effect to check if returning from Stripe
   useEffect(() => {
     const pendingId = localStorage.getItem("pendingCoachingId");
     if (pendingId && pendingId === requestId?.toString()) {
       setPaymentStarted(true);
-      localStorage.removeItem("pendingCoachingId"); // Clean up
+      localStorage.removeItem("pendingCoachingId");
     }
   }, [requestId]);
 
@@ -377,30 +376,27 @@ function PaymentStep({
     try {
       if (!requestId) {
         console.error("Request ID is not available for Stripe redirect.");
-        setPollingError("Failed to start subscription: Missing request ID.");
+        setPollingError(t('coaching_request.payment.error_missing_id'));
         return;
       }
-      // Store requestId to check on return (optional, helps if user closes tab)
       localStorage.setItem("pendingCoachingId", requestId.toString());
 
       const { data } = await axios.post(
-        "/.netlify/functions/createCoachingSession", // Ensure this is your correct Netlify function endpoint
+        "/.netlify/functions/createCoachingSession",
         {
-          requestId, // This is the coaching_requests.id
-          tier: selectedTier, // 'Weekly', 'Daily', 'Priority'
-          email: formData.email, // Use email from formData
-          // Supabase Price IDs (replace with your actual IDs from Stripe Dashboard)
-          // Ensure these map correctly to your tiers and are for subscriptions
-          productId: "prod_SBC2yFeKHqFXZr", // Replace with your actual Product ID from Stripe
-          isTestBooking: false, // Set to true for test cards
+          requestId,
+          tier: selectedTier,
+          email: formData.email,
+          productId: "prod_SBC2yFeKHqFXZr",
+          isTestBooking: false,
         }
       );
 
-      window.open(data.url, "_blank"); // Open Stripe checkout in a new tab
-      setPaymentStarted(true); // Indicate that Stripe process has started
+      window.open(data.url, "_blank");
+      setPaymentStarted(true);
     } catch (error) {
       console.error("Error creating Stripe subscription:", error);
-      setPollingError("Failed to start subscription process");
+      setPollingError(t('coaching_request.payment.error_start_process'));
     }
   };
 
@@ -410,23 +406,21 @@ function PaymentStep({
     const interval = setInterval(async () => {
       try {
         const response = await axios.get(
-          `/.netlify/functions/getCoachingStatus?id=${requestId}` // Your Netlify function endpoint
+          `/.netlify/functions/getCoachingStatus?id=${requestId}`
         );
 
         if (response.data.paymentStatus === "paid") {
           setPaymentConfirmed(true);
-          onPaymentConfirmed(true); // Notify parent
+          onPaymentConfirmed(true);
           clearInterval(interval);
         } else if (
           response.data.paymentStatus === "pending" &&
           Math.random() < 0.2
         ) {
-          // Fallback: Attempt to force update status (for cases where webhook might be delayed)
           try {
             await axios.get(
               `/.netlify/functions/forceUpdateCoaching?id=${requestId}`
-            ); // Another Netlify function if needed
-            // Re-check status after attempting force update
+            );
             const verifyResponse = await axios.get(
               `/.netlify/functions/getCoachingStatus?id=${requestId}`
             );
@@ -442,25 +436,25 @@ function PaymentStep({
         }
       } catch (error) {
         console.error("Error checking payment status:", error);
-        setPollingError("Error checking subscription status");
-        clearInterval(interval); // Stop polling on error
+        setPollingError(t('coaching_request.payment.error_check_status'));
+        clearInterval(interval);
       }
-    }, 5000); // Poll every 5 seconds
+    }, 5000);
 
     return () => clearInterval(interval);
-  }, [paymentStarted, requestId, onPaymentConfirmed]);
+  }, [paymentStarted, requestId, onPaymentConfirmed, t]);
 
   return (
     <div className="max-w-md mx-auto">
       <div className="bg-white/5 backdrop-blur-sm rounded-xl border border-white/20 overflow-hidden mb-6">
         <div className="bg-darkGold/10 p-4 border-b border-white/10">
           <h3 className="text-white font-semibold text-center">
-            Subscription Details
+            {t('coaching_request.payment.title')}
           </h3>
         </div>
         <div className="p-5 space-y-4">
           <div className="flex justify-between items-center">
-            <span className="text-white/70">Selected Plan:</span>
+            <span className="text-white/70">{t('coaching_request.payment.plan_label')}</span>
             <div className="flex items-center gap-2">
               <span className="text-white font-medium">
                 {getPlanNameForTier(selectedTier)}
@@ -471,29 +465,28 @@ function PaymentStep({
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-white/70">Price:</span>
+            <span className="text-white/70">{t('coaching_request.payment.price_label')}</span>
             <div className="text-darkGold font-bold text-lg">
               {getPriceForTier(selectedTier)}
-              <span className="text-white/50 text-sm font-normal">/month</span>
+              <span className="text-white/50 text-sm font-normal">{t('coaching_request.payment.per_month')}</span>
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-white/70">Billing:</span>
-            <span className="text-white">Monthly</span>
+            <span className="text-white/70">{t('coaching_request.payment.billing_label')}</span>
+            <span className="text-white">{t('coaching_request.payment.billing_value')}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-white/70">Renewal:</span>
-            <span className="text-white">Automatic</span>
+            <span className="text-white/70">{t('coaching_request.payment.renewal_label')}</span>
+            <span className="text-white">{t('coaching_request.payment.renewal_value')}</span>
           </div>
           <div className="border-t border-white/10 my-2"></div>
           <div className="flex justify-between items-center text-sm">
-            <span className="text-white/70">Email for billing:</span>
+            <span className="text-white/70">{t('coaching_request.payment.email_label')}</span>
             <span className="text-white break-all">{formData.email}</span>
           </div>
         </div>
         <div className="bg-white/5 p-3 text-xs text-white/60 text-center border-t border-white/10">
-          You can cancel your subscription at any time from your account
-          settings
+          {t('coaching_request.payment.cancellation_policy')}
         </div>
       </div>
       <div className="space-y-4">
@@ -502,7 +495,7 @@ function PaymentStep({
             onClick={handleStripeRedirect}
             className="w-full py-3 bg-gradient-to-r from-darkGold to-amber-400 text-black font-medium rounded-lg hover:from-amber-400 hover:to-amber-300 transition-all shadow-lg"
           >
-            Start Subscription
+            {t('coaching_request.payment.start_button')}
           </button>
         ) : paymentConfirmed ? (
           <div className="flex items-center justify-center gap-2 bg-green-500/20 border border-green-400/30 rounded-lg p-3 text-green-400">
@@ -520,38 +513,36 @@ function PaymentStep({
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span>Subscription activated successfully</span>
+            <span>{t('coaching_request.payment.success_message')}</span>
           </div>
         ) : (
           <div className="flex items-center justify-center gap-2 bg-white/5 border border-white/20 rounded-lg p-3 text-white/80">
             <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-            <span>Confirming your subscription...</span>
+            <span>{t('coaching_request.payment.confirming_message')}</span>
           </div>
         )}
         {pollingError && (
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-sm text-center">
-            {pollingError}. Please refresh the page or contact support.
+            {pollingError}
           </div>
         )}
         {paymentStarted && !paymentConfirmed && !pollingError && (
           <p className="text-white/60 text-sm text-center">
-            A payment window has opened in a new tab. Please complete the
-            payment there and return to this page.
+            {t('coaching_request.payment.prompt_window_opened')}
           </p>
         )}
       </div>
       <div className="mb-2 mt-4 flex justify-center items-center gap-4">
         <img
           src={stripe}
-          alt="Secure payments powered by Stripe"
+          alt={t('coaching_request.payment.alt_stripe')}
           className="h-8 opacity-90"
         />
-        <img src={ssl} alt="SSL Secured" className="h-8 opacity-90" />
+        <img src={ssl} alt={t('coaching_request.payment.alt_ssl')} className="h-8 opacity-90" />
       </div>
     </div>
   );
 }
-
 
 // Main Coaching Request Component
 export default function CoachingRequest({ onBackService, tier: propTier }) { // tier can be passed as a prop

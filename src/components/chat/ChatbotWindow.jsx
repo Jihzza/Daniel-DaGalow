@@ -21,6 +21,7 @@ function generateUUID() {
 }
 
 export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatOpenedViaNotification }) {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [userText, setUserText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,12 +30,9 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
   const listRef = useRef(null);
   const draggableHeaderRef = useRef(null);
   
-  // NavigationBar heights
   const navBarHeightDefault = 48; 
   const navBarHeightLg = 60;    
 
-  // Function to calculate the height of the chatbot window
-  // It should fill the screen from the top of the navbar to the top of the viewport
   const calculateChatbotHeight = () => {
     const viewportHeight = window.innerHeight;
     const currentNavBarHeight = window.innerWidth >= 1024 ? navBarHeightLg : navBarHeightDefault;
@@ -48,19 +46,15 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
   const [sessionId] = useState(() => propSessionId || generateUUID());
   const { user } = useAuth();
   const userId = user?.id;
-  // const [isNewChat, setIsNewChat] = useState(true); // This state might not be strictly needed if fetch logic handles it
-  const { t } = useTranslation();
 
-  // Recalculate height on window resize
   useEffect(() => {
     const handleResize = () => {
       setHeight(calculateChatbotHeight());
     };
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initial calculation
+    handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
 
   const checkTypingAnimations = () => {
     const anyStillTyping = messages.some(
@@ -86,18 +80,14 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
     const viewportHeight = window.innerHeight;
     const currentNavBarHeight = window.innerWidth >= 1024 ? navBarHeightLg : navBarHeightDefault;
     
-    // Calculate new height based on pointer position relative to the top of the viewport
-    // The chatbot's height is viewportHeight - pointerY (relative to viewport top) - navBarHeight
     const newHeightValue = viewportHeight - e.clientY - currentNavBarHeight;
 
-    // Min height: e.g., 100px. Max height: full available height above navbar.
     const minChatHeight = 100;
     const maxChatHeight = viewportHeight - currentNavBarHeight; 
 
     setHeight(Math.max(minChatHeight, Math.min(newHeightValue, maxChatHeight)));
   };
   
-
   const onPointerUp = (e) => {
     if (!resizing) return;
     if (draggableHeaderRef.current) {
@@ -147,13 +137,12 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
               isTyping: false, 
             }))
           );
-          // setIsNewChat(false); 
           if (!sessionData && !sessionError) { 
              try {
                 await supabase.from("chat_sessions").insert({
                     id: sessionId,
                     user_id: userId, 
-                    title: "Previous Chat", 
+                    title: t('window_chatbot.previous_chat_title'), 
                 });
             } catch (insertError) {
                 console.error("Error creating session for existing messages:", insertError);
@@ -161,7 +150,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
           }
         } else { 
           const welcomeMessageText = chatOpenedViaNotification
-            ? t('window_chatbot.guided_welcome_message', "I'm here to help you explore all available services! How can I assist you today?")
+            ? t('window_chatbot.guided_welcome_message')
             : t("window_chatbot.welcome_message");
           
           const welcomeMessage = {
@@ -174,14 +163,13 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
                 await supabase.from("chat_sessions").insert({
                     id: sessionId,
                     user_id: userId,
-                    title: chatOpenedViaNotification ? "Guided Service Chat" : "New Chat",
+                    title: chatOpenedViaNotification ? t('window_chatbot.guided_chat_title') : t('window_chatbot.new_chat_title'),
                 });
             } catch (insertError) {
                 console.error("Error creating new session:", insertError);
             }
           }
           setMessages([welcomeMessage]);
-          // setIsNewChat(false); 
           setIsTypingAnimationActive(true);
           try {
             await supabase.from("messages").insert({
@@ -201,16 +189,11 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
   }, [sessionId, userId, t, chatOpenedViaNotification]); 
 
   useEffect(() => {
-    // Simplified drag-to-close logic: if height becomes very small, close.
-    // This threshold should be less than minChatHeight.
     const closeThreshold = 50; 
-    if (height <= closeThreshold && resizing) { // Only consider closing during active resize
-      // To prevent accidental closure, perhaps add a delay or require a more deliberate gesture.
-      // For now, direct close.
-      // onClose(); // This might be too aggressive. Double-tap is more reliable.
+    if (height <= closeThreshold && resizing) {
+      // Intentionally left blank for now, double-tap is more reliable
     }
   }, [height, onClose, resizing]);
-
 
   useEffect(() => {
     if (listRef.current) {
@@ -290,14 +273,13 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
   return (
     <motion.div
       ref={panelRef}
-      className="fixed w-full bg-oxfordBlue shadow-2xl rounded-t-2xl overflow-visible border-t-2 border-darkGold flex flex-col z-50 touch-none overscroll-contain bottom-[48px] lg:bottom-[60px]" // MODIFIED: Changed z-40 to z-50
+      className="fixed w-full bg-oxfordBlue shadow-2xl rounded-t-2xl overflow-visible border-t-2 border-darkGold flex flex-col z-50 touch-none overscroll-contain bottom-[48px] lg:bottom-[60px]"
       style={{ height: `${height}px` }}
       initial={{ y: "100%" }}
       animate={{ y: 0 }}
       exit={{ y: "100%" }}
       transition={{ type: "tween", duration: 0.15 }}
     >
-      {/* Header */}
       <div
         className={`relative w-full flex items-stretch justify-between py-3 md:py-4 px-2 md:px-4 touch-none ${
           resizing ? "bg-opacity-50" : ""
@@ -314,18 +296,17 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-1 bg-darkGold rounded-full pointer-events-none"></div>
         </div>
 
-        <div className="flex-shrink-0 flex items-center justify-center pl-2 z-10"> {/* Note: This inner z-10 is relative to its parent stacking context */}
+        <div className="flex-shrink-0 flex items-center justify-center pl-2 z-10">
           <button
             onClick={onClose}
             className="text-darkGold text-2xl md:text-3xl leading-none focus:outline-none p-2"
-            aria-label="Close chat"
+            aria-label={t('window_chatbot.close_aria_label')}
           >
             &times;
           </button>
         </div>
       </div>
 
-      {/* Message list */}
       <div className="flex-1 w-full text-white overflow-auto space-y-2 px-2">
         <div
           ref={listRef}
@@ -367,11 +348,10 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
           )}
         </div>
       </div>
-      {/* Input & attachments */}
       <div className="pb-2 md:pb-4 px-2">
         <div className="relative w-full">
-          <button className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-1"> {/* Note: This inner z-10 is relative to its parent stacking context */}
-            <img src={Anexar} alt={t("window_chatbot.attach_alt", "Attach file")} className="w-5 h-5 md:w-6 md:h-6" />
+          <button className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-1">
+            <img src={Anexar} alt={t("window_chatbot.attach_alt")} className="w-5 h-5 md:w-6 md:h-6" />
           </button>
           <input
             className="w-full h-12 md:h-14 border-2 border-darkGold bg-oxfordBlue text-white md:text-lg rounded-full p-3 pl-10 pr-12 md:pl-12 md:pr-14"
@@ -382,19 +362,19 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
             }
             placeholder={
               isTypingAnimationActive
-                ? t("window_chatbot.placeholder_waiting", "Wait for bot response...")
-                : t("window_chatbot.placeholder_default", "Type a message…")
+                ? t("window_chatbot.placeholder_waiting")
+                : t("window_chatbot.placeholder_default")
             }
             disabled={loading || isTypingAnimationActive}
           />
           <button
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-1"  // Note: This inner z-10 is relative to its parent stacking context
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-1"
             onClick={sendMessage}
             disabled={loading || isTypingAnimationActive}
           >
             <img
               src={Send}
-              alt={t("window_chatbot.send_alt", "Send message")}
+              alt={t("window_chatbot.send_alt")}
               className={`w-5 h-5 md:w-6 md:h-6 ${
                 loading || isTypingAnimationActive ? "opacity-50" : ""
               }`}

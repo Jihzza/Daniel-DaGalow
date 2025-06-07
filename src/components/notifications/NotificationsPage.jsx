@@ -3,16 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../utils/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
-import { Link, useNavigate } from 'react-router-dom'; // Ensure useNavigate is imported
+import { Link, useNavigate } from 'react-router-dom';
 import { BellRing, CheckCheck, Info, AlertTriangle, LogIn, ExternalLink } from 'lucide-react';
 
-// Generic Notification Icon (can be customized per type)
 const NotificationTypeIcon = ({ type }) => {
   switch (type) {
     case 'reminder':
       return <BellRing className="w-5 h-5 text-amber-400" />;
     case 'new_message':
-      return <Info className="w-5 h-5 text-blue-400" />; // Example
+      return <Info className="w-5 h-5 text-blue-400" />;
     default:
       return <Info className="w-5 h-5 text-gray-400" />;
   }
@@ -21,7 +20,7 @@ const NotificationTypeIcon = ({ type }) => {
 function NotificationsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,7 +45,7 @@ function NotificationsPage() {
         setNotifications(data || []);
       } catch (err) {
         console.error('Error fetching notifications:', err);
-        setError(t('notifications.load_error', 'Failed to load notifications.'));
+        setError(t('notifications.load_error'));
       } finally {
         setLoading(false);
       }
@@ -60,14 +59,10 @@ function NotificationsPage() {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` },
         (payload) => {
-          // console.log('Realtime notification change received:', payload);
-          fetchNotifications(); // Refetch all on any change for simplicity
+          fetchNotifications();
         }
       )
       .subscribe((status, err) => {
-        if (status === 'SUBSCRIBED') {
-          // console.log('Subscribed to notifications changes!');
-        }
         if (err) {
           console.error('Notifications subscription error:', err);
         }
@@ -96,24 +91,20 @@ function NotificationsPage() {
     }
   };
 
-  // UPDATED handleNotificationClick
   const handleNotificationClick = async (notification) => {
     if (!notification.is_read) {
       await markAsRead(notification.id);
     }
     if (notification.link) {
-      // Check if it's an external link
       if (notification.link.startsWith('http://') || notification.link.startsWith('https://')) {
         window.open(notification.link, '_blank', 'noopener,noreferrer');
       } else {
-        // Assume internal link for react-router
         navigate(notification.link);
       }
     }
   };
 
   const markAllAsRead = async () => {
-    // ... (implementation is likely fine, keeping it for brevity)
     if (!user || notifications.filter(n => !n.is_read).length === 0) return;
     try {
       const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
@@ -127,12 +118,11 @@ function NotificationsPage() {
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     } catch (err) {
       console.error('Error marking all as read:', err);
-      setError(t('notifications.mark_all_read_error', 'Failed to mark all as read.'));
+      setError(t('notifications.mark_all_read_error'));
     }
   };
 
   const formatDate = (dateString) => {
-    // ... (keep your existing formatDate)
     if (!dateString) return '';
     const date = new Date(dateString);
     const now = new Date();
@@ -141,16 +131,15 @@ function NotificationsPage() {
     const diffHours = Math.round(diffMinutes / 60);
     const diffDays = Math.round(diffHours / 24);
 
-    if (diffSeconds < 60) return `just now`;
-    if (diffMinutes < 60) return `${diffMinutes} min ago`;
-    if (diffHours < 24) return `${diffHours} hr ago`;
-    if (diffDays === 1) return `yesterday`;
-    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffSeconds < 60) return t('notifications.just_now');
+    if (diffMinutes < 60) return t('notifications.minutes_ago', { count: diffMinutes });
+    if (diffHours < 24) return t('notifications.hours_ago', { count: diffHours });
+    if (diffDays === 1) return t('notifications.yesterday');
+    if (diffDays < 7) return t('notifications.days_ago', { count: diffDays });
     return date.toLocaleDateString(t('locale_code', 'en-US'), { month: 'short', day: 'numeric' });
   };
 
   const formatTime = (dateString) => {
-    // ... (keep your existing formatTime)
     if (!dateString) return '';
     return new Date(dateString).toLocaleTimeString(t('locale_code', 'en-US'), { hour: '2-digit', minute: '2-digit', hour12: true });
   };
@@ -160,7 +149,7 @@ function NotificationsPage() {
       <div className="max-w-2xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
           <h1 className="text-3xl md:text-4xl font-bold text-white">
-            {t('notifications.title', 'Notifications')}
+            {t('notifications.title')}
           </h1>
           {notifications.some(n => !n.is_read) && (
             <button
@@ -168,7 +157,7 @@ function NotificationsPage() {
               className="px-4 py-2 bg-darkGold text-black border border-darkGold rounded-lg hover:bg-opacity-80 transition-colors text-sm font-semibold shadow-md"
             >
               <CheckCheck className="inline-block w-4 h-4 mr-2" />
-              {t('notifications.mark_all_read', 'Mark all as read')}
+              {t('notifications.mark_all_read')}
             </button>
           )}
         </div>
@@ -189,9 +178,9 @@ function NotificationsPage() {
         {!loading && !error && !user && (
           <div className="bg-yellow-800/30 border border-yellow-600 text-yellow-200 px-6 py-4 rounded-lg text-center shadow-lg flex flex-col items-center justify-center gap-3">
             <LogIn className="w-8 h-8 text-yellow-300 mb-2" />
-            <p>{t('notifications.login_prompt', 'Please log in to see your notifications.')}</p>
+            <p>{t('notifications.login_prompt')}</p>
             <Link to="/login" className="mt-2 px-4 py-2 bg-darkGold text-black rounded-md hover:bg-opacity-80 font-semibold transition-colors">
-              {t('navigation.login', 'Log In')}
+              {t('navigation.login')}
             </Link>
           </div>
         )}
@@ -199,21 +188,19 @@ function NotificationsPage() {
         {!loading && !error && user && notifications.length === 0 && (
           <div className="text-center py-16 bg-oxfordBlue/30 rounded-xl shadow-xl border border-white/10">
             <BellRing className="w-16 h-16 text-gray-500 mx-auto" />
-            <p className="mt-6 text-xl text-gray-400">{t('notifications.no_notifications', 'You have no new notifications.')}</p>
-            <p className="text-sm text-gray-500 mt-1">Check back later for updates.</p>
+            <p className="mt-6 text-xl text-gray-400">{t('notifications.no_notifications')}</p>
+            <p className="text-sm text-gray-500 mt-1">{t('notifications.no_notifications_subtitle')}</p>
           </div>
         )}
 
         {!loading && !error && user && notifications.length > 0 && (
           <div className="space-y-3">
             {notifications.map(notification => {
-              // Determine if the link is internal or external
               const isExternalLink = notification.link && (notification.link.startsWith('http://') || notification.link.startsWith('https://'));
 
               return (
                 <div
                   key={notification.id}
-                  // The main div click will handle navigation if no specific "View Details" link is present or if it's not an external link
                   onClick={() => handleNotificationClick(notification)}
                   className={`
                     p-4 rounded-xl shadow-lg transition-all duration-300 ease-in-out flex items-start space-x-4
@@ -228,7 +215,7 @@ function NotificationsPage() {
                   {!notification.is_read && (
                     <div className="mt-1 flex-shrink-0 w-3 h-3 bg-darkGold rounded-full shadow-sm animate-pulse"></div>
                   )}
-                  <div className={`flex-shrink-0 mt-0.5 ${notification.is_read ? 'ml-3' : ''}`}> {/* Adjusted margin for read items to align text */}
+                  <div className={`flex-shrink-0 mt-0.5 ${notification.is_read ? 'ml-3' : ''}`}>
                     <NotificationTypeIcon type={notification.type} />
                   </div>
                   <div className="flex-grow min-w-0">
@@ -240,27 +227,24 @@ function NotificationsPage() {
                       {notification.type === 'reminder' && notification.notify_at && (
                         <span className="flex items-center text-amber-400">
                           <BellRing className="w-3 h-3 mr-1" />
-                          Due: {formatTime(notification.notify_at)}
+                          {t('notifications.due_prefix')} {formatTime(notification.notify_at)}
                         </span>
                       )}
                     </div>
-                    {/* "View Details" link for internal navigation - always use Link component for this */}
                     {notification.link && !isExternalLink && (
                       <Link
                         to={notification.link}
                         className="text-xs text-darkGold hover:text-amber-300 underline mt-2 inline-block font-semibold transition-colors"
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent parent onClick from firing if Link is clicked
+                          e.stopPropagation();
                           if (!notification.is_read) {
                             markAsRead(notification.id);
                           }
-                          // Navigation is handled by <Link to="...">
                         }}
                       >
-                        {t('notifications.view_details', 'View Details')} &rarr;
+                        {t('notifications.view_details')} &rarr;
                       </Link>
                     )}
-                    {/* "View Details" for external links - uses an <a> tag */}
                     {notification.link && isExternalLink && (
                        <a
                         href={notification.link}
@@ -274,7 +258,7 @@ function NotificationsPage() {
                           }
                         }}
                       >
-                        {t('notifications.view_details', 'View Details')} <ExternalLink className="w-3 h-3 ml-1" />
+                        {t('notifications.view_details')} <ExternalLink className="w-3 h-3 ml-1" />
                       </a>
                     )}
                   </div>
