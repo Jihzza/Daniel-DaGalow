@@ -145,8 +145,8 @@ function NotificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-oxfordBlue to-gentleGray text-white pt-20 pb-24 px-4 md:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
+    <div className="absolute left-0 right-0 top-14 md:top-[96px] lg:top-20 bottom-[48px] lg:bottom-[60px] overflow-y-auto bg-gradient-to-b from-oxfordBlue to-gentleGray text-white px-4 md:px-6 lg:px-8 py-6 md:py-8">
+      <div className="max-w-2xl lg:max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
           <h1 className="text-3xl md:text-4xl font-bold text-white">
             {t('notifications.title')}

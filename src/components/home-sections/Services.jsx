@@ -53,7 +53,8 @@ function Services() {
 
   const getColumns = useCallback(() => {
     if (typeof window !== "undefined") {
-      return window.innerWidth < 768 ? 2 : 3;
+      // Return 3 columns for medium screens and up, otherwise 2.
+      return window.innerWidth >= 768 ? 3 : 2;
     }
     return 3;
   }, []);
@@ -63,7 +64,7 @@ function Services() {
   useEffect(() => {
     const handleResize = () => setColumns(getColumns());
     window.addEventListener("resize", handleResize);
-    handleResize();
+    handleResize(); // Initial call
     return () => window.removeEventListener("resize", handleResize);
   }, [getColumns]);
 
@@ -128,7 +129,6 @@ function Services() {
   }, []);
 
   const handleScroll = useCallback(() => {
-    // Ensure refs are present and the button has a measurable height.
     if (!buttonRef.current || !buttonStopContainerRef.current || !sectionRef.current || buttonRef.current.offsetHeight === 0) {
         return;
     }
@@ -137,8 +137,6 @@ function Services() {
     const effectiveSpaceFromBottomForFixed = NAVIGATION_BAR_HEIGHT + BUTTON_PADDING_ABOVE_NAV;
     const stopContainerRect = buttonStopContainerRef.current.getBoundingClientRect();
 
-    // If container is not in viewport or has no dimensions, exit.
-    // (Rects for off-screen elements can have all zeros)
     if (stopContainerRect.width === 0 && stopContainerRect.height === 0 && stopContainerRect.top === 0 && stopContainerRect.left === 0 && stopContainerRect.bottom === 0 && stopContainerRect.right === 0) {
         return;
     }
@@ -150,31 +148,29 @@ function Services() {
                                       stopContainerRect.bottom <= fixedButtonBottomY;
 
     if (geometricallyShouldBeDocked) {
-        // Determine and set DOCKED (absolute) state
         setButtonPositionStyle({
             position: 'absolute',
             bottom: '0px',
             left: '50%',
             transform: 'translateX(-50%)',
-            opacity: 1, // Ensure button is visible
+            opacity: 1,
             transition: SMOOTH_TRANSITION,
             zIndex: 1,
         });
         hasButtonReachedFinalPosition.current = true;
     } else {
-        // Determine and set FLOATING (fixed) state
         setButtonPositionStyle({
             position: 'fixed',
             bottom: `${effectiveSpaceFromBottomForFixed}px`,
             left: '50%',
             transform: 'translateX(-50%)',
-            opacity: 1, // Ensure button is visible
+            opacity: 1,
             transition: SMOOTH_TRANSITION,
             zIndex: 10,
         });
         hasButtonReachedFinalPosition.current = false;
     }
-}, []); // No dependencies like isButtonVisibleBasedOnSection or component state needed here
+}, []);
 
   useEffect(() => {
     if (isButtonVisibleBasedOnSection) {
@@ -212,9 +208,7 @@ function Services() {
     const descriptionVariants = {
       open: {
         opacity: 1,
-        height: calculatedHeight, // This will be the scrollHeight of the padded inner content
-        // paddingTop: "1rem", // REMOVE
-        // paddingBottom: "1rem", // REMOVE
+        height: calculatedHeight,
         marginTop: "0.5rem",
         marginBottom: "0.5rem",
         transition: {
@@ -225,8 +219,6 @@ function Services() {
       collapsed: {
         opacity: 0,
         height: 0,
-        // paddingTop: "0rem", // REMOVE
-        // paddingBottom: "0rem", // REMOVE
         marginTop: "0rem",
         marginBottom: "0rem",
         transition: {
@@ -255,7 +247,7 @@ function Services() {
         key={item.id}
         onClick={() => handleServiceItemClick(item)}
         className={`
-          flex flex-col items-center justify-center p-4 w-[154px] h-[108px] md:w-[200px] md:h-[140px] border-2 rounded-lg text-center shadow-lg cursor-pointer transition-all duration-200 ease-in-out
+          flex flex-col items-center justify-center p-4 w-full aspect-[4/3] border-2 rounded-lg text-center shadow-lg cursor-pointer transition-all duration-200 ease-in-out
           ${
             selectedServiceItem?.id === item.id
               ? "border-darkGold scale-105"
@@ -279,7 +271,7 @@ function Services() {
     if ((index + 1) % columns === 0 || index === serviceItems.length - 1) {
       renderedItemsWithDescriptions.push(
         <React.Fragment key={`row-items-${currentRowIndex}`}>
-          {rowBuffer.map((bufferedItem) => bufferedItem)}
+          {rowBuffer}
         </React.Fragment>
       );
       rowBuffer = [];
@@ -290,9 +282,7 @@ function Services() {
 
       let rowDescriptionItem = null;
       if (isThisRowsDescriptionVisible) {
-        const startIdx = currentRowIndex * columns;
-        const itemsInCurrentRow = serviceItems.slice(startIdx, startIdx + columns);
-        rowDescriptionItem = itemsInCurrentRow.find(si => si.id === selectedServiceItem.id) || null;
+        rowDescriptionItem = selectedServiceItem;
       }
       
       const descriptionColSpanClass = columns === 2 ? "col-span-2" : "col-span-3";
@@ -302,10 +292,10 @@ function Services() {
           layout
           transition={{ duration: 0.4, ease: "easeInOut" }}
           key={`desc-slot-for-row-${currentRowIndex}`}
-          className={`${descriptionColSpanClass} overflow-hidden`} // Keep overflow-hidden
+          className={`${descriptionColSpanClass} overflow-hidden`}
           initial="collapsed"
           animate={isThisRowsDescriptionVisible ? "open" : "collapsed"}
-          variants={descriptionVariants} // Use the modified variants
+          variants={descriptionVariants}
           style={{
             pointerEvents: isThisRowsDescriptionVisible ? "auto" : "none",
           }}
@@ -315,11 +305,9 @@ function Services() {
             style={{
               paddingTop: isThisRowsDescriptionVisible ? '1rem' : '0rem',
               paddingBottom: isThisRowsDescriptionVisible ? '1rem' : '0rem',
-              // The transition for these paddings appearing/disappearing will be
-              // part of the overall layout animation handled by the parent motion.div
             }}
           >
-            <div className="rounded-lg text-white"> {/* Your existing styling div */}
+            <div className="rounded-lg text-white text-center">
               {isThisRowsDescriptionVisible && rowDescriptionItem && (
                 <>
                   <h3 className="text-lg md:text-xl font-bold mb-2 text-darkGold">
@@ -337,17 +325,17 @@ function Services() {
 
   const gridLayoutClasses = columns === 2 
     ? "grid-cols-2" 
-    : "grid-cols-3 md:grid-cols-3";
+    : "grid-cols-3";
 
   return (
     <section ref={sectionRef} id="services" className="py-8 px-4 text-white bg-oxfordBlue">
-      <div className="max-w-3xl mx-auto text-center space-y-6">
+      <div className="max-w-4xl mx-auto text-center space-y-6">
         <h2 className="text-2xl md:text-4xl font-bold">
           {t("services.services_title")}
         </h2>
         <p className="md:text-xl">{t("services.services_description")}</p>
 
-        <div className={`grid ${gridLayoutClasses} gap-2 md:gap-6 place-items-center md:place-items-start`}>
+        <div className={`grid ${gridLayoutClasses} gap-4 md:gap-6 lg:gap-8 justify-items-center`}>
           {renderedItemsWithDescriptions}
         </div>
       </div>

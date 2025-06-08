@@ -54,7 +54,7 @@ function DirectMessagesPage() {
     if (textarea) {
       textarea.style.height = 'auto';
       const scrollHeight = textarea.scrollHeight;
-      const maxHeight = 112;
+      const maxHeight = 112; // Corresponds to max-h-28
       if (scrollHeight > maxHeight) {
         textarea.style.height = `${maxHeight}px`;
         textarea.style.overflowY = 'auto';
@@ -460,7 +460,7 @@ function DirectMessagesPage() {
     : [];
 
   const renderConversationsAndUsersList = () => (
-    <div className="h-full flex flex-col bg-oxfordBlue text-white">
+    <>
       <div className="p-4 border-b border-darkGold/30 flex items-center justify-between">
         <h1 className="text-xl font-semibold text-white">{t('direct_messages.title')}</h1>
         <button onClick={handleRefresh} className="p-2 text-gray-300 hover:text-darkGold" aria-label={t('direct_messages.refresh_aria_label')}>
@@ -549,13 +549,13 @@ function DirectMessagesPage() {
           <div className="p-4 text-center text-gray-400">{t('direct_messages.no_match')}</div>
         )}
       </div>
-    </div>
+    </>
   );
 
   const renderChatView = () => (
-    <div className="h-full flex flex-col bg-gentleGray text-black">
+    <>
       <div className="flex items-center p-3 border-b border-gray-300 bg-oxfordBlue text-white">
-        <button onClick={() => setSelectedConversation(null)} className="mr-3 p-2 text-gray-300 hover:text-darkGold" aria-label={t('direct_messages.back_aria_label')}>
+        <button onClick={() => setSelectedConversation(null)} className="mr-3 p-2 text-gray-300 hover:text-darkGold md:hidden" aria-label={t('direct_messages.back_aria_label')}>
           <ArrowLeft size={20} />
         </button>
         {selectedConversation?.otherUser && (
@@ -582,7 +582,7 @@ function DirectMessagesPage() {
             className={`flex ${msg.sender_id === user.id ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-xs lg:max-w-md px-3 py-2 rounded-xl shadow-md ${msg.sender_id === user.id
+              className={`max-w-[80%] md:max-w-[70%] lg:max-w-[60%] px-3 py-2 rounded-xl shadow-md ${msg.sender_id === user.id
                   ? 'bg-oxfordBlue text-white rounded-br-none'
                   : 'bg-white text-oxfordBlue rounded-bl-none border border-gray-300'
                 } ${msg.isOptimistic ? 'opacity-70' : ''} ${msg.hasError ? 'bg-red-200 border-red-400 text-red-700 opacity-90' : ''}`}
@@ -621,18 +621,44 @@ function DirectMessagesPage() {
           </button>
         </div>
       </form>
+    </>
+  );
+
+  const WelcomePlaceholder = () => (
+    <div className="h-full flex flex-col items-center justify-center text-center p-4 text-gray-400 bg-gentleGray">
+      <MessageSquare size={48} className="mb-4 text-gray-500" />
+      <h2 className="text-xl font-semibold text-gray-700">Welcome to Direct Messages</h2>
+      <p className="max-w-xs">Select a conversation from the list to start chatting, or use the search to find someone new.</p>
     </div>
   );
 
   return (
     <div
-      className="absolute left-0 right-0 flex flex-col bg-gradient-to-b from-oxfordBlue to-gentleGray"
-      style={{
-        top: 'var(--header-height, 56px)',
-        bottom: 'var(--navbar-height, 48px)',
-      }}
+      className="absolute left-0 right-0 top-14 md:top-[96px] lg:top-20 bottom-[48px] lg:bottom-[60px] flex flex-row"
     >
-      {selectedConversation ? renderChatView() : renderConversationsAndUsersList()}
+      {/* --- Conversations List (Left Panel) --- */}
+      {/* This panel is hidden on mobile if a conversation is selected */}
+      <div
+        className={`h-full flex-col bg-oxfordBlue text-white border-r border-darkGold/20
+                    w-full md:w-[40%] lg:w-[30%] xl:w-[25%]
+                    ${selectedConversation ? 'hidden md:flex' : 'flex'}`}
+      >
+        {renderConversationsAndUsersList()}
+      </div>
+
+      {/* --- Chat View (Right Panel) --- */}
+      {/* This panel is hidden by default on mobile, and always shown on desktop */}
+      <div className="h-full flex-1 hidden md:flex flex-col">
+        {selectedConversation ? renderChatView() : <WelcomePlaceholder />}
+      </div>
+      
+      {/* --- Mobile Chat View (Overlay) --- */}
+      {/* This is shown only on mobile when a conversation is active, covering the conversation list */}
+      {selectedConversation && (
+         <div className="absolute top-0 left-0 w-full h-full flex flex-col bg-gentleGray md:hidden">
+            {renderChatView()}
+         </div>
+      )}
     </div>
   );
 }
