@@ -25,6 +25,8 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEvents, setSelectedEvents] = useState([]);
   const { t } = useTranslation();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAuthCheckComplete, setIsAuthCheckComplete] = useState(false);
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -32,30 +34,61 @@ export default function CalendarPage() {
   useEffect(() => {
     if (!user) {
       navigate("/login");
+      return;
     }
+    
+    async function checkAdminStatus() {
+        try {
+          const { data, error } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", user.id)
+            .single();
+          if (error && error.code !== 'PGRST116') throw error;
+          if (data && data.role === "admin") {
+            setIsAdmin(true);
+          }
+        } catch (err) {
+          console.error("Error checking admin status:", err);
+          setIsAdmin(false);
+        } finally {
+            setIsAuthCheckComplete(true);
+        }
+    }
+    checkAdminStatus();
   }, [user, navigate]);
 
   useEffect(() => {
+    if (!user || !isAuthCheckComplete) return;
+    
     async function fetchEvents() {
-      // Only fetch events if user is logged in
-      if (!user) return;
-      
       setLoading(true);
-      const { data, error } = await supabase
-        .from("bookings")
-        .select("id, appointment_date, name, duration_minutes")
-        .eq("user_id", user.id); // Filter by current user's ID
+
+      let query;
+
+      if (isAdmin) {
+        query = supabase
+            .from("bookings")
+            .select("id, appointment_date, name, duration_minutes, user_id");
+      } else {
+        query = supabase
+            .from("bookings")
+            .select("id, appointment_date, name, duration_minutes, user_id")
+            .eq("user_id", user.id);
+      }
+        
+      const { data, error } = await query;
         
       if (error) {
         console.error("Error fetching events:", error);
       } else {
-        // Transform data for better display
         const formattedEvents = data.map(evt => ({
           id: evt.id,
           date: new Date(evt.appointment_date),
           title: evt.name || "Appointment",
           duration: evt.duration_minutes || 60,
-          time: format(new Date(evt.appointment_date), "h:mm a")
+          time: format(new Date(evt.appointment_date), "h:mm a"),
+          userId: evt.user_id // Keep userId for color coding
         }));
         setEvents(formattedEvents);
       }
@@ -63,7 +96,7 @@ export default function CalendarPage() {
     }
     
     fetchEvents();
-  }, [user]); // Add user as a dependency so query re-runs when user changes
+  }, [user, isAdmin, isAuthCheckComplete]);
 
   useEffect(() => {
     if (selectedDate) {
@@ -74,12 +107,13 @@ export default function CalendarPage() {
     }
   }, [selectedDate, events]);
 
-  const hasEventOn = (date) => {
-    return events.some(evt => isSameDay(evt.date, date));
+  const hasCurrentUserEventOn = (date) => {
+    return events.some(evt => isSameDay(evt.date, date) && evt.userId === user.id);
   };
 
-  const countEventsOn = (date) => {
-    return events.filter(evt => isSameDay(evt.date, date)).length;
+  const hasOtherUserEventOn = (date) => {
+    if (!isAdmin) return false;
+    return events.some(evt => isSameDay(evt.date, date) && evt.userId !== user.id);
   };
 
   // Build calendar grid for display: show 42 days (6 weeks)
@@ -113,8 +147,6 @@ export default function CalendarPage() {
       </main>
     );
   }
-
-  
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-oxfordBlue to-gentleGray py-6 md:py-12 px-4 md:px-8 lg:px-12">
@@ -180,7 +212,8 @@ export default function CalendarPage() {
                     const isCurrentMonth = isSameMonth(date, currentMonth);
                     const isCurrentDay = isToday(date);
                     const isSelected = selectedDate && isSameDay(date, selectedDate);
-                    const hasEvent = hasEventOn(date);
+                    const hasMyEvent = hasCurrentUserEventOn(date);
+                    const hasOthersEvent = hasOtherUserEventOn(date);
                     
                     return (
                       <div
@@ -205,10 +238,15 @@ export default function CalendarPage() {
                           </span>
                         </div>
                         
-                        {/* Event Indicator - Enhanced for better visibility */}
-                        {hasEvent && (
-                          <div className="w-full flex justify-center items-center h-2 md:h-3">
-                            <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-darkGold"></div>
+                        {/* Event Indicators - NEW LOGIC */}
+                        {(hasMyEvent || hasOthersEvent) && (
+                          <div className="w-full flex justify-center items-center h-2 md:h-3 space-x-1">
+                            {hasMyEvent && (
+                              <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-darkGold" title="My Appointment"></div>
+                            )}
+                            {hasOthersEvent && (
+                              <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-oxfordBlue" title="User Appointment"></div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -229,7 +267,9 @@ export default function CalendarPage() {
                       selectedEvents.map(event => (
                         <div 
                           key={event.id} 
-                          className="bg-gentleGray p-4 rounded-lg border-l-4 border-darkGold hover:shadow-md transition-shadow"
+                          className={`bg-gentleGray p-4 rounded-lg border-l-4 hover:shadow-md transition-shadow ${
+                            event.userId === user.id ? 'border-darkGold' : 'border-oxfordBlue'
+                          }`}
                         >
                           <div className="flex justify-between items-center">
                             <h4 className="font-semibold text-oxfordBlue">{event.title}</h4>
