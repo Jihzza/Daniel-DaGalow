@@ -126,7 +126,10 @@ function DateTimeStep({
   const calendarGridRef = useRef(null); 
 
   const handleTouchStart = (e) => {
-    touchStartX.current = e.targetTouches[0].clientX;
+    const startX = e.targetTouches[0].clientX;
+    touchStartX.current = startX;
+    // FIX: Initialize end position to prevent misinterpretation of taps as swipes.
+    touchEndX.current = startX;
   };
 
   const handleTouchMove = (e) => {

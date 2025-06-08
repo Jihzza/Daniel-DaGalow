@@ -906,7 +906,6 @@ const handleNext = async () => {
             stepCount={UI_STEPS} 
             currentStep={step + 1} 
             onStepClick={handleStepClick}
-            className="pt-6"
           />
 
           <div className="flex justify-between mt-4 sm:mt-6"> {/* Increased margin-top */}
