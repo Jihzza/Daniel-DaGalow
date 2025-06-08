@@ -339,7 +339,7 @@ function DirectCoaching() {
   // Derived button label
   // -----------------------------------------------------------------------------
   const floatingButtonText = selectedTier
-    ? `${t("coaching.button_get_number_default")} - ${selectedTier.price}/m`
+    ? `${t("coaching.button_get_number_default")} - ${selectedTier.price}/m`
     : selectedCategory
     ? t(selectedCategory.buttonActionKey)
     : t("coaching.button_get_number_default");
@@ -382,7 +382,7 @@ function DirectCoaching() {
         key={item.id}
         onClick={() => handleCategoryClick(item)}
         className={`
-          flex flex-col items-center justify-center p-4 w-[154px] h-[108px] md:w-[200px] md:h-[140px] border-2 rounded-lg text-center shadow-lg cursor-pointer transition-all duration-200 ease-in-out
+          flex flex-col items-center justify-center p-4 w-full aspect-[4/3] border-2 rounded-lg text-center shadow-lg cursor-pointer transition-all duration-200 ease-in-out
           ${
             selectedCategory?.id === item.id
               ? "border-darkGold scale-105"
@@ -469,7 +469,7 @@ function DirectCoaching() {
 
         {/* --- Category grid --- */}
         <div
-          className={`grid ${gridLayoutClasses} gap-2 md:gap-6 place-items-center md:place-items-start`}
+          className={`grid ${gridLayoutClasses} gap-4 md:gap-6 lg:gap-8 justify-items-center`}
         >
           {renderedItemsWithDescriptions}
         </div>

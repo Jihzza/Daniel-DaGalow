@@ -9,7 +9,7 @@ const supabase = createClient(
 
 // Pricing map for coaching tiers (in cents)
 const TIER_PRICES = {
-  Weekly: 4000, // €40.00 // Assuming your comment meant this might be a promotional $0
+  Weekly: 0, // €40.00 // Assuming your comment meant this might be a promotional $0
   Daily: 9000, // €90.00
   Priority: 23000, // €230.00
 };
