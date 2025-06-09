@@ -52,6 +52,8 @@ import SubscriptionsListPage from "./pages/profile/SubscriptionsListPage";
 import PitchDecksListPage from "./pages/profile/PitchDecksListPage";
 import ChatHistoryPage from "./pages/profile/ChatHistoryPage";
 import CreateTestimonialPage from './pages/CreateTestimonialPage';
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 
 
 import {
@@ -417,8 +419,8 @@ function AppContent() {
         <Route path="/admin/bugs" element={<PrivateRoute><BugReportsPage /></PrivateRoute>} />
 
         {/* Auth Routes */}
-        <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
-        <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
+        <Route path="/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
+        <Route path="/signup" element={<PublicOnlyRoute><SignupPage /></PublicOnlyRoute>} />
         <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
         <Route path="/reset-password" element={<PublicOnlyRoute><ResetPassword /></PublicOnlyRoute>} />
         
