@@ -17,9 +17,24 @@ import chatbotIcon from '../../assets/icons/Dagalow Branco.svg';
 import messagesIcon from '../../assets/icons/Messages Branco.svg';
 import defaultProfileIcon from '../../assets/img/Pessoas/Default.svg';
 
-// Constants
-const ICON_SIZE_PX = 26; 
-const PROFILE_ICON_SIZE_PX = 26;
+// Constants for responsive icon sizing
+const ICON_SIZE_DEFAULT_PX = 26;
+const ICON_SIZE_ACTIVE_MOBILE_PX = 22; // Smaller size for the active icon on mobile
+const PROFILE_ICON_SIZE_DEFAULT_PX = 28;
+const PROFILE_ICON_SIZE_ACTIVE_MOBILE_PX = 24;
+
+// Helper hook to detect if the view is mobile
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isMobile;
+}
 
 // Helper to construct Supabase avatar URL
 const getSupabaseAvatarUrl = (avatarPath) =>
@@ -36,6 +51,7 @@ const NavigationBar = ({
   const location = useLocation();
   const { user } = useAuth();
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   // State
   const [profileDisplayData, setProfileDisplayData] = useState({
@@ -50,36 +66,27 @@ const NavigationBar = ({
         setProfileDisplayData({ imageSrc: defaultProfileIcon, fullName: '' });
         return;
       }
-
       let newAvatarUrl = defaultProfileIcon;
       let newFullName = user.user_metadata?.full_name || '';
-
       try {
         const { data: dbProfile, error } = await supabase
           .from('profiles')
           .select('avatar_url, full_name')
           .eq('id', user.id)
           .single();
-
-        if (error && error.code !== 'PGRST116') {
-          console.error("Error fetching profile for navbar:", error.message);
-        } else if (dbProfile) {
+        if (error && error.code !== 'PGRST116') throw error;
+        if (dbProfile) {
           newFullName = dbProfile.full_name || newFullName;
           if (dbProfile.avatar_url) {
-            if (dbProfile.avatar_url.startsWith('http')) {
-              newAvatarUrl = dbProfile.avatar_url;
-            } else if (dbProfile.avatar_url.trim() !== '') {
-              newAvatarUrl = getSupabaseAvatarUrl(dbProfile.avatar_url);
-            }
+            newAvatarUrl = dbProfile.avatar_url.startsWith('http')
+              ? dbProfile.avatar_url
+              : getSupabaseAvatarUrl(dbProfile.avatar_url);
           }
         }
-        
         if (newAvatarUrl === defaultProfileIcon && user.user_metadata?.avatar_url?.startsWith('http')) {
           newAvatarUrl = user.user_metadata.avatar_url;
         }
-        
         setProfileDisplayData({ imageSrc: newAvatarUrl, fullName: newFullName });
-
       } catch (e) {
         console.error("Exception fetching profile data for navbar:", e);
         const fallbackUserAvatar = user.user_metadata?.avatar_url?.startsWith('http')
@@ -88,7 +95,6 @@ const NavigationBar = ({
         setProfileDisplayData({ imageSrc: fallbackUserAvatar, fullName: newFullName });
       }
     };
-
     fetchAndSetProfileData();
   }, [user]);
 
@@ -102,7 +108,6 @@ const NavigationBar = ({
     return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
   }, [profileDisplayData.fullName, user?.email]);
 
-  // Memoized event handlers
   const handleCloseChatbotIfNeeded = useCallback(() => {
     if (isChatbotOpen && typeof onChatbotClick === 'function') {
       onChatbotClick();
@@ -142,103 +147,73 @@ const NavigationBar = ({
     }
   }, [onChatbotClick]);
 
-  // Function to generate common props for icon images
-  const commonIconProps = (altText) => ({
-    role: "button",
-    "aria-label": altText,
-    style: { width: `${ICON_SIZE_PX}px`, height: `${ICON_SIZE_PX}px` },
-    className: "cursor-pointer drop-shadow-lg transition-all duration-300",
-  });
-
-  // Unified list of navigation items for even distribution
+  // Data for nav items
   const navItems = [
-    { 
-      id: 'home', 
-      type: 'image', 
-      src: casaIcon, 
-      altKey: "navigation.home", 
-      action: handleHomeNavigation 
-    },
-    { 
-      id: 'calendar', 
-      type: 'image', 
-      src: calendarIcon, 
-      altKey: "navigation.calendar", 
-      action: () => navigateToPathOrOpenAuth("/components/Subpages/Calendar") 
-    },
-    { 
-      id: 'chatbot', 
-      type: 'imageWithNotification', 
-      src: chatbotIcon, 
-      altKey: "navigation.chatbot", 
-      action: handleChatbotToggle,
-      showNotification: showChatbotIconNotification
-    },
-    { 
-      id: 'messages', 
-      type: 'image', 
-      src: messagesIcon, 
-      altKey: "navigation.messages", 
-      action: () => navigateToPathOrOpenAuth("/messages") 
-    },
-    { 
-      id: 'account', 
-      type: 'profile', 
-      altKey: 'navigation.account', 
-      action: handleAccountClick 
-    },
+    { id: 'home', type: 'image', src: casaIcon, altKey: "navigation.home", labelKey: "navigation.home", path: "/", action: handleHomeNavigation },
+    { id: 'calendar', type: 'image', src: calendarIcon, altKey: "navigation.calendar", labelKey: "navigation.calendar", path: "/components/Subpages/Calendar", action: () => navigateToPathOrOpenAuth("/components/Subpages/Calendar") },
+    { id: 'chatbot', type: 'imageWithNotification', src: chatbotIcon, altKey: "navigation.chatbot", labelKey: "navigation.chatbot", path: null, action: handleChatbotToggle, showNotification: showChatbotIconNotification },
+    { id: 'messages', type: 'image', src: messagesIcon, altKey: "navigation.messages", labelKey: "navigation.messages", path: "/messages", action: () => navigateToPathOrOpenAuth("/messages") },
+    { id: 'account', type: 'profile', altKey: 'navigation.profile', labelKey: 'navigation.profile', path: "/profile", action: handleAccountClick },
   ];
 
   return (
-    <div className="fixed h-[48px] bottom-0 left-0 w-full px-2 lg:px-4 lg:h-[60px] z-50 bg-black flex justify-evenly items-center"> {/* Changed padding to px-2 lg:px-4 */}
+    <div className="fixed h-[48px] bottom-0 left-0 w-full px-3 lg:px-4 lg:h-[60px] z-50 bg-black flex justify-evenly items-center">
       {navItems.map((item) => {
-        const translatedAlt = t(item.altKey);
-        switch (item.type) {
-          case 'image':
-            return (
-              <img
-                key={item.id}
-                src={item.src}
-                alt={translatedAlt}
-                {...commonIconProps(translatedAlt)}
-                onClick={item.action}
-              />
-            );
-          case 'imageWithNotification':
-            return (
-              <div key={item.id} className="relative">
-                <img
-                  src={item.src}
-                  alt={translatedAlt}
-                  {...commonIconProps(translatedAlt)}
-                  onClick={item.action}
-                />
-                {item.showNotification && (
-                  <span className="absolute top-0 right-0 block h-2.5 w-2.5 transform translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500 ring-2 ring-black animate-pulse"></span>
-                )}
-              </div>
-            );
-          case 'profile':
-            return (
-              <div
-                key={item.id}
-                role="button"
-                aria-label={translatedAlt}
-                onClick={item.action}
-                className="cursor-pointer"
-              >
+        
+        // --- START: BUG FIX ---
+        // Updated logic to ensure only one item is active at a time.
+        // If the chatbot is open, it's the only active item.
+        let isActive = false;
+        if (isChatbotOpen) {
+          isActive = item.id === 'chatbot';
+        } else {
+          isActive = 
+            (item.id === 'home' && location.pathname === '/') ||
+            (item.path && item.path !== '/' && location.pathname.startsWith(item.path));
+        }
+        // --- END: BUG FIX ---
+
+        const translatedLabel = t(item.labelKey);
+
+        const iconSize = isMobile && isActive ? ICON_SIZE_ACTIVE_MOBILE_PX : ICON_SIZE_DEFAULT_PX;
+        const profileIconSize = isMobile && isActive ? PROFILE_ICON_SIZE_ACTIVE_MOBILE_PX : PROFILE_ICON_SIZE_DEFAULT_PX;
+
+        return (
+          <button
+            key={item.id}
+            onClick={item.action}
+            className="flex flex-col items-center justify-center h-full min-h-full flex-1 text-white transition-colors duration-200"
+            aria-label={translatedLabel}
+          >
+            <div className="relative">
+              {item.type === 'profile' ? (
                 <OctagonalProfile
                   borderColor="#002147" 
                   innerBorderColor="#000"   
                   imageSrc={profileDisplayData.imageSrc}
                   fallbackText={getInitials()} 
-                  size={PROFILE_ICON_SIZE_PX}
+                  size={profileIconSize}
                 />
-              </div>
-            );
-          default:
-            return null;
-        }
+              ) : (
+                <img
+                  src={item.src}
+                  alt={t(item.altKey)}
+                  style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
+                  className="cursor-pointer drop-shadow-lg"
+                />
+              )}
+               {item.type === 'imageWithNotification' && item.showNotification && (
+                  <span className="absolute top-0 right-0 block h-2.5 w-2.5 transform translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500 ring-2 ring-black animate-pulse"></span>
+               )}
+            </div>
+            
+            {isActive && (
+              <span className="text-xs text-white whitespace-nowrap">
+                {translatedLabel}
+              </span>
+            )}
+          </button>
+        );
       })}
     </div>
   );
