@@ -1,4 +1,4 @@
-// ChatbotWindow.jsx
+// src/components/chat/ChatbotWindow.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Send from "../../assets/icons/Send.svg";
@@ -96,17 +96,22 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
       }
     }
     setResizing(false);
-
-    if (!dragging.current && draggableHeaderRef.current && draggableHeaderRef.current.contains(e.target)) {
+  
+    const viewportHeight = window.innerHeight;
+    // Check if user was dragging and if the final height is 25% or less.
+    if (dragging.current && height <= viewportHeight * 0.25) {
+      onClose();
+    } else if (!dragging.current && draggableHeaderRef.current && draggableHeaderRef.current.contains(e.target)) {
+      // Handle double tap to close
       const now = Date.now();
-      if (now - lastTap.current < 300) { 
-        onClose(); 
+      if (now - lastTap.current < 300) {
+        onClose();
         lastTap.current = 0;
       } else {
         lastTap.current = now;
       }
     }
-    dragging.current = false;
+    dragging.current = false; // Reset dragging state
   };
 
   useEffect(() => {
@@ -187,13 +192,6 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
       }
     })();
   }, [sessionId, userId, t, chatOpenedViaNotification]); 
-
-  useEffect(() => {
-    const closeThreshold = 50; 
-    if (height <= closeThreshold && resizing) {
-      // Intentionally left blank for now, double-tap is more reliable
-    }
-  }, [height, onClose, resizing]);
 
   useEffect(() => {
     if (listRef.current) {

@@ -39,12 +39,19 @@ import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
-import TestimonialReview from "./pages/admin/TestimonialReview";
+import UserManagementPage from "./pages/admin/UserManagementPage";
+import TestimonialReviewPage from "./pages/admin/TestimonialReviewPage";
+import BugReportsPage from "./pages/admin/BugReportsPage";
 import BookingSuccess from "./pages/BookingSuccess";
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import DirectMessagesPage from './pages/DirectMessages';
 import ScrollToTopButton from "./components/common/ScrollToTopButton";
+import AppointmentsListPage from "./pages/profile/AppointmentsListPage";
+import SubscriptionsListPage from "./pages/profile/SubscriptionsListPage";
+import PitchDecksListPage from "./pages/profile/PitchDecksListPage";
+import ChatHistoryPage from "./pages/profile/ChatHistoryPage";
+
 
 import {
   requestNotificationPermission,
@@ -114,51 +121,31 @@ function AppContent() {
   // Effect to detect modal login and set the scroll skip flag
   useEffect(() => {
     if (prevUser.current === null && user !== null && prevIsAuthModalOpen.current && !isAuthModalOpen) {
-      // console.log("[App.js] Modal login detected, setting flag to skip scroll.");
       justClosedAuthModalAfterLogin.current = true;
-
-      // Clear any existing timeout for resetting the flag
       if (scrollSkipFlagTimeoutRef.current) {
         clearTimeout(scrollSkipFlagTimeoutRef.current);
       }
-      // Set a new timeout to reset the flag. This ensures it's active for a short period
-      // to cover immediate re-renders, then automatically clears.
       scrollSkipFlagTimeoutRef.current = setTimeout(() => {
-        // console.log("[App.js] Resetting modal login scroll skip flag after timeout.");
         justClosedAuthModalAfterLogin.current = false;
-      }, 150); // Adjust timeout if needed, 150ms is a starting point
+      }, 150); 
     }
     prevUser.current = user;
     prevIsAuthModalOpen.current = isAuthModalOpen;
   }, [user, isAuthModalOpen]);
 
 
-  // Scroll to top logic - MODIFIED
+  // Scroll to top logic
   useEffect(() => {
-    // This effect handles scrolling to the top of the page on navigation,
-    // unless a modal login just occurred (flagged by justClosedAuthModalAfterLogin).
-
-    // console.log(`[App.js scroll useEffect] Path: ${location.pathname}. Flag: ${justClosedAuthModalAfterLogin.current}. ScrollY: ${window.scrollY}`);
-
     const attemptScrollToTop = (context = "initial") => {
-      // Check the flag *before* attempting to scroll
       if (justClosedAuthModalAfterLogin.current) {
-        // console.log(`[App.js scroll useEffect] Modal login flag is TRUE. Skipping scrollToTop for ${context}.`);
-        // The flag will be reset by its own timer, so no need to reset it here.
         return;
       }
-      // console.log(`[App.js ${context} scroll] Forcing scrollTo(0,0) for path: ${location.pathname}. Current scrollY: ${window.scrollY}`);
       window.scrollTo(0, 0);
-      // console.log(`[App.js ${context} scroll] After scrollTo(0,0). Current scrollY: ${window.scrollY}`);
     };
 
-    // If the flag is true, we don't even set up the scroll timers for this path change.
-    // The flag will be reset by its own timeout, allowing normal scroll behavior on subsequent navigations.
     if (justClosedAuthModalAfterLogin.current) {
-        // console.log("[App.js scroll useEffect] Skipping scroll setup due to modal login flag.");
     } else {
         const initialScrollTimer = setTimeout(() => attemptScrollToTop("initial"), 0);
-
         let delayedHomepageScrollTimer = null;
         let finalHomepageScrollTimer = null;
         if (location.pathname === '/') {
@@ -169,7 +156,6 @@ function AppContent() {
             }
           }, 250);
         }
-        // Cleanup for these timers
         return () => {
           clearTimeout(initialScrollTimer);
           if (delayedHomepageScrollTimer) clearTimeout(delayedHomepageScrollTimer);
@@ -177,21 +163,18 @@ function AppContent() {
         };
     }
 
-    // Hash cleaning logic (remains the same)
     if (
       window.location.hash &&
       !window.location.hash.includes('access_token=') &&
       !window.location.hash.includes('refresh_token=') &&
       !window.location.hash.includes('error_description=')
     ) {
-      // console.log('[App.js useEffect] Cleaning hash:', window.location.hash);
       const cleanUrl = window.location.pathname + window.location.search;
       window.history.replaceState(null, document.title, cleanUrl);
     }
 
-  }, [location.pathname]); // Effect runs on path change
+  }, [location.pathname]);
 
-  // Cleanup timeout on component unmount
   useEffect(() => {
     return () => {
       if (scrollSkipFlagTimeoutRef.current) {
@@ -217,7 +200,6 @@ function AppContent() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // console.log('Auth state change:', event, session);
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -283,9 +265,7 @@ function AppContent() {
         }
       )
       .subscribe((status, err) => {
-        if (status === 'SUBSCRIBED') {
-          // console.log('Subscribed to notifications channel for user:', user.id);
-        } else if (err) {
+        if (err) {
           console.error('Error subscribing to notifications channel:', err);
         }
       });
@@ -389,20 +369,28 @@ function AppContent() {
           }
         />
         <Route path="/booking-success" element={<BookingSuccess />} />
-        <Route
-          path="/admin/testimonials"
-          element={<PrivateRoute><TestimonialReview /></PrivateRoute>}
-        />
+        
+        {/* Admin Routes */}
+        <Route path="/admin/users" element={<PrivateRoute><UserManagementPage /></PrivateRoute>} />
+        <Route path="/admin/testimonials" element={<PrivateRoute><TestimonialReviewPage /></PrivateRoute>} />
+        <Route path="/admin/bugs" element={<PrivateRoute><BugReportsPage /></PrivateRoute>} />
+
+        {/* Auth Routes */}
         <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
         <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
         <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
         <Route path="/reset-password" element={<PublicOnlyRoute><ResetPassword /></PublicOnlyRoute>} />
+        
+        {/* Profile Routes */}
         <Route path="/profile" element={<PrivateRoute><ProfilePage onChatOpen={toggleChatbot} /></PrivateRoute>} />
         <Route path="/edit-profile" element={<PrivateRoute><EditProfilePage /></PrivateRoute>} />
-        <Route
-          path="/messages"
-          element={<PrivateRoute><DirectMessagesPage /></PrivateRoute>}
-        />
+        <Route path="/profile/appointments" element={<PrivateRoute><AppointmentsListPage /></PrivateRoute>} />
+        <Route path="/profile/subscriptions" element={<PrivateRoute><SubscriptionsListPage /></PrivateRoute>} />
+        <Route path="/profile/pitch-decks" element={<PrivateRoute><PitchDecksListPage /></PrivateRoute>} />
+        <Route path="/profile/chat-history" element={<PrivateRoute><ChatHistoryPage onChatOpen={toggleChatbot} /></PrivateRoute>} />
+        
+        {/* Other Routes */}
+        <Route path="/messages" element={<PrivateRoute><DirectMessagesPage /></PrivateRoute>} />
         <Route path="/settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
         <Route path="/components/Subpages/Calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
         <Route path="/components/Subpages/Settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
@@ -460,7 +448,6 @@ function AppContent() {
 }
 
 function App() {
-  // State for AuthModalContext needs to be at this level
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const openAuthModal = useCallback(() => {
     setIsAuthModalOpen(true);
@@ -471,7 +458,6 @@ function App() {
     <I18nextProvider i18n={i18n}>
       <AuthProvider>
         <ServiceProvider>
-          {/* Provide the context value here */}
           <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal, isAuthModalOpen }}>
             <Router>
               <AppContent />
