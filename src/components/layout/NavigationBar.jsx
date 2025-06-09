@@ -17,23 +17,29 @@ import chatbotIcon from '../../assets/icons/Dagalow Branco.svg';
 import messagesIcon from '../../assets/icons/Messages Branco.svg';
 import defaultProfileIcon from '../../assets/img/Pessoas/Default.svg';
 
-// Constants for responsive icon sizing
-const ICON_SIZE_DEFAULT_PX = 26;
-const ICON_SIZE_ACTIVE_MOBILE_PX = 22; // Smaller size for the active icon on mobile
-const PROFILE_ICON_SIZE_DEFAULT_PX = 28;
-const PROFILE_ICON_SIZE_ACTIVE_MOBILE_PX = 24;
+/**
+ * Helper hook to get the current responsive breakpoint.
+ * This allows the component to adapt its styling for mobile, tablet, and desktop.
+ * @returns {'sm' | 'md' | 'lg'} The current breakpoint.
+ */
+function useBreakpoint() {
+  const getBreakpoint = () => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth >= 1024) return 'lg';
+      if (window.innerWidth >= 768) return 'md';
+    }
+    return 'sm';
+  };
 
-// Helper hook to detect if the view is mobile
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [breakpoint, setBreakpoint] = useState(getBreakpoint());
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setBreakpoint(getBreakpoint());
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  return isMobile;
+  return breakpoint;
 }
 
 // Helper to construct Supabase avatar URL
@@ -52,7 +58,7 @@ const NavigationBar = ({
   const location = useLocation();
   const { user } = useAuth();
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
+  const breakpoint = useBreakpoint(); // Use the new responsive breakpoint hook
 
   // State
   const [profileDisplayData, setProfileDisplayData] = useState({
@@ -152,14 +158,11 @@ const NavigationBar = ({
     handleCloseChatbotIfNeeded();
     if (user) {
         if (location.pathname === '/messages') {
-            // If already on the messages page, send a signal to reset the view to the list.
             navigate('/messages', { state: { forceList: true }, replace: true });
         } else {
-            // Otherwise, just navigate to the messages page.
             navigate('/messages');
         }
     } else if (typeof onAuthModalOpen === 'function') {
-        // If not logged in, open the authentication modal.
         onAuthModalOpen();
     }
   }, [user, location.pathname, navigate, onAuthModalOpen, handleCloseChatbotIfNeeded]);
@@ -174,7 +177,7 @@ const NavigationBar = ({
   ];
 
   return (
-    <div className="fixed h-[48px] bottom-0 left-0 w-full px-3 lg:px-4 lg:h-[60px] z-50 bg-black flex justify-evenly items-center">
+    <div className="fixed h-[48px] md:h-[54px] lg:h-[60px] bottom-0 left-0 w-full px-3 lg:px-4 z-50 bg-black flex justify-evenly items-center">
       {navItems.map((item) => {
         
         let isActive = false;
@@ -188,8 +191,25 @@ const NavigationBar = ({
 
         const translatedLabel = t(item.labelKey);
 
-        const iconSize = isMobile && isActive ? ICON_SIZE_ACTIVE_MOBILE_PX : ICON_SIZE_DEFAULT_PX;
-        const profileIconSize = isMobile && isActive ? PROFILE_ICON_SIZE_ACTIVE_MOBILE_PX : PROFILE_ICON_SIZE_DEFAULT_PX;
+        // --- RESPONSIVE SIZING LOGIC ---
+        // 1. Determine the base (inactive) icon size based on the current breakpoint.
+        let baseIconSize;
+        switch (breakpoint) {
+          case 'lg':
+            baseIconSize = 30; // Larger icons for desktop
+            break;
+          case 'md':
+            baseIconSize = 28; // Medium icons for tablet
+            break;
+          default: // 'sm'
+            baseIconSize = 26; // Default icons for mobile
+        }
+
+        // 2. When active, shrink the icon to make space for the label.
+        //    The profile icon is consistently larger than the other icons.
+        const iconSize = isActive ? baseIconSize - 4 : baseIconSize;
+        const profileIconSize = iconSize + 2;
+        // --- END OF SIZING LOGIC ---
 
         return (
           <button
@@ -212,7 +232,7 @@ const NavigationBar = ({
                   src={item.src}
                   alt={t(item.altKey)}
                   style={{ width: `${iconSize}px`, height: `${iconSize}px` }}
-                  className="cursor-pointer drop-shadow-lg"
+                  className="cursor-pointer drop-shadow-lg transition-all duration-200"
                 />
               )}
                {item.type === 'imageWithNotification' && item.showNotification && (
@@ -224,7 +244,7 @@ const NavigationBar = ({
             </div>
             
             {isActive && (
-              <span className="text-xs text-white whitespace-nowrap">
+              <span className="text-[10px] mt-[2px] md:text-xs lg:text-sm text-white whitespace-nowrap">
                 {translatedLabel}
               </span>
             )}

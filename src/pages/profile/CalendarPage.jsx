@@ -100,10 +100,13 @@ export default function CalendarPage() {
 
   useEffect(() => {
     if (selectedDate) {
+      // If a date is selected, filter events for that day.
       const dayEvents = events.filter(evt => isSameDay(evt.date, selectedDate));
       setSelectedEvents(dayEvents);
     } else {
-      setSelectedEvents([]);
+      // If no date is selected, show all events, sorted by date.
+      const sortedEvents = [...events].sort((a, b) => a.date - b.date);
+      setSelectedEvents(sortedEvents);
     }
   }, [selectedDate, events]);
 
@@ -148,6 +151,17 @@ export default function CalendarPage() {
     );
   }
 
+  const handleDayClick = (date) => {
+    // If the clicked date is already selected, deselect it (show all events).
+    if (selectedDate && isSameDay(date, selectedDate)) {
+      setSelectedDate(null);
+    } else {
+      // Otherwise, select the new date.
+      setSelectedDate(date);
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-oxfordBlue to-gentleGray py-6 md:py-12 px-4 md:px-8 lg:px-12">
       <div className="max-w-4xl mx-auto">
@@ -188,7 +202,7 @@ export default function CalendarPage() {
           ) : (
             <div className="md:flex md:space-x-6 lg:space-x-8">
               {/* Calendar Grid - optimized for tablets and desktops */}
-              <div className="md:flex-1 bg-white rounded-xl shadow-md p-4 mb-6 md:mb-0">
+              <div className="md:w-1/2 bg-white rounded-xl shadow-md p-4 mb-6 md:mb-0">
                 {/* Weekday Headers with improved styling */}
                 <div className="grid grid-cols-7 gap-1 md:gap-2 mb-2 md:mb-4">
                   {[
@@ -218,7 +232,7 @@ export default function CalendarPage() {
                     return (
                       <div
                         key={idx}
-                        onClick={() => setSelectedDate(date)}
+                        onClick={() => handleDayClick(date)}
                         className={`
                           h-10 md:h-14 lg:h-16 p-1 border rounded-lg transition-all cursor-pointer 
                           flex flex-col items-center justify-between
@@ -255,49 +269,36 @@ export default function CalendarPage() {
                 </div>
               </div>
               
-              {/* Selected Date Events - Now side by side on larger screens */}
-              {selectedDate && (
-                <div className="md:flex-1 bg-white rounded-xl shadow-md p-4 md:p-6">
-                  <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-oxfordBlue mb-4">
-                    {format(selectedDate, "EEEE, MMMM d, yyyy")}
-                  </h3>
-                  
-                  <div className="space-y-3 max-h-80 md:max-h-96 overflow-auto pr-2">
-                    {selectedEvents.length > 0 ? (
-                      selectedEvents.map(event => (
-                        <div 
-                          key={event.id} 
-                          className={`bg-gentleGray p-4 rounded-lg border-l-4 hover:shadow-md transition-shadow ${
-                            event.userId === user.id ? 'border-darkGold' : 'border-oxfordBlue'
-                          }`}
-                        >
-                          <div className="flex justify-between items-center">
-                            <h4 className="font-semibold text-oxfordBlue">{event.title}</h4>
-                            <span className="bg-oxfordBlue text-white px-2 py-1 rounded text-xs md:text-sm">{event.time}</span>
-                          </div>
-                          <p className="text-sm text-gray-600 mt-1">Duration: {event.duration} minutes</p>
+              <div className="md:w-1/2 bg-white rounded-xl shadow-md p-4 md:p-6">
+                <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-oxfordBlue mb-4">
+                  {selectedDate ? format(selectedDate, "EEEE, MMMM d, yyyy") : 'All Appointments'}
+                </h3>
+                
+                <div className="space-y-3 max-h-80 md:max-h-[50vh] overflow-auto pr-2">
+                  {selectedEvents.length > 0 ? (
+                    selectedEvents.map(event => (
+                      <div 
+                        key={event.id} 
+                        className={`bg-gentleGray p-4 rounded-lg border-l-4 hover:shadow-md transition-shadow ${
+                          event.userId === user.id ? 'border-darkGold' : 'border-oxfordBlue'
+                        }`}
+                      >
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-semibold text-oxfordBlue">{event.title}</h4>
+                          <span className="bg-oxfordBlue text-white px-2 py-1 rounded text-xs md:text-sm">{event.time}</span>
                         </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-gray-600 border-2 border-dashed border-gray-300 rounded-lg">
-                        <p>{t('calendar.no_appointments')}</p>
+                        <p className="text-sm text-gray-600 mt-1">{format(event.date, "MMMM d, yyyy")}</p>
+                        <p className="text-sm text-gray-600 mt-1">Duration: {event.duration} minutes</p>
                       </div>
-                    )}
-                  </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-600 border-2 border-dashed border-gray-300 rounded-lg">
+                      <p>{t('calendar.no_appointments')}</p>
+                    </div>
+                  )}
                 </div>
-              )}
-              
-              {/* Empty state when no date is selected */}
-              {!selectedDate && (
-                <div className="md:flex-1 hidden md:block bg-white rounded-xl shadow-md p-6">
-                  <div className="h-full flex flex-col items-center justify-center">
-                    <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <p className="text-gray-500 text-center">Select a date to view appointments</p>
-                  </div>
-                </div>
-              )}
+              </div>
+
             </div>
           )}
           
