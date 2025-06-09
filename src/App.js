@@ -114,6 +114,46 @@ function AppContent() {
   const prevIsAuthModalOpen = useRef(isAuthModalOpen);
   const scrollSkipFlagTimeoutRef = useRef(null);
 
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadMessagesCount(0);
+      return;
+    }
+
+    const fetchUnreadCount = async () => {
+      const { count, error } = await supabase
+        .from('private_messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('receiver_id', user.id)
+        .eq('is_read', false);
+
+      if (error) {
+        console.error('Error fetching unread messages count:', error.message);
+      } else {
+        setUnreadMessagesCount(count);
+      }
+    };
+
+    fetchUnreadCount(); // Initial fetch
+
+    const channel = supabase
+      .channel(`realtime-messages-count-for-${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'private_messages', filter: `receiver_id=eq.${user.id}` },
+        (payload) => {
+          fetchUnreadCount(); // Re-fetch on any change
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
 
   useEffect(() => {
     setAcceptsFunctionalCookies(Cookies.get("siteCookieConsent") === "true");
@@ -404,6 +444,7 @@ function AppContent() {
         onChatbotClick={toggleChatbot}
         onAuthModalOpen={contextOpenAuthModal}
         showChatbotIconNotification={showChatbotIconNotification}
+        unreadMessagesCount={unreadMessagesCount}
       />
       <AnimatePresence>
         {isChatbotOpen && (

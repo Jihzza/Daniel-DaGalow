@@ -1,5 +1,6 @@
 // src/pages/DirectMessages.jsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient'; // Adjust path as needed
 import { useAuth } from '../contexts/AuthContext'; // Adjust path as needed
 import OctagonalProfile from '../components/common/Octagonal Profile'; // Adjust path as needed
@@ -42,6 +43,20 @@ function DirectMessagesPage() {
   const messageSubscriptionRef = useRef(null);
   const conversationSubscriptionRef = useRef(null);
   const optimisticMessageIdRef = useRef(null);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // This effect listens for the 'forceList' signal from the router state.
+    if (location.state?.forceList) {
+        // If the signal is present, reset the view by clearing the selected conversation.
+        setSelectedConversation(null);
+        // Immediately replace the history state to remove the signal,
+        // preventing it from re-triggering on a page refresh or back/forward navigation.
+        navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate, location.pathname]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -103,11 +118,37 @@ function DirectMessagesPage() {
         `)
         .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
         .order('last_message_at', { ascending: false });
+
       if (convError) throw convError;
-      const formattedConversations = (data || []).map(conv => {
+
+      const conversationsWithLastMessage = await Promise.all(
+        (data || []).map(async (conv) => {
+          const { data: lastMessage, error: lastMessageError } = await supabase
+            .from('private_messages')
+            .select('content, sender_id')
+            .eq('conversation_id', conv.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle(); 
+
+          if (lastMessageError) {
+              console.error(`Error fetching last message for conv ${conv.id}:`, lastMessageError);
+              return { ...conv, last_message: null };
+          }
+          return { ...conv, last_message: lastMessage };
+        })
+      );
+
+      const formattedConversations = conversationsWithLastMessage.map(conv => {
         const otherUser = conv.user1_id === user.id ? conv.user2 : conv.user1;
         const currentUserIsUser1 = conv.user1_id === user.id;
         const unreadCount = currentUserIsUser1 ? conv.user1_unread_count : conv.user2_unread_count;
+        
+        let lastMessagePreview = conv.last_message?.content || t('direct_messages.no_messages_yet');
+        if (conv.last_message?.sender_id === user.id) {
+            lastMessagePreview = `You: ${lastMessagePreview}`;
+        }
+
         return {
           id: conv.id,
           otherUser: {
@@ -117,8 +158,10 @@ function DirectMessagesPage() {
           },
           last_message_at: conv.last_message_at,
           unread_count: unreadCount,
+          last_message_preview: lastMessagePreview,
         };
       });
+
       setConversations(formattedConversations);
     } catch (err) {
       console.error('Error fetching conversations:', err);
@@ -127,6 +170,7 @@ function DirectMessagesPage() {
       setLoadingConversations(false);
     }
   }, [user, t]);
+
 
   useEffect(() => {
     if (user) {
@@ -497,15 +541,23 @@ function DirectMessagesPage() {
                   fallbackText={(conv.otherUser.username?.[0] || 'U').toUpperCase()}
                   borderColor="transparent"
                   innerBorderColor={selectedConversation?.id === conv.id ? "#BFA200" : "#001A3A"}
+                  showUnreadIndicator={conv.unread_count > 0}
                 />
                 <div className="ml-3 flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{conv.otherUser.username}</p>
-                  <p className="text-xs text-gray-400 truncate">
-                    {conv.last_message_at ? `${formatDate(conv.last_message_at)}` : t('direct_messages.no_messages_yet')}
-                  </p>
+                    <div className="flex justify-between items-baseline">
+                        <p className={`text-sm truncate text-white ${conv.unread_count > 0 ? 'font-bold' : 'font-medium'}`}>
+                            {conv.otherUser.username}
+                        </p>
+                        <p className="text-xs text-gray-400 flex-shrink-0 ml-2">
+                            {conv.last_message_at ? formatDate(conv.last_message_at) : ''}
+                        </p>
+                    </div>
+                    <p className="text-sm truncate text-gray-400 font-normal">
+                        {conv.last_message_preview}
+                    </p>
                 </div>
                 {conv.unread_count > 0 && (
-                  <span className="ml-2 bg-darkGold text-oxfordBlue text-xs font-bold px-2 py-0.5 rounded-full">
+                  <span className="ml-2 bg-darkGold text-oxfordBlue text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0">
                     {conv.unread_count}
                   </span>
                 )}

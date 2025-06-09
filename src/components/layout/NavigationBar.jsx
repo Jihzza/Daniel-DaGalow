@@ -45,6 +45,7 @@ const NavigationBar = ({
   onAuthModalOpen,
   isChatbotOpen,
   showChatbotIconNotification,
+  unreadMessagesCount,
 }) => {
   // Hooks
   const navigate = useNavigate();
@@ -147,12 +148,28 @@ const NavigationBar = ({
     }
   }, [onChatbotClick]);
 
+  const handleMessagesClick = useCallback(() => {
+    handleCloseChatbotIfNeeded();
+    if (user) {
+        if (location.pathname === '/messages') {
+            // If already on the messages page, send a signal to reset the view to the list.
+            navigate('/messages', { state: { forceList: true }, replace: true });
+        } else {
+            // Otherwise, just navigate to the messages page.
+            navigate('/messages');
+        }
+    } else if (typeof onAuthModalOpen === 'function') {
+        // If not logged in, open the authentication modal.
+        onAuthModalOpen();
+    }
+  }, [user, location.pathname, navigate, onAuthModalOpen, handleCloseChatbotIfNeeded]);
+
   // Data for nav items
   const navItems = [
     { id: 'home', type: 'image', src: casaIcon, altKey: "navigation.home", labelKey: "navigation.home", path: "/", action: handleHomeNavigation },
     { id: 'calendar', type: 'image', src: calendarIcon, altKey: "navigation.calendar", labelKey: "navigation.calendar", path: "/components/Subpages/Calendar", action: () => navigateToPathOrOpenAuth("/components/Subpages/Calendar") },
     { id: 'chatbot', type: 'imageWithNotification', src: chatbotIcon, altKey: "navigation.chatbot", labelKey: "navigation.chatbot", path: null, action: handleChatbotToggle, showNotification: showChatbotIconNotification },
-    { id: 'messages', type: 'image', src: messagesIcon, altKey: "navigation.messages", labelKey: "navigation.messages", path: "/messages", action: () => navigateToPathOrOpenAuth("/messages") },
+    { id: 'messages', type: 'image', src: messagesIcon, altKey: "navigation.messages", labelKey: "navigation.messages", path: "/messages", action: handleMessagesClick },
     { id: 'account', type: 'profile', altKey: 'navigation.profile', labelKey: 'navigation.profile', path: "/profile", action: handleAccountClick },
   ];
 
@@ -160,9 +177,6 @@ const NavigationBar = ({
     <div className="fixed h-[48px] bottom-0 left-0 w-full px-3 lg:px-4 lg:h-[60px] z-50 bg-black flex justify-evenly items-center">
       {navItems.map((item) => {
         
-        // --- START: BUG FIX ---
-        // Updated logic to ensure only one item is active at a time.
-        // If the chatbot is open, it's the only active item.
         let isActive = false;
         if (isChatbotOpen) {
           isActive = item.id === 'chatbot';
@@ -171,7 +185,6 @@ const NavigationBar = ({
             (item.id === 'home' && location.pathname === '/') ||
             (item.path && item.path !== '/' && location.pathname.startsWith(item.path));
         }
-        // --- END: BUG FIX ---
 
         const translatedLabel = t(item.labelKey);
 
@@ -205,6 +218,9 @@ const NavigationBar = ({
                {item.type === 'imageWithNotification' && item.showNotification && (
                   <span className="absolute top-0 right-0 block h-2.5 w-2.5 transform translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500 ring-2 ring-black animate-pulse"></span>
                )}
+              {item.id === 'messages' && unreadMessagesCount > 0 && (
+                 <span className="absolute top-0 right-0 block h-2.5 w-2.5 transform translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500 ring-2 ring-black"></span>
+              )}
             </div>
             
             {isActive && (
