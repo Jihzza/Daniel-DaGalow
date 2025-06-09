@@ -136,6 +136,25 @@ function Header({ onAuthModalOpen }) {
       navigate(`/#${sectionId}`);
     }
   };
+
+  const handleCarouselNavigation = (sectionId, pageId) => {
+    setMenuOpen(false); 
+    navigate(`/#${sectionId}`, { state: { activeCarouselPage: pageId } });
+
+    setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            const headerHeight = breakpoint === "lg" ? 80 : breakpoint === "md" ? 96 : 56;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - headerHeight;
+            
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    }, 100);
+  };
   
   const getFlagImage = (langCode) => {
     const normalized = langCode.toLowerCase();
@@ -159,14 +178,13 @@ function Header({ onAuthModalOpen }) {
     return langDetails.name.toUpperCase();
   };
 
-  // Calculate heights based on breakpoint
   const headerHeightValue = breakpoint === "lg" ? 80 : breakpoint === "md" ? 96 : 56;
   const navBarHeightValue = breakpoint === "lg" ? 60 : 48;
 
   const mobileMenuStyle = {
     height: `calc(100vh - ${headerHeightValue}px - ${navBarHeightValue}px)`,
     top: `${headerHeightValue}px`,
-    zIndex: 51, // Increased z-index
+    zIndex: 51,
   };
 
   return (
@@ -242,7 +260,7 @@ function Header({ onAuthModalOpen }) {
       <div
         className={`fixed left-0 w-[70vw] sm:w-[50vw] md:w-[40vw] lg:w-[30vw] xl:w-[25vw] max-w-xs bg-black transform transition-transform duration-300 ease-in-out shadow-2xl flex flex-col`}
         style={{
-          ...mobileMenuStyle, // Apply dynamic height, top, and zIndex
+          ...mobileMenuStyle,
           transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
         }}
       >
@@ -322,12 +340,28 @@ function Header({ onAuthModalOpen }) {
             >
                 {t("other_wins.other_wins_title")}
             </button>
+
+            {/* *** MODIFIED SECTION *** */}
+            {/* Replaced the single FAQs button with all three carousel options */}
             <button
-              onClick={() => handleScrollToSection("bottom-carousel")}
+              onClick={() => handleCarouselNavigation('bottom-carousel', 'social_media')}
+              className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+            >
+              {t("bottom_carousel.pages.social_media")}
+            </button>
+            <button
+              onClick={() => handleCarouselNavigation('bottom-carousel', 'faqs')}
               className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
             >
               {t("bottom_carousel.pages.faqs")}
             </button>
+            <button
+              onClick={() => handleCarouselNavigation('bottom-carousel', 'bugs')}
+              className="w-full text-left flex items-center text-white hover:bg-darkGold/10 hover:text-darkGold px-3 py-2 sm:py-2.5 rounded-lg text-base md:text-lg transition-colors"
+            >
+              {t("bottom_carousel.pages.bugs")}
+            </button>
+            {/* *** END OF MODIFIED SECTION *** */}
           </div>
 
           <div className="pt-2 border-t border-darkGold/20 mt-2">
