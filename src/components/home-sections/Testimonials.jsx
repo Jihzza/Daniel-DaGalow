@@ -7,6 +7,7 @@ import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 // bring in your original assets
 import rafaelImg from "../../assets/img/Pessoas/Rafa.jpeg";
@@ -14,6 +15,7 @@ import goncaloImg from "../../assets/img/Pessoas/Gonçalo.png";
 
 function Testimonials({ onAuthModalOpen }) {
   const { t } = useTranslation();
+  const navigate = useNavigate(); // Hook for navigation
   const swiperRef = useRef(null);
   
   const defaultTestimonials = [
@@ -59,14 +61,6 @@ function Testimonials({ onAuthModalOpen }) {
   const [testimonials, setTestimonials] = useState(defaultTestimonials);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const [isAuthRequired, setIsAuthRequired] = useState(false);
-
-  // Modal & form state
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [author, setAuthor] = useState("");
-  const [quote, setQuote] = useState("");
-  const [imageFile, setImageFile] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
 
   // Add custom CSS via style tag directly in the component
   useEffect(() => {
@@ -182,70 +176,14 @@ function Testimonials({ onAuthModalOpen }) {
 
   const handleTestimonialButtonClick = () => {
     if (user) {
-      // User is logged in, show testimonial form
-      setModalOpen(true);
+      // User is logged in, navigate to the new page
+      navigate('/create-testimonial');
     } else {
       // User is not logged in, trigger the auth modal
-      onAuthModalOpen(); // You'd need to pass this as a prop to the component
+      onAuthModalOpen();
     }
   };
 
-  // handle new submission
-  const handleSubmit = async () => {
-    if (!author.trim() || !quote.trim() || !imageFile) {
-      alert(t("testimonials.modal_validation"));
-      return;
-    }
-
-    if (!user) {
-      alert(t("testimonials.modal_auth_required"));
-      return;
-    }
-
-    setSubmitting(true);
-
-    try {
-      // upload image
-      const ext = imageFile.name.split(".").pop();
-      const fileName = `${Date.now()}.${ext}`;
-      let { error: upErr } = await supabase.storage
-        .from("testimonials")
-        .upload(fileName, imageFile, { cacheControl: "3600", upsert: false });
-      if (upErr) throw upErr;
-
-      // get URL
-      let { data: urlData, error: urlErr } = supabase.storage
-        .from("testimonials")
-        .getPublicUrl(fileName);
-      if (urlErr) throw urlErr;
-
-      // insert record
-      let { data: newT, error: insErr } = await supabase
-        .from("testimonials")
-        .insert({
-          user_id: user.id,
-          author: author.trim(),
-          quote: quote.trim(),
-          image_url: urlData.publicUrl,
-          status: "pending",
-        })
-        .single();
-      if (insErr) throw insErr;
-
-      // update state: put new one at top
-      setTestimonials((prev) => [newT, ...prev]);
-      setModalOpen(false);
-      setAuthor("");
-      setQuote("");
-      setImageFile(null);
-      alert(t("testimonials.modal_success"));
-    } catch (error) {
-      console.error("Submission error:", error);
-      alert(t("testimonials.modal_error"));
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   return (
     <section id="testimonials" className="py-8 px-4 text-black">
@@ -349,182 +287,6 @@ function Testimonials({ onAuthModalOpen }) {
           {t("testimonials.leave_testimonial")}
         </button>
       </div>
-
-      {/* Modal with updated layout order */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
-          <div className="bg-oxfordBlue rounded-2xl w-full max-w-md shadow-2xl transform transition-all duration-300 animate-fade-in">
-            <div className="border-b border-darkGold/30 p-4">
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-1">
-                {t("testimonials.modal_title")}
-              </h3>
-              <p className="text-gray-300 text-sm md:text-base">
-                {t("testimonials.modal_subtitle")}
-              </p>
-            </div>
-
-            <div className="p-4 space-y-6">
-              {/* Image upload with preview - NOW FIRST */}
-              <div className="space-y-3">
-                <label className="block text-white font-medium">
-                  {t("testimonials.modal_photo_label")}
-                </label>
-                <div className="flex flex-col items-center space-y-4">
-                  {imageFile ? (
-                    <div className="relative">
-                      <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-darkGold">
-                        <img
-                          src={URL.createObjectURL(imageFile)}
-                          alt="Preview"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <button
-                        onClick={() => setImageFile(null)}
-                        className="absolute top-2 right-2 bg-red-500 rounded-full w-6 h-6 flex items-center justify-center text-white text-xs"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="w-20 h-20 rounded-full border-2 border-darkGold border-dashed flex items-center justify-center text-darkGold/50">
-                      <svg
-                        className="w-8 h-8"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                        ></path>
-                      </svg>
-                    </div>
-                  )}
-
-                  <label className="w-full">
-                    <div className="px-4 py-2 bg-darkGold text-black font-medium rounded-lg hover:bg-opacity-90 transition cursor-pointer text-center">
-                      {imageFile
-                        ? t("testimonials.modal_photo_change")
-                        : t("testimonials.modal_photo_select")}
-                    </div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setImageFile(e.target.files[0])}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
-                {!imageFile && (
-                  <p className="text-gray-400 text-xs md:text-base text-center">
-                    {t("testimonials.modal_photo_placeholder")}
-                  </p>
-                )}
-              </div>
-
-              {/* Name field - NOW SECOND */}
-              <div className="space-y-2">
-                <label className="block text-white font-medium">
-                  {t("testimonials.modal_name_label")}
-                </label>
-                <input
-                  type="text"
-                  placeholder={t("testimonials.modal_name_placeholder")}
-                  value={author}
-                  onChange={(e) => setAuthor(e.target.value)}
-                  className="w-full px-3 py-2 border-2 border-darkGold rounded-xl bg-oxfordBlue/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-darkGold"
-                  required
-                />
-              </div>
-
-              {/* Testimonial text with character counter - NOW THIRD */}
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <label className="block text-white font-medium">
-                    {t("testimonials.modal_testimonial_label")}
-                  </label>
-                  <span
-                    className={`text-xs md:text-base ${
-                      quote.length > 110 ? "text-red-400" : "text-gray-400"
-                    }`}
-                  >
-                    {quote.length}/110
-                  </span>
-                </div>
-                <textarea
-                  placeholder={t("testimonials.modal_testimonial_placeholder")}
-                  maxLength={110}
-                  value={quote}
-                  onChange={(e) => setQuote(e.target.value)}
-                  className="w-full px-3 py-2 border-2 border-darkGold rounded-xl bg-oxfordBlue/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-darkGold h-28 resize-none"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Footer with buttons */}
-            <div className="px-4 pb-4 flex justify-end space-x-3">
-              <button
-                onClick={() => setModalOpen(false)}
-                className="px-4 py-2 border border-darkGold text-darkGold rounded-lg hover:bg-darkGold/10 transition"
-              >
-                {t("testimonials.modal_cancel")}
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={
-                  submitting ||
-                  !author.trim() ||
-                  !quote.trim() ||
-                  !imageFile ||
-                  quote.length > 110
-                }
-                className={`px-3 py-2 bg-darkGold text-black font-bold rounded-lg ${
-                  submitting ||
-                  !author.trim() ||
-                  !quote.trim() ||
-                  !imageFile ||
-                  quote.length > 110
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-opacity-90"
-                } transition`}
-              >
-                {submitting ? (
-                  <div className="flex items-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-black"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    {t("testimonials.modal_submitting")}
-                  </div>
-                ) : (
-                  t("testimonials.modal_submit")
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

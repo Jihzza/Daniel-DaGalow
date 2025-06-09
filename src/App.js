@@ -51,6 +51,7 @@ import AppointmentsListPage from "./pages/profile/AppointmentsListPage";
 import SubscriptionsListPage from "./pages/profile/SubscriptionsListPage";
 import PitchDecksListPage from "./pages/profile/PitchDecksListPage";
 import ChatHistoryPage from "./pages/profile/ChatHistoryPage";
+import CreateTestimonialPage from './pages/CreateTestimonialPage';
 
 
 import {
@@ -395,6 +396,7 @@ function AppContent() {
         <Route path="/components/Subpages/Calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
         <Route path="/components/Subpages/Settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
         <Route path="/notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
+        <Route path="/create-testimonial" element={<PrivateRoute><CreateTestimonialPage /></PrivateRoute>} />
       </Routes>
 
       <NavigationBar
