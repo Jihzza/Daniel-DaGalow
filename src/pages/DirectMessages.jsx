@@ -214,7 +214,7 @@ function DirectMessagesPage() {
         .order('created_at', { ascending: true });
       if (messagesError) throw messagesError;
       setMessages(data || []);
-
+  
       const unreadMessagesFromOtherUser = data.filter(msg => msg.receiver_id === user.id && !msg.is_read);
       if (unreadMessagesFromOtherUser.length > 0) {
         const messageIdsToUpdate = unreadMessagesFromOtherUser.map(msg => msg.id);
@@ -222,7 +222,7 @@ function DirectMessagesPage() {
           .from('private_messages')
           .update({ is_read: true })
           .in('id', messageIdsToUpdate);
-
+  
         const convDetails = await supabase.from('conversations').select('user1_id, user2_id').eq('id', conversationId).single();
         if (convDetails.data) {
           const fieldToUpdate = convDetails.data.user1_id === user.id ? 'user1_unread_count' : 'user2_unread_count';
@@ -230,6 +230,10 @@ function DirectMessagesPage() {
             .from('conversations')
             .update({ [fieldToUpdate]: 0 })
             .eq('id', conversationId);
+          
+          // ** THE FIX: "Ring the bell" for App.js to hear **
+          window.dispatchEvent(new Event('messagesRead'));
+  
           fetchConversations();
         }
       }
@@ -289,7 +293,11 @@ function DirectMessagesPage() {
                           .from('conversations')
                           .update({ [fieldToUpdate]: 0 })
                           .eq('id', selectedConversation.id)
-                          .then(() => fetchConversations());
+                          .then(() => {
+                            // ** THE FIX: "Ring the bell" here too **
+                            window.dispatchEvent(new Event('messagesRead'));
+                            fetchConversations()
+                          });
                       }
                     });
                 }

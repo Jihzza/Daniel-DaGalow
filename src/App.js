@@ -96,7 +96,6 @@ function AppContent() {
   const { user } = useAuth();
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [chatSessionId, setChatSessionId] = useState(null);
-  // Consuming context for modal state
   const { isAuthModalOpen, openAuthModal: contextOpenAuthModal, closeAuthModal: contextCloseAuthModal } = useContext(AuthModalContext);
 
   const location = useLocation();
@@ -110,7 +109,6 @@ function AppContent() {
   const [hasShownNotificationThisSession, setHasShownNotificationThisSession] = useState(false);
   const notificationTimerRef = useRef(null);
 
-  // Refs for scroll-to-top logic after modal login
   const justClosedAuthModalAfterLogin = useRef(false);
   const prevUser = useRef(user);
   const prevIsAuthModalOpen = useRef(isAuthModalOpen);
@@ -118,50 +116,58 @@ function AppContent() {
 
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
 
+  const fetchUnreadCount = useCallback(async () => {
+    if (!user) return;
+    const { count, error } = await supabase
+      .from('private_messages')
+      .select('*', { count: 'exact', head: true })
+      .eq('receiver_id', user.id)
+      .eq('is_read', false);
+
+    if (error) {
+      console.error('Error fetching unread messages count:', error.message);
+    } else {
+      setUnreadMessagesCount(count || 0);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!user) {
       setUnreadMessagesCount(0);
       return;
     }
 
-    const fetchUnreadCount = async () => {
-      const { count, error } = await supabase
-        .from('private_messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('receiver_id', user.id)
-        .eq('is_read', false);
+    // --- START: THE FINAL SOLUTION ---
+    
+    // 1. Fetch count on initial load
+    fetchUnreadCount();
 
-      if (error) {
-        console.error('Error fetching unread messages count:', error.message);
-      } else {
-        setUnreadMessagesCount(count);
-      }
-    };
+    // 2. Listen for the custom 'messagesRead' event from anywhere in the app
+    window.addEventListener('messagesRead', fetchUnreadCount);
 
-    fetchUnreadCount(); // Initial fetch
-
-    const channel = supabase
-      .channel(`realtime-messages-count-for-${user.id}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'private_messages', filter: `receiver_id=eq.${user.id}` },
-        (payload) => {
-          fetchUnreadCount(); // Re-fetch on any change
+    // 3. Set up a Supabase listener ONLY for brand new messages (INSERTs).
+    const messagesListener = supabase
+      .channel(`public:private_messages:receiver_id=eq.${user.id}`)
+      .on('postgres_changes', 
+        { event: 'INSERT', schema: 'public', table: 'private_messages', filter: `receiver_id=eq.${user.id}` },
+        () => {
+          fetchUnreadCount();
         }
-      )
-      .subscribe();
-
+      ).subscribe();
+    
+    // 4. Cleanup all listeners when the component unmounts
     return () => {
-      supabase.removeChannel(channel);
+      window.removeEventListener('messagesRead', fetchUnreadCount);
+      supabase.removeChannel(messagesListener);
     };
-  }, [user]);
+    // --- END: THE FINAL SOLUTION ---
+  }, [user, fetchUnreadCount]);
 
 
   useEffect(() => {
     setAcceptsFunctionalCookies(Cookies.get("siteCookieConsent") === "true");
   }, []);
 
-  // Effect to detect modal login and set the scroll skip flag
   useEffect(() => {
     if (prevUser.current === null && user !== null && prevIsAuthModalOpen.current && !isAuthModalOpen) {
       justClosedAuthModalAfterLogin.current = true;
@@ -177,7 +183,6 @@ function AppContent() {
   }, [user, isAuthModalOpen]);
 
 
-  // Scroll to top logic
   useEffect(() => {
     const attemptScrollToTop = (context = "initial") => {
       if (justClosedAuthModalAfterLogin.current) {
