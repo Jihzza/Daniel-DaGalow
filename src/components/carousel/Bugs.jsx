@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../../contexts/AuthContext";
 import { AuthModalContext } from "../../App";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import { validatePhoneNumber } from '../../utils/phoneValidation';
 
 const EyeIcon = ({ color = "currentColor" }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -29,16 +32,17 @@ function BugReport() {
     email: "",
     description: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    phone: ""
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState({
-    success: false,
-    error: false,
-    message: "",
-  });
+  const [submitStatus, setSubmitStatus] = useState({ success: false, error: false, message: "" });
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
+  const [validatingPhone, setValidatingPhone] = useState(false);
+  const [phoneError, setPhoneError] = useState('');
+  const phoneValidationTimeout = useRef(null);
 
   useEffect(() => {
     if (user) {
@@ -47,26 +51,47 @@ function BugReport() {
         name: user.user_metadata?.full_name || "",
         email: user.email || "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        phone: "" // Phone not needed for logged-in bug report
       }));
     } else {
-        setFormData(prev => ({
-            ...prev,
-            name: '', 
-            email: '', 
-            password: '', 
-            confirmPassword: ''
-        }));
+        setFormData({ name: '', email: '', description: '', password: '', confirmPassword: '', phone: '' });
     }
   }, [user]);
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handlePhoneChange = (newPhone) => {
+    setFormData(prev => ({ ...prev, phone: newPhone }));
+    setIsPhoneValid(false);
+    setPhoneError("");
+
+    if (phoneValidationTimeout.current) clearTimeout(phoneValidationTimeout.current);
+
+    if (newPhone.replace(/\D/g, "").length < 8) return;
+
+    phoneValidationTimeout.current = setTimeout(async () => {
+      setValidatingPhone(true);
+      try {
+        const result = await validatePhoneNumber(newPhone);
+        setValidatingPhone(false);
+        setIsPhoneValid(result.isValid);
+        if (!result.isValid) {
+          setPhoneError(t("coaching_request.form.phone_validation_error"));
+        }
+      } catch (error) {
+        setValidatingPhone(false);
+        setPhoneError("Validation service unavailable");
+      }
+    }, 800);
+  };
+
+  useEffect(() => {
+    return () => { if (phoneValidationTimeout.current) clearTimeout(phoneValidationTimeout.current) };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,54 +99,36 @@ function BugReport() {
     setLoading(true);
 
     try {
-        if (user) { // User is logged in, submitting the bug report
-            if (!formData.description) {
-                throw new Error(t("bug_report.validation.required_fields"));
-            }
+        if (user) {
+            if (!formData.description) throw new Error(t("bug_report.validation.required_fields"));
             
             const { error: bugError } = await supabase.from("bug_reports").insert({
-                user_id: user.id,
-                name: formData.name,
-                email: formData.email,
-                description: formData.description,
-                status: "new",
+                user_id: user.id, name: formData.name, email: formData.email, description: formData.description, status: "new",
             });
-
             if (bugError) throw bugError;
 
-            setFormData(prev => ({ ...prev, description: "" })); // Clear only description
+            setFormData(prev => ({ ...prev, description: "" }));
             setSubmitStatus({ success: true, error: false, message: t("bug_report.messages.success") });
 
-        } else { // User is a guest, they are signing up
-            if (!formData.name || !formData.email || !formData.password) {
-                throw new Error("Name, email and password are required.");
-            }
-            if (formData.password !== formData.confirmPassword) {
-                throw new Error(t('auth.signup.errors.password_mismatch'));
-            }
-            if (formData.password.length < 6) {
-                throw new Error(t('auth.signup.errors.password_length'));
-            }
+        } else {
+            if (!formData.name || !formData.email || !formData.password || !formData.phone) throw new Error("Name, email, phone, and password are required.");
+            if (!isPhoneValid) throw new Error("Please enter a valid phone number.");
+            if (formData.password !== formData.confirmPassword) throw new Error(t('auth.signup.errors.password_mismatch'));
+            if (formData.password.length < 6) throw new Error(t('auth.signup.errors.password_length'));
 
-            // Call the signUp function from useAuth
-            const { error: signUpError } = await signUp(
-                formData.email,
-                formData.password,
-                { data: { full_name: formData.name } }
-            );
-
+            const { data, error: signUpError } = await signUp(formData.email, formData.password, { data: { full_name: formData.name } });
             if (signUpError) throw signUpError;
             
-            // Success message for account creation. The component will re-render due to user state change.
-            setSubmitStatus({ success: true, error: false, message: "Account created successfully! You can now describe the bug."});
+            if (data.user) {
+                const { error: updateError } = await supabase.from('profiles').update({ phone_number: formData.phone }).eq('id', data.user.id);
+                if (updateError) console.error("Error updating profile with phone number:", updateError.message);
+            }
+            
+            setSubmitStatus({ success: true, error: false, message: "Account created! You can now describe the bug."});
         }
     } catch (error) {
         console.error("Bug Report/Signup Error:", error);
-        setSubmitStatus({
-            success: false,
-            error: true,
-            message: error.message || t("bug_report.messages.error"),
-        });
+        setSubmitStatus({ success: false, error: true, message: error.message || t("bug_report.messages.error") });
     } finally {
         setLoading(false);
     }
@@ -170,7 +177,7 @@ function BugReport() {
             </>
           ) : (
             <>
-              {/* === GUEST VIEW (SIGNUP ONLY) === */}
+              {/* === GUEST VIEW (SIGNUP) === */}
               <div>
                   <label htmlFor="name-guest" className="block mb-1 text-sm text-white">{t("auth.signup.full_name.label")}</label>
                   <input type="text" id="name-guest" name="name" value={formData.name} onChange={handleChange} required placeholder={t('auth.signup.full_name.placeholder')} className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"/>
@@ -178,6 +185,32 @@ function BugReport() {
               <div>
                   <label htmlFor="email-guest" className="block mb-1 text-sm text-white">{t("auth.signup.email.label")}</label>
                   <input type="email" id="email-guest" name="email" value={formData.email} onChange={handleChange} required placeholder={t('auth.signup.email.placeholder')} className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"/>
+              </div>
+              <div>
+                <label htmlFor="phone-bug-report" className="block text-sm font-medium text-white mb-1.5">{t("coaching_request.form.phone_label")}</label>
+                <div className="relative">
+                  <PhoneInput
+                    inputProps={{ name: 'phone', required: true, id: 'phone-bug-report' }}
+                    containerClass="!w-full"
+                    inputClass="!w-full !px-3 !py-2.5 !text-sm !bg-white/5 !border !border-darkGold !rounded-xl !text-white !placeholder-white/50 focus:!ring-2 focus:!ring-darkGold"
+                    buttonClass="!bg-white/5 !border-y !border-l !border-darkGold !rounded-l-xl"
+                    dropdownClass="!bg-oxfordBlue"
+                    searchClass="!bg-white !text-black !placeholder-gray-500 !rounded-md !my-2"
+                    country={'es'}
+                    value={formData.phone}
+                    onChange={handlePhoneChange}
+                    enableSearch={true}
+                  />
+                   {formData.phone && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center pointer-events-none">
+                      {validatingPhone ? ( <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                      ) : isPhoneValid ? ( <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                      ) : ( <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {phoneError && <p className="text-red-500 text-xs mt-1">{phoneError}</p>}
               </div>
               <div>
                   <label htmlFor="password-guest" className="block text-sm font-medium text-white mb-1.5">{t('auth.signup.password.label')}</label>
@@ -206,14 +239,12 @@ function BugReport() {
             </>
           )}
 
-          {/* Common Submit Button with conditional text */}
           <div>
               <button type="submit" disabled={loading} className="w-full bg-darkGold text-black font-bold py-3 rounded-xl hover:bg-opacity-90 transition-colors disabled:opacity-50">
                   {loading ? loadingSpinner : (user ? t("bug_report.form.submit_button") : t("auth.signup.submit.default", "Sign Up"))}
               </button>
           </div>
 
-          {/* Status Message */}
           {(submitStatus.success || submitStatus.error) && (
             <div className={`p-3 rounded-xl text-center text-sm ${
                 submitStatus.success ? "bg-green-600/20 text-green-300" : "bg-red-600/20 text-red-300"}`}>
