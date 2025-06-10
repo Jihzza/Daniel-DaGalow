@@ -23,6 +23,26 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString();
 };
 
+function useBreakpoint() {
+    const getBreakpoint = () => {
+        if (typeof window !== 'undefined') {
+            if (window.innerWidth >= 1024) return 'lg';
+            if (window.innerWidth >= 768) return 'md';
+        }
+        return 'sm';
+    };
+
+    const [breakpoint, setBreakpoint] = useState(getBreakpoint());
+
+    useEffect(() => {
+        const handleResize = () => setBreakpoint(getBreakpoint());
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return breakpoint;
+}
+
 function DirectMessagesPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -46,6 +66,9 @@ function DirectMessagesPage() {
 
   const location = useLocation();
   const navigate = useNavigate();
+  const breakpoint = useBreakpoint();
+  const headerHeight = breakpoint === 'lg' ? 80 : breakpoint === 'md' ? 96 : 56;
+  const navBarHeight = breakpoint === 'lg' ? 60 : breakpoint === 'md' ? 54 : 48;
 
   useEffect(() => {
     // This effect listens for the 'forceList' signal from the router state.
@@ -481,7 +504,7 @@ function DirectMessagesPage() {
   if (!user) {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-oxfordBlue to-gentleGray text-white p-4"
-        style={{ paddingTop: 'var(--header-height, 60px)', paddingBottom: 'var(--navbar-height, 50px)' }}
+        style={{ top: `${headerHeight}px`, bottom: `${navBarHeight}px` }}
       >
         <MessageSquare size={48} className="mb-4 text-darkGold" />
         <p className="text-xl">{t('direct_messages.login_prompt')}</p>
@@ -680,8 +703,8 @@ function DirectMessagesPage() {
     <div
       className="absolute left-0 right-0 flex flex-col bg-gradient-to-b from-oxfordBlue to-gentleGray"
       style={{
-        top: 'var(--header-height, 56px)',
-        bottom: 'var(--navbar-height, 48px)',
+        top: `${headerHeight}px`,
+        bottom: `${navBarHeight}px`,
       }}
     >
       {selectedConversation ? renderChatView() : renderConversationsAndUsersList()}
