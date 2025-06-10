@@ -52,6 +52,7 @@ const NavigationBar = ({
   isChatbotOpen,
   showChatbotIconNotification,
   unreadMessagesCount,
+  unreadChatbotMessagesCount,
 }) => {
   // Hooks
   const navigate = useNavigate();
@@ -225,10 +226,16 @@ const NavigationBar = ({
               
               {/* === MODIFIED SECTION START === */}
               {item.id === 'messages' && unreadMessagesCount > 0 && (
-                 <span className="absolute top-0 right-0 transform translate-x-1/3 -translate-y-1/3 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full ring-2 ring-black">
+                 <span className="absolute top-0 right-0 transform translate-x-1/3 -translate-y-1/3 bg-red-500 text-white text-xs font-bold w-4 h-4 flex items-center justify-center rounded-full ring-2 ring-black">
                     {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
                  </span>
-              )}
+               )}
+               {item.id === 'chatbot' && unreadChatbotMessagesCount > 0 && (
+                 <span className="absolute top-0 right-0 transform translate-x-1/3 -translate-y-1/3 bg-red-500 text-white text-xs font-bold w-4 h-4 flex items-center justify-center rounded-full ring-2 ring-black">
+                    {unreadChatbotMessagesCount > 9 ? '9+' : unreadChatbotMessagesCount}
+                 </span>
+               )}
+            
               {/* === MODIFIED SECTION END === */}
             </div>
             

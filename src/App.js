@@ -98,6 +98,7 @@ function AppContent() {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [chatSessionId, setChatSessionId] = useState(null);
   const { isAuthModalOpen, openAuthModal: contextOpenAuthModal, closeAuthModal: contextCloseAuthModal } = useContext(AuthModalContext);
+  const [unreadChatbotMessagesCount, setUnreadChatbotMessagesCount] = useState(0);
 
   const location = useLocation();
   const [notificationPermission, setNotificationPermission] = useState(getNotificationPermission());
@@ -264,14 +265,19 @@ function AppContent() {
     if (notificationTimerRef.current) {
       clearTimeout(notificationTimerRef.current);
     }
-
-    if (!isChatbotOpen && !showChatbotIconNotification && !hasShownNotificationThisSession) {
+  
+    // If the chatbot is closed and we haven't shown the notification this session
+    if (!isChatbotOpen && !hasShownNotificationThisSession) {
       notificationTimerRef.current = setTimeout(() => {
-        setShowChatbotIconNotification(true);
-        setHasShownNotificationThisSession(true);
+        // Before showing the notification, double-check that the chatbot wasn't opened in the meantime
+        if (!isChatbotOpen) {
+          setUnreadChatbotMessagesCount(1); // Set unread count for the automatic message
+          setShowChatbotIconNotification(true);
+          setHasShownNotificationThisSession(true);
+        }
       }, 5000);
     }
-  }, [isChatbotOpen, showChatbotIconNotification, hasShownNotificationThisSession]);
+  }, [isChatbotOpen, hasShownNotificationThisSession]);
 
 
   useEffect(() => {
@@ -287,9 +293,12 @@ function AppContent() {
         if (sessionId) {
           setChatSessionId(sessionId);
         }
-        if (showChatbotIconNotification) {
+        // When opening the chat, reset the unread message count and hide the notification
+        setUnreadChatbotMessagesCount(0);
+        setShowChatbotIconNotification(false);
+  
+        if (showChatbotIconNotification || unreadChatbotMessagesCount > 0) {
           setChatOpenedViaNotification(true);
-          setShowChatbotIconNotification(false);
         } else {
           setChatOpenedViaNotification(false);
         }
@@ -298,7 +307,8 @@ function AppContent() {
       }
       return openingChatbot;
     });
-  }, [showChatbotIconNotification]);
+  }, [showChatbotIconNotification, unreadChatbotMessagesCount]); // Add unreadChatbotMessagesCount to the dependency array
+  
 
 
   const handleRequestNotification = async () => {
@@ -483,6 +493,8 @@ function AppContent() {
         onAuthModalOpen={contextOpenAuthModal}
         showChatbotIconNotification={showChatbotIconNotification}
         unreadMessagesCount={unreadConversationsCount} // Prop name updated for clarity
+        unreadChatbotMessagesCount={unreadChatbotMessagesCount} // Add this new prop
+
       />
       <AnimatePresence>
         {isChatbotOpen && (
