@@ -130,23 +130,20 @@ const NavigationBar = ({
     }
   }, [location.pathname, navigate, handleCloseChatbotIfNeeded]);
 
-  const navigateToPathOrOpenAuth = useCallback((path) => {
+  const handleNavClick = useCallback((path) => {
     handleCloseChatbotIfNeeded();
     if (user) {
-      navigate(path);
+      // If the user is on the page they are trying to navigate to, go back.
+      if (location.pathname === path) {
+        navigate(-1);
+      } else {
+        navigate(path);
+      }
     } else if (typeof onAuthModalOpen === 'function') {
+      // If not logged in, open the authentication modal.
       onAuthModalOpen();
     }
-  }, [user, navigate, onAuthModalOpen, handleCloseChatbotIfNeeded]);
-
-  const handleAccountClick = useCallback(() => {
-    handleCloseChatbotIfNeeded();
-    if (user) {
-      navigate('/profile');
-    } else if (typeof onAuthModalOpen === 'function') {
-      onAuthModalOpen();
-    }
-  }, [user, navigate, onAuthModalOpen, handleCloseChatbotIfNeeded]);
+  }, [user, location.pathname, navigate, onAuthModalOpen, handleCloseChatbotIfNeeded]);
 
   const handleChatbotToggle = useCallback(() => {
     if (typeof onChatbotClick === 'function') {
@@ -154,26 +151,13 @@ const NavigationBar = ({
     }
   }, [onChatbotClick]);
 
-  const handleMessagesClick = useCallback(() => {
-    handleCloseChatbotIfNeeded();
-    if (user) {
-        if (location.pathname === '/messages') {
-            navigate('/messages', { state: { forceList: true }, replace: true });
-        } else {
-            navigate('/messages');
-        }
-    } else if (typeof onAuthModalOpen === 'function') {
-        onAuthModalOpen();
-    }
-  }, [user, location.pathname, navigate, onAuthModalOpen, handleCloseChatbotIfNeeded]);
-
   // Data for nav items
   const navItems = [
     { id: 'home', type: 'image', src: casaIcon, altKey: "navigation.home", labelKey: "navigation.home", path: "/", action: handleHomeNavigation },
-    { id: 'calendar', type: 'image', src: calendarIcon, altKey: "navigation.calendar", labelKey: "navigation.calendar", path: "/components/Subpages/Calendar", action: () => navigateToPathOrOpenAuth("/components/Subpages/Calendar") },
+    { id: 'calendar', type: 'image', src: calendarIcon, altKey: "navigation.calendar", labelKey: "navigation.calendar", path: "/components/Subpages/Calendar", action: () => handleNavClick("/components/Subpages/Calendar") },
     { id: 'chatbot', type: 'imageWithNotification', src: chatbotIcon, altKey: "navigation.chatbot", labelKey: "navigation.chatbot", path: null, action: handleChatbotToggle, showNotification: showChatbotIconNotification },
-    { id: 'messages', type: 'image', src: messagesIcon, altKey: "navigation.messages", labelKey: "navigation.messages", path: "/messages", action: handleMessagesClick },
-    { id: 'account', type: 'profile', altKey: 'navigation.profile', labelKey: 'navigation.profile', path: "/profile", action: handleAccountClick },
+    { id: 'messages', type: 'image', src: messagesIcon, altKey: "navigation.messages", labelKey: "navigation.messages", path: "/messages", action: () => handleNavClick("/messages") },
+    { id: 'account', type: 'profile', altKey: 'navigation.profile', labelKey: 'navigation.profile', path: "/profile", action: () => handleNavClick("/profile") },
   ];
 
   return (

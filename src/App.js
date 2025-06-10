@@ -54,7 +54,8 @@ import ChatHistoryPage from "./pages/profile/ChatHistoryPage";
 import CreateTestimonialPage from './pages/CreateTestimonialPage';
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
-
+import TermsOfServicePage from "./pages/TermsOfServicePage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 
 import {
   requestNotificationPermission,
@@ -471,6 +472,9 @@ function AppContent() {
         <Route path="/components/Subpages/Settings" element={<OptionalAuthRoute><SettingsPage acceptsFunctionalCookies={acceptsFunctionalCookies} /></OptionalAuthRoute>} />
         <Route path="/notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
         <Route path="/create-testimonial" element={<PrivateRoute><CreateTestimonialPage /></PrivateRoute>} />
+        {/* Legal Pages */}
+        <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       </Routes>
 
       <NavigationBar

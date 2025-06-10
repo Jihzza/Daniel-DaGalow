@@ -466,7 +466,7 @@ const SettingsPage = () => {
                 {/* Privacy Policy Link */}
                 <div
                   className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all mb-4 md:mb-0 flex justify-between items-center"
-                  onClick={() => setActiveSection("privacy-policy")}
+                  onClick={() => navigate("/privacy-policy")}
                 >
                   <div className="flex items-center">
                     <div className="bg-oxfordBlue/10 p-2 rounded-full mr-3">
@@ -506,7 +506,7 @@ const SettingsPage = () => {
                 {/* Terms of Service Link */}
                 <div
                   className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all flex justify-between items-center"
-                  onClick={() => setActiveSection("terms-of-service")}
+                  onClick={() => navigate("/terms-of-service")}
                 >
                   <div className="flex items-center">
                     <div className="bg-oxfordBlue/10 p-2 rounded-full mr-3">
@@ -548,48 +548,6 @@ const SettingsPage = () => {
               <button
                 onClick={() => setActiveSection(null)}
                 className="bg-gray-200 text-gray-800 py-2 px-3 md:px-4 rounded-lg hover:bg-gray-300 transition-colors mr-4 text-sm md:text-base"
-              >
-                Back
-              </button>
-            </div>
-          </div>
-        ) : (
-          <LoginPrompt />
-        );
-
-      case "privacy-policy":
-        return user ? (
-          <div>
-            <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
-              <div className="max-h-[60vh] md:max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
-                {renderPrivacyPolicy()}
-              </div>
-            </div>
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => setActiveSection("others")}
-                className="bg-gray-200 text-gray-800 py-2 px-3 md:px-4 rounded-lg hover:bg-gray-300 transition-colors text-sm md:text-base"
-              >
-                Back
-              </button>
-            </div>
-          </div>
-        ) : (
-          <LoginPrompt />
-        );
-
-      case "terms-of-service":
-        return user ? (
-          <div>
-            <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
-              <div className="max-h-[60vh] md:max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
-                {renderTermsOfService()}
-              </div>
-            </div>
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => setActiveSection("others")}
-                className="bg-gray-200 text-gray-800 py-2 px-3 md:px-4 rounded-lg hover:bg-gray-300 transition-colors text-sm md:text-base"
               >
                 Back
               </button>
