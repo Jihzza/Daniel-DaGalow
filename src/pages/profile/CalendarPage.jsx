@@ -274,7 +274,7 @@ export default function CalendarPage() {
                   {selectedDate ? format(selectedDate, "EEEE, MMMM d, yyyy") : 'All Appointments'}
                 </h3>
                 
-                <div className="space-y-3 max-h-80 md:max-h-[50vh] overflow-auto pr-2">
+                <div className="space-y-3 pr-2">
                   {selectedEvents.length > 0 ? (
                     selectedEvents.map(event => (
                       <div 
