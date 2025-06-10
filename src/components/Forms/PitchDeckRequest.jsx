@@ -171,6 +171,40 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation, user }) { // A
           {!!user && <p className="text-xs text-white/60 mt-1">{t("edit_profile.form.email.cannot_change", "Email cannot be changed")}</p>}
         </div>
 
+        <div>
+          <label htmlFor="pitchdeck-phone" className="block text-white text-sm font-medium mb-1.5">
+            {t("pitch_deck_request.form.phone_label", "Phone Number")}
+          </label>
+          <div className="relative">
+            <PhoneInput
+              inputProps={{ name: 'phone', required: true, id: 'pitchdeck-phone' }}
+              containerClass="!w-full"
+              inputClass={`!w-full !px-3 !py-2.5 !text-sm !bg-white/5 !border !border-white/10 !rounded-xl !text-white !placeholder-white/50 focus:!ring-2 focus:!ring-darkGold${phoneError ? ' !border-red-500' : ''}`}
+              buttonClass="!bg-white/5 !border-y !border-l !border-white/10 !rounded-l-xl"
+              dropdownClass="!bg-oxfordBlue"
+              searchClass="!bg-white !text-black !placeholder-gray-500 !rounded-md !my-2"
+              country={'es'}
+              value={formData.phone}
+              onChange={handlePhoneChange}
+              enableSearch={true}
+            />
+            {formData.phone && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center pointer-events-none">
+                {validatingPhone ? (
+                  <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                ) : phoneValidated ? (
+                  <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                ) : (
+                  <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                )}
+              </div>
+            )}
+          </div>
+          {phoneError && (
+            <p className="text-red-500 text-xs mt-1">{phoneError}</p>
+          )}
+        </div>
+
         {!user && (
           <>
             <div>
@@ -225,51 +259,6 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation, user }) { // A
             </div>
           </>
         )}
-
-        <div>
-          <label htmlFor="pitchdeck-phone" className="block text-white text-sm font-medium mb-1.5">
-            {t("pitch_deck_request.form.phone_label", "Phone Number")}
-          </label>
-          <div className="relative">
-            <PhoneInput
-              containerClass="!w-full !h-[42px] md:!h-[44px] bg-oxfordBlue rounded-xl overflow-hidden border border-white/10"
-              buttonClass="!bg-white/5 !border-none !h-full"
-              inputClass={`!text-sm !bg-white/5 !w-full !border-none !px-3 !py-2.5 !h-full text-white placeholder-white/50 ${
-                phoneError ? "!border !border-red-500" : ""
-              }`}
-              country="es"
-              enableSearch
-              searchPlaceholder={t("pitch_deck_request.form.phone_search_placeholder")}
-              value={formData.phone}
-              onChange={handlePhoneChange}
-              dropdownClass="!bg-oxfordBlue text-white rounded-xl shadow-lg"
-              searchClass="!bg-oxfordBlue !text-white placeholder-white/50 rounded-md p-2 my-2"
-            />
-            {formData.phone && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center pointer-events-none">
-                {validatingPhone && (
-                  <svg className="animate-spin h-4 w-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                )}
-                {!validatingPhone && phoneValidated && (
-                  <svg className="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                )}
-                {!validatingPhone && !phoneValidated && formData.phone && formData.phone.replace(/\D/g, "").length >= 8 && (
-                  <svg className="h-4 w-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                  </svg>
-                )}
-              </div>
-            )}
-          </div>
-          {phoneError && (
-            <p className="text-red-500 text-xs mt-1">{phoneError}</p>
-          )}
-        </div>
       </div>
 
       {!user && (

@@ -517,13 +517,15 @@ function DateTimeStep({
 }
 
 // Step 2: Contact Info / Signup
-function InfoStep({ formData, onChange, user }) {
+function InfoStep({ formData, onFormChange, onPhoneChange, user, isPhoneValid, onPhoneValidation }) {
   const { t } = useTranslation();
   const { openAuthModal } = useContext(AuthModalContext);
 
-  // Password visibility states
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [validatingPhone, setValidatingPhone] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+  const phoneValidationTimeout = useRef(null);
 
   const EyeIcon = ({ color = "currentColor" }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -539,6 +541,32 @@ function InfoStep({ formData, onChange, user }) {
     </svg>
   );
 
+  const handleLocalPhoneChange = (newPhone) => {
+    onPhoneChange(newPhone); // Update parent state
+    onPhoneValidation(false); // Reset validation status in parent
+    setPhoneError("");
+
+    if (phoneValidationTimeout.current) clearTimeout(phoneValidationTimeout.current);
+
+    if (newPhone.replace(/\D/g, "").length < 8) return;
+
+    phoneValidationTimeout.current = setTimeout(async () => {
+      setValidatingPhone(true);
+      const result = await validatePhoneNumber(newPhone);
+      setValidatingPhone(false);
+      onPhoneValidation(result.isValid);
+      if (!result.isValid) {
+        setPhoneError(t("coaching_request.form.phone_validation_error"));
+      }
+    }, 800);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (phoneValidationTimeout.current) clearTimeout(phoneValidationTimeout.current);
+    };
+  }, []);
+
   return (
     <div className="space-y-6 mb-4 max-w-md mx-auto w-full">
       <div className="space-y-4 text-left">
@@ -546,83 +574,64 @@ function InfoStep({ formData, onChange, user }) {
           <label htmlFor="booking-name" className="block text-white text-sm font-medium mb-1.5">
             {t("booking.name_label", "Full Name")}
           </label>
-          <input
-            id="booking-name"
-            name="name"
-            placeholder={t("booking.name_placeholder", "Enter your full name")}
-            value={formData.name}
-            onChange={onChange}
-            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
-            required
-          />
+          <input id="booking-name" name="name" placeholder={t("booking.name_placeholder", "Enter your full name")} value={formData.name} onChange={onFormChange} className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm" required/>
         </div>
         <div>
           <label htmlFor="booking-email" className="block text-white text-sm font-medium mb-1.5">
             {t("booking.email_label", "Email Address")}
           </label>
-          <input
-            id="booking-email"
-            name="email"
-            type="email"
-            placeholder={t("booking.email_placeholder", "Enter your email")}
-            value={formData.email}
-            onChange={onChange}
-            className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
-            required
-            readOnly={!!user}
-          />
+          <input id="booking-email" name="email" type="email" placeholder={t("booking.email_placeholder", "Enter your email")} value={formData.email} onChange={onFormChange} className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm" required readOnly={!!user}/>
           {!!user && <p className="text-xs text-white/60 mt-1">{t("edit_profile.form.email.cannot_change", "Email cannot be changed")}</p>}
         </div>
 
         {!user && (
           <>
             <div>
-              <label htmlFor="booking-password" className="block text-white text-sm font-medium mb-1.5">
-                {t('auth.signup.password.label')}
+              <label htmlFor="booking-phone" className="block text-white text-sm font-medium mb-1.5">
+                {t("coaching_request.form.phone_label", "Phone Number")}
               </label>
               <div className="relative">
-                <input
-                  id="booking-password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  value={formData.password}
-                  onChange={onChange}
-                  placeholder={t('auth.signup.password.placeholder')}
-                  className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
-                  required
+                <PhoneInput
+                    inputProps={{ name: 'phone', required: true, id: 'booking-phone' }}
+                    containerClass="!w-full"
+                    inputClass={`!w-full !px-3 !py-2.5 !text-sm !bg-white/5 !border !border-white/10 !rounded-xl !text-white !placeholder-white/50 focus:!ring-2 focus:!ring-darkGold`}
+                    buttonClass="!bg-white/5 !border-y !border-l !border-white/10 !rounded-l-xl"
+                    dropdownClass="!bg-oxfordBlue"
+                    searchClass="!bg-white !text-black !placeholder-gray-500 !rounded-md !my-2"
+                    country={'es'}
+                    value={formData.phone}
+                    onChange={handleLocalPhoneChange}
+                    enableSearch={true}
                 />
-                <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-white/70"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                {formData.phone && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center pointer-events-none">
+                    {validatingPhone ? (
+                        <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    ) : isPhoneValid ? (
+                        <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                    ) : (
+                        <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    )}
+                  </div>
+                )}
+              </div>
+              {phoneError && <p className="text-red-500 text-xs mt-1">{phoneError}</p>}
+            </div>
+            <div>
+              <label htmlFor="booking-password" className="block text-white text-sm font-medium mb-1.5">{t('auth.signup.password.label')}</label>
+              <div className="relative">
+                <input id="booking-password" name="password" type={showPassword ? "text" : "password"} value={formData.password} onChange={onFormChange} placeholder={t('auth.signup.password.placeholder')} className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm" required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3 text-white/70" aria-label={showPassword ? "Hide password" : "Show password"}>
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                 </button>
               </div>
             </div>
             <div>
-              <label htmlFor="booking-confirmPassword" className="block text-white text-sm font-medium mb-1.5">
-                {t('auth.signup.confirm_password.label')}
-              </label>
+              <label htmlFor="booking-confirmPassword" className="block text-white text-sm font-medium mb-1.5">{t('auth.signup.confirm_password.label')}</label>
               <div className="relative">
-                <input
-                  id="booking-confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={formData.confirmPassword}
-                  onChange={onChange}
-                  placeholder={t('auth.signup.confirm_password.placeholder')}
-                  className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm"
-                  required
-                />
-                 <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-white/70"
-                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                >
-                    {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                <input id="booking-confirmPassword" name="confirmPassword" type={showConfirmPassword ? "text" : "password"} value={formData.confirmPassword} onChange={onFormChange} placeholder={t('auth.signup.confirm_password.placeholder')} className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-darkGold text-sm" required />
+                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 right-0 flex items-center pr-3 text-white/70" aria-label={showConfirmPassword ? "Hide password" : "Show password"}>
+                  {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
                 </button>
               </div>
             </div>
@@ -633,14 +642,8 @@ function InfoStep({ formData, onChange, user }) {
       {!user && (
         <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10 space-y-3 mt-6">
           <div className="pt-2">
-            <p className="text-white/80 text-sm mb-2">
-              {t("booking.login_prompt_simple", "Already have an account?")}
-            </p>
-            <button
-              type="button"
-              onClick={openAuthModal}
-              className="inline-flex items-center justify-center bg-darkGold text-black font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90 transition-colors text-sm"
-            >
+            <p className="text-white/80 text-sm mb-2">{t("booking.login_prompt_simple", "Already have an account?")}</p>
+            <button type="button" onClick={openAuthModal} className="inline-flex items-center justify-center bg-darkGold text-black font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90 transition-colors text-sm">
               {t("booking.login_button", "Log In Here")}
             </button>
           </div>
@@ -654,7 +657,6 @@ function InfoStep({ formData, onChange, user }) {
     </div>
   );
 }
-
 
 // Step 3: Payment
 function PaymentStep({
