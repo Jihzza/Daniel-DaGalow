@@ -238,9 +238,14 @@ const NavigationBar = ({
                {item.type === 'imageWithNotification' && item.showNotification && (
                   <span className="absolute top-0 right-0 block h-2.5 w-2.5 transform translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500 ring-2 ring-black animate-pulse"></span>
                )}
+              
+              {/* === MODIFIED SECTION START === */}
               {item.id === 'messages' && unreadMessagesCount > 0 && (
-                 <span className="absolute top-0 right-0 block h-2.5 w-2.5 transform translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500 ring-2 ring-black"></span>
+                 <span className="absolute top-0 right-0 transform translate-x-1/3 -translate-y-1/3 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full ring-2 ring-black">
+                    {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
+                 </span>
               )}
+              {/* === MODIFIED SECTION END === */}
             </div>
             
             {isActive && (

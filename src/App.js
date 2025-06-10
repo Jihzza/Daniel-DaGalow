@@ -118,16 +118,25 @@ function AppContent() {
 
   const fetchUnreadCount = useCallback(async () => {
     if (!user) return;
-    const { count, error } = await supabase
-      .from('private_messages')
-      .select('*', { count: 'exact', head: true })
-      .eq('receiver_id', user.id)
-      .eq('is_read', false);
+    try {
+      // Fetch all unread messages to count unique senders
+      const { data, error } = await supabase
+        .from('private_messages')
+        .select('sender_id') // We only need the sender_id to count unique conversations
+        .eq('receiver_id', user.id)
+        .eq('is_read', false);
 
-    if (error) {
-      console.error('Error fetching unread messages count:', error.message);
-    } else {
-      setUnreadMessagesCount(count || 0);
+      if (error) {
+        console.error('Error fetching unread messages:', error.message);
+        setUnreadMessagesCount(0);
+      } else {
+        // Use a JavaScript Set to automatically handle uniqueness
+        const distinctSenders = new Set(data.map(message => message.sender_id));
+        setUnreadMessagesCount(distinctSenders.size);
+      }
+    } catch (e) {
+      console.error('Exception while fetching unread count:', e);
+      setUnreadMessagesCount(0);
     }
   }, [user]);
 
