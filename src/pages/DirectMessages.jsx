@@ -71,12 +71,8 @@ function DirectMessagesPage() {
   const navBarHeight = breakpoint === 'lg' ? 60 : breakpoint === 'md' ? 54 : 48;
 
   useEffect(() => {
-    // This effect listens for the 'forceList' signal from the router state.
     if (location.state?.forceList) {
-        // If the signal is present, reset the view by clearing the selected conversation.
         setSelectedConversation(null);
-        // Immediately replace the history state to remove the signal,
-        // preventing it from re-triggering on a page refresh or back/forward navigation.
         navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state, navigate, location.pathname]);
@@ -231,7 +227,7 @@ function DirectMessagesPage() {
             .update({ [fieldToUpdate]: 0 })
             .eq('id', conversationId);
           
-          // ** THE FIX: "Ring the bell" for App.js to hear **
+          console.log("🔔 [DirectMessages.jsx] DISPATCHING 'messagesRead' event from fetchMessages.");
           window.dispatchEvent(new Event('messagesRead'));
   
           fetchConversations();
@@ -294,7 +290,7 @@ function DirectMessagesPage() {
                           .update({ [fieldToUpdate]: 0 })
                           .eq('id', selectedConversation.id)
                           .then(() => {
-                            // ** THE FIX: "Ring the bell" here too **
+                            console.log("🔔 [DirectMessages.jsx] DISPATCHING 'messagesRead' event from real-time listener.");
                             window.dispatchEvent(new Event('messagesRead'));
                             fetchConversations()
                           });
@@ -583,7 +579,7 @@ function DirectMessagesPage() {
                             {conv.last_message_at ? formatDate(conv.last_message_at) : ''}
                         </p>
                     </div>
-                    <p className="text-sm truncate text-gray-400 font-normal">
+                    <p className={`text-sm truncate ${conv.unread_count > 0 ? 'text-white font-semibold' : 'text-gray-400 font-normal'}`}>
                         {conv.last_message_preview}
                     </p>
                 </div>

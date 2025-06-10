@@ -114,63 +114,81 @@ function AppContent() {
   const prevIsAuthModalOpen = useRef(isAuthModalOpen);
   const scrollSkipFlagTimeoutRef = useRef(null);
 
-  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+  const [unreadConversationsCount, setUnreadConversationsCount] = useState(0);
 
-  const fetchUnreadCount = useCallback(async () => {
+  const fetchUnreadConversationCount = useCallback(async () => {
     if (!user) return;
-    try {
-      // Fetch all unread messages to count unique senders
-      const { data, error } = await supabase
-        .from('private_messages')
-        .select('sender_id') // We only need the sender_id to count unique conversations
-        .eq('receiver_id', user.id)
-        .eq('is_read', false);
+    console.log("🚀 [App.js] Starting fetchUnreadConversationCount...");
 
-      if (error) {
-        console.error('Error fetching unread messages:', error.message);
-        setUnreadMessagesCount(0);
-      } else {
-        // Use a JavaScript Set to automatically handle uniqueness
-        const distinctSenders = new Set(data.map(message => message.sender_id));
-        setUnreadMessagesCount(distinctSenders.size);
-      }
-    } catch (e) {
-      console.error('Exception while fetching unread count:', e);
-      setUnreadMessagesCount(0);
-    }
-  }, [user]);
+    const { data, error } = await supabase
+      .from('conversations')
+      .select('user1_id, user1_unread_count, user2_unread_count')
+      .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`);
 
-  useEffect(() => {
-    if (!user) {
-      setUnreadMessagesCount(0);
+    if (error) {
+      console.error("❌ [App.js] Error fetching conversations for count:", error);
       return;
     }
 
-    // --- START: THE FINAL SOLUTION ---
+    if (!data) {
+      console.warn("⚠️ [App.js] No conversation data returned.");
+      return;
+    }
+
+    const count = data.reduce((acc, convo) => {
+      const isUser1 = convo.user1_id === user.id;
+      const unreadCount = isUser1 ? convo.user1_unread_count : convo.user2_unread_count;
+      if (unreadCount > 0) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
     
-    // 1. Fetch count on initial load
-    fetchUnreadCount();
+    console.log(`✅ [App.js] Calculated unread conversation count: ${count}`);
+    setUnreadConversationsCount(count);
 
-    // 2. Listen for the custom 'messagesRead' event from anywhere in the app
-    window.addEventListener('messagesRead', fetchUnreadCount);
+  }, [user]);
 
-    // 3. Set up a Supabase listener ONLY for brand new messages (INSERTs).
-    const messagesListener = supabase
-      .channel(`public:private_messages:receiver_id=eq.${user.id}`)
+  // This is the event handler that will be called by the event listener
+  const handleMessagesReadEvent = useCallback(() => {
+    console.log("👂 [App.js] 'messagesRead' event HEARD! Triggering count fetch.");
+    fetchUnreadConversationCount();
+  }, [fetchUnreadConversationCount]);
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadConversationsCount(0);
+      return;
+    }
+
+    fetchUnreadConversationCount();
+
+    // Listen for the custom client-side event dispatched from DirectMessages.jsx
+    console.log("➕ [App.js] ADDING 'messagesRead' event listener to window.");
+    window.addEventListener('messagesRead', handleMessagesReadEvent);
+
+    // Listen for any changes on the conversations table
+    const conversationsListener = supabase
+      .channel(`public:conversations:user_id=eq.${user.id}`)
       .on('postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'private_messages', filter: `receiver_id=eq.${user.id}` },
-        () => {
-          fetchUnreadCount();
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'conversations', 
+          filter: `or(user1_id.eq.${user.id},user2_id.eq.${user.id})`
+        },
+        (payload) => {
+          console.log("📬 [App.js] Conversation table changed, refetching count.", payload);
+          fetchUnreadConversationCount();
         }
       ).subscribe();
     
-    // 4. Cleanup all listeners when the component unmounts
     return () => {
-      window.removeEventListener('messagesRead', fetchUnreadCount);
-      supabase.removeChannel(messagesListener);
+      console.log("➖ [App.js] REMOVING 'messagesRead' event listener from window.");
+      window.removeEventListener('messagesRead', handleMessagesReadEvent);
+      supabase.removeChannel(conversationsListener);
     };
-    // --- END: THE FINAL SOLUTION ---
-  }, [user, fetchUnreadCount]);
+  }, [user, fetchUnreadConversationCount, handleMessagesReadEvent]);
 
 
   useEffect(() => {
@@ -460,7 +478,7 @@ function AppContent() {
         onChatbotClick={toggleChatbot}
         onAuthModalOpen={contextOpenAuthModal}
         showChatbotIconNotification={showChatbotIconNotification}
-        unreadMessagesCount={unreadMessagesCount}
+        unreadMessagesCount={unreadConversationsCount} // Prop name updated for clarity
       />
       <AnimatePresence>
         {isChatbotOpen && (
