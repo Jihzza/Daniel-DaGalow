@@ -20,22 +20,22 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    console.log("AuthContext: Setting up listeners and fetching session.");
+    // console.log("AuthContext: Setting up listeners and fetching session.");
     // Listen to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('AuthContext: onAuthStateChange EVENT:', event, 'SESSION:', session);
+        // console.log('AuthContext: onAuthStateChange EVENT:', event, 'SESSION:', session);
         if (event === 'SIGNED_IN') {
-          console.log('AuthContext: User signed in via onAuthStateChange:', session?.user);
+          // console.log('AuthContext: User signed in via onAuthStateChange:', session?.user);
         }
         if (event === 'USER_UPDATED') {
-          console.log('AuthContext: User updated via onAuthStateChange:', session?.user);
+          // console.log('AuthContext: User updated via onAuthStateChange:', session?.user);
         }
         if (event === 'SIGNED_OUT') {
-          console.log('AuthContext: User signed out via onAuthStateChange');
+          // console.log('AuthContext: User signed out via onAuthStateChange');
         }
         if (event === 'INITIAL_SESSION') {
-          console.log('AuthContext: Initial session event via onAuthStateChange.', session);
+          // console.log('AuthContext: Initial session event via onAuthStateChange.', session);
         }
         setUser(session?.user ?? null);
         setLoading(false); // setLoading should be false once an event is processed
@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
     supabase.auth
       .getSession()
       .then(({ data: { session } }) => {
-        console.log('AuthContext: getSession RESPONSE:', session);
+        // console.log('AuthContext: getSession RESPONSE:', session);
         // Only set user and loading state if onAuthStateChange hasn't already done so
         // This helps prevent unnecessary re-renders if onAuthStateChange (e.g. INITIAL_SESSION) fires first.
         if (loading) { // Check if loading is still true
@@ -55,7 +55,7 @@ export function AuthProvider({ children }) {
         }
       })
       .catch(err => {
-        console.error('AuthContext: Error getting session:', err);
+        // console.error('AuthContext: Error getting session:', err);
         if (loading) { // Check if loading is still true
             setUser(null);
             setLoading(false);
@@ -63,7 +63,7 @@ export function AuthProvider({ children }) {
       });
 
     return () => {
-      console.log("AuthContext: Unsubscribing auth listener.");
+      // console.log("AuthContext: Unsubscribing auth listener.");
       subscription.unsubscribe();
     };
   }, []); // Empty dependency array ensures this effect runs only once on mount and cleans up on unmount.

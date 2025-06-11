@@ -1,5 +1,5 @@
 // src/components/layout/Header.jsx
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTranslation } from "react-i18next";
@@ -178,14 +178,6 @@ function Header({ onAuthModalOpen, unreadNotificationsCount = 0 }) {
     return langDetails.name.toUpperCase();
   };
 
-  const handleNotificationClick = useCallback(() => {
-    if (location.pathname === '/notifications') {
-      navigate(-1); // Go back if already on the notifications page
-    } else {
-      navigate('/notifications'); // Go to notifications page
-    }
-  }, [location.pathname, navigate]);
-
   const headerHeightValue = breakpoint === "lg" ? 80 : breakpoint === "md" ? 96 : 56;
   const navBarHeightValue = breakpoint === "lg" ? 60 : 48;
 
@@ -255,7 +247,7 @@ function Header({ onAuthModalOpen, unreadNotificationsCount = 0 }) {
           </div>
 
           <button
-            onClick={handleNotificationClick}
+            onClick={() => navigate("/notifications")}
             className="focus:outline-none p-1"
             aria-label="Open notifications"
           >

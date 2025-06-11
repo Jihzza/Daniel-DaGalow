@@ -113,7 +113,6 @@ function ContactInfoStep({ formData, onChange, onPhoneValidation, user }) { // A
         setValidatingPhone(false);
         setPhoneError("Validation service unavailable");
         if (onPhoneValidation) onPhoneValidation(false);
-        console.error("Phone validation error:", error);
       }
     }, 800);
   };

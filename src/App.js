@@ -121,7 +121,6 @@ function AppContent() {
 
   const fetchUnreadConversationCount = useCallback(async () => {
     if (!user) return;
-    console.log("🚀 [App.js] Starting fetchUnreadConversationCount...");
 
     const { data, error } = await supabase
       .from('conversations')
@@ -129,12 +128,10 @@ function AppContent() {
       .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`);
 
     if (error) {
-      console.error("❌ [App.js] Error fetching conversations for count:", error);
       return;
     }
 
     if (!data) {
-      console.warn("⚠️ [App.js] No conversation data returned.");
       return;
     }
 
@@ -147,7 +144,6 @@ function AppContent() {
       return acc;
     }, 0);
     
-    console.log(`✅ [App.js] Calculated unread conversation count: ${count}`);
     setUnreadConversationsCount(count);
 
   }, [user]);
@@ -162,13 +158,11 @@ function AppContent() {
     if (!error && typeof count === "number") {
       setUnreadNotificationsCount(count);
     } else {
-      console.error("Error fetching unread-notifications count:", error);
     }
   }, [user]);
 
   // This is the event handler that will be called by the event listener
   const handleMessagesReadEvent = useCallback(() => {
-    console.log("👂 [App.js] 'messagesRead' event HEARD! Triggering count fetch.");
     fetchUnreadConversationCount();
   }, [fetchUnreadConversationCount]);
 
@@ -186,7 +180,6 @@ function AppContent() {
     fetchUnreadConversationCount();
 
     // Listen for the custom client-side event dispatched from DirectMessages.jsx
-    console.log("➕ [App.js] ADDING 'messagesRead' event listener to window.");
     window.addEventListener('messagesRead', handleMessagesReadEvent);
 
     // Listen for any changes on the conversations table
@@ -200,13 +193,11 @@ function AppContent() {
           filter: `or(user1_id.eq.${user.id},user2_id.eq.${user.id})`
         },
         (payload) => {
-          console.log("📬 [App.js] Conversation table changed, refetching count.", payload);
           fetchUnreadConversationCount();
         }
       ).subscribe();
     
     return () => {
-      console.log("➖ [App.js] REMOVING 'messagesRead' event listener from window.");
       window.removeEventListener('messagesRead', handleMessagesReadEvent);
       supabase.removeChannel(conversationsListener);
     };
@@ -400,7 +391,6 @@ function AppContent() {
       )
       .subscribe((status, err) => {
         if (err) {
-          console.error('Error subscribing to notifications channel:', err);
         }
       });
     const checkForInitialDueReminders = async () => {
@@ -417,7 +407,6 @@ function AppContent() {
             .lte('notify_at', fiveMinutesFromNow.toISOString())
             .gte('created_at', oneHourAgo.toISOString());
         if (error) {
-            console.error("Error fetching initial due reminders:", error);
             return;
         }
         if (dueNotifications) {

@@ -736,25 +736,30 @@ function PaymentStep({
   return (
     <div className="max-w-md mx-auto">
       <div className="flex flex-col gap-5">
-        <div className="rounded-lg border border-white/10 overflow-hidden">
-          <div className="bg-white/5 p-3 border-b border-white/10">
-            <h3 className="text-white font-medium">{t('booking.payment.title')}</h3>
-          </div>
-          <div className="p-4 space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-white/60">{t('booking.payment.duration')}</span>
-              <span className="text-white">{t('booking.payment.duration_value', { duration: selectedDuration })}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-white/60">{t('booking.payment.price')}</span>
-              <span className="text-white font-medium">€{sessionPrice}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-white/60">{t('booking.payment.email')}</span>
-              <span className="text-white break-all">{formData.email}</span>
-            </div>
-          </div>
+      <div className="rounded-lg border border-white/10 overflow-hidden">
+      <div className="bg-white/5 p-3 border-b border-white/10">
+        <h3 className="text-white font-medium">{t('booking.payment.title')}</h3>
+      </div>
+      <div className="p-4 space-y-3">
+        {/* ADD THIS ROW FOR SERVICE TYPE */}
+        <div className="flex justify-between text-sm">
+          <span className="text-white/60">Service</span>
+          <span className="text-white font-medium">Consultation</span>
         </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-white/60">{t('booking.payment.duration')}</span>
+          <span className="text-white">{t('booking.payment.duration_value', { duration: selectedDuration })}</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-white/60">{t('booking.payment.price')}</span>
+          <span className="text-white font-medium">€{sessionPrice}</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-white/60">{t('booking.payment.email')}</span>
+          <span className="text-white break-all">{formData.email}</span>
+        </div>
+      </div>
+    </div>
 
         <div
           className={`p-4 rounded-lg border ${

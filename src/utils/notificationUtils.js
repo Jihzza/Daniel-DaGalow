@@ -58,7 +58,6 @@ export const requestNotificationPermission = async () => {
  */
 export const showNotification = (title, options, link = null) => {
   if (getNotificationPermission() !== "granted") {
-    console.log("Cannot show notification, permission not granted.");
     return null;
   }
 

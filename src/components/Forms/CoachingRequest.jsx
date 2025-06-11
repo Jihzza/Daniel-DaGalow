@@ -153,7 +153,6 @@ function ContactStep({ formData, onChange, onPhoneValidation, user }) {
         setValidatingPhone(false);
         setPhoneError("Validation service unavailable");
         if (onPhoneValidation) onPhoneValidation(false);
-        console.error("Phone validation error:", error);
       }
     }, 800);
   };
@@ -450,6 +449,11 @@ function PaymentStep({
           </h3>
         </div>
         <div className="p-5 space-y-4">
+          {/* ADD THIS ROW FOR SERVICE TYPE */}
+          <div className="flex justify-between items-center">
+            <span className="text-white/70">Service</span>
+            <span className="text-white font-medium">Direct Coaching</span>
+          </div>
           <div className="flex justify-between items-center">
             <span className="text-white/70">{t('coaching_request.payment.plan_label')}</span>
             <div className="flex items-center gap-2">

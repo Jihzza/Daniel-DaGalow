@@ -2,7 +2,9 @@
 
 /* 1) Keep the button’s selected-flag box in Oxford‑Blue */
 .react-tel-input .selected-flag {
-  background-color: #002147 !important;   /* your bg‑oxfordBlue */
+  background-color: #002147 !important; /* your bg‑oxfordBlue */
+  border-top-left-radius: 0.7rem !important;
+  border-bottom-left-radius: 0.7rem !important;
 }
 
 /* 3) Style the country list container */

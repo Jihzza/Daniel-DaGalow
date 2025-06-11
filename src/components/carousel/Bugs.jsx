@@ -178,6 +178,9 @@ function BugReport() {
           ) : (
             <>
               {/* === GUEST VIEW (SIGNUP) === */}
+              <h3 className="text-xl md:text-2xl font-medium text-left text-white mb-4">
+                Create an Account
+              </h3>
               <div>
                   <label htmlFor="name-guest" className="block mb-1 text-sm text-white">{t("auth.signup.full_name.label")}</label>
                   <input type="text" id="name-guest" name="name" value={formData.name} onChange={handleChange} required placeholder={t('auth.signup.full_name.placeholder')} className="w-full bg-white/5 border border-darkGold rounded-xl px-4 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-darkGold"/>
