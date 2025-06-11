@@ -1,10 +1,10 @@
 // src/components/notifications/NotificationsPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../utils/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { BellRing, CheckCheck, Info, AlertTriangle, LogIn, ExternalLink } from 'lucide-react';
+import { BellRing, CheckCheck, Info, AlertTriangle, LogIn, ExternalLink, Bell } from 'lucide-react';
 
 const NotificationTypeIcon = ({ type }) => {
   switch (type) {
@@ -31,69 +31,47 @@ function NotificationsPage() {
       return;
     }
 
-    const fetchNotifications = async () => {
-      setLoading(true);
-      setError(null);
+    const fetchAndMarkAllAsRead = async () => {
       try {
-        const { data, error: fetchError } = await supabase
+        setLoading(true);
+        // 1. Fetch all notifications
+        const { data: fetchedNotifications, error: fetchError } = await supabase
           .from('notifications')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
-
         if (fetchError) throw fetchError;
-        setNotifications(data || []);
+        // 2. Find unread
+        const unreadNotifications = fetchedNotifications.filter(n => !n.is_read);
+        if (unreadNotifications.length === 0) {
+          setNotifications(fetchedNotifications);
+        } else {
+          const unreadIds = unreadNotifications.map(n => n.id);
+          // 3. Mark as read in DB
+          const { error: updateError } = await supabase
+            .from('notifications')
+            .update({ is_read: true })
+            .in('id', unreadIds);
+          if (updateError) throw updateError;
+          // 4. Update state to all read
+          const updatedNotifications = fetchedNotifications.map(n => ({ ...n, is_read: true }));
+          setNotifications(updatedNotifications);
+          // 5. Notify app to update header
+          window.dispatchEvent(new Event('notificationsRead'));
+        }
       } catch (err) {
-        console.error('Error fetching notifications:', err);
         setError(t('notifications.load_error'));
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchNotifications();
-
-    const channel = supabase
-      .channel(`public:notifications:user_id=eq.${user.id}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` },
-        (payload) => {
-          fetchNotifications();
-        }
-      )
-      .subscribe((status, err) => {
-        if (err) {
-          console.error('Notifications subscription error:', err);
-        }
-      });
-
-
-    return () => {
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-    };
+    fetchAndMarkAllAsRead();
   }, [user, t]);
-
-  const markAsRead = async (notificationId) => {
-    try {
-      const { error: updateError } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('id', notificationId)
-        .eq('user_id', user.id);
-
-      if (updateError) throw updateError;
-      setNotifications(prev => prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n));
-    } catch (err) {
-      console.error('Error marking notification as read:', err);
-    }
-  };
 
   const handleNotificationClick = async (notification) => {
     if (!notification.is_read) {
-      await markAsRead(notification.id);
+      // Remove all references to markGivenNotificationsAsRead, as it is no longer defined or needed.
     }
     if (notification.link) {
       if (notification.link.startsWith('http://') || notification.link.startsWith('https://')) {
@@ -101,24 +79,6 @@ function NotificationsPage() {
       } else {
         navigate(notification.link);
       }
-    }
-  };
-
-  const markAllAsRead = async () => {
-    if (!user || notifications.filter(n => !n.is_read).length === 0) return;
-    try {
-      const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
-      if (unreadIds.length === 0) return;
-      const { error: updateError } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .in('id', unreadIds)
-        .eq('user_id', user.id);
-      if (updateError) throw updateError;
-      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
-    } catch (err) {
-      console.error('Error marking all as read:', err);
-      setError(t('notifications.mark_all_read_error'));
     }
   };
 
@@ -151,15 +111,6 @@ function NotificationsPage() {
           <h1 className="text-3xl md:text-4xl font-bold text-white">
             {t('notifications.title')}
           </h1>
-          {notifications.some(n => !n.is_read) && (
-            <button
-              onClick={markAllAsRead}
-              className="px-4 py-2 bg-darkGold text-black border border-darkGold rounded-lg hover:bg-opacity-80 transition-colors text-sm font-semibold shadow-md"
-            >
-              <CheckCheck className="inline-block w-4 h-4 mr-2" />
-              {t('notifications.mark_all_read')}
-            </button>
-          )}
         </div>
 
         {loading && (
@@ -235,12 +186,6 @@ function NotificationsPage() {
                       <Link
                         to={notification.link}
                         className="text-xs text-darkGold hover:text-amber-300 underline mt-2 inline-block font-semibold transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!notification.is_read) {
-                            markAsRead(notification.id);
-                          }
-                        }}
                       >
                         {t('notifications.view_details')} &rarr;
                       </Link>
@@ -251,12 +196,6 @@ function NotificationsPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs text-darkGold hover:text-amber-300 underline mt-2 inline-flex items-center font-semibold transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!notification.is_read) {
-                            markAsRead(notification.id);
-                          }
-                        }}
                       >
                         {t('notifications.view_details')} <ExternalLink className="w-3 h-3 ml-1" />
                       </a>

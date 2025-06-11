@@ -117,6 +117,7 @@ function AppContent() {
   const scrollSkipFlagTimeoutRef = useRef(null);
 
   const [unreadConversationsCount, setUnreadConversationsCount] = useState(0);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
   const fetchUnreadConversationCount = useCallback(async () => {
     if (!user) return;
@@ -151,11 +152,30 @@ function AppContent() {
 
   }, [user]);
 
+  const fetchUnreadNotificationCount = useCallback(async () => {
+    if (!user) return;
+    const { count, error } = await supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("is_read", false);
+    if (!error && typeof count === "number") {
+      setUnreadNotificationsCount(count);
+    } else {
+      console.error("Error fetching unread-notifications count:", error);
+    }
+  }, [user]);
+
   // This is the event handler that will be called by the event listener
   const handleMessagesReadEvent = useCallback(() => {
     console.log("👂 [App.js] 'messagesRead' event HEARD! Triggering count fetch.");
     fetchUnreadConversationCount();
   }, [fetchUnreadConversationCount]);
+
+  // New event handler for notifications
+  const handleNotificationsReadEvent = useCallback(() => {
+    fetchUnreadNotificationCount();
+  }, [fetchUnreadNotificationCount]);
 
   useEffect(() => {
     if (!user) {
@@ -192,6 +212,34 @@ function AppContent() {
     };
   }, [user, fetchUnreadConversationCount, handleMessagesReadEvent]);
 
+  useEffect(() => {
+    if (!user) {
+      setUnreadNotificationsCount(0);
+      return;
+    }
+
+    // initial load
+    fetchUnreadNotificationCount();
+
+    // Add window event listener
+    window.addEventListener('notificationsRead', handleNotificationsReadEvent);
+
+    // real-time updates
+    const notifListener = supabase
+      .channel(`public:notifications:user_id=eq.${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
+        fetchUnreadNotificationCount   // just re-count – cheap & reliable
+      )
+      .subscribe();
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('notificationsRead', handleNotificationsReadEvent);
+      supabase.removeChannel(notifListener);
+    };
+  }, [user, fetchUnreadNotificationCount, handleNotificationsReadEvent]);
 
   useEffect(() => {
     setAcceptsFunctionalCookies(Cookies.get("siteCookieConsent") === "true");
@@ -400,7 +448,10 @@ function AppContent() {
 
   return (
     <div className="App font-sans bg-gradient-to-b from-oxfordBlue via-oxfordBlue to-gentleGray overflow-x-hidden">
-      <Header onAuthModalOpen={contextOpenAuthModal} />
+      <Header
+        onAuthModalOpen={contextOpenAuthModal}
+        unreadNotificationsCount={unreadNotificationsCount}
+      />
 
       {isNotificationAPISupported() && notificationPermission === 'default' && (
         <div style={{

@@ -1,5 +1,5 @@
 // src/components/layout/Header.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTranslation } from "react-i18next";
@@ -38,7 +38,7 @@ function useBreakpoint() {
   return breakpoint;
 }
 
-function Header({ onAuthModalOpen }) {
+function Header({ onAuthModalOpen, unreadNotificationsCount = 0 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [show, setShow] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -178,6 +178,14 @@ function Header({ onAuthModalOpen }) {
     return langDetails.name.toUpperCase();
   };
 
+  const handleNotificationClick = useCallback(() => {
+    if (location.pathname === '/notifications') {
+      navigate(-1); // Go back if already on the notifications page
+    } else {
+      navigate('/notifications'); // Go to notifications page
+    }
+  }, [location.pathname, navigate]);
+
   const headerHeightValue = breakpoint === "lg" ? 80 : breakpoint === "md" ? 96 : 56;
   const navBarHeightValue = breakpoint === "lg" ? 60 : 48;
 
@@ -247,11 +255,26 @@ function Header({ onAuthModalOpen }) {
           </div>
 
           <button
-            onClick={() => navigate("/notifications")}
+            onClick={handleNotificationClick}
             className="focus:outline-none p-1"
             aria-label="Open notifications"
           >
-            <img src={NotificationsIcon} alt="Notifications" className="w-5 h-5 md:w-6 md:h-6" />
+            <div className="relative">
+              <img
+                src={NotificationsIcon}
+                alt="Notifications"
+                className="w-5 h-5 md:w-6 md:h-6"
+              />
+              {unreadNotificationsCount > 0 && (
+                <span
+                  className="absolute top-0 right-0 transform translate-x-1/3 -translate-y-1/3
+                             bg-red-500 text-white text-xs font-bold w-4 h-4 flex items-center
+                             justify-center rounded-full ring-2 ring-black"
+                >
+                  {unreadNotificationsCount > 9 ? "9+" : unreadNotificationsCount}
+                </span>
+              )}
+            </div>
           </button>
         </div>
       </header>
