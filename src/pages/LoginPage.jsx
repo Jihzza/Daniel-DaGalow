@@ -9,10 +9,15 @@ const LoginPage = () => {
   const { t } = useTranslation();
 
   const handleGoogleSignIn = async () => {
+    // Store the current scroll position and page path before redirecting
+    sessionStorage.setItem('scrollPosition', window.scrollY);
+    sessionStorage.setItem('scrollPath', window.location.pathname);
+
     await supabase.auth.signInWithOAuth({ 
       provider: 'google',
       options: {
-        redirectTo: window.location.origin,
+        // Redirect back to the page the user was on
+        redirectTo: window.location.origin + window.location.pathname,
       },
     });
   };

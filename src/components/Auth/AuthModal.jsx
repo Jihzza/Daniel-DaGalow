@@ -20,6 +20,25 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
     };
   }, [isOpen]);
 
+  // New handler function for Google Sign-In
+  const handleGoogleSignIn = async () => {
+    // 1. Store the scroll position and current page path
+    sessionStorage.setItem('scrollPosition', window.scrollY);
+    sessionStorage.setItem('scrollPath', window.location.pathname);
+
+    // 2. Initiate the OAuth flow
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        // Make sure the user is redirected back to the page they were on
+        redirectTo: window.location.origin + window.location.pathname,
+      },
+    });
+    if (error) {
+      alert("Google sign-in failed: " + error.message);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -87,14 +106,7 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
               <>
                 <button
                   className="w-full flex items-center justify-center py-2 mb-4 border border-oxfordBlue rounded-lg"
-                  onClick={async () => {
-                    const { error } = await supabase.auth.signInWithOAuth({
-                      provider: "google",
-                    });
-                    if (error) {
-                      alert("Google sign-in failed: " + error.message);
-                    }
-                  }}
+                  onClick={handleGoogleSignIn}
                   type="button"
                 >
                   <img
@@ -112,17 +124,9 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
               </>
             ) : view === "signup" ? (
               <>
-                <button // Added Google button for Signup
+                <button
                   className="w-full flex items-center justify-center py-2 mb-4 border border-oxfordBlue rounded-lg"
-                  onClick={async () => {
-                    const { error } = await supabase.auth.signInWithOAuth({
-                      provider: "google",
-                    });
-                    if (error) {
-                      alert("Google sign-up failed: " + error.message);
-                    }
-                    // No onSuccess or onClose here for OAuth, as it causes a redirect.
-                  }}
+                  onClick={handleGoogleSignIn}
                   type="button"
                 >
                   <img
@@ -134,14 +138,14 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
                 </button>
                 <Signup
                   isModal={true}
-                  onSuccess={onClose} // This applies to email/password signup
+                  onSuccess={onClose}
                   onSwitchToLogin={() => setView("login")}
                 />
               </>
             ) : (
               <ForgotPassword
                 isModal={true}
-                onSuccess={onClose} // This might need to be adjusted if ForgotPassword also has OAuth
+                onSuccess={onClose}
                 onBackToLogin={() => setView("login")}
               />
             )}

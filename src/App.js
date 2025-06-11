@@ -252,6 +252,25 @@ function AppContent() {
 
 
   useEffect(() => {
+    // Check if we need to restore a scroll position from sessionStorage
+    const scrollPosition = sessionStorage.getItem('scrollPosition');
+    const scrollPath = sessionStorage.getItem('scrollPath');
+
+    // Restore scroll only if the path matches the one stored before redirect
+    if (scrollPosition && scrollPath && scrollPath === location.pathname) {
+      setTimeout(() => {
+        // Scroll to the saved position
+        window.scrollTo(0, parseInt(scrollPosition, 10));
+        // Clean up so this doesn't run again on refresh
+        sessionStorage.removeItem('scrollPosition');
+        sessionStorage.removeItem('scrollPath');
+      }, 250); // Delay allows page to render before scrolling
+      
+      // Exit early and skip the scroll-to-top logic below
+      return; 
+    }
+    
+    // --- Existing scroll-to-top logic ---
     const attemptScrollToTop = (context = "initial") => {
       if (justClosedAuthModalAfterLogin.current) {
         return;
