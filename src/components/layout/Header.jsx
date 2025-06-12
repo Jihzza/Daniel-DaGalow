@@ -57,6 +57,19 @@ function Header({ onAuthModalOpen, unreadNotificationsCount = 0 }) {
     (l) => l !== "cimode" && l !== "*"
   );
 
+  /**
+   * Handles clicks on the notification icon.
+   * If the user is on the notifications page, it navigates back.
+   * Otherwise, it navigates to the notifications page.
+   */
+  const handleNotificationsClick = () => {
+    if (location.pathname === '/notifications') {
+      navigate(-1); // Go back to the previous page
+    } else {
+      navigate('/notifications');
+    }
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -247,7 +260,7 @@ function Header({ onAuthModalOpen, unreadNotificationsCount = 0 }) {
           </div>
 
           <button
-            onClick={() => navigate("/notifications")}
+            onClick={handleNotificationsClick}
             className="focus:outline-none p-1"
             aria-label="Open notifications"
           >
