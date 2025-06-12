@@ -336,7 +336,7 @@ const SettingsPage = () => {
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-2 space-y-4 md:space-y-0">
                   <p className="text-black">••••••••••••</p>
                   <Link
-                    to="/forgot-password"
+                    to="/account/reset-password"
                     className="w-full md:w-auto text-oxfordBlue hover:underline text-xs md:text-sm px-3 py-1 border border-oxfordBlue rounded-lg text-center"
                   >
                     Reset Password
