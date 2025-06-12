@@ -271,7 +271,7 @@ export default function ChatbotWindow({ onClose, sessionId: propSessionId, chatO
   return (
     <motion.div
       ref={panelRef}
-      className="fixed w-full bg-oxfordBlue shadow-2xl rounded-t-2xl overflow-visible border-t-2 border-darkGold flex flex-col z-50 touch-none overscroll-contain bottom-[48px] lg:bottom-[60px]"
+      className="fixed w-full bg-oxfordBlue shadow-2xl rounded-t-2xl overflow-visible border-t-2 border-darkGold flex flex-col z-40 touch-none overscroll-contain bottom-[48px] lg:bottom-[60px]"
       style={{ height: `${height}px` }}
       initial={{ y: "100%" }}
       animate={{ y: 0 }}
