@@ -1,6 +1,6 @@
 {
   "short_name": "React App",
-  "display": "fullscreen",
+  "display": "standalone",
   "name": "Create React App Sample",
   "icons": [
     {

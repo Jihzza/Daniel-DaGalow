@@ -825,18 +825,17 @@ function PaymentStep({
   );
 }
 
-// Main Booking Component
 export default function Booking({ onBackService }) {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
-  const { user, signUp: contextSignUp } = useAuth(); // Renamed signUp
+  const { user, signUp: contextSignUp } = useAuth();
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedDuration, setSelectedDuration] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [allBookings, setAllBookings] = useState([]); // Store all bookings for conflict checking
-  const [dailyAvailability, setDailyAvailability] = useState([]); // Store available slots for selectedDate
-  const [isPhoneValidInParent, setIsPhoneValidInParent] = useState(false); // For InfoStep
+  const [allBookings, setAllBookings] = useState([]);
+  const [dailyAvailability, setDailyAvailability] = useState([]);
+  const [isPhoneValidInParent, setIsPhoneValidInParent] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "", 
@@ -845,11 +844,63 @@ export default function Booking({ onBackService }) {
     confirmPassword: "" 
   });
   const [paymentDone, setPaymentDone] = useState(false);
-  const [loading, setLoading] = useState(true); // Combined loading state
+  const [loading, setLoading] = useState(true);
   const [bookingId, setBookingId] = useState(null);
   const formRef = useScrollToTopOnChange([step]);
 
-  const minDate = addDays(new Date(), 1); // Min booking date is tomorrow
+  // --- START: MODIFICATIONS ---
+
+  // Effect to RESTORE state on mount, now conditional on the OAuth flag.
+  useEffect(() => {
+    const isOAuthRedirect = sessionStorage.getItem('oauth_redirect_in_progress');
+
+    // Only run the restoration logic if we've just returned from the redirect.
+    if (isOAuthRedirect === 'true') {
+      // First, remove the flag so this logic doesn't run again on a simple refresh.
+      sessionStorage.removeItem('oauth_redirect_in_progress');
+
+      const savedStateJSON = sessionStorage.getItem('bookingFormState');
+      if (savedStateJSON) {
+        try {
+          const savedState = JSON.parse(savedStateJSON);
+          setStep(savedState.step || 1);
+          setSelectedDate(savedState.selectedDate ? new Date(savedState.selectedDate) : null);
+          setSelectedTime(savedState.selectedTime || null);
+          setSelectedDuration(savedState.selectedDuration || null);
+          setFormData(savedState.formData || { name: '', email: '', password: '', confirmPassword: '' });
+        } catch (e) {
+          console.error("Failed to restore booking form state:", e);
+        }
+      }
+    }
+  }, []); // This effect still only needs to run once on component mount.
+
+  // Effect to SAVE state. (Logic is the same as before)
+  useEffect(() => {
+    if (step >= 4) {
+      return;
+    }
+    const stateToSave = {
+      step,
+      selectedDate: selectedDate ? selectedDate.toISOString() : null,
+      selectedTime,
+      selectedDuration,
+      formData,
+    };
+    sessionStorage.setItem('bookingFormState', JSON.stringify(stateToSave));
+  }, [step, selectedDate, selectedTime, selectedDuration, formData]);
+
+  // Effect to CLEAN UP state on completion. (Logic is the same as before)
+  useEffect(() => {
+    if (step === 4) {
+      sessionStorage.removeItem('serviceSelectionState');
+      sessionStorage.removeItem('bookingFormState');
+    }
+  }, [step]);
+
+  // --- END: MODIFICATIONS ---
+
+  const minDate = addDays(new Date(), 1);
 
   const handlePhoneValidationInParent = (isValid) => {
     setIsPhoneValidInParent(isValid);
