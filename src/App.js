@@ -121,8 +121,6 @@ function AppContent() {
   const [unreadConversationsCount, setUnreadConversationsCount] = useState(0);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
-  // ... (all other hooks and functions from fetchUnreadConversationCount to the useEffect for location.pathname remain unchanged)
-
   const fetchUnreadConversationCount = useCallback(async () => {
     if (!user) return;
 
@@ -256,47 +254,61 @@ function AppContent() {
 
 
   useEffect(() => {
-    // --- START: CORRECTED SCROLL-ONLY LOGIC ---
-    
-    // This effect now ONLY looks for the scroll target.
-    // It does NOT touch the 'oauth_redirect_in_progress' flag.
-    const scrollTargetId = sessionStorage.getItem('oauth_scroll_target');
-    
-    if (scrollTargetId) {
-      console.log('[App.js] Scroll target found:', scrollTargetId);
-      // Consume the scroll target so it doesn't fire again on refresh.
-      sessionStorage.removeItem('oauth_scroll_target');
+    // Check if we need to restore a scroll position from sessionStorage
+    const scrollPosition = sessionStorage.getItem('scrollPosition');
+    const scrollPath = sessionStorage.getItem('scrollPath');
 
-      // Delay scrolling to give the page time to render.
+    // Restore scroll only if the path matches the one stored before redirect
+    if (scrollPosition && scrollPath && scrollPath === location.pathname) {
       setTimeout(() => {
-        const element = document.getElementById(scrollTargetId);
-        if (element) {
-          const header = document.querySelector('header');
-          const headerHeight = header ? header.offsetHeight : 80;
-          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-          const offsetPosition = elementPosition - headerHeight;
-
-          window.scrollTo({ top: offsetPosition, behavior: 'auto' });
-          console.log('[App.js] Scrolled to target element.');
-        } else {
-          console.warn('[App.js] Could not find element to scroll to:', scrollTargetId);
-        }
-      }, 500);
-
-      // Exit early to prevent any other scroll logic from running.
+        // Scroll to the saved position
+        window.scrollTo(0, parseInt(scrollPosition, 10));
+        // Clean up so this doesn't run again on refresh
+        sessionStorage.removeItem('scrollPosition');
+        sessionStorage.removeItem('scrollPath');
+      }, 250); // Delay allows page to render before scrolling
+      
+      // Exit early and skip the scroll-to-top logic below
       return; 
     }
-    // --- END: CORRECTED SCROLL-ONLY LOGIC ---
-
-    // Default scroll-to-top logic for normal page navigation.
-    const attemptScrollToTop = () => {
-      if (justClosedAuthModalAfterLogin.current) return;
+    
+    // --- Existing scroll-to-top logic ---
+    const attemptScrollToTop = (context = "initial") => {
+      if (justClosedAuthModalAfterLogin.current) {
+        return;
+      }
       window.scrollTo(0, 0);
     };
-    
-    // This timeout ensures that the scroll to top happens after the initial render.
-    const initialScrollTimer = setTimeout(attemptScrollToTop, 0);
-    return () => clearTimeout(initialScrollTimer);
+
+    if (justClosedAuthModalAfterLogin.current) {
+    } else {
+        const initialScrollTimer = setTimeout(() => attemptScrollToTop("initial"), 0);
+        let delayedHomepageScrollTimer = null;
+        let finalHomepageScrollTimer = null;
+        if (location.pathname === '/') {
+          delayedHomepageScrollTimer = setTimeout(() => {
+            attemptScrollToTop("delayed homepage");
+            if (window.scrollY !== 0) {
+              finalHomepageScrollTimer = setTimeout(() => attemptScrollToTop("final homepage check"), 50);
+            }
+          }, 250);
+        }
+        return () => {
+          clearTimeout(initialScrollTimer);
+          if (delayedHomepageScrollTimer) clearTimeout(delayedHomepageScrollTimer);
+          if (finalHomepageScrollTimer) clearTimeout(finalHomepageScrollTimer);
+        };
+    }
+
+    if (
+      window.location.hash &&
+      !window.location.hash.includes('access_token=') &&
+      !window.location.hash.includes('refresh_token=') &&
+      !window.location.hash.includes('error_description=')
+    ) {
+      const cleanUrl = window.location.pathname + window.location.search;
+      window.history.replaceState(null, document.title, cleanUrl);
+    }
 
   }, [location.pathname]);
 
@@ -599,13 +611,11 @@ function App() {
   return (
     <I18nextProvider i18n={i18n}>
       <AuthProvider>
-        <ServiceProvider>
-          <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal, isAuthModalOpen }}>
-            <Router>
-              <AppContent />
-            </Router>
-          </AuthModalContext.Provider>
-        </ServiceProvider>
+        <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal, isAuthModalOpen }}>
+          <Router>
+            <AppContent />
+          </Router>
+        </AuthModalContext.Provider>
       </AuthProvider>
     </I18nextProvider>
   );

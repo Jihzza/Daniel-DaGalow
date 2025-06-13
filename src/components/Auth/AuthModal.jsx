@@ -1,3 +1,4 @@
+// src/components/Auth/AuthModal.jsx
 import React, { useState, useEffect } from "react";
 import Login from "./Login";
 import Signup from "./Signup";
@@ -19,7 +20,7 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
     };
   }, [isOpen]);
 
-  // Handler function for Google Sign-In
+  // New handler function for Google Sign-In
   const handleGoogleSignIn = async () => {
     // 1. Store the scroll position and current page path
     sessionStorage.setItem('scrollPosition', window.scrollY);
@@ -34,9 +35,6 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
       },
     });
     if (error) {
-      // It's better to use a more user-friendly notification system than alert()
-      // but for now we'll keep the existing logic.
-      console.error("Google sign-in failed:", error);
       alert("Google sign-in failed: " + error.message);
     }
   };
@@ -45,29 +43,24 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
 
   return (
     <>
-      {/* Modal overlay - Standard dark overlay is good for focus */}
+      {/* Modal overlay */}
       <div
         className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
         onClick={onClose}
       >
         {/* Modal content */}
         <div
-          // STYLE CHANGE:
-          // - Changed background from `bg-gentleGray` to `bg-white` for a clean look.
-          // - Added `shadow-xl` to give the modal depth against the overlay.
-          className="bg-white rounded-lg w-full max-w-md mx-4 overflow-hidden relative shadow-xl"
+          className="bg-gentleGray rounded-lg w-full max-w-md mx-4 overflow-hidden relative"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Close button */}
+          {/* Close button - absolutely positioned top right */}
           <button
-            // STYLE CHANGE:
-            // - Adjusted text color for better contrast and a more subtle look on a white background.
-            className="absolute top-3 right-4 z-10 text-gray-400 hover:text-gray-600 transition-colors"
+            className="absolute top-2 right-3 z-10 text-oxfordBlue"
             onClick={onClose}
             aria-label="Close"
           >
             <svg
-              className="w-6 h-6" // Increased size slightly for easier clicking
+              className="w-4 h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -80,26 +73,25 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
               />
             </svg>
           </button>
-
-          {/* Tab navigation */}
+          {/* Tab navigation - Only show for login/signup */}
           {view !== "forgot-password" && (
-            <div className="flex border-b border-gray-200 mt-4">
-              {/* Tab buttons - Retained the core logic but adjusted for the new theme */}
+            <div className="flex border-b mt-3">
+              {/* Tab buttons */}
               <button
-                className={`flex-1 py-4 text-center font-medium text-sm transition-colors ${
+                className={`flex-1 py-4 text-center font-medium ${
                   view === "login"
                     ? "text-oxfordBlue border-b-2 border-oxfordBlue"
-                    : "text-gray-500 hover:text-gray-700"
+                    : "text-gray-500"
                 }`}
                 onClick={() => setView("login")}
               >
                 Log In
               </button>
               <button
-                className={`flex-1 py-4 text-center font-medium text-sm transition-colors ${
+                className={`flex-1 py-4 text-center font-medium ${
                   view === "signup"
                     ? "text-oxfordBlue border-b-2 border-oxfordBlue"
-                    : "text-gray-500 hover:text-gray-700"
+                    : "text-gray-500"
                 }`}
                 onClick={() => setView("signup")}
               >
@@ -109,21 +101,18 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
           )}
 
           {/* Auth form content */}
-          <div className="p-6 sm:p-8">
+          <div className="p-6">
             {view === "login" ? (
               <>
                 <button
-                  // STYLE CHANGE:
-                  // - Styled to be a secondary button: white background, gray border.
-                  // - This makes the primary action button within the Login form stand out more.
-                  className="w-full flex items-center justify-center py-2.5 mb-4 border border-gray-300 rounded-lg text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-center py-2 mb-4 border border-oxfordBlue rounded-lg"
                   onClick={handleGoogleSignIn}
                   type="button"
                 >
                   <img
                     src="https://www.svgrepo.com/show/355037/google.svg"
                     alt="Google"
-                    className="w-5 h-5 mr-3"
+                    className="w-5 h-5 mr-2"
                   />
                   Continue with Google
                 </button>
@@ -136,16 +125,14 @@ const AuthModal = ({ isOpen, onClose, initialView = "login" }) => {
             ) : view === "signup" ? (
               <>
                 <button
-                   // STYLE CHANGE:
-                  // - Same styling as the login view for consistency.
-                  className="w-full flex items-center justify-center py-2.5 mb-4 border border-gray-300 rounded-lg text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-center py-2 mb-4 border border-oxfordBlue rounded-lg"
                   onClick={handleGoogleSignIn}
                   type="button"
                 >
                   <img
                     src="https://www.svgrepo.com/show/355037/google.svg"
                     alt="Google"
-                    className="w-5 h-5 mr-3"
+                    className="w-5 h-5 mr-2"
                   />
                   Continue with Google
                 </button>

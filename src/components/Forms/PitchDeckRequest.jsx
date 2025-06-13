@@ -7,6 +7,7 @@ import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { useAuth } from "../../contexts/AuthContext"; // Ensure useAuth is imported
 import { AuthModalContext } from "../../App"; // Ensure AuthModalContext is imported
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
+// import { autoCreateAccount } from "../../utils/autoSignup"; // REMOVE THIS LINE
 import { validatePhoneNumber } from "../../utils/phoneValidation";
 
 // Progress Indicator Component - Standardized
@@ -296,68 +297,6 @@ export default function PitchDeckRequest({ onBackService }) {
   const [requestId, setRequestId] = useState(null);
   
   const formRef = useScrollToTopOnChange([step]);
-
-  // --- START: MODIFICATIONS FOR STATE PERSISTENCE ---
-
-  // Effect to RESTORE state on mount, conditional on the OAuth flag.
-  useEffect(() => {
-    const isOAuthRedirect = sessionStorage.getItem('oauth_redirect_in_progress');
-
-    if (isOAuthRedirect === 'true') {
-      sessionStorage.removeItem('oauth_redirect_in_progress');
-
-      const savedStateJSON = sessionStorage.getItem('pitchDeckFormState');
-      if (savedStateJSON) {
-        try {
-          const savedState = JSON.parse(savedStateJSON);
-          setStep(savedState.step || 1);
-          setFormData(savedState.formData || { name: "", email: "", phone: "", password: "", confirmPassword: "" });
-          setRequestId(savedState.requestId || null);
-        } catch (e) {
-          console.error("Failed to restore pitch deck form state:", e);
-        }
-      }
-    }
-  }, []);
-
-  // Effect to SAVE state whenever it changes.
-  useEffect(() => {
-    // Step 2 is the final "Chat" step.
-    if (step >= 2) {
-      return;
-    }
-    const stateToSave = {
-      step,
-      formData,
-      requestId,
-    };
-    sessionStorage.setItem('pitchDeckFormState', JSON.stringify(stateToSave));
-  }, [step, formData, requestId]);
-
-  // Effect to CLEAN UP state from sessionStorage on completion.
-  useEffect(() => {
-    const savedStateJSON = sessionStorage.getItem('pitchDeckFormState');
-    if (savedStateJSON) {
-      try {
-        const savedState = JSON.parse(savedStateJSON);
-        setStep(savedState.step || 1);
-        setFormData(savedState.formData || { name: "", email: "", phone: "", password: "", confirmPassword: "" });
-        setRequestId(savedState.requestId || null);
-      } catch (e) {
-        console.error("Failed to restore pitch deck form state:", e);
-      }
-    }
-  }, []); // Empty dependency array ensures this runs only on mount.
-
-  // This effect clears the state on completion. It remains unchanged.
-  useEffect(() => {
-    if (step === 2) { // Step 2 is the Chat step
-      sessionStorage.removeItem('serviceSelectionState');
-      sessionStorage.removeItem('pitchDeckFormState');
-    }
-  }, [step]);
-
-  // --- END: MODIFICATIONS FOR STATE PERSISTENCE ---
 
   const STEPS = [
     {

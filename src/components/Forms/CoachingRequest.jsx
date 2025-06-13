@@ -7,8 +7,13 @@ import { useAuth } from "../../contexts/AuthContext";
 import InlineChatbotStep from "../chat/InlineChatbotStep";
 import { addMonths } from "date-fns";
 import { AuthModalContext } from "../../App";
+// Removed ServiceContext import as 'tier' is passed via props or router state in many apps.
+// If you still use ServiceContext to get the tier, you can add it back.
+// import { ServiceContext } from "../../contexts/ServiceContext";
 import axios from "axios";
 import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
+// Removed autoCreateAccount as direct signup is implemented
+// import { autoCreateAccount } from "../../utils/autoSignup";
 import { validatePhoneNumber } from "../../utils/phoneValidation";
 import stripe from "../../assets/icons/stripe.svg";
 import ssl from "../../assets/icons/ssl-lock.svg";
@@ -325,7 +330,7 @@ function ContactStep({ formData, onChange, onPhoneValidation, user }) {
   );
 }
 
-// Step 3: Payment Step
+// Step 3: Payment Step (remains largely the same, ensure it uses formData.email correctly)
 function PaymentStep({
   selectedTier,
   requestId,
@@ -541,12 +546,12 @@ function PaymentStep({
 }
 
 // Main Coaching Request Component
-export default function CoachingRequest({ onBackService, tier: propTier }) {
+export default function CoachingRequest({ onBackService, tier: propTier }) { // tier can be passed as a prop
   const { t } = useTranslation();
-  const { user, signUp: contextSignUp } = useAuth();
-  const initialTier = propTier || "";
+  const { user, signUp: contextSignUp } = useAuth(); // Renamed signUp from context
+  const initialTier = propTier || ""; // Use propTier if available
 
-  const [step, setStep] = useState(initialTier ? 2 : 1);
+  const [step, setStep] = useState(initialTier && user ? 2 : initialTier && !user ? 2 : 1);
   
   const [formData, setFormData] = useState({
     frequency: initialTier,
@@ -563,54 +568,6 @@ export default function CoachingRequest({ onBackService, tier: propTier }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
 
-  // --- START: CORRECTED STATE PERSISTENCE LOGIC ---
-  
-  // Effect to RESTORE state on mount, only after an OAuth redirect.
-  useEffect(() => {
-    const isOAuthRedirect = sessionStorage.getItem('oauth_redirect_in_progress');
-
-    if (isOAuthRedirect === 'true') {
-      // It's a redirect, so clean up the flag first.
-      sessionStorage.removeItem('oauth_redirect_in_progress');
-
-      const savedStateJSON = sessionStorage.getItem('coachingFormState');
-      if (savedStateJSON) {
-        try {
-          const savedState = JSON.parse(savedStateJSON);
-          setStep(savedState.step || (initialTier ? 2 : 1));
-          setFormData(savedState.formData || { frequency: initialTier, name: "", email: "", phone: "", password: "", confirmPassword: "" });
-          setRequestId(savedState.requestId || null);
-        } catch (e) {
-          console.error("Failed to restore coaching form state:", e);
-        }
-      }
-    }
-  }, [initialTier]); // Run once on mount.
-
-  // Effect to SAVE state whenever it changes.
-  useEffect(() => {
-    // Stop saving state once we reach the final (chat) step.
-    if (step >= 4) {
-      return;
-    }
-    const stateToSave = {
-      step,
-      formData,
-      requestId,
-    };
-    sessionStorage.setItem('coachingFormState', JSON.stringify(stateToSave));
-  }, [step, formData, requestId]);
-
-  // Effect to CLEAN UP state from sessionStorage on completion.
-  useEffect(() => {
-    if (step === 4) {
-      sessionStorage.removeItem('serviceSelectionState'); // From parent
-      sessionStorage.removeItem('coachingFormState');
-    }
-  }, [step]);
-
-  // --- END: CORRECTED STATE PERSISTENCE LOGIC ---
-
   useEffect(() => {
     if (user) {
       const fetchUserProfile = async () => {
@@ -621,7 +578,7 @@ export default function CoachingRequest({ onBackService, tier: propTier }) {
             .eq("id", user.id)
             .single();
 
-          if (profileError && profileError.code !== 'PGRST116') {
+          if (profileError && profileError.code !== 'PGRST116') { // Ignore "no rows found" error
             console.warn("Error fetching profile for autofill (CoachingRequest):", profileError.message);
           }
 
@@ -629,18 +586,15 @@ export default function CoachingRequest({ onBackService, tier: propTier }) {
             ...prevFormData,
             name: user.user_metadata?.full_name || profileData?.full_name || "",
             email: user.email || "",
-            phone: profileData?.phone_number || prevFormData.phone, // Prioritize existing form data over profile if it exists
+            phone: profileData?.phone_number || "",
             password: '', 
             confirmPassword: '',
-            frequency: initialTier || prevFormData.frequency
+            frequency: initialTier || prevFormData.frequency // Preserve tier if already set
           }));
 
           if (profileData?.phone_number) {
             const validationResult = await validatePhoneNumber(profileData.phone_number);
             setIsPhoneValid(validationResult.isValid);
-          } else if (formData.phone) {
-             const validationResult = await validatePhoneNumber(formData.phone);
-             setIsPhoneValid(validationResult.isValid);
           } else {
             setIsPhoneValid(false); 
           }
@@ -653,25 +607,35 @@ export default function CoachingRequest({ onBackService, tier: propTier }) {
       };
       fetchUserProfile();
     } else {
-       if (!sessionStorage.getItem('coachingFormState')) {
-         setFormData(prev => ({
-            frequency: initialTier || prev.frequency, 
-            name: "",
-            email: "",
-            phone: "",
-            password: "",
-            confirmPassword: ""
-        }));
-        setIsPhoneValid(false);
-      }
+      setFormData(prev => ({
+          frequency: initialTier || prev.frequency, 
+          name: "",
+          email: "",
+          phone: "",
+          password: "",
+          confirmPassword: ""
+      }));
+      setIsPhoneValid(false); 
     }
   }, [user, initialTier]);
+
+
+  useEffect(() => {
+    // This effect now primarily handles initial step setting based on tier and user status
+    // The formData.frequency is already initialized with propTier
+    if (initialTier) {
+      setStep(2); // If a tier is provided (e.g., from Hero section), always start at step 2
+    } else {
+      setStep(1); // Otherwise, start at step 1 (frequency selection)
+    }
+  }, [initialTier]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (name === "frequency" && value) {
-        setStep(2);
+        setStep(2); // Move to contact step after frequency selection
     }
   };
 
@@ -686,7 +650,8 @@ export default function CoachingRequest({ onBackService, tier: propTier }) {
     { title: t("coaching_request.steps.chat"), component: InlineChatbotStep },
   ];
 
-  const UI_STEPS = STEPS.length + 1;
+  const CurrentStepComponent = STEPS[step - 1].component;
+  const UI_STEPS = STEPS.length + 1; // Total steps for the UI indicator
 
   const handlePaymentConfirmed = (confirmed) => {
     setPaymentDone(confirmed);
@@ -695,7 +660,7 @@ export default function CoachingRequest({ onBackService, tier: propTier }) {
   const canProceed = () => {
     if (step === 1 && !formData.frequency) return false;
 
-    if (step === 2) {
+    if (step === 2) { // Contact/Signup step
       const isNameValid = formData.name && formData.name.trim().length >= 2;
       const isEmailValid = formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
       let passwordChecks = true;
@@ -705,26 +670,27 @@ export default function CoachingRequest({ onBackService, tier: propTier }) {
       return isNameValid && isEmailValid && isPhoneValid && passwordChecks;
     }
 
-    if (step === 3) return paymentDone;
+    if (step === 3) return paymentDone; // Payment step
 
-    return true;
+    return true; // For Chat step or if other steps are added
   };
 
 const handleNext = async () => {
     if (!canProceed()) return;
 
     if (step === 1 && formData.frequency) {
-        setStep(2);
+        setStep(2); // Move from Frequency to Contact/Signup
         return;
     }
 
-    if (step === 2) {
+    if (step === 2) { // Processing Contact Info / Signup
         setIsSubmitting(true);
         try {
             let currentUserId = user?.id;
             let currentEmail = user?.email || formData.email; 
 
-            if (!user) {
+            if (!user) { // User is not logged in, so sign them up
+                // Password validation already in canProceed, but double-check here for safety
                 if (formData.password !== formData.confirmPassword) {
                     alert(t('auth.signup.errors.password_mismatch'));
                     setIsSubmitting(false);
@@ -739,7 +705,12 @@ const handleNext = async () => {
                 const { data: signUpData, error: signUpError } = await contextSignUp(
                     formData.email,
                     formData.password,
-                    { data: { full_name: formData.name } }
+                    {
+                        data: { // This data goes into auth.users.raw_user_meta_data
+                            full_name: formData.name,
+                            // Phone number is handled separately below by updating the 'profiles' table
+                        }
+                    }
                 );
 
                 if (signUpError) {
@@ -751,18 +722,22 @@ const handleNext = async () => {
                 currentUserId = signUpData.user.id;
                 currentEmail = signUpData.user.email; 
 
+                // After successful signup, Supabase trigger should create a profile.
+                // Now, update that profile with the phone number.
                 if (signUpData.user && formData.phone) {
                     const { error: profileUpdateError } = await supabase
                         .from('profiles')
-                        .update({ phone_number: formData.phone })
+                        .update({ phone_number: formData.phone }) // Only update phone, name is from metadata
                         .eq('id', signUpData.user.id);
                     if (profileUpdateError) {
                         console.warn('Failed to update profile with phone number after signup:', profileUpdateError.message);
                     }
                 }
                 alert("Account created! Please check your email for confirmation. Your request is being processed.");
-            } else {
+            } else { // User is already logged in
+                // Check if name or phone number changed and update profile
                 let profileUpdates = {};
+                // Fetch current profile details to compare
                 const {data: currentProfileData, error: currentProfileError} = await supabase
                     .from('profiles')
                     .select('full_name, phone_number')
@@ -789,6 +764,7 @@ const handleNext = async () => {
                 }
             }
 
+            // Common logic: Create coaching request
             const membershipStartDate = new Date();
             const membershipEndDate = addMonths(membershipStartDate, 1);
 
@@ -812,38 +788,42 @@ const handleNext = async () => {
             if (coachingError) {
                 console.error("Error creating coaching request:", coachingError);
                 alert("Failed to create coaching request: " + coachingError.message);
-                throw coachingError;
+                throw coachingError; // Throw to be caught by outer catch
             }
             setRequestId(coachingRequestData.id);
-            setStep(3);
+            setStep(3); // Proceed to Payment Step
 
         } catch (error) { 
             console.error("Error in contact/signup step processing:", error);
+            // No generic alert here, specific ones are shown inside the try block
         } finally {
             setIsSubmitting(false);
         }
     } else if (step === 3 && paymentDone) {
-        setStep(4);
+        setStep(4); // Move from Payment to Chat
     }
 };
 
+
   const handleBack = () => {
     if (step > 1) {
-      if (step === 2 && initialTier) {
+      if (step === 2 && initialTier) { // If coming from Hero with a tier, back from contact goes to service selection
         onBackService();
       } else {
         setStep((s) => s - 1);
       }
     } else {
-      onBackService();
+      onBackService(); // If on step 1, back goes to service selection
     }
   };
 
   const handleStepClick = (clickedStepNum) => {
-    const targetInternalStep = clickedStepNum - 1;
+    // clickedStepNum is 1-based for UI, step is 0-based internal state usually, but here step is 1-based
+    // UI_STEPS is total dots, so step 1 (Frequency) is dot 2 if UI_STEPS = STEPS.length + 1
+    const targetInternalStep = clickedStepNum - 1; // Convert UI dot to internal step
 
-    if (targetInternalStep < step && !isSubmitting) {
-        if (targetInternalStep === 0) {
+    if (targetInternalStep < step && !isSubmitting) { // Can only go back to previous steps
+        if (targetInternalStep === 0) { // Corresponds to UI dot 1 (Main Service Selection)
              onBackService();
         } else {
             setStep(targetInternalStep);
@@ -906,9 +886,10 @@ const handleNext = async () => {
                     return;
                   }
                   try {
+                    // This URL should match the trigger in your N8N workflow
                     const webhookUrl = "https://rafaello.app.n8n.cloud/webhook/coaching-complete"; 
                     await axios.post(webhookUrl, {
-                      session_id: requestId,
+                      session_id: requestId, // Ensure your N8N workflow expects session_id
                     });
                   } catch (error) {
                     console.error("Error triggering coaching completion webhook:", error);
@@ -916,7 +897,7 @@ const handleNext = async () => {
               }}
             />
           )}
-          {step === 4 && !requestId && (
+          {step === 4 && !requestId && ( // Fallback if requestId isn't set for chat step
                <div className="text-center text-red-400 p-4">
                 Preparing chat... If this persists, please go back and try again.
               </div>
@@ -928,7 +909,7 @@ const handleNext = async () => {
             onStepClick={handleStepClick}
           />
 
-          <div className="flex justify-between mt-4 sm:mt-6">
+          <div className="flex justify-between mt-4 sm:mt-6"> {/* Increased margin-top */}
             <button
               onClick={handleBack}
               disabled={isSubmitting}

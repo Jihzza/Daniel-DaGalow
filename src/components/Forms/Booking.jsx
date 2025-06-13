@@ -37,6 +37,34 @@ import PhoneInput from "react-phone-input-2"; // Added for InfoStep
 import "react-phone-input-2/lib/style.css"; // Added for InfoStep
 import { validatePhoneNumber } from "../../utils/phoneValidation"; // Added for InfoStep
 
+// ======== START: MODIFIED CODE BLOCK ========
+
+const bookingStateKey = 'pendingBookingState';
+
+// HELPER: Now includes logging
+const getInitialBookingState = () => {
+    console.log(`[HELPER] getInitialBookingState: Attempting to read from sessionStorage with key: "${bookingStateKey}"`);
+    try {
+        const savedStateJSON = sessionStorage.getItem(bookingStateKey);
+        if (savedStateJSON) {
+            console.log("[HELPER] getInitialBookingState: Found raw state in sessionStorage:", savedStateJSON);
+            sessionStorage.removeItem(bookingStateKey); // Remove immediately after reading
+            console.log("[HELPER] getInitialBookingState: Removed item from sessionStorage.");
+            const parsedState = JSON.parse(savedStateJSON);
+            console.log("[HELPER] getInitialBookingState: Parsed state successfully:", parsedState);
+            return parsedState;
+        } else {
+            console.log("[HELPER] getInitialBookingState: No state found in sessionStorage.");
+        }
+    } catch (error) {
+        console.error("[HELPER] getInitialBookingState: Could not parse saved booking state. Clearing corrupted data.", error);
+        sessionStorage.removeItem(bookingStateKey); // Clear corrupted data
+    }
+    return null; // Return null if no state is found or if an error occurs.
+};
+
+// ======== END: MODIFIED CODE BLOCK ========
+
 // Shared StepIndicator
 function StepIndicator({
   stepCount,
@@ -825,6 +853,7 @@ function PaymentStep({
   );
 }
 
+// Main Booking Component
 export default function Booking({ onBackService }) {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
@@ -833,74 +862,24 @@ export default function Booking({ onBackService }) {
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedDuration, setSelectedDuration] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [allBookings, setAllBookings] = useState([]);
-  const [dailyAvailability, setDailyAvailability] = useState([]);
-  const [isPhoneValidInParent, setIsPhoneValidInParent] = useState(false);
-
-  const [formData, setFormData] = useState({
-    name: "", 
-    email: "",
-    password: "",   
-    confirmPassword: "" 
-  });
+  const [allBookings, setAllBookings] = useState([]); // Store all bookings for conflict checking
+  const [dailyAvailability, setDailyAvailability] = useState([]); // Store available slots for selectedDate
+  const [isPhoneValidInParent, setIsPhoneValidInParent] = useState(false); // For InfoStep
+  const [isRestoring, setIsRestoring] = useState(true); // New state to manage the initial restore/hydration phase
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [paymentDone, setPaymentDone] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Combined loading state
   const [bookingId, setBookingId] = useState(null);
   const formRef = useScrollToTopOnChange([step]);
 
-  // --- START: MODIFICATIONS ---
+  // RENDER LOG: See state on every render
+  console.log(
+    `%c--- Booking Component Render ---\n    Step: %c${step}\n    User Authenticated: %c${!!user}\n    Date Selected: %c${selectedDate ? format(selectedDate, 'yyyy-MM-dd') : 'null'}`,
+    'color: #64748b; font-weight: bold;', 'color: #fbbf24; font-weight: bold;',
+    'color: #fbbf24; font-weight: bold;', 'color: #fbbf24; font-weight: bold;'
+  );
 
-  // Effect to RESTORE state on mount, now conditional on the OAuth flag.
-  useEffect(() => {
-    const isOAuthRedirect = sessionStorage.getItem('oauth_redirect_in_progress');
-
-    // Only run the restoration logic if we've just returned from the redirect.
-    if (isOAuthRedirect === 'true') {
-      // First, remove the flag so this logic doesn't run again on a simple refresh.
-      sessionStorage.removeItem('oauth_redirect_in_progress');
-
-      const savedStateJSON = sessionStorage.getItem('bookingFormState');
-      if (savedStateJSON) {
-        try {
-          const savedState = JSON.parse(savedStateJSON);
-          setStep(savedState.step || 1);
-          setSelectedDate(savedState.selectedDate ? new Date(savedState.selectedDate) : null);
-          setSelectedTime(savedState.selectedTime || null);
-          setSelectedDuration(savedState.selectedDuration || null);
-          setFormData(savedState.formData || { name: '', email: '', password: '', confirmPassword: '' });
-        } catch (e) {
-          console.error("Failed to restore booking form state:", e);
-        }
-      }
-    }
-  }, []); // This effect still only needs to run once on component mount.
-
-  // Effect to SAVE state. (Logic is the same as before)
-  useEffect(() => {
-    if (step >= 4) {
-      return;
-    }
-    const stateToSave = {
-      step,
-      selectedDate: selectedDate ? selectedDate.toISOString() : null,
-      selectedTime,
-      selectedDuration,
-      formData,
-    };
-    sessionStorage.setItem('bookingFormState', JSON.stringify(stateToSave));
-  }, [step, selectedDate, selectedTime, selectedDuration, formData]);
-
-  // Effect to CLEAN UP state on completion. (Logic is the same as before)
-  useEffect(() => {
-    if (step === 4) {
-      sessionStorage.removeItem('serviceSelectionState');
-      sessionStorage.removeItem('bookingFormState');
-    }
-  }, [step]);
-
-  // --- END: MODIFICATIONS ---
-
-  const minDate = addDays(new Date(), 1);
+  const minDate = addDays(new Date(), 1); // Min booking date is tomorrow
 
   const handlePhoneValidationInParent = (isValid) => {
     setIsPhoneValidInParent(isValid);
@@ -964,27 +943,80 @@ export default function Booking({ onBackService }) {
 
 
   useEffect(() => {
+    console.log("%c[EFFECT 1 - RESTORE] Fired on initial component mount.", 'color: #22c55e');
+    const savedState = getInitialBookingState();
+
+    if (savedState) {
+      console.log("%c[EFFECT 1 - RESTORE] Found saved state to restore:", 'color: #22c55e', savedState);
+      // Restore all the state from the previous session
+      setStep(savedState.step || 1);
+      if (savedState.selectedDate) {
+        setSelectedDate(new Date(savedState.selectedDate));
+      }
+      setSelectedTime(savedState.selectedTime || null);
+      setSelectedDuration(savedState.selectedDuration || null);
+      setFormData(prev => ({ ...prev, ...savedState.formData }));
+      console.log(`%c[EFFECT 1 - RESTORE] Component state has been updated. Should be on step: ${savedState.step}`, 'color: #22c55e; font-weight: bold;');
+    } else {
+        console.log("%c[EFFECT 1 - RESTORE] No saved state found to restore.", 'color: #a1a1aa');
+    }
+    
+    // ======== START: MODIFICATION ========
+    // After attempting a restore (whether it succeeded or not), set the restoring flag to false.
+    // We use a timeout to ensure this happens in the next event loop tick, after other initial effects have fired.
+    setTimeout(() => setIsRestoring(false), 0);
+    console.log("%c[EFFECT 1 - RESTORE] Restore phase is now complete.", 'color: #22c55e');
+    // ======== END: MODIFICATION ========
+
+  }, []); // This hook still runs only once.
+
+  // ======== START: ADD THIS NEW HOOK ========
+  // HOOK 4: Auto-advance after login
+  useEffect(() => {
+    // This effect runs when the initial restore phase is complete OR when the user logs in.
+    if (!isRestoring && user && step === 2) {
+      console.log(
+        `%c[EFFECT 4 - AUTO-ADVANCE] Conditions met:\n        - Restore phase complete: %c${!isRestoring}\n        - User is logged in: %c${!!user}\n        - Current step is 2: %c${step === 2}\n        Proceeding to next step automatically.`,
+        'color: #8b5cf6; font-weight: bold;', 'color: #8b5cf6', 'color: #8b5cf6', 'color: #8b5cf6'
+      );
+      handleNext(); // This is the function that handles moving from step 2 to 3
+    }
+  }, [isRestoring, user, step]); // Dependencies ensure this logic is re-evaluated when needed
+  // ======== END: ADD THIS NEW HOOK ========
+
+  // HOOK 2: Save state changes to sessionStorage if the user is a GUEST
+  useEffect(() => {
+    // This effect now logs its decisions
+    if (!user && step >= 1) {
+      const stateToSave = { step, selectedDate, selectedTime, selectedDuration, formData };
+      console.log(`%c[EFFECT 2 - SAVE] User is a GUEST. Saving state to sessionStorage for step ${step}:`, 'color: #3b82f6', stateToSave);
+      sessionStorage.setItem(bookingStateKey, JSON.stringify(stateToSave));
+    } else if (user) {
+      console.log(`%c[EFFECT 2 - SAVE] User is LOGGED IN. Skipping state save.`, 'color: #a1a1aa');
+    }
+  }, [user, step, selectedDate, selectedTime, selectedDuration, formData]);
+
+  // HOOK 3: Update form data when user object changes (e.g., after login)
+  useEffect(() => {
+    console.log(`%c[EFFECT 3 - USER] Fired because 'user' object changed. User is now: ${user ? user.email : 'null'}`,'color: #f97316');
     if (user) {
       const fetchUserProfile = async () => {
         try {
-          const { data: profileData, error: profileError } = await supabase
-            .from("profiles")
-            .select("full_name")
-            .eq("id", user.id)
-            .single();
-
-          if (profileError && profileError.code !== 'PGRST116') {
-            console.warn("Error fetching profile for autofill (Booking):", profileError.message);
-          }
-
-          setFormData(prevFormData => ({
-            ...prevFormData,
-            name: user.user_metadata?.full_name || profileData?.full_name || "",
-            email: user.email || "",
-            password: '', 
-            confirmPassword: '',
-          }));
-
+          const { data: profileData, error: profileError } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
+          
+          console.log(`%c[EFFECT 3 - USER] Fetching user profile. Merging with existing form data.`, 'color: #f97316');
+          setFormData(prevFormData => {
+            console.log(`%c[EFFECT 3 - USER] Inside setFormData. Previous form data:`, 'color: #f97316', prevFormData);
+            const newFormData = {
+              ...prevFormData,
+              name: prevFormData.name || user.user_metadata?.full_name || profileData?.full_name || "",
+              email: user.email || prevFormData.email || "",
+              password: '', 
+              confirmPassword: '',
+            };
+            console.log(`%c[EFFECT 3 - USER] New merged form data:`, 'color: #f97316', newFormData);
+            return newFormData;
+          });
         } catch (error) {
           console.error("Error in fetchUserProfile (Booking):", error);
           setFormData(prev => ({ ...prev, password: '', confirmPassword: ''}));
@@ -992,10 +1024,14 @@ export default function Booking({ onBackService }) {
       };
       fetchUserProfile();
     } else {
-      setFormData({ name: "", email: "", password: "", confirmPassword: "" });
+       const pendingState = sessionStorage.getItem(bookingStateKey);
+       console.log(`%c[EFFECT 3 - USER] User is null. Checking if pending state exists: ${!!pendingState}`,'color: #a1a1aa');
+       if (!pendingState) {
+           console.log(`%c[EFFECT 3 - USER] No user and no pending state. Clearing form.`, 'color: #a1a1aa');
+           setFormData({ name: "", email: "", password: "", confirmPassword: "" });
+       }
     }
   }, [user]);
-
 
   const STEPS = [
     { title: t("booking.step_datetime"), component: DateTimeStep },
@@ -1011,13 +1047,16 @@ export default function Booking({ onBackService }) {
 
   const canProceed = () => {
     if (step === 1) return selectedDate && selectedTime && selectedDuration;
-    if (step === 2) { // Info / Signup Step
+    if (step === 2) {
       const isNameValid = formData.name && formData.name.trim().length >= 2;
-      const isEmailValid = formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
-      let passwordChecks = true;
-      if (!user) { // Only check passwords if user is not logged in (signing up)
-        passwordChecks = formData.password && formData.password.length >= 6 && formData.password === formData.confirmPassword;
-      }
+      // When auto-advancing, the user's email will be present from their profile
+      const isEmailValid = !!user?.email || (formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email));
+      
+      // If a user is logged in, we don't need to validate passwords
+      if (user) return isNameValid && isEmailValid;
+
+      // Original logic for new user signup
+      const passwordChecks = formData.password && formData.password.length >= 6 && formData.password === formData.confirmPassword;
       return isNameValid && isEmailValid && passwordChecks;
     }
     if (step === 3) return paymentDone;

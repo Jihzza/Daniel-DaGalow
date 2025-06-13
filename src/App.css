@@ -119,4 +119,3 @@
 .animate-pulse-dot { /* You can use a more specific name if 'animate-pulse' is used elsewhere */
   animation: pulse-dot 1.5s infinite ease-in-out;
 }
-

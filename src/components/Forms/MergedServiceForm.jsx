@@ -1,5 +1,3 @@
-// src/components/Forms/MergedServiceForm.jsx
-
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import Booking from "./Booking";
@@ -7,7 +5,7 @@ import CoachingRequest from "./CoachingRequest";
 import PitchDeckRequest from "./PitchDeckRequest";
 import { useSearchParams } from "react-router-dom";
 import { ServiceContext } from "../../contexts/ServiceContext";
-import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange";
+import { useScrollToTopOnChange } from "../../hooks/useScrollToTopOnChange"; // Import the custom hook
 
 export default function MergedServiceForm() {
   const { t } = useTranslation();
@@ -16,32 +14,10 @@ export default function MergedServiceForm() {
 
   const { service, setService } = useContext(ServiceContext);
   const [step, setStep] = useState(service ? 2 : 1);
-
+  
+  // IMPORTANT: Only use the custom hook AFTER all state variables are declared
   const formRef = useScrollToTopOnChange([step, service]);
-
-  // Effect to RESTORE the service from sessionStorage on component mount.
-  useEffect(() => {
-    const savedStateJSON = sessionStorage.getItem('serviceSelectionState');
-    if (savedStateJSON) {
-      try {
-        const savedState = JSON.parse(savedStateJSON);
-        if (savedState.service && !service) {
-          setService(savedState.service);
-        }
-      } catch (e) {
-        console.error("Failed to restore service selection state:", e);
-      }
-    }
-  }, [setService, service]);
-
-  // Effect to SAVE the currently selected service to sessionStorage.
-  useEffect(() => {
-    if (service) {
-      const stateToSave = { service };
-      sessionStorage.setItem('serviceSelectionState', JSON.stringify(stateToSave));
-    }
-  }, [service]);
-
+  
   const services = [
     { label: t("service_form.services.consultation"), value: "booking" },
     { label: t("service_form.services.coaching"), value: "coaching" },
@@ -69,18 +45,13 @@ export default function MergedServiceForm() {
     setStep(1);
   };
 
+  // total dots = 1 (service select) + internal
   const totalSteps = 1 + (service ? SERVICE_STEPS[service] : 0);
 
   const onStepClick = (n) => {
     if (n === 1) {
       setService(null);
       setStep(1);
-      // **FIX:** Clear the saved state from session storage.
-      // This prevents the useEffect hook from immediately restoring the service.
-      sessionStorage.removeItem('serviceSelectionState');
-      sessionStorage.removeItem('bookingFormState');
-      sessionStorage.removeItem('coachingFormState');
-      sessionStorage.removeItem('pitchDeckFormState');
     } else if (service && n <= totalSteps) {
       setStep(n);
     }
@@ -93,8 +64,10 @@ export default function MergedServiceForm() {
 
   const CurrentForm = service ? SERVICE_COMPONENT[service] : null;
 
+  // Step indicators with original styling
   const StepIndicator = () => <div></div>;
 
+  // Service selection view
   if (!service) {
     return (
       <section id="service-selection" className="py-8 px-4" ref={formRef}>
@@ -125,6 +98,7 @@ export default function MergedServiceForm() {
     );
   }
 
+  // Internal form
   return (
     <section id="service-selection" ref={formRef}>
       <div className="max-w-3xl mx-auto">
